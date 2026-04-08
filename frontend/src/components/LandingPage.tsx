@@ -20,7 +20,7 @@ const LandingPage: React.FC = () => {
 
     return (
         <div style={{
-            minHeight: '100vh',
+            height: '100vh',
             width: '100%',
             background: `linear-gradient(rgba(0, 21, 41, 0.7), rgba(0, 21, 41, 0.8)), url('/system_landing_bg.png')`,
             backgroundSize: 'cover',
@@ -29,23 +29,26 @@ const LandingPage: React.FC = () => {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            padding: '60px 24px',
+            padding: '40px 24px',
             overflowX: 'hidden',
             overflowY: 'auto'
         }}>
             <div style={{
-                margin: 'auto 0',
+                margin: '0 auto',
+                padding: '40px 0',
                 width: '100%',
                 maxWidth: 1200,
                 display: 'flex',
                 flexDirection: 'column',
-                alignItems: 'center'
+                alignItems: 'center',
+                minHeight: 'fit-content',
+                flexShrink: 0
             }}>
-                <div style={{ textAlign: 'center', marginBottom: 48, maxWidth: 800 }}>
-                    <Title style={{ color: '#fff', fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 800, marginBottom: 16 }}>
+                <div style={{ textAlign: 'center', marginBottom: 32, maxWidth: 800, padding: '0 24px' }}>
+                    <Title style={{ color: '#fff', fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 800, marginBottom: 12 }}>
                         CIC CORE SYSTEM
                     </Title>
-                    <Text style={{ color: 'rgba(255, 255, 255, 0.65)', fontSize: 'clamp(14px, 2vw, 18px)' }}>
+                    <Text style={{ color: 'rgba(255, 255, 255, 0.65)', fontSize: 'clamp(14px, 1.5vw, 16px)' }}>
                         Nền tảng quản trị và vận hành hệ thống thông tin tín dụng tập trung.
                         Vui lòng chọn phân hệ để bắt đầu làm việc.
                     </Text>
