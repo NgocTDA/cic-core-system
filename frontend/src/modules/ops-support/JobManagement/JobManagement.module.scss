@@ -1,0 +1,198 @@
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 16px 24px;
+  background: #f7f9fc;
+}
+
+.pageHeader {
+  margin-bottom: 24px;
+}
+
+.statsStrip {
+  margin-top: 16px;
+  padding: 16px 0;
+  border-bottom: 2px solid #eceef1; // Subtle separator as per Digital Atrium vibe
+}
+
+.statItem {
+  .statValue {
+    display: flex;
+    align-items: center;
+    margin-top: 4px;
+  }
+}
+
+.contentWrapper {
+  flex: 1;
+  overflow: hidden;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.mainLayout {
+  display: flex;
+  height: 100%;
+}
+
+.leftPanel {
+  width: 350px;
+  border-right: 1px solid #f2f4f7;
+  display: flex;
+  flex-direction: column;
+}
+
+.rightPanel {
+  flex: 1;
+  overflow-y: auto;
+  background: #ffffff;
+}
+
+/* JobExplorer styles */
+.jobExplorer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.searchContainer {
+  padding: 16px;
+  border-bottom: 1px solid #f2f4f7;
+}
+
+.jobList {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.jobItem {
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-left: 4px solid transparent;
+
+  &:hover {
+    background: #f2f4f7;
+  }
+
+  &.active {
+    background: #eceef1;
+    border-left-color: #1677ff;
+    position: relative;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      left: -4px;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: #1677ff;
+      border-radius: 0 2px 2px 0;
+    }
+  }
+}
+
+/* JobDetailPanel styles */
+.jobDetailPanel {
+  padding: 24px;
+}
+
+.detailHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 32px;
+}
+
+.primaryGradientBtn {
+  background: linear-gradient(135deg, #1677ff 0%, #0057c2 100%) !important;
+  border: none !important;
+  
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+.monitoringArea {
+  margin-bottom: 32px;
+}
+
+.monitoringCard {
+  background: #f7f9fc !important;
+  border-radius: 8px !important;
+}
+
+.sparklineGrid {
+  display: flex;
+  gap: 3px;
+  height: 60px;
+  align-items: flex-end;
+  margin-top: 12px;
+}
+
+.sparkBar {
+  flex: 1;
+  min-width: 6px;
+  border-radius: 2px 2px 0 0;
+  
+  &.success {
+    background: #52c41a;
+    height: 70%;
+    opacity: 0.6;
+    
+    &:hover {
+      opacity: 1;
+    }
+  }
+  
+  &.failed {
+    background: #ff4d4f;
+    height: 40%;
+    opacity: 0.8;
+  }
+}
+
+.statCard {
+  background: #ffffff !important;
+  border-radius: 6px !important;
+}
+
+.miniStat {
+  text-align: center;
+}
+
+.configTabs {
+  margin-top: 24px;
+}
+
+.tabContent {
+  padding: 16px 0;
+}
+
+.configInnerCard {
+  background: #f2f4f7 !important;
+  height: 100%;
+}
+
+.emptyDetail {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logDrawer {
+  :global(.ant-drawer-header) {
+    border-bottom: 1px solid #f2f4f7;
+  }
+  
+  :global(.ant-drawer-body) {
+    padding: 0;
+    backdrop-filter: blur(12px);
+    background: rgba(255, 255, 255, 0.8);
+  }
+}

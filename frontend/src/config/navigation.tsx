@@ -74,6 +74,12 @@ export const SUB_SYSTEMS: SubSystem[] = [
         color: '#722ed1',
         menuItems: [
             { key: 'ops-support-dashboard', label: 'Dashboard Vận hành', icon: <DashboardOutlined />, path: '/ops-support/dashboard' },
+            { 
+                key: 'job-management', 
+                label: 'Quản lý Job', 
+                icon: <ProjectOutlined />, 
+                path: '/ops-support/job-management' 
+            },
         ]
     },
     {
