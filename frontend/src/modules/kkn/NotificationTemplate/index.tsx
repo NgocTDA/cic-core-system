@@ -31,7 +31,7 @@ const NotificationTemplate: React.FC = () => {
         icon: <PlusOutlined />,
         type: 'primary',
         onClick: () => {
-          router.push('/notification-template/create');
+          router.push('/ops-support/notification-template/create');
         }
       }
     ]
@@ -110,11 +110,11 @@ const NotificationTemplate: React.FC = () => {
   };
 
   const handleEdit = (template: INotificationTemplate) => {
-    router.push(`/notification-template/${template.id}/edit`);
+    router.push(`/ops-support/notification-template/${template.id}/edit`);
   };
 
   const handleDuplicate = (template: INotificationTemplate) => {
-    router.push('/notification-template/create'); // Next.js push doesn't support state easily
+    router.push('/ops-support/notification-template/create'); // Next.js push doesn't support state easily
     message.info(`Đang tạo bản sao từ mẫu "${template.code}"...`);
   };
 

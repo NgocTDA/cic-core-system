@@ -374,11 +374,11 @@ const TemplateFormPage: React.FC = () => {
 
     const handleSubmit = (_values: any) => {
         message.success(isEditMode ? 'Cập nhật mẫu thông báo thành công' : 'Tạo mẫu thông báo thành công');
-        router.push('/notification-template');
+        router.push('/ops-support/notification-template');
     };
 
     const handleCancel = () => {
-        router.push('/notification-template');
+        router.push('/ops-support/notification-template');
     };
 
     // Set Header Title

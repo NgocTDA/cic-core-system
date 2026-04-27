@@ -12,6 +12,7 @@ import CommandPalette from '@/components/CommandPalette';
 import viVN_ from 'antd/locale/vi_VN';
 import dayjs from 'dayjs';
 import 'dayjs/locale/vi';
+import { antdTheme, colors } from '@/design-system';
 
 const { Content } = Layout;
 
@@ -54,7 +55,7 @@ const ClientLayout: React.FC<MainLayoutProps> = ({ children }) => {
     };
 
     if (!mounted) {
-        return <div style={{ minHeight: '100vh', background: '#f5f5f5' }}>{children}</div>;
+        return <div style={{ minHeight: '100vh', background: colors.bg.page }}>{children}</div>;
     }
 
     const isLandingPage = pathname === '/';
@@ -62,20 +63,7 @@ const ClientLayout: React.FC<MainLayoutProps> = ({ children }) => {
     return (
         <ConfigProvider
             locale={viVN}
-            theme={{
-                token: {
-                    colorPrimary: '#1677ff',
-                    fontFamily: 'Inter, sans-serif',
-                    borderRadius: 6,
-                    controlHeight: 32,
-                },
-                components: {
-                    Menu: {
-                        darkItemSelectedBg: '#fa8c16',
-                        darkItemSelectedColor: '#ffffff',
-                    }
-                }
-            }}
+            theme={antdTheme}
         >
             <SubSystemProvider>
                 <CommandPalette />
@@ -85,7 +73,7 @@ const ClientLayout: React.FC<MainLayoutProps> = ({ children }) => {
                             {children}
                         </div>
                     ) : (
-                        <Layout style={{ height: '100vh', overflow: 'hidden', background: '#f5f5f5' }}>
+                        <Layout style={{ height: '100vh', overflow: 'hidden', background: colors.bg.page }}>
                             {isMobile ? (
                                 <Drawer
                                     placement="left"
@@ -115,7 +103,7 @@ const ClientLayout: React.FC<MainLayoutProps> = ({ children }) => {
                                     onCollapse={handleToggleCollapse}
                                     isMobile={isMobile}
                                 />
-                                <Content style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: isMobile ? 'auto' : 'hidden', transition: 'all 0.2s', background: '#f5f7fa' }}>
+                                <Content style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: isMobile ? 'auto' : 'hidden', transition: 'all 0.2s', background: colors.bg.page }}>
                                     {children}
                                 </Content>
                             </Layout>

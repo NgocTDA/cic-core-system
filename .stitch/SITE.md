@@ -18,7 +18,7 @@ A high-end, authoritative enterprise platform for CIC core operations, following
 
 ## 4. Sitemap
 - [x] Landing Page (`/`)
-- [x] KKN Dashboard (`/kkn-dashboard`)
+- [x] Dashboard kênh kết nối (`/kkn-dashboard`)
 - [x] Notification Templates (`/notification-template`)
 - [x] Notifications (`/notifications`)
 - [/] Job Management (`/ops-support/job-management`)

@@ -24,13 +24,10 @@ interface AppHeaderProps {
 
 const ROUTE_TITLES: Record<string, string> = {
   '/': 'Tổng quan hệ thống',
-  '/kkn-dashboard': 'Dashboard',
-  '/notification-template': 'Quản lý mẫu thông báo',
-  '/notifications': 'Thông báo hệ thống',
-  '/variable-registry': 'Danh mục biến dùng chung',
-  '/analytics': 'Phân tích & Thống kê',
-  '/projects': 'Danh sách dự án',
-  '/settings': 'Cài đặt hệ thống',
+  '/kkn-dashboard': 'Dashboard kênh kết nối',
+  '/ops-support/notification-template': 'Quản lý mẫu thông báo',
+  '/ops-support/notifications': 'Tra cứu thông báo',
+  '/ops-support/variable-registry': 'Danh mục biến thông báo',
 };
 
 const AppHeader: React.FC<AppHeaderProps> = ({ collapsed, onCollapse, isMobile }) => {
@@ -124,7 +121,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({ collapsed, onCollapse, isMobile }
         )}
 
         {/* Always visible: notification bell */}
-        <Link href="/notifications" style={{ color: 'inherit' }}>
+        <Link href="/ops-support/notifications" style={{ color: 'inherit' }}>
           <Badge dot offset={[-2, 5]}>
             <BellOutlined style={{ fontSize: 20, cursor: 'pointer' }} />
           </Badge>

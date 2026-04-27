@@ -66,17 +66,7 @@ export const SUB_SYSTEMS: SubSystem[] = [
         icon: <ApiOutlined />,
         color: '#fa8c16',
         menuItems: [
-            { key: 'kkn-dashboard', label: 'Dashboard KKN', icon: <DashboardOutlined />, path: '/kkn-dashboard' },
-            {
-                key: 'template-management',
-                label: 'Quản lý mẫu',
-                icon: <FolderOutlined />,
-                children: [
-                    { key: 'variable-registry', label: 'Danh mục biến', icon: <TableOutlined />, path: '/variable-registry' },
-                    { key: 'notification-template', label: 'Mẫu thông báo', icon: <FileTextOutlined />, path: '/notification-template' },
-                ]
-            },
-            { key: 'notifications', label: 'Thông báo', icon: <BellOutlined />, path: '/notifications' },
+            { key: 'kkn-dashboard', label: 'Dashboard', icon: <DashboardOutlined />, path: '/kkn-dashboard' },
         ]
     },
     {
@@ -110,6 +100,16 @@ export const SUB_SYSTEMS: SubSystem[] = [
                 icon: <ProjectOutlined />,
                 path: '/ops-support/job-management'
             },
+            {
+                key: 'template-management',
+                label: 'Quản lý thông báo',
+                icon: <FolderOutlined />,
+                children: [
+                    { key: 'notifications', label: 'Tra cứu thông báo', icon: <BellOutlined />, path: '/ops-support/notifications' },
+                    { key: 'notification-template', label: 'Mẫu thông báo', icon: <FileTextOutlined />, path: '/ops-support/notification-template' },
+                    { key: 'variable-registry', label: 'Biến thông báo', icon: <TableOutlined />, path: '/ops-support/variable-registry' },
+                ]
+            },
         ]
     },
     {
@@ -131,13 +131,13 @@ export const SUB_SYSTEMS: SubSystem[] = [
                 key: 'dashboard',
                 label: 'Tổng quan',
                 icon: <DashboardOutlined />,
-                path: '/dashboard',
+                path: '/data-governance/dashboard',
             },
             {
                 key: 'search',
                 label: 'Tìm kiếm toàn cục',
                 icon: <SearchOutlined />,
-                path: '/search',
+                path: '/data-governance/search',
                 badge: 'Ctrl+K'
             },
             {
@@ -156,14 +156,14 @@ export const SUB_SYSTEMS: SubSystem[] = [
                     {
                         key: 't1-list',
                         label: 'Danh sách tài sản',
-                        path: '/assets',
+                        path: '/data-governance/assets',
                         fnCode: 'T1.4',
                         icon: <UnorderedListOutlined />
                     },
                     {
                         key: 't1-new',
                         label: 'Đăng ký tài sản mới',
-                        path: '/assets/new',
+                        path: '/data-governance/assets/new',
                         fnCode: 'T1.1',
                         icon: <PlusOutlined />,
                         highlight: true
@@ -171,7 +171,7 @@ export const SUB_SYSTEMS: SubSystem[] = [
                     {
                         key: 't1-pending',
                         label: 'Chờ phê duyệt',
-                        path: '/assets?status=pending_review',
+                        path: '/data-governance/assets?status=pending_review',
                         fnCode: 'T1.1 / T1.2',
                         icon: <ClockCircleOutlined />,
                         badgeDynamic: 'pendingCount'
@@ -179,7 +179,7 @@ export const SUB_SYSTEMS: SubSystem[] = [
                     {
                         key: 't1-my-assets',
                         label: 'Tài sản của tôi',
-                        path: '/assets?owner=me',
+                        path: '/data-governance/assets?owner=me',
                         fnCode: 'T1.7',
                         icon: <UserOutlined />
                     }
@@ -196,14 +196,14 @@ export const SUB_SYSTEMS: SubSystem[] = [
                     {
                         key: 't2a-list',
                         label: 'Danh sách BA',
-                        path: '/assets?type=business',
+                        path: '/data-governance/assets?type=business',
                         fnCode: 'T2A.5',
                         icon: <UnorderedListOutlined />
                     },
                     {
                         key: 't2a-mapping',
                         label: 'BA ↔ TA Mapping',
-                        path: '/assets/mapping',
+                        path: '/data-governance/assets/mapping',
                         fnCode: 'T2A.4',
                         icon: <SwapOutlined />,
                         highlight: true
@@ -211,7 +211,7 @@ export const SUB_SYSTEMS: SubSystem[] = [
                     {
                         key: 't2a-unmapped',
                         label: 'Chưa có mapping',
-                        path: '/assets?type=business&mapped=false',
+                        path: '/data-governance/assets?type=business&mapped=false',
                         fnCode: 'T2A.4',
                         icon: <ExclamationCircleOutlined />,
                         badgeDynamic: 'unmappedBACount'
@@ -229,14 +229,14 @@ export const SUB_SYSTEMS: SubSystem[] = [
                     {
                         key: 't2b-list',
                         label: 'Danh sách TA',
-                        path: '/assets?type=technical',
+                        path: '/data-governance/assets?type=technical',
                         fnCode: 'T2B.1',
                         icon: <UnorderedListOutlined />
                     },
                     {
                         key: 't2b-discovery',
                         label: 'Auto-discovery',
-                        path: '/discovery',
+                        path: '/data-governance/discovery',
                         fnCode: 'T2B.2',
                         icon: <AimOutlined />,
                         badgeDynamic: 'newDiscoveryCount'
@@ -244,7 +244,7 @@ export const SUB_SYSTEMS: SubSystem[] = [
                     {
                         key: 't2b-schema',
                         label: 'Thay đổi schema',
-                        path: '/assets/schema-changes',
+                        path: '/data-governance/assets/schema-changes',
                         fnCode: 'T2B.4',
                         icon: <BranchesOutlined />,
                         badgeDynamic: 'pendingSchemaCount'
@@ -252,7 +252,7 @@ export const SUB_SYSTEMS: SubSystem[] = [
                     {
                         key: 't2b-impact',
                         label: 'Phân tích tác động',
-                        path: '/assets/impact',
+                        path: '/data-governance/assets/impact',
                         fnCode: 'T2B.5',
                         icon: <ThunderboltOutlined />
                     }
@@ -274,14 +274,14 @@ export const SUB_SYSTEMS: SubSystem[] = [
                     {
                         key: 't3a-browse',
                         label: 'Tra cứu thuật ngữ',
-                        path: '/glossary',
+                        path: '/data-governance/glossary',
                         fnCode: 'T3A.5',
                         icon: <SearchOutlined />
                     },
                     {
                         key: 't3a-new',
                         label: 'Tạo thuật ngữ mới',
-                        path: '/glossary/new',
+                        path: '/data-governance/glossary/new',
                         fnCode: 'T3A.1',
                         icon: <PlusOutlined />,
                         highlight: true
@@ -289,7 +289,7 @@ export const SUB_SYSTEMS: SubSystem[] = [
                     {
                         key: 't3a-review',
                         label: 'Phê duyệt',
-                        path: '/glossary/review',
+                        path: '/data-governance/glossary/review',
                         fnCode: 'T3A.3',
                         icon: <CheckSquareOutlined />,
                         badgeDynamic: 'pendingTermCount'
@@ -297,7 +297,7 @@ export const SUB_SYSTEMS: SubSystem[] = [
                     {
                         key: 't3a-needs-review',
                         label: 'Cần review (> 1 năm)',
-                        path: '/glossary?stale=true',
+                        path: '/data-governance/glossary?stale=true',
                         fnCode: 'T3A.2',
                         icon: <WarningOutlined />,
                         badgeDynamic: 'staleTermCount'
@@ -305,7 +305,7 @@ export const SUB_SYSTEMS: SubSystem[] = [
                     {
                         key: 't3a-export',
                         label: 'Xuất Glossary',
-                        path: '/glossary/export',
+                        path: '/data-governance/glossary/export',
                         fnCode: 'T3A.7',
                         icon: <DownloadOutlined />
                     }
@@ -327,14 +327,14 @@ export const SUB_SYSTEMS: SubSystem[] = [
                     {
                         key: 'mx-lineage',
                         label: 'Data Lineage',
-                        path: '/lineage',
+                        path: '/data-governance/lineage',
                         fnCode: 'MX.1',
                         icon: <MergeCellsOutlined />
                     },
                     {
                         key: 'mx-relations',
                         label: 'Sơ đồ quan hệ',
-                        path: '/relations',
+                        path: '/data-governance/relations',
                         fnCode: 'MX.2',
                         icon: <ShareAltOutlined />
                     }
@@ -354,28 +354,28 @@ export const SUB_SYSTEMS: SubSystem[] = [
                     {
                         key: 'admin-domains',
                         label: 'Quản lý Domain',
-                        path: '/admin/domains',
+                        path: '/data-governance/admin/domains',
                         fnCode: 'T4',
                         icon: <GroupOutlined />
                     },
                     {
                         key: 'admin-users',
                         label: 'Người dùng & Phân quyền',
-                        path: '/admin/users',
+                        path: '/data-governance/admin/users',
                         fnCode: 'T6: Ownership',
                         icon: <TeamOutlined />
                     },
                     {
                         key: 'admin-connections',
                         label: 'Kết nối Data Source',
-                        path: '/admin/connections',
+                        path: '/data-governance/admin/connections',
                         fnCode: 'T2B.2',
                         icon: <ApiOutlined />
                     },
                     {
                         key: 'admin-codelists',
                         label: 'Bảng mã danh mục',
-                        path: '/admin/codelists',
+                        path: '/data-governance/admin/codelists',
                         fnCode: 'T7: DQ Rules',
                         icon: <TagOutlined />
                     }

@@ -22,7 +22,7 @@ const VariableRegistry: React.FC = () => {
 
   // Register title and actions to the AppHeader via context
   useHeaderActions({
-    title: 'Danh mục biến dùng chung',
+    title: 'Danh mục biến thông báo',
     actions: [
       {
         key: 'add',

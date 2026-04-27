@@ -2,18 +2,141 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+   CIC Core System — Global CSS Custom Properties
+   Mirrors design tokens for use in plain CSS / SCSS files.
+   ============================================================ */
+
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  /* ─── Brand primary ───────────────────────────────────── */
+  --color-primary-50:  #e6f4ff;
+  --color-primary-100: #bae0ff;
+  --color-primary-200: #91caff;
+  --color-primary-300: #69b1ff;
+  --color-primary-400: #4096ff;
+  --color-primary-500: #1677ff;
+  --color-primary-600: #0958d9;
+  --color-primary-700: #003eb3;
+  --color-primary-800: #002c8c;
+  --color-primary-900: #001d66;
+
+  /* ─── Subsystem accents ───────────────────────────────── */
+  --color-sub-kkn:        #fa8c16;
+  --color-sub-collection: #1890ff;
+  --color-sub-product:    #52c41a;
+  --color-sub-ops:        #722ed1;
+  --color-sub-analytics:  #eb2f96;
+  --color-sub-governance: #13c2c2;
+
+  /* ─── Semantic ────────────────────────────────────────── */
+  --color-success: #52c41a;
+  --color-warning: #faad14;
+  --color-error:   #ff4d4f;
+  --color-info:    #1677ff;
+
+  /* ─── Neutral scale ───────────────────────────────────── */
+  --color-neutral-0:    #ffffff;
+  --color-neutral-50:   #fafafa;
+  --color-neutral-100:  #f5f5f5;
+  --color-neutral-200:  #f0f0f0;
+  --color-neutral-300:  #d9d9d9;
+  --color-neutral-400:  #bfbfbf;
+  --color-neutral-500:  #8c8c8c;
+  --color-neutral-600:  #595959;
+  --color-neutral-700:  #434343;
+  --color-neutral-800:  #262626;
+  --color-neutral-900:  #1f1f1f;
+
+  /* ─── Background surfaces ─────────────────────────────── */
+  --color-bg-page:      #f5f7fa;
+  --color-bg-container: #ffffff;
+  --color-bg-subtle:    #fafafa;
+
+  /* ─── Sidebar ─────────────────────────────────────────── */
+  --color-sidebar:       #2e3035;
+  --color-sidebar-deep:  #1f2024;
+
+  /* ─── Text ────────────────────────────────────────────── */
+  --color-text-primary:   rgba(0, 0, 0, 0.88);
+  --color-text-secondary: rgba(0, 0, 0, 0.45);
+  --color-text-tertiary:  rgba(0, 0, 0, 0.25);
+
+  /* ─── Border ──────────────────────────────────────────── */
+  --color-border:        #d9d9d9;
+  --color-border-split:  #f0f0f0;
+
+  /* ─── Typography ──────────────────────────────────────── */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', Consolas, 'Courier New', monospace;
+
+  /* ─── Spacing ─────────────────────────────────────────── */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* ─── Radius ──────────────────────────────────────────── */
+  --radius-sm:  4px;
+  --radius-md:  6px;
+  --radius-lg:  8px;
+  --radius-xl:  12px;
+  --radius-2xl: 16px;
+
+  /* ─── Shadows ─────────────────────────────────────────── */
+  --shadow-xs:   0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm:   0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-md:   0 4px 16px rgba(0, 0, 0, 0.08);
+  --shadow-lg:   0 8px 24px rgba(0, 0, 0, 0.10);
+  --shadow-xl:   0 16px 48px rgba(0, 0, 0, 0.14);
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+  /* ─── Transitions ─────────────────────────────────────── */
+  --transition-fast:     100ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal:   200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow:     300ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ─── Layout dimensions ───────────────────────────────── */
+  --sidebar-width:           256px;
+  --sidebar-collapsed-width: 64px;
+  --header-height:           56px;
 }
 
+/* ─── Base resets ─────────────────────────────────────────── */
 html,
 body {
   height: 100%;
   margin: 0;
   padding: 0;
   overflow: hidden;
-  color: rgb(var(--foreground-rgb));
-  background: white;
+  color: var(--color-text-primary);
+  background: var(--color-bg-container);
+}
+
+/* ─── Utility: smooth scrollbar ──────────────────────────── */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-neutral-300) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--color-neutral-300);
+  border-radius: var(--radius-sm);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-neutral-400);
 }
