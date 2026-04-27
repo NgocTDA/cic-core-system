@@ -20,6 +20,56 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, isMobile }) => {
   const pathname = usePathname();
   const { activeSubSystem } = useSubSystem();
   const badgeCounts = useMenuBadges();
+  const [openKeys, setOpenKeys] = React.useState<string[]>([]);
+
+  // Function to find parent keys
+  const getParentKeys = (items: MenuItem[], targetPath: string): string[] => {
+    for (const item of items) {
+      if (item.path === targetPath) {
+        return [];
+      }
+      if (item.children) {
+        const parents = getParentKeys(item.children, targetPath);
+        if (parents !== null && (parents.length > 0 || item.children.some(c => c.path === targetPath))) {
+          return [item.key, ...parents];
+        }
+      }
+    }
+    return [];
+  };
+
+  // Sync openKeys with pathname
+  React.useEffect(() => {
+    if (pathname && !collapsed) {
+      const allMenuItems = [...activeSubSystem.menuItems, ...SHARED_MENU];
+      const parents = getParentKeys(allMenuItems, pathname);
+      if (parents.length > 0) {
+        setOpenKeys(prev => {
+          // If already open, don't override to allow manual toggle
+          const isAlreadyOpen = parents.every(p => prev.includes(p));
+          if (isAlreadyOpen) return prev;
+          return Array.from(new Set([...prev, ...parents]));
+        });
+      }
+    }
+  }, [pathname, activeSubSystem, collapsed]);
+
+  const onOpenChange = (keys: string[]) => {
+    if (collapsed) return;
+
+    // Accordion behavior: only one top-level submenu open at a time
+    const rootSubmenuKeys = [
+      ...activeSubSystem.menuItems.filter(i => i.children).map(i => i.key),
+      ...SHARED_MENU.filter(i => i.children).map(i => i.key)
+    ];
+
+    const latestOpenKey = keys.find(key => openKeys.indexOf(key) === -1);
+    if (rootSubmenuKeys.indexOf(latestOpenKey!) === -1) {
+      setOpenKeys(keys);
+    } else {
+      setOpenKeys(latestOpenKey ? [latestOpenKey] : []);
+    }
+  };
 
   const renderMenuItems = (items: MenuItem[]): any[] => {
     return items.map(item => {
@@ -38,18 +88,18 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, isMobile }) => {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
           <span style={{ fontWeight: item.highlight ? 600 : 400 }}>{item.label}</span>
           {hasBadge && !collapsed && (
-            <Badge 
-              count={dynamicCount !== null ? dynamicCount : item.badge} 
-              style={{ 
-                backgroundColor: item.badgeColor === 'purple' ? '#722ed1' : 
-                               item.badgeColor === 'teal' ? '#13c2c2' : 
-                               item.badgeColor === 'orange' ? '#fa8c16' :
-                               item.badgeColor === 'gray' ? '#8c8c8c' : '#f5222d',
+            <Badge
+              count={dynamicCount !== null ? dynamicCount : item.badge}
+              style={{
+                backgroundColor: item.badgeColor === 'purple' ? '#722ed1' :
+                  item.badgeColor === 'teal' ? '#13c2c2' :
+                    item.badgeColor === 'orange' ? '#fa8c16' :
+                      item.badgeColor === 'gray' ? '#8c8c8c' : '#f5222d',
                 fontSize: 10,
                 minWidth: 16,
                 height: 16,
                 lineHeight: '16px'
-              }} 
+              }}
             />
           )}
         </div>
@@ -63,7 +113,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, isMobile }) => {
           children: renderMenuItems(item.children)
         };
       }
-      
+
       return {
         key: item.path || item.key,
         icon: item.icon,
@@ -74,8 +124,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, isMobile }) => {
 
   const activeMenu = [
     ...renderMenuItems(activeSubSystem.menuItems),
-    { type: 'divider', key: 'shared-divider' },
-    ...renderMenuItems(SHARED_MENU)
+    ...(SHARED_MENU.length > 0 ? [{ type: 'divider' as const, key: 'shared-divider' }, ...renderMenuItems(SHARED_MENU)] : [])
   ];
 
   return (
@@ -101,6 +150,8 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, isMobile }) => {
             theme="dark"
             mode="inline"
             selectedKeys={[pathname || '/']}
+            openKeys={openKeys}
+            onOpenChange={onOpenChange}
             items={activeMenu}
             style={{ background: '#2e3035', borderRight: 0 }}
           />

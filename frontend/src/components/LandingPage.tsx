@@ -29,7 +29,7 @@ const LandingPage: React.FC = () => {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            padding: '40px 24px',
+            padding: '24px 24px',
             overflowX: 'hidden',
             overflowY: 'auto'
         }}>
@@ -48,9 +48,8 @@ const LandingPage: React.FC = () => {
                     <Title style={{ color: '#fff', fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 800, marginBottom: 12 }}>
                         CIC CORE SYSTEM
                     </Title>
-                    <Text style={{ color: 'rgba(255, 255, 255, 0.65)', fontSize: 'clamp(14px, 1.5vw, 16px)' }}>
-                        Nền tảng quản trị và vận hành hệ thống thông tin tín dụng tập trung.
-                        Vui lòng chọn phân hệ để bắt đầu làm việc.
+                    <Text style={{ color: 'rgba(255, 255, 255, 0.65)', fontSize: 'clamp(16px, 1.5vw, 18px)' }}>
+                        Nền tảng quản trị và vận hành hệ thống thông tin tín dụng tập trung
                     </Text>
                 </div>
 
@@ -110,7 +109,7 @@ const LandingPage: React.FC = () => {
                                         gap: 8,
                                         marginTop: 'auto'
                                     }}>
-                                        Khám phá ngay <ArrowRightOutlined />
+                                        Truy cập ngay <ArrowRightOutlined />
                                     </div>
                                 </Card>
                             </Col>

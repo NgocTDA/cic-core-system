@@ -104,11 +104,11 @@ export const SUB_SYSTEMS: SubSystem[] = [
         color: '#722ed1',
         menuItems: [
             { key: 'ops-support-dashboard', label: 'Dashboard Vận hành', icon: <DashboardOutlined />, path: '/ops-support/dashboard' },
-            { 
-                key: 'job-management', 
-                label: 'Quản lý Job', 
-                icon: <ProjectOutlined />, 
-                path: '/ops-support/job-management' 
+            {
+                key: 'job-management',
+                label: 'Quản lý Job',
+                icon: <ProjectOutlined />,
+                path: '/ops-support/job-management'
             },
         ]
     },
@@ -385,8 +385,4 @@ export const SUB_SYSTEMS: SubSystem[] = [
     }
 ];
 
-export const SHARED_MENU: MenuItem[] = [
-    { key: 'analytics', icon: <BarChartOutlined />, label: 'Phân tích chung', path: '/analytics' },
-    { key: 'projects', icon: <ProjectOutlined />, label: 'Quản lý dự án', path: '/projects' },
-    { key: 'settings', icon: <SettingOutlined />, label: 'Cài đặt hệ thống', path: '/settings' },
-];
+export const SHARED_MENU: MenuItem[] = [];
