@@ -5,37 +5,30 @@ import { SearchOutlined, FilterOutlined, ReloadOutlined } from '@ant-design/icon
 const { Option } = Select;
 
 interface VariableFilterProps {
-  groups: string[];
   onSearchChange: (text: string) => void;
-  onGroupChange: (group: string | null) => void;
   onStatusChange: (status: string | null) => void;
 }
 
-const VariableFilter: React.FC<VariableFilterProps> = ({ 
-  groups, 
-  onSearchChange, 
-  onGroupChange,
+const VariableFilter: React.FC<VariableFilterProps> = ({
+  onSearchChange,
   onStatusChange
 }) => {
   const [searchValue, setSearchValue] = useState('');
-  const [groupValue, setGroupValue] = useState<string | null>(null);
   const [statusValue, setStatusValue] = useState<string | null>(null);
 
   const handleReset = () => {
     setSearchValue('');
-    setGroupValue(null);
     setStatusValue(null);
     onSearchChange('');
-    onGroupChange(null);
     onStatusChange(null);
   };
 
   return (
     <Card bordered={false} style={{ marginBottom: 16 }}>
       <Row gutter={[16, 12]} wrap align="middle">
-        <Col xs={24} sm={12} md={7} lg={6}>
+        <Col xs={16} sm={8} md={5} lg={4}>
           <Input
-            placeholder="Từ khóa (Mã biến, Tên hiển thị)"
+            placeholder="Mã biến"
             prefix={<SearchOutlined style={{ color: '#bfbfbf' }} />}
             allowClear
             value={searchValue}
@@ -45,21 +38,19 @@ const VariableFilter: React.FC<VariableFilterProps> = ({
             }}
           />
         </Col>
-        <Col xs={24} sm={12} md={5} lg={4}>
-          <Select
-            placeholder="Lọc theo nhóm"
-            style={{ width: '100%' }}
+        <Col xs={16} sm={8} md={5} lg={4}>
+          <Input
+            placeholder="Tên hiển thị"
+            prefix={<SearchOutlined style={{ color: '#bfbfbf' }} />}
             allowClear
-            value={groupValue}
-            onChange={(value) => {
-              setGroupValue(value);
-              onGroupChange(value);
+            value={searchValue}
+            onChange={e => {
+              setSearchValue(e.target.value);
+              onSearchChange(e.target.value);
             }}
-          >
-            {groups.map(g => <Option key={g} value={g}>{g}</Option>)}
-          </Select>
+          />
         </Col>
-        <Col xs={24} sm={12} md={5} lg={4}>
+        <Col xs={16} sm={8} md={5} lg={4}>
           <Select
             placeholder="Trạng thái"
             style={{ width: '100%' }}
@@ -75,7 +66,7 @@ const VariableFilter: React.FC<VariableFilterProps> = ({
             ]}
           />
         </Col>
-        <Col xs={24} sm={24} md={7} lg={10} style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <Col xs={24} sm={24} md={10} lg={12} style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <Space>
             <Tooltip title="Thêm bộ lọc">
               <Button icon={<FilterOutlined />}>Thêm bộ lọc</Button>

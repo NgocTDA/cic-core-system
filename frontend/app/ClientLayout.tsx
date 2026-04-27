@@ -8,6 +8,7 @@ import { useIsMobile } from '@/hooks/useIsMobile';
 import { HeaderProvider } from '@/context/HeaderContext';
 import { SubSystemProvider } from '@/context/SubSystemContext';
 import { usePathname } from 'next/navigation';
+import CommandPalette from '@/components/CommandPalette';
 import viVN_ from 'antd/locale/vi_VN';
 import dayjs from 'dayjs';
 import 'dayjs/locale/vi';
@@ -77,6 +78,7 @@ const ClientLayout: React.FC<MainLayoutProps> = ({ children }) => {
             }}
         >
             <SubSystemProvider>
+                <CommandPalette />
                 <HeaderProvider>
                     {isLandingPage ? (
                         <div style={{ height: '100vh', overflow: 'hidden' }}>

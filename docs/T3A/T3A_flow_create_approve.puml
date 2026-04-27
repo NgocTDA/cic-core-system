@@ -1,0 +1,77 @@
+@startuml T3A_Flow_Create_Approve
+title T3A.1 + T3A.3 · Tạo mới & Phê duyệt Thuật ngữ Nghiệp vụ
+
+|Data Steward|
+start
+:Truy cập màn hình\n"Tạo thuật ngữ mới";
+:Nhập thông tin thuật ngữ\n(xem T3A-FORM-01);
+
+|Hệ thống|
+:Kiểm tra tên trùng lặp\ntrong toàn bộ Glossary\n(exact match + fuzzy match);
+
+if (Tìm thấy thuật ngữ\ntương tự?) then (Có)
+  :Hiển thị danh sách\nthuật ngữ gợi ý;
+  |Data Steward|
+  if (Thuật ngữ đã tồn tại?) then (Đúng rồi)
+    :Dùng thuật ngữ có sẵn\nhoặc đề xuất cập nhật;
+    stop
+  else (Khác nghĩa — tạo mới)
+  endif
+else (Không)
+endif
+
+|Data Steward|
+:Khai báo quan hệ\nvới thuật ngữ khác\n[→ T3A.4];
+:Liên kết tài sản kỹ thuật\n(cột/bảng tương ứng)\n[→ T2B];
+:Submit → Trạng thái\n= "Pending Review";
+
+|Hệ thống|
+:Xác định reviewer\ndựa theo Domain;
+
+note right
+  Reviewer = Data Owner
+  của Domain tương ứng
+  [→ T1.7: Data Owner]
+end note
+
+:Gửi thông báo\nemail + in-app\ncho Data Owner;
+:Ghi Audit Log;
+
+|Data Owner|
+:Nhận thông báo;
+:Mở màn hình review\n(T3A-SCREEN-03);
+:Đọc định nghĩa,\nví dụ, quan hệ;
+
+if (Quyết định?) then (Yêu cầu chỉnh sửa)
+  :Ghi comment\nchi tiết cần sửa;
+  |Hệ thống|
+  :Trạng thái = "Needs Revision";
+  :Thông báo Steward\nkèm comment;
+  |Data Steward|
+  :Chỉnh sửa theo\ncomment;
+  :Resubmit;
+  note right
+    Lặp lại tối đa 3 lần.
+    Sau 3 lần vẫn reject
+    → escalate lên
+    Data Governance Council
+    [→ T8: DG Council]
+  end note
+else if (Từ chối) then
+  :Ghi lý do từ chối;
+  |Hệ thống|
+  :Trạng thái = "Rejected";
+  :Thông báo Steward;
+  stop
+else (Phê duyệt)
+endif
+
+|Hệ thống|
+:Trạng thái = "Approved";
+:Gán số phiên bản = v1.0;
+:Thuật ngữ xuất hiện\ntrong Business Glossary\ncông khai;
+:Ghi Audit Log;
+:Thông báo toàn bộ\nngười theo dõi Domain;
+stop
+
+@enduml

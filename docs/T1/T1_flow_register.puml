@@ -1,0 +1,79 @@
+@startuml T1_DataAsset_Spec
+
+' ============================================================
+' ACTIVITY DIAGRAM — T1.1: ĐĂNG KÝ TÀI SẢN DỮ LIỆU MỚI
+' ============================================================
+title T1.1 · Đăng ký Tài sản Dữ liệu Mới
+
+|Data Steward|
+start
+:Truy cập màn hình\n"Đăng ký tài sản mới";
+:Nhập thông tin cơ bản\n(xem form T1-FORM-01);
+
+|Hệ thống|
+:Kiểm tra tên tài sản\ntrùng lặp trong Domain;
+
+if (Trùng tên?) then (Có)
+  :Cảnh báo + gợi ý\ntài sản tương tự;
+  |Data Steward|
+  if (Vẫn tạo mới?) then (Không)
+    :Hủy hoặc chọn\ntài sản hiện có;
+    stop
+  else (Có — khác nghĩa)
+  endif
+else (Không)
+endif
+
+|Data Steward|
+:Chọn loại tài sản\n[Business / Technical];
+
+if (Loại = Technical?) then (Có)
+  :Nhập thêm thông tin kỹ thuật\n(hệ thống nguồn, schema, bảng...)\n[→ liên kết T2B];
+else (Business)
+  :Nhập thêm thông tin nghiệp vụ\n(quy trình liên quan, KPI...)\n[→ liên kết T2A];
+endif
+
+:Chọn Data Domain\n[→ liên kết T4: Data Domain];
+:Chọn mức độ nhạy cảm\n[→ liên kết T6: Data Classification];
+:Gắn tag / nhãn tùy chọn;
+
+|Hệ thống|
+:Validate toàn bộ form\n(bắt buộc, định dạng, tham chiếu);
+
+if (Hợp lệ?) then (Không)
+  :Hiển thị lỗi từng trường;
+  |Data Steward|
+  :Sửa và submit lại;
+else (Có)
+endif
+
+|Data Steward|
+:Submit đăng ký;
+
+|Hệ thống|
+:Tạo mã tài sản duy nhất\n(Asset ID — auto generate);
+:Lưu trạng thái = "Draft";
+:Ghi Audit Log\n(người tạo, thời gian, IP)\n[→ T1.8];
+:Gửi thông báo đến\nData Owner được chỉ định\n[→ T1.7];
+
+|Data Owner|
+:Nhận thông báo & review;
+
+if (Duyệt?) then (Từ chối)
+  :Ghi comment từ chối;
+  |Hệ thống|
+  :Cập nhật trạng thái = "Rejected";
+  :Thông báo lại Steward;
+  |Data Steward|
+  :Chỉnh sửa và submit lại;
+else (Duyệt)
+endif
+
+|Hệ thống|
+:Cập nhật trạng thái = "Active";
+:Tài sản xuất hiện\ntrong Data Catalog\n[→ T4: Data Catalog];
+:Ghi Audit Log;
+
+stop
+
+@enduml

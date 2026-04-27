@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quản trị Dữ liệu Ngân hàng — Sơ đồ Khái niệm</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #f5f5f0;
+    color: #2c2c2a;
+    padding: 24px;
+  }
+  h1 {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #1a1a18;
+  }
+  .subtitle {
+    font-size: 14px;
+    color: #5f5e5a;
+    margin-bottom: 24px;
+  }
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .tab {
+    padding: 8px 18px;
+    border-radius: 20px;
+    border: 1px solid #d3d1c7;
+    background: #fff;
+    cursor: pointer;
+    font-size: 13px;
+    color: #5f5e5a;
+    transition: all 0.2s;
+  }
+  .tab:hover { border-color: #7F77DD; color: #534AB7; }
+  .tab.active { background: #534AB7; color: #fff; border-color: #534AB7; }
+  .diagram-wrap {
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid #e0dfd8;
+    padding: 32px 24px;
+    overflow-x: auto;
+  }
+  .panel { display: none; }
+  .panel.active { display: block; }
+  .legend {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 24px;
+    padding: 16px 20px;
+    background: #f8f7f2;
+    border-radius: 10px;
+    font-size: 13px;
+  }
+  .legend-item { display: flex; align-items: center; gap: 8px; }
+  .legend-dot {
+    width: 14px; height: 14px; border-radius: 4px; flex-shrink: 0;
+  }
+  .note {
+    margin-top: 16px;
+    font-size: 12px;
+    color: #888780;
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+
+<h1>Quản trị Dữ liệu (Data Governance) — Ngân hàng</h1>
+<p class="subtitle">Sơ đồ toàn cảnh các khái niệm, thực thể và mối quan hệ cốt lõi theo chuẩn DAMA-DMBOK & BCBS 239</p>
+
+<div class="tabs">
+  <button class="tab active" onclick="show('overview')">Toàn cảnh</button>
+  <button class="tab" onclick="show('asset')">Tài sản dữ liệu</button>
+  <button class="tab" onclick="show('quality')">Chất lượng DL</button>
+  <button class="tab" onclick="show('roles')">Vai trò & Trách nhiệm</button>
+  <button class="tab" onclick="show('compliance')">Tuân thủ & Bảo mật</button>
+  <button class="tab" onclick="show('lifecycle')">Vòng đời DL</button>
+</div>
+
+<div class="diagram-wrap">
+
+<!-- ============ PANEL 1: TOÀN CẢNH ============ -->
+<div id="panel-overview" class="panel active">
+<div class="mermaid">
+graph TB
+  subgraph GOV["🏛️ KHUNG QUẢN TRỊ DỮ LIỆU (Data Governance Framework)"]
+    direction TB
+
+    subgraph STRATEGY["Chiến lược & Tổ chức"]
+      DGC["Data Governance Council\n(Hội đồng Quản trị DL)"]
+      DGO["Data Governance Office\n(Văn phòng Quản trị DL)"]
+      POLICY["Data Policy\n(Chính sách DL)"]
+      STANDARD["Data Standard\n(Chuẩn dữ liệu)"]
+      DGC --> DGO
+      DGO --> POLICY
+      DGO --> STANDARD
+    end
+
+    subgraph ROLES["Vai trò & Trách nhiệm"]
+      DO["Data Owner\n(Chủ sở hữu DL)"]
+      DS["Data Steward\n(Người quản lý DL)"]
+      DC["Data Custodian\n(Người lưu giữ DL)"]
+      DU["Data User\n(Người dùng DL)"]
+      DO --> DS
+      DS --> DC
+      DS --> DU
+    end
+
+    subgraph ASSET["Tài sản Dữ liệu"]
+      DA["Data Asset\n(Tài sản DL)"]
+      DE["Data Entity\n(Thực thể DL)"]
+      BA["Business Asset\n(Tài sản nghiệp vụ)"]
+      TA["Technical Asset\n(Tài sản kỹ thuật)"]
+      MDM["Master Data\n(Dữ liệu chủ)"]
+      REF["Reference Data\n(Dữ liệu tham chiếu)"]
+      DA --> DE
+      DA --> BA
+      DA --> TA
+      DE --> MDM
+      DE --> REF
+    end
+
+    subgraph META["Metadata & Catalog"]
+      CAT["Data Catalog\n(Danh mục DL)"]
+      DICT["Data Dictionary\n(Từ điển DL)"]
+      BTERM["Business Glossary\n(Thuật ngữ nghiệp vụ)"]
+      TMETA["Technical Metadata\n(Siêu DL kỹ thuật)"]
+      BMETA["Business Metadata\n(Siêu DL nghiệp vụ)"]
+      OPMETA["Operational Metadata\n(Siêu DL vận hành)"]
+      CAT --> DICT
+      CAT --> BTERM
+      CAT --> TMETA
+      CAT --> BMETA
+      CAT --> OPMETA
+    end
+
+    subgraph QUALITY["Chất lượng Dữ liệu"]
+      DQ["Data Quality\n(Chất lượng DL)"]
+      DQR["DQ Rule\n(Quy tắc CL)"]
+      DQI["DQ Issue\n(Vấn đề CL)"]
+      DQM["DQ Metric / KPI\n(Chỉ số CL)"]
+      DQD["DQ Dashboard\n(Bảng theo dõi)"]
+      DQ --> DQR
+      DQ --> DQI
+      DQ --> DQM
+      DQM --> DQD
+    end
+
+    subgraph LINEAGE["Truy vết & Luồng DL"]
+      LIN["Data Lineage\n(Vết dữ liệu)"]
+      IMP["Impact Analysis\n(Phân tích tác động)"]
+      ETL["ETL / Integration\n(Tích hợp DL)"]
+      SRC["Source System\n(Hệ thống nguồn)"]
+      TGT["Target System\n(Hệ thống đích)"]
+      LIN --> IMP
+      SRC --> ETL
+      ETL --> TGT
+      LIN --> ETL
+    end
+
+    subgraph SECURITY["Bảo mật & Tuân thủ"]
+      CLASS["Data Classification\n(Phân loại DL)"]
+      PRIV["Data Privacy\n(Quyền riêng tư)"]
+      SEC["Data Security\n(Bảo mật DL)"]
+      COMP["Compliance\n(Tuân thủ)"]
+      BCBS["BCBS 239"]
+      NHNN["Quy định NHNN"]
+      GDPR["GDPR / Luật ATTT"]
+      CLASS --> PRIV
+      CLASS --> SEC
+      COMP --> BCBS
+      COMP --> NHNN
+      COMP --> GDPR
+    end
+
+    subgraph LIFECYCLE["Vòng đời Dữ liệu"]
+      LFC["Data Lifecycle\n(Vòng đời DL)"]
+      CREATE["Creation\n(Tạo lập)"]
+      STORE["Storage\n(Lưu trữ)"]
+      USE["Usage\n(Sử dụng)"]
+      ARCH["Archival\n(Lưu trữ dài hạn)"]
+      DEST["Destruction\n(Hủy bỏ)"]
+      LFC --> CREATE --> STORE --> USE --> ARCH --> DEST
+    end
+
+  end
+
+  DGO --> DO
+  DO --> DA
+  POLICY --> CLASS
+  STANDARD --> DQ
+  CAT --> LIN
+  DA --> DQ
+  DA --> CLASS
+  LFC --> DA
+  COMP --> DQ
+  MDM --> CAT
+
+classDef strategy fill:#EEEDFE,stroke:#534AB7,color:#26215C
+classDef roles fill:#E1F5EE,stroke:#0F6E56,color:#04342C
+classDef asset fill:#FAECE7,stroke:#993C1D,color:#4A1B0C
+classDef meta fill:#E6F1FB,stroke:#185FA5,color:#042C53
+classDef quality fill:#EAF3DE,stroke:#3B6D11,color:#173404
+classDef lineage fill:#EEEDFE,stroke:#534AB7,color:#26215C
+classDef security fill:#FCEBEB,stroke:#A32D2D,color:#501313
+classDef lifecycle fill:#FAEEDA,stroke:#854F0B,color:#412402
+
+class DGC,DGO,POLICY,STANDARD strategy
+class DO,DS,DC,DU roles
+class DA,DE,BA,TA,MDM,REF asset
+class CAT,DICT,BTERM,TMETA,BMETA,OPMETA meta
+class DQ,DQR,DQI,DQM,DQD quality
+class LIN,IMP,ETL,SRC,TGT lineage
+class CLASS,PRIV,SEC,COMP,BCBS,NHNN,GDPR security
+class LFC,CREATE,STORE,USE,ARCH,DEST lifecycle
+</div>
+</div>
+
+<!-- ============ PANEL 2: TÀI SẢN DỮ LIỆU ============ -->
+<div id="panel-asset" class="panel">
+<div class="mermaid">
+graph TD
+  DA["🗄️ Data Asset\n(Tài sản dữ liệu)"]
+
+  DA --> BA["Business Asset\n(Tài sản nghiệp vụ)"]
+  DA --> TA["Technical Asset\n(Tài sản kỹ thuật)"]
+
+  BA --> BTERM["Business Glossary\n(Thuật ngữ & định nghĩa)"]
+  BA --> BRULE["Business Rule\n(Quy tắc nghiệp vụ)"]
+  BA --> KPI_B["Business KPI\n(Chỉ số kinh doanh)"]
+
+  TA --> DB["Database / Table\n(Bảng dữ liệu)"]
+  TA --> API["API / Service\n(Giao diện dịch vụ)"]
+  TA --> FILE["File / Report\n(Tệp / Báo cáo)"]
+  TA --> STREAM["Data Stream\n(Luồng dữ liệu)"]
+
+  DA --> DE["Data Entity\n(Thực thể dữ liệu)"]
+  DE --> MDM["Master Data\n(Khách hàng, Sản phẩm,\nTài khoản, Tổ chức)"]
+  DE --> REF["Reference Data\n(Mã quốc gia, Loại tiền,\nLoại giao dịch)"]
+  DE --> TRANS["Transactional Data\n(Giao dịch, Hợp đồng,\nLịch sử thanh toán)"]
+  DE --> HIST["Historical Data\n(Dữ liệu lịch sử)"]
+  DE --> META_E["Metadata\n(Siêu dữ liệu)"]
+
+  META_E --> TMETA["Technical Metadata\n(Schema, kiểu DL, index)"]
+  META_E --> BMETA["Business Metadata\n(Ý nghĩa, chủ sở hữu)"]
+  META_E --> OPMETA["Operational Metadata\n(Lineage, tần suất cập nhật)"]
+
+classDef asset fill:#FAECE7,stroke:#993C1D,color:#4A1B0C
+classDef meta fill:#E6F1FB,stroke:#185FA5,color:#042C53
+classDef biz fill:#E1F5EE,stroke:#0F6E56,color:#04342C
+
+class DA,DE,MDM,REF,TRANS,HIST asset
+class TMETA,BMETA,OPMETA,META_E meta
+class BA,TA,DB,API,FILE,STREAM,BTERM,BRULE,KPI_B biz
+</div>
+</div>
+
+<!-- ============ PANEL 3: CHẤT LƯỢNG DL ============ -->
+<div id="panel-quality" class="panel">
+<div class="mermaid">
+graph TD
+  DQ["✅ Data Quality\n(Chất lượng Dữ liệu)"]
+
+  DQ --> DIM["6 Chiều Chất lượng"]
+  DIM --> ACC["Accuracy\n(Độ chính xác)"]
+  DIM --> COMP_Q["Completeness\n(Độ đầy đủ)"]
+  DIM --> CONS["Consistency\n(Tính nhất quán)"]
+  DIM --> TIME["Timeliness\n(Tính kịp thời)"]
+  DIM --> UNIQ["Uniqueness\n(Tính duy nhất)"]
+  DIM --> VALID["Validity\n(Tính hợp lệ)"]
+
+  DQ --> DQR["DQ Rule\n(Quy tắc kiểm tra)"]
+  DQR --> TECH_R["Technical Rule\n(Kiểu DL, độ dài, format)"]
+  DQR --> BIZ_R["Business Rule\n(Logic nghiệp vụ, ràng buộc)"]
+  DQR --> REF_R["Referential Rule\n(Tính toàn vẹn tham chiếu)"]
+
+  DQ --> PROC["DQ Process"]
+  PROC --> PROF["Data Profiling\n(Phân tích hiện trạng)"]
+  PROC --> MON["Monitoring\n(Giám sát liên tục)"]
+  PROC --> REM["Remediation\n(Xử lý & sửa lỗi)"]
+  PROC --> CERT["Certification\n(Chứng nhận DL đạt chuẩn)"]
+
+  DQ --> METRIC["DQ Metrics / KPI"]
+  METRIC --> SCORE["Data Quality Score\n(Điểm chất lượng)"]
+  METRIC --> DASH["DQ Dashboard\n(Bảng theo dõi)"]
+  METRIC --> ALERT["Alert / Notification\n(Cảnh báo tự động)"]
+  METRIC --> REPORT["DQ Report\n(Báo cáo định kỳ)"]
+
+  DQ --> ISSUE["DQ Issue Management"]
+  ISSUE --> DETECT["Detection\n(Phát hiện)"]
+  DETECT --> ASSIGN["Assignment\n(Phân công xử lý)"]
+  ASSIGN --> RESOLVE["Resolution\n(Giải quyết)"]
+  RESOLVE --> VERIFY["Verification\n(Xác nhận)"]
+  VERIFY --> CLOSE["Closure\n(Đóng vấn đề)"]
+
+classDef quality fill:#EAF3DE,stroke:#3B6D11,color:#173404
+classDef dim fill:#C0DD97,stroke:#3B6D11,color:#173404
+classDef proc fill:#E6F1FB,stroke:#185FA5,color:#042C53
+classDef issue fill:#FAECE7,stroke:#993C1D,color:#4A1B0C
+
+class DQ,DIM quality
+class ACC,COMP_Q,CONS,TIME,UNIQ,VALID dim
+class DQR,TECH_R,BIZ_R,REF_R proc
+class PROC,PROF,MON,REM,CERT proc
+class METRIC,SCORE,DASH,ALERT,REPORT quality
+class ISSUE,DETECT,ASSIGN,RESOLVE,VERIFY,CLOSE issue
+</div>
+</div>
+
+<!-- ============ PANEL 4: VAI TRÒ ============ -->
+<div id="panel-roles" class="panel">
+<div class="mermaid">
+graph TD
+  DGC["🏛️ Data Governance Council\n(Hội đồng cao nhất — cấp C-level)"]
+  DGO["Data Governance Office\n(Văn phòng điều phối — CDO/CIO)"]
+  CDO["Chief Data Officer (CDO)\n(Giám đốc Dữ liệu)"]
+
+  DGC --> CDO
+  CDO --> DGO
+
+  DGO --> DO
+  DGO --> DA_ARCH["Data Architect\n(Kiến trúc sư DL)"]
+  DGO --> DQ_MGR["DQ Manager\n(Trưởng nhóm Chất lượng)"]
+  DGO --> SEC_MGR["Data Security Officer\n(Cán bộ Bảo mật DL)"]
+
+  DO["Data Owner\n(Chủ sở hữu — cấp Giám đốc BU)"]
+  DO --> DS["Data Steward\n(Người quản lý — chuyên gia nghiệp vụ)"]
+  DS --> DC["Data Custodian\n(Người lưu giữ — IT/DBA)"]
+  DS --> DU["Data Consumer\n(Người dùng — analyst, RM)"]
+
+  subgraph RESP_DO["Trách nhiệm: Data Owner"]
+    DO_1["Phê duyệt định nghĩa & quy tắc"]
+    DO_2["Xác nhận chất lượng dữ liệu"]
+    DO_3["Quyết định phân quyền truy cập"]
+    DO_4["Chịu trách nhiệm tuân thủ"]
+  end
+
+  subgraph RESP_DS["Trách nhiệm: Data Steward"]
+    DS_1["Duy trì Business Glossary"]
+    DS_2["Xử lý DQ Issues hàng ngày"]
+    DS_3["Phối hợp giữa IT và nghiệp vụ"]
+    DS_4["Cập nhật Metadata"]
+  end
+
+  subgraph RESP_DC["Trách nhiệm: Data Custodian"]
+    DC_1["Quản lý cơ sở hạ tầng lưu trữ"]
+    DC_2["Backup & Recovery"]
+    DC_3["Thực thi chính sách bảo mật"]
+    DC_4["Giám sát kỹ thuật & hiệu năng"]
+  end
+
+  DO --> RESP_DO
+  DS --> RESP_DS
+  DC --> RESP_DC
+
+classDef council fill:#EEEDFE,stroke:#534AB7,color:#26215C
+classDef owner fill:#E1F5EE,stroke:#0F6E56,color:#04342C
+classDef steward fill:#E6F1FB,stroke:#185FA5,color:#042C53
+classDef custodian fill:#FAEEDA,stroke:#854F0B,color:#412402
+classDef resp fill:#F1EFE8,stroke:#5F5E5A,color:#2C2C2A
+
+class DGC,DGO,CDO,DA_ARCH,DQ_MGR,SEC_MGR council
+class DO,DO_1,DO_2,DO_3,DO_4,RESP_DO owner
+class DS,DS_1,DS_2,DS_3,DS_4,RESP_DS steward
+class DC,DU,DC_1,DC_2,DC_3,DC_4,RESP_DC custodian
+</div>
+</div>
+
+<!-- ============ PANEL 5: TUÂN THỦ ============ -->
+<div id="panel-compliance" class="panel">
+<div class="mermaid">
+graph TD
+  COMP["🔒 Data Compliance & Security\n(Tuân thủ & Bảo mật Dữ liệu)"]
+
+  COMP --> REG["Khung Quy định Pháp lý"]
+  REG --> BCBS["BCBS 239\n(Nguyên tắc tổng hợp rủi ro\ncho ngân hàng G-SIB & D-SIB)"]
+  REG --> NHNN["Thông tư NHNN\nTT09/2020, TT02/2023\nvề CNTT & Bảo mật"]
+  REG --> GDPR["GDPR / Luật ATTT VN\nNghị định 13/2023/NĐ-CP\nvề bảo vệ DLCN"]
+  REG --> ISO["ISO 27001 / ISO 8000\nQuản lý ATTT & CL dữ liệu"]
+
+  COMP --> CLASS["Data Classification\n(Phân loại độ nhạy cảm)"]
+  CLASS --> PUB["Public\n(Công khai)"]
+  CLASS --> INT["Internal\n(Nội bộ)"]
+  CLASS --> CONF["Confidential\n(Bảo mật)"]
+  CLASS --> SECRET["Strictly Confidential\n(Tuyệt mật)"]
+
+  COMP --> CTRL["Kiểm soát Truy cập"]
+  CTRL --> RBAC["RBAC\n(Phân quyền theo vai trò)"]
+  CTRL --> ABAC["ABAC\n(Phân quyền theo thuộc tính)"]
+  CTRL --> MASK["Data Masking\n(Che giấu DL nhạy cảm)"]
+  CTRL --> ENCR["Encryption\n(Mã hóa)"]
+  CTRL --> ANON["Anonymization\n(Ẩn danh hóa)"]
+
+  COMP --> AUDIT["Kiểm toán & Giám sát"]
+  AUDIT --> ALOG["Audit Log\n(Nhật ký truy cập)"]
+  AUDIT --> DLP["DLP — Data Loss Prevention\n(Ngăn chặn rò rỉ DL)"]
+  AUDIT --> REVIEW["Periodic Review\n(Rà soát định kỳ)"]
+  AUDIT --> BREACH["Breach Response\n(Xử lý sự cố rò rỉ)"]
+
+  COMP --> PRIV["Quyền riêng tư (Privacy)"]
+  PRIV --> CONSENT["Consent Management\n(Quản lý đồng ý của KH)"]
+  PRIV --> DSAR["DSAR\n(Yêu cầu truy cập DL cá nhân)"]
+  PRIV --> RETENTION["Retention Policy\n(Chính sách lưu trữ & xóa)"]
+
+classDef comp fill:#FCEBEB,stroke:#A32D2D,color:#501313
+classDef reg fill:#FAEEDA,stroke:#854F0B,color:#412402
+classDef ctrl fill:#E6F1FB,stroke:#185FA5,color:#042C53
+classDef priv fill:#EAF3DE,stroke:#3B6D11,color:#173404
+
+class COMP,CLASS,PUB,INT,CONF,SECRET comp
+class REG,BCBS,NHNN,GDPR,ISO reg
+class CTRL,RBAC,ABAC,MASK,ENCR,ANON,AUDIT,ALOG,DLP,REVIEW,BREACH ctrl
+class PRIV,CONSENT,DSAR,RETENTION priv
+</div>
+</div>
+
+<!-- ============ PANEL 6: VÒNG ĐỜI ============ -->
+<div id="panel-lifecycle" class="panel">
+<div class="mermaid">
+flowchart LR
+  subgraph LFC["🔄 Vòng đời Dữ liệu (Data Lifecycle)"]
+    direction LR
+    C1["1. Creation\n──────────\nThu thập, nhập liệu\nAPI, batch, stream\nXác thực tại nguồn"]
+    C2["2. Storage\n──────────\nLưu trữ tập trung\nDW, Data Lake\nBackup & DR"]
+    C3["3. Processing\n──────────\nETL/ELT\nTransformation\nEnrichment"]
+    C4["4. Usage\n──────────\nBáo cáo, phân tích\nMô hình ML/AI\nAPI cho ứng dụng"]
+    C5["5. Sharing\n──────────\nChia sẻ nội bộ\nAPI bên thứ 3\nBáo cáo NHNN"]
+    C6["6. Archival\n──────────\nLưu trữ dài hạn\nCompress & tier\nRetention policy"]
+    C7["7. Destruction\n──────────\nXóa có kiểm soát\nCertified disposal\nAudit trail"]
+
+    C1 --> C2 --> C3 --> C4 --> C5 --> C6 --> C7
+  end
+
+  subgraph GOV_LFC["Quản trị xuyên suốt vòng đời"]
+    G1["Data Quality Check\ntại mỗi bước"]
+    G2["Metadata cập nhật\nliên tục"]
+    G3["Lineage ghi nhận\nmọi biến đổi"]
+    G4["Phân loại & Bảo mật\ntheo cấp độ"]
+    G5["Audit Log\ntoàn bộ truy cập"]
+  end
+
+  C1 -. "áp dụng" .-> G1
+  C3 -. "áp dụng" .-> G2
+  C3 -. "áp dụng" .-> G3
+  C4 -. "áp dụng" .-> G4
+  C5 -. "áp dụng" .-> G5
+
+classDef step fill:#E6F1FB,stroke:#185FA5,color:#042C53
+classDef gov fill:#EAF3DE,stroke:#3B6D11,color:#173404
+
+class C1,C2,C3,C4,C5,C6,C7 step
+class G1,G2,G3,G4,G5 gov
+</div>
+</div>
+
+</div><!-- /diagram-wrap -->
+
+<div class="legend">
+  <strong style="align-self:center">Chú thích màu sắc:</strong>
+  <div class="legend-item"><div class="legend-dot" style="background:#EEEDFE;border:1px solid #534AB7"></div><span>Khung quản trị / Chiến lược</span></div>
+  <div class="legend-item"><div class="legend-dot" style="background:#E1F5EE;border:1px solid #0F6E56"></div><span>Vai trò & Nghiệp vụ</span></div>
+  <div class="legend-item"><div class="legend-dot" style="background:#FAECE7;border:1px solid #993C1D"></div><span>Tài sản dữ liệu</span></div>
+  <div class="legend-item"><div class="legend-dot" style="background:#E6F1FB;border:1px solid #185FA5"></div><span>Metadata & Kỹ thuật</span></div>
+  <div class="legend-item"><div class="legend-dot" style="background:#EAF3DE;border:1px solid #3B6D11"></div><span>Chất lượng dữ liệu</span></div>
+  <div class="legend-item"><div class="legend-dot" style="background:#FAEEDA;border:1px solid #854F0B"></div><span>Vòng đời & Vận hành</span></div>
+  <div class="legend-item"><div class="legend-dot" style="background:#FCEBEB;border:1px solid #A32D2D"></div><span>Tuân thủ & Bảo mật</span></div>
+</div>
+
+<p class="note">Tham chiếu: DAMA-DMBOK v2 · BCBS 239 · ISO 27001 · ISO 8000 · Nghị định 13/2023/NĐ-CP · Thông tư NHNN</p>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'base',
+    themeVariables: {
+      fontFamily: "'Segoe UI', sans-serif",
+      fontSize: '14px',
+      primaryColor: '#E6F1FB',
+      primaryBorderColor: '#185FA5',
+      primaryTextColor: '#042C53',
+      lineColor: '#888780',
+      secondaryColor: '#EAF3DE',
+      tertiaryColor: '#EEEDFE',
+    },
+    flowchart: { curve: 'basis', padding: 20 }
+  });
+
+  function show(id) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('panel-' + id).classList.add('active');
+    event.target.classList.add('active');
+  }
+</script>
+</body>
+</html>

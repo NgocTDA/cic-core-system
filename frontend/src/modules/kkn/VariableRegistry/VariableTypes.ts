@@ -5,7 +5,6 @@ export interface IVariable {
   id: string;
   code: string;
   displayName: string;
-  group: string;
   type: VariableType;
   sampleValue: string;
   description: string;

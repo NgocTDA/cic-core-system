@@ -1,0 +1,185 @@
+@startuml CIC_Function_List
+
+title Danh sách chức năng quản lý T1–T3\nHệ thống Quản trị Dữ liệu Tín dụng CIC
+
+left to right direction
+
+skinparam {
+  BackgroundColor #FAFAFA
+  ActorBackgroundColor #D6EAF8
+  ActorBorderColor #2E86C1
+  UsecaseBackgroundColor #FFFFFF
+  UsecaseBorderColor #888888
+  UsecaseBorderThickness 1
+  PackageBackgroundColor #F4F6F7
+  PackageBorderColor #AAB7B8
+  PackageBorderThickness 1
+  ArrowColor #555555
+  DefaultFontName Arial
+  DefaultFontSize 11
+}
+
+' ============================================================
+' ACTORS
+' ============================================================
+actor "Cán bộ\nQuản trị DL" as ADMIN
+actor "Cán bộ\nBáo cáo TCTD" as BC
+actor "Hệ thống\nNhận dữ liệu" as SYS
+actor "Kiểm soát\nviên / Audit" as AUD
+
+' ============================================================
+' MODULE 1: QUẢN LÝ TCTD / CHI NHÁNH
+' ============================================================
+package "M1. Quản lý TCTD & Chi nhánh" #E8F8F5 {
+  usecase "M1.1 Thêm mới TCTD / Chi nhánh" as M1_1
+  usecase "M1.2 Cập nhật thông tin TCTD" as M1_2
+  usecase "M1.3 Tra cứu / Tìm kiếm TCTD" as M1_3
+  usecase "M1.4 Quản lý trạng thái hoạt động" as M1_4
+  usecase "M1.5 Xem lịch sử thay đổi TCTD" as M1_5
+  usecase "M1.6 Quản lý người báo cáo\n(KB002–KB004)" as M1_6
+  usecase "M1.7 Cập nhật vốn tự có & dự phòng\n(KB005–KB007)" as M1_7
+  usecase "M1.8 Nhận & xác nhận tệp báo cáo\n(KB001, KB008)" as M1_8
+}
+
+' ============================================================
+' MODULE 2: QUẢN LÝ KHÁCH HÀNG
+' ============================================================
+package "M2. Quản lý Khách hàng" #EBF5FB {
+
+  package "M2A. Khách hàng Tổ chức" #D6EAF8 {
+    usecase "M2A.1 Tạo mới KH tổ chức" as M2A_1
+    usecase "M2A.2 Cập nhật thông tin pháp lý\n(TC001–TC016)" as M2A_2
+    usecase "M2A.3 Cập nhật phân loại & ngành nghề\n(TC017–TC018)" as M2A_3
+    usecase "M2A.4 Quản lý người đứng đầu\n(TC019–TC021)" as M2A_4
+    usecase "M2A.5 Quản lý người đại diện PL\n(TC0251–TC0253)" as M2A_5
+    usecase "M2A.6 Quản lý thành viên HĐQT/HĐTV\n(TC0261–TC0263)" as M2A_6
+    usecase "M2A.7 Cập nhật vốn điều lệ\n(TC0241–TC0242)" as M2A_7
+    usecase "M2A.8 Đánh dấu thành viên đặc thù\n(TC022–TC023)" as M2A_8
+  }
+
+  package "M2B. Khách hàng Cá nhân / HKD" #D6EAF8 {
+    usecase "M2B.1 Tạo mới KH cá nhân / HKD" as M2B_1
+    usecase "M2B.2 Cập nhật thông tin nhân thân\n(CN001–CN007)" as M2B_2
+    usecase "M2B.3 Quản lý giấy tờ định danh\n(CN008–CN011)\nCCCD / CMT / Hộ chiếu" as M2B_3
+    usecase "M2B.4 Cập nhật thông tin HKD\n(CN012–CN015)" as M2B_4
+    usecase "M2B.5 Cập nhật vợ/chồng & việc làm\n(CN016–CN021)" as M2B_5
+    usecase "M2B.6 Đánh dấu thành viên đặc thù\n(CN022)" as M2B_6
+  }
+
+  package "M2C. Nghiệp vụ chung KH" #BFD7ED {
+    usecase "M2C.1 Tra cứu / Tìm kiếm KH\n(đa tiêu chí)" as M2C_1
+    usecase "M2C.2 Hợp nhất hồ sơ KH trùng\n(dedup CIF)" as M2C_2
+    usecase "M2C.3 Chuyển đổi loại KH\n(cá nhân ↔ tổ chức)" as M2C_3
+    usecase "M2C.4 Xem lịch sử thay đổi KH" as M2C_4
+    usecase "M2C.5 Xuất hồ sơ KH\n(PDF / Excel)" as M2C_5
+    usecase "M2C.6 Xem toàn bộ tín dụng của KH\n(360° view)" as M2C_6
+  }
+}
+
+' ============================================================
+' MODULE 3: QUẢN LÝ NGƯỜI CÓ LIÊN QUAN
+' ============================================================
+package "M3. Quản lý Người có liên quan" #FEF9E7 {
+  usecase "M3.1 Khai báo người có liên quan\n(LQ0021–LQ0026)" as M3_1
+  usecase "M3.2 Tính & kiểm tra ngưỡng\ndư nợ kích hoạt\n(LQ001 ≥ 0.1% VTC)" as M3_2
+  usecase "M3.3 Xem sơ đồ quan hệ liên quan\n(relationship graph)" as M3_3
+  usecase "M3.4 Cập nhật / xóa người liên quan" as M3_4
+  usecase "M3.5 Cảnh báo tập trung tín dụng\nnhóm người liên quan" as M3_5
+  usecase "M3.6 Tra cứu ngược:\nKH này là người LQ\ncủa những KH nào?" as M3_6
+}
+
+' ============================================================
+' MODULE 4: QUẢN LÝ HỢP ĐỒNG TÍN DỤNG
+' ============================================================
+package "M4. Quản lý Hợp đồng Tín dụng" #FDEDEC {
+  usecase "M4.1 Tạo mới hợp đồng TD\n(HD001–HD006)" as M4_1
+  usecase "M4.2 Cập nhật hạn mức & thời hạn\n(HD0061–HD0062, HD004)" as M4_2
+  usecase "M4.3 Quản lý người đồng vay\n(HD0071–HD0079)" as M4_3
+  usecase "M4.4 Gia hạn / Kết thúc hợp đồng\n(HD003)" as M4_4
+  usecase "M4.5 Tra cứu hợp đồng\n(theo KH / TCTD / ngày)" as M4_5
+  usecase "M4.6 Xem lịch sử thay đổi hợp đồng" as M4_6
+}
+
+' ============================================================
+' MODULE 5: QUẢN LÝ KHẾ ƯỚC / DƯ NỢ
+' ============================================================
+package "M5. Quản lý Khế ước & Dư nợ" #FADBD8 {
+  usecase "M5.1 Tạo mới khế ước / giải ngân\n(KU001–KU009)" as M5_1
+  usecase "M5.2 Cập nhật dư nợ & lãi suất\n(KU010–KU011)" as M5_2
+  usecase "M5.3 Ghi nhận & cập nhật nhóm nợ\n(KU012–KU013)" as M5_3
+  usecase "M5.4 Ghi nhận chậm trả\n(KU014–KU017)" as M5_4
+  usecase "M5.5 Quản lý cơ cấu lại thời hạn\n(KU018–KU020)" as M5_5
+  usecase "M5.6 Ghi nhận doanh số giải ngân\n(KU0281–KU0282)" as M5_6
+  usecase "M5.7 Ghi nhận doanh số trả nợ\n(KU0291–KU0292)" as M5_7
+  usecase "M5.8 Quản lý mục đích sử dụng vốn\n(KU021–KU023)" as M5_8
+  usecase "M5.9 Quản lý dự phòng cụ thể\n(KU026–KU027)" as M5_9
+  usecase "M5.10 Nhóm nợ: tham chiếu CIC\n& cập nhật sau 3 ngày LV" as M5_10
+}
+
+' ============================================================
+' MODULE 6: QUẢN LÝ TÀI SẢN BẢO ĐẢM
+' ============================================================
+package "M6. Quản lý Tài sản bảo đảm" #F4ECF7 {
+  usecase "M6.1 Đăng ký TSBĐ mới\n(TS001–TS002)" as M6_1
+  usecase "M6.2 Định giá & cập nhật giá trị\n(TS005–TS008)" as M6_2
+  usecase "M6.3 Liên kết TSBĐ với HĐ/Khế ước\n(TS009) — quan hệ N:N" as M6_3
+  usecase "M6.4 Đăng ký TSBĐ dùng chung\nnhiều TCTD (TS010–TS011)" as M6_4
+  usecase "M6.5 Quản lý chủ sở hữu bên thứ 3\n(TS0121–TS0123)" as M6_5
+  usecase "M6.6 Quản lý chi tiết theo loại\n↳ Dự án (TS014)\n↳ BĐS/QSDĐ (TS015)\n↳ Phương tiện (TS016)" as M6_6
+  usecase "M6.7 Tra cứu TSBĐ\n(theo KH / HĐ / loại TS)" as M6_7
+  usecase "M6.8 Theo dõi vòng đời TSBĐ\n(hiệu lực → kết thúc)" as M6_8
+  usecase "M6.9 Cảnh báo TSBĐ sắp hết hạn\nhoặc giảm giá trị" as M6_9
+}
+
+' ============================================================
+' MODULE 7: QUẢN TRỊ DỮ LIỆU NGANG (Data Governance)
+' ============================================================
+package "M7. Quản trị & Kiểm soát Dữ liệu" #F0F3F4 {
+  usecase "M7.1 Kiểm tra tính đầy đủ\n(chỉ tiêu bắt buộc X)" as M7_1
+  usecase "M7.2 Kiểm tra định dạng dữ liệu\n(N/C, độ dài, YYYYMMDD)" as M7_2
+  usecase "M7.3 Kiểm tra tính nhất quán\n(TS006 ≤ TS005,\nnhóm nợ logic...)" as M7_3
+  usecase "M7.4 Kiểm tra tham chiếu bảng mã\n(01–15/CIC)" as M7_4
+  usecase "M7.5 Phát hiện & báo cáo dữ liệu lỗi\n(Data Issue)" as M7_5
+  usecase "M7.6 Ghi nhật ký thay đổi\n(Audit Log)" as M7_6
+  usecase "M7.7 Quản lý phiên bản tệp báo cáo\n(KB008 – Lý do điều chỉnh)" as M7_7
+  usecase "M7.8 Dashboard chất lượng dữ liệu\n(DQ KPI theo TCTD)" as M7_8
+  usecase "M7.9 Quản lý bảng mã danh mục\n(01–15/CIC)" as M7_9
+}
+
+' ============================================================
+' ACTOR → MODULE ASSIGNMENT
+' ============================================================
+ADMIN --> M1_1
+ADMIN --> M1_2
+ADMIN --> M1_4
+ADMIN --> M7_9
+
+BC --> M1_6
+BC --> M1_7
+BC --> M1_8
+BC --> M2A_1
+BC --> M2A_2
+BC --> M2B_1
+BC --> M2B_2
+BC --> M3_1
+BC --> M4_1
+BC --> M5_1
+BC --> M5_6
+BC --> M5_7
+BC --> M6_1
+
+SYS --> M5_3
+SYS --> M5_10
+SYS --> M7_1
+SYS --> M7_2
+SYS --> M7_3
+SYS --> M7_4
+
+AUD --> M7_5
+AUD --> M7_6
+AUD --> M7_7
+AUD --> M7_8
+AUD --> M3_5
+AUD --> M3_6
+
+@enduml

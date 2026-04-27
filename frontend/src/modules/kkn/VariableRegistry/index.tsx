@@ -18,7 +18,6 @@ const VariableRegistry: React.FC = () => {
 
   // Filters state
   const [searchText, setSearchText] = useState('');
-  const [filterGroup, setFilterGroup] = useState<string | null>(null);
   const [filterStatus, setFilterStatus] = useState<string | null>(null);
 
   // Register title and actions to the AppHeader via context
@@ -38,30 +37,25 @@ const VariableRegistry: React.FC = () => {
     ]
   }, []);
 
-  const applyFilters = (sourceData: IVariable[], search: string, group: string | null, status: string | null) => {
+  const applyFilters = (sourceData: IVariable[], search: string, status: string | null) => {
     return sourceData.filter(item => {
       const matchSearch = !search ||
         item.code.toLowerCase().includes(search.toLowerCase()) ||
         item.displayName.toLowerCase().includes(search.toLowerCase());
-      const matchGroup = !group || item.group === group;
       const matchStatus = !status || item.status === status;
-      return matchSearch && matchGroup && matchStatus;
+      return matchSearch && matchStatus;
     });
   };
 
   const handleSearchChange = (text: string) => {
     setSearchText(text);
-    setFilteredData(applyFilters(allData, text, filterGroup, filterStatus));
+    setFilteredData(applyFilters(allData, text, filterStatus));
   };
 
-  const handleGroupChange = (group: string | null) => {
-    setFilterGroup(group);
-    setFilteredData(applyFilters(allData, searchText, group, filterStatus));
-  };
 
   const handleStatusChange = (status: string | null) => {
     setFilterStatus(status);
-    setFilteredData(applyFilters(allData, searchText, filterGroup, status));
+    setFilteredData(applyFilters(allData, searchText, status));
   };
 
   const handleToggleStatus = (id: string, currentStatus: VariableStatus) => {
@@ -70,7 +64,7 @@ const VariableRegistry: React.FC = () => {
       items.map(item => item.id === id ? { ...item, status: newStatus } : item);
     const newAll = updater(allData);
     setAllData(newAll);
-    setFilteredData(applyFilters(newAll, searchText, filterGroup, filterStatus));
+    setFilteredData(applyFilters(newAll, searchText, filterStatus));
     message.success(`Đã ${newStatus === 'ACTIVE' ? 'kích hoạt' : 'vô hiệu hóa'} biến thành công`);
   };
 
@@ -85,7 +79,7 @@ const VariableRegistry: React.FC = () => {
       onOk() {
         const newAll = allData.filter(item => item.id !== id);
         setAllData(newAll);
-        setFilteredData(applyFilters(newAll, searchText, filterGroup, filterStatus));
+        setFilteredData(applyFilters(newAll, searchText, filterStatus));
         message.success('Đã xóa biến thành công');
       },
     });
@@ -118,7 +112,7 @@ const VariableRegistry: React.FC = () => {
         item.id === editingVariable.id ? { ...item, ...values } : item
       );
       setAllData(newAll);
-      setFilteredData(applyFilters(newAll, searchText, filterGroup, filterStatus));
+      setFilteredData(applyFilters(newAll, searchText, filterStatus));
       message.success('Cập nhật biến thành công');
     } else {
       const newVar: IVariable = {
@@ -129,22 +123,19 @@ const VariableRegistry: React.FC = () => {
       };
       const newAll = [newVar, ...allData];
       setAllData(newAll);
-      setFilteredData(applyFilters(newAll, searchText, filterGroup, filterStatus));
+      setFilteredData(applyFilters(newAll, searchText, filterStatus));
       message.success('Tạo biến mới thành công');
     }
     setIsModalOpen(false);
     setEditingVariable(null);
   };
 
-  const groups = Array.from(new Set(allData.map(item => item.group)));
 
   return (
     <div style={{ padding: '16px 24px 24px', display: 'flex', flexDirection: 'column', flex: 1 }}>
       {/* Card 1: Filter Area */}
       <VariableFilter
-        groups={groups}
         onSearchChange={handleSearchChange}
-        onGroupChange={handleGroupChange}
         onStatusChange={handleStatusChange}
       />
 

@@ -1,0 +1,398 @@
+@startuml CIC Entity Attribute Diagram
+
+title Sơ đồ Thực thể & Thuộc tính — Hệ thống CIC\n(T1: Tài sản DL | T2: Business/Technical Asset | T3: Data Entity)
+
+skinparam {
+  BackgroundColor #FAFAFA
+  ClassBackgroundColor #FFFFFF
+  ClassBorderColor #888888
+  ClassBorderThickness 1
+  ClassHeaderBackgroundColor #D6EAF8
+  ClassFontSize 12
+  ClassFontStyle bold
+  AttributeFontSize 11
+  ArrowColor #555555
+  ArrowThickness 1.2
+  RectangleBorderRadius 6
+  Padding 5
+  Nodesep 60
+  Ranksep 80
+  DefaultFontName Arial
+}
+
+' ============================================================
+' LEGEND / PACKAGE COLORS
+' ============================================================
+' Teal  = Business Asset (nghiệp vụ)
+' Coral = Technical Asset (kỹ thuật)
+' Gray  = Metadata / Reference
+
+' ============================================================
+' T2-BA: TCTD / CHI NHÁNH
+' ============================================================
+class "TCTD / Chi nhánh" as TCTD <<Business Asset>> #D5F5E3 {
+  ' --- Định danh ---
+  + MACNTCTD : C(8)      [TTC01] [PK] [bắt buộc]
+  + TENCNTCTD : C(250)   [TTC02] [bắt buộc]
+  ' --- Tài chính ---
+  + VONTC : N(15)        [KB005] Vốn tự có
+  + DPCHUNGPT : N(15)    [KB006] Dự phòng chung phải trích
+  + DPCHUNGDT : N(15)    [KB007] Dự phòng chung đã trích
+  ' --- Khai báo vận hành ---
+  + NGAYBC : C(8)        [KB001] Ngày báo cáo (YYYYMMDD)
+  + HOTENBC : C(250)     [KB002] Người báo cáo
+  + DTHOAIBC : C(100)    [KB003] ĐT người báo cáo
+  + EMAILBC : C(150)     [KB004] Email người báo cáo
+  + LYDODC : C(4000)     [KB008] Lý do điều chỉnh
+}
+
+' ============================================================
+' T3-DE: KHÁCH HÀNG (abstract → 2 loại)
+' ============================================================
+abstract class "Khách hàng" as KH <<Data Entity>> #D6EAF8 {
+  ' --- Định danh chung ---
+  + MAKH : C(50)         [TTC03] [PK] Mã CIF
+  + TENKH : C(250)       [TTC04] [bắt buộc]
+  + LOAIKH : N(1)        [TTC05] 1=Tổ chức / 2=Cá nhân
+  ' --- Quan hệ ---
+  + MACNTCTD : C(8)      [TTC01] [FK → TCTD]
+}
+
+' ============================================================
+' T3-DE: KHÁCH HÀNG TỔ CHỨC
+' ============================================================
+class "Khách hàng Tổ chức" as KH_TC <<Data Entity>> #D6EAF8 {
+  ' --- Thông tin pháp lý ---
+  + TENDNG : C(250)      [TC001] Tên đối ngoại
+  + TENVT : C(100)       [TC002] Tên viết tắt
+  + TENCU : C(250)       [TC003] Tên cũ
+  + DIACHI : C(300)      [TC004] [bắt buộc]
+  + MATINH : C(2)        [TC005] [bắt buộc] Bảng mã 01/CIC
+  + CUTRU : N(1)         [TC006] 1=Cư trú / 0=Không
+  + DTHOAI : C(100)      [TC007] [bắt buộc]
+  + FAX : C(50)          [TC008]
+  + WEBSITE : C(150)     [TC009]
+  + EMAIL : C(150)       [TC010]
+  ' --- Mã số pháp lý ---
+  + MASODN : C(20)       [TC011] [bắt buộc] Mã số DN/thuế
+  + NGMSDN : C(8)        [TC012] [bắt buộc] Ngày cấp (YYYYMMDD)
+  + SOQDTL : C(20)       [TC013] Số QĐ thành lập
+  + NGQDTL : C(8)        [TC014] Ngày cấp QĐ TL
+  + SOGPDT : C(20)       [TC015] Số giấy phép đầu tư
+  + NGGPDT : C(8)        [TC016] Ngày cấp GP đầu tư
+  ' --- Phân loại ---
+  + MALH : C(3)          [TC017] [bắt buộc] Bảng mã 03/CIC
+  + MANKT : C(3)         [TC018] [bắt buộc] Ngành nghề KD chính
+  ' --- Người đứng đầu ---
+  + HOTENGD : C(250)     [TC019] [bắt buộc] TGĐ/GĐ
+  + DIACHIGD : C(300)    [TC020] [bắt buộc] Địa chỉ GĐ
+  + GIAYTOCNGD : C(12)   [TC021] [bắt buộc] CCCD/CMND GĐ
+  ' --- Vốn điều lệ ---
+  + MANT_VDL : C(3)      [TC0241] Bảng mã 05/CIC
+  + VONDL : N(15)        [TC0242] Số tiền VĐL
+  ' --- Thành viên đặc thù ---
+  + TVQTDND : N(1)       [TC022] Thành viên Quỹ TDND
+  + TVHTX : N(1)         [TC023] Thành viên NH Hợp tác xã
+}
+
+' ============================================================
+' T3-DE: KHÁCH HÀNG CÁ NHÂN / HỘ KINH DOANH
+' ============================================================
+class "Khách hàng Cá nhân\n/ Hộ kinh doanh" as KH_CN <<Data Entity>> #D6EAF8 {
+  ' --- Nhân thân ---
+  + GIOITINH : C(1)      [CN001] [bắt buộc] Nam=1/Nữ=0/K
+  + NGSINH : C(8)        [CN002] [bắt buộc] YYYYMMDD
+  + DIACHI : C(300)      [CN003] [bắt buộc]
+  + MATINH : C(2)        [CN004] [bắt buộc]
+  + CUTRU : N(1)         [CN005] [bắt buộc]
+  + DTHOAI : C(100)      [CN006] [bắt buộc]
+  + MAQT : C(4)          [CN007] [bắt buộc] Mã quốc tịch
+  ' --- Giấy tờ định danh ---
+  + CCCD : C(12)         [CN008] [bắt buộc] Mã số định danh
+  + NGCCCD : C(8)        [CN009] Ngày cấp CCCD
+  + SOCMT : C(12)        [CN010] [bắt buộc] Số CMND (nếu còn HL)
+  + SOHCHIEU : C(12)     [CN011] [bắt buộc] Hộ chiếu (NN)
+  ' --- Hộ kinh doanh ---
+  + MST : C(20)          [CN012] Mã số thuế HKD
+  + NGMST : C(8)         [CN013] Ngày cấp MST
+  + SODKKD : C(20)       [CN014] Số ĐKKD
+  + NGDKKD : C(8)        [CN015] Ngày cấp ĐKKD
+  ' --- Thông tin thêm ---
+  + HOTENVC : C(250)     [CN016] [bắt buộc] Họ tên vợ/chồng
+  + GIAYTOCNVC : C(12)   [CN017] [bắt buộc] CCCD vợ/chồng
+  + NOILV : C(250)       [CN018] [bắt buộc] Nơi làm việc
+  + VITRILV : C(200)     [CN019] [bắt buộc] Vị trí làm việc
+  + SONAMLV : N(2)       [CN020] [bắt buộc] Số năm làm việc
+  + THUNHAPBQ : N(15)    [CN021] [bắt buộc] Thu nhập BQ/tháng
+  + TVQTDND : N(1)       [CN022] Thành viên Quỹ TDND
+}
+
+' ============================================================
+' T3-DE: NGƯỜI ĐẠI DIỆN THEO PHÁP LUẬT (child of KH_TC)
+' ============================================================
+class "Người đại diện\ntheo pháp luật" as NDD <<Data Entity>> #EBF5FB {
+  + HOTENNDD : C(250)    [TC0251] [bắt buộc]
+  + GIAYTOCNNDD : C(12)  [TC0252] [bắt buộc] CCCD/CMND/HC
+  + DIACHINDD : C(300)   [TC0253] [bắt buộc]
+}
+
+' ============================================================
+' T3-DE: THÀNH VIÊN HĐQT / HĐTV (child of KH_TC)
+' ============================================================
+class "Thành viên\nHĐQT / HĐTV" as TVHD <<Data Entity>> #EBF5FB {
+  + HOTENTVHD : C(250)   [TC0261]
+  + GIAYTOCNTVHD : C(12) [TC0262] CCCD/CMND/HC
+  + DIACHITVHD : C(300)  [TC0263]
+}
+
+' ============================================================
+' T3-DE: NGƯỜI CÓ LIÊN QUAN
+' ============================================================
+class "Người có liên quan" as NLQ <<Data Entity>> #FDEBD0 {
+  ' --- Ngưỡng kích hoạt ---
+  + TDNOKHV : N(15)      [LQ001] [bắt buộc] Tổng dư nợ KH vay
+  ' --- Thông tin người LQ ---
+  + MALQ : C(2)          [LQ0021] [bắt buộc] Bảng mã 04/CIC
+  + MAKHLQ : C(50)       [LQ0022] [bắt buộc] Mã CIF người LQ
+  + TENKHLQ : C(250)     [LQ0023] [bắt buộc]
+  + GIAYTOCNLQ : C(12)   [LQ0024] [bắt buộc] CCCD/HC (cá nhân)
+  + MASODNLQ : C(20)     [LQ0025] [bắt buộc] MSDN (tổ chức)
+  + TDNONGLQ : N(15)     [LQ0026] [bắt buộc] Tổng dư nợ người LQ
+}
+
+' ============================================================
+' T3-DE: HỢP ĐỒNG TÍN DỤNG
+' ============================================================
+class "Hợp đồng tín dụng" as HD <<Data Entity>> #FDEDEC {
+  + SOHD : C(100)        [HD001] [PK] [bắt buộc]
+  + NGKYHD : C(8)        [HD002] [bắt buộc] Ngày hiệu lực
+  + NGKTHD : C(8)        [HD003] [bắt buộc] Ngày kết thúc
+  + THOIHAN : N(6)       [HD004] [bắt buộc] Thời hạn (ngày)
+  + TTTSBD : N(1)        [HD005] [bắt buộc] 0=Không/1=Có TSBĐ
+  ' --- Hạn mức ---
+  + MANT_HM : C(3)       [HD0061] [bắt buộc] Mã tiền tệ
+  + HANMUC : N(15)       [HD0062] [bắt buộc] Hạn mức tín dụng
+  ' --- FK ---
+  + MAKH : C(50)         [FK → Khách hàng]
+  + MACNTCTD : C(8)      [FK → TCTD]
+}
+
+' ============================================================
+' T3-DE: NGƯỜI ĐỒNG VAY (child of HD)
+' ============================================================
+class "Người đồng vay" as DVV <<Data Entity>> #FDEDEC {
+  + MAKHDVV : C(50)      [HD0071] [bắt buộc] Mã CIF đồng vay
+  + HOTENDVV : C(250)    [HD0072] [bắt buộc]
+  + CCCDDVV : C(12)      [HD0073] CCCD đồng vay
+  + SOCMTDVV : C(12)     [HD0074] CMND đồng vay
+  + SOHCHIEUDVV : C(12)  [HD0075] Hộ chiếu đồng vay
+  + NGSINHDVV : C(8)     [HD0076] Ngày sinh (YYYYMMDD)
+  + DTHOAIDVV : C(100)   [HD0077] Số điện thoại
+  + DIACHIDVV : C(300)   [HD0078] Địa chỉ
+  + QHDVV : N(1)         [HD0079] Quan hệ với KH vay
+}
+
+' ============================================================
+' T3-DE: KHẾ ƯỚC / GIẢI NGÂN
+' ============================================================
+class "Khế ước\n(Giải ngân)" as KU <<Data Entity>> #FADBD8 {
+  + SOKU : C(100)        [KU001] [PK] [bắt buộc]
+  + NGGIAINGAN : C(8)    [KU002] [bắt buộc] Ngày giải ngân đầu
+  + NGKTKU : C(8)        [KU003] [bắt buộc] Ngày kết thúc KU
+  + DIENTU : N(1)        [KU004] [bắt buộc] Điện tử 0/1
+  + MATHOIHAN : C(2)     [KU005] [bắt buộc] Bảng mã 08/CIC
+  + MAHTCAPTD : C(3)     [KU006] [bắt buộc] Hình thức CTD
+  + MAPTHUCCV : C(3)     [KU007] Phương thức cho vay
+  + NGTRUYDOI : C(8)     [KU008] Thời điểm truy đòi
+  + MANT : C(3)          [KU009] [bắt buộc] Mã tiền tệ
+  + DUNO : N(15)         [KU010] [bắt buộc] Dư nợ gốc
+  + LAISUAT : N(4)       [KU011] [bắt buộc] Lãi suất %/năm
+  ' --- Phân loại nợ ---
+  + NHOMNO : C(2)        [KU012] [bắt buộc] Nhóm nợ tự PL
+  + NHOMNOSTC : C(2)     [KU013] [bắt buộc] Nhóm nợ sau TK CIC
+  ' --- Chậm trả ---
+  + STGOCCHAMTN : N(15)  [KU014] [bắt buộc] Dư nợ gốc chậm trả
+  + NGCHAMTGOC : C(8)    [KU015] [bắt buộc] Ngày chậm trả gốc
+  + STLAICHAMTN : N(15)  [KU016] [bắt buộc] Lãi chậm trả
+  + NGCHAMTLAI : C(8)    [KU017] [bắt buộc] Ngày chậm trả lãi
+  ' --- Cơ cấu nợ ---
+  + SOLANCC : N(3)       [KU018] [bắt buộc] Số lần cơ cấu
+  + STGOCCC : N(15)      [KU019] [bắt buộc] Nợ gốc cơ cấu
+  + STLAICC : N(15)      [KU020] [bắt buộc] Nợ lãi cơ cấu
+  ' --- Mục đích vay ---
+  + MAMDSDTVNKT : C(3)   [KU021] [bắt buộc] Ngành kinh tế
+  + MAMDSDTVLV : C(5)    [KU022] [bắt buộc] Lĩnh vực đặc thù
+  + MOTAMDSDTV : C(4000) [KU023] [bắt buộc] Mô tả mục đích
+  ' --- Lãi ---
+  + LCVPTHUNB : N(15)    [KU024] [bắt buộc] Lãi phải thu NB
+  + LCVCTHUNGB : N(15)   [KU025] [bắt buộc] Lãi chưa thu NB
+  ' --- Dự phòng ---
+  + DPPTNB : N(15)       [KU026] [bắt buộc] DP cụ thể phải trích
+  + DPDTNB : N(15)       [KU027] [bắt buộc] DP cụ thể đã trích
+  ' --- Nguồn vốn ---
+  + NGUONTD : N(1)       [KU030] [bắt buộc] Nguồn CTD
+  + STMUANO : N(15)      [KU031] Số tiền mua nợ
+  ' --- FK ---
+  + SOHD : C(100)        [FK → Hợp đồng TD]
+}
+
+' ============================================================
+' T3-DE: DOANH SỐ GIẢI NGÂN (child of KU)
+' ============================================================
+class "Doanh số\nGiải ngân" as DSNG <<Data Entity>> #FADBD8 {
+  + STGIAINGAN : N(15)   [KU0281] [bắt buộc] Số tiền GN
+  + NGGIAINGAN : C(8)    [KU0282] [bắt buộc] Ngày GN (YYYYMMDD)
+}
+
+' ============================================================
+' T3-DE: DOANH SỐ TRẢ NỢ (child of KU)
+' ============================================================
+class "Doanh số\nTrả nợ" as DSTN <<Data Entity>> #FADBD8 {
+  + STTRANO : N(15)      [KU0291] [bắt buộc] Số tiền trả (gốc+lãi)
+  + NGTRANO : C(8)       [KU0292] [bắt buộc] Ngày trả nợ
+}
+
+' ============================================================
+' T3-DE: TÀI SẢN BẢO ĐẢM
+' ============================================================
+class "Tài sản bảo đảm" as TSBD <<Data Entity>> #E8DAEF {
+  + MASOBD : C(100)      [TS001] [PK] [bắt buộc]
+  + MALOAIBD : C(4)      [TS002] [bắt buộc] Bảng mã 12/CIC
+  + NGBDAU : C(8)        [TS003] [bắt buộc] Ngày hiệu lực
+  + NGKT : C(8)          [TS004] Ngày kết thúc
+  + GIATRI : N(15)       [TS005] [bắt buộc] Tổng giá trị TSBĐ
+  + GIATRIBDKV : N(15)   [TS006] [bắt buộc] GiáTrị bảo đảm KV
+  + NGDINHGIA : C(8)     [TS007] [bắt buộc] Ngày định giá
+  + GTKHAUTRU : N(15)    [TS008] [bắt buộc] Giá trị khấu trừ
+  + DSSOHD : C(100)      [TS009] [bắt buộc] Danh sách số HĐ
+  + TSCHUNGMATCTD : C(8) [TS010] [bắt buộc] TCTD nhận chung TS
+  + TSCHUNGMAKH : C(50)  [TS011] [bắt buộc] KH chung TSBĐ
+  + MOTABD : C(4000)     [TS013] [bắt buộc] Mô tả chi tiết
+}
+
+' ============================================================
+' T3-DE: CHỦ SỞ HỮU TÀI SẢN (child of TSBD)
+' ============================================================
+class "Chủ sở hữu\ntài sản" as CSH <<Data Entity>> #E8DAEF {
+  + HOTENCSH : C(250)    [TS0121] [bắt buộc]
+  + GIAYTOCNCSH : C(12)  [TS0122] [bắt buộc] CCCD/HC
+  + MSTCSH : C(20)       [TS0123] [bắt buộc] MST/MSDN
+}
+
+' ============================================================
+' T3-DE: DỰ ÁN (TSBĐ dạng dự án)
+' ============================================================
+class "Dự án\n(TSBĐ)" as DA <<Data Entity>> #E8DAEF {
+  + CHUDA : C(250)       [TS01411] [bắt buộc] Chủ đầu tư
+  + GIAYTOCHUDA : C(12)  [TS01412] CCCD/HC chủ ĐT
+  + MSTCHUDA : C(20)     [TS01413] MST chủ ĐT tổ chức
+  + DIACHICHUDA : C(300) [TS01414] [bắt buộc]
+  + TENDA : C(300)       [TS0142] [bắt buộc] Tên dự án
+  + VITRIDA : C(300)     [TS0143] [bắt buộc] Vị trí DA
+  + MATINH_DA : C(2)     [TS0144] [bắt buộc]
+  + GIAYPHEP : C(50)     [TS0145] [bắt buộc] Số GP thực hiện
+  + GIATRIDA : N(15)     [TS0146] [bắt buộc] Tổng GT đầu tư
+  + THOIHANDA : C(8)     [TS0147] [bắt buộc] Ngày hết hạn DA
+  + MOTADA : C(4000)     [TS0148] [bắt buộc] Mô tả DA
+}
+
+' ============================================================
+' T3-DE: BĐS / QSDĐ (TSBĐ dạng đất + nhà)
+' ============================================================
+class "BĐS / Quyền\nsử dụng đất" as BDS <<Data Entity>> #E8DAEF {
+  + GIAYCN : C(100)      [TS0151] [bắt buộc] Số GCN QSDĐ
+  + DIACHI_TS : C(300)   [TS0152] [bắt buộc]
+  + MATINH_TS : C(2)     [TS0153] [bắt buộc]
+  + MOTABDS : C(4000)    [TS0154] [bắt buộc] Mô tả BĐS
+}
+
+' ============================================================
+' T3-DE: PHƯƠNG TIỆN VẬN TẢI (TSBĐ)
+' ============================================================
+class "Phương tiện\nvận tải" as PT <<Data Entity>> #E8DAEF {
+  + LOAIPT : N(1)        [TS0161] [bắt buộc] 1-5
+  + GIAYDK : C(50)       [TS0162] [bắt buộc] Số giấy đăng ký
+  + BIENKS : C(20)       [TS0163] [bắt buộc] Biển kiểm soát
+}
+
+' ============================================================
+' QUAN HỆ
+' ============================================================
+
+' TCTD → Khách hàng
+TCTD "1" *-- "0..*" KH : quản lý >
+
+' Khách hàng (abstract) → 2 loại con
+KH <|-- KH_TC : loại 1
+KH <|-- KH_CN : loại 2
+
+' Tổ chức → NDD (1 tổ chức có nhiều NDD)
+KH_TC "1" *-- "1..*" NDD : có người đại diện >
+' Tổ chức → TVHD (1 tổ chức có nhiều thành viên HĐ)
+KH_TC "1" *-- "0..*" TVHD : có thành viên HĐQT/HĐTV >
+
+' Khách hàng → Người có liên quan (ngưỡng: dư nợ ≥ 0.1% VTC)
+KH "1" *-- "0..*" NLQ : [dư nợ ≥ 0.1% VTC]\ncó người liên quan >
+
+' Khách hàng → Hợp đồng TD
+KH "1" *-- "1..*" HD : ký kết >
+TCTD "1" *-- "1..*" HD
+
+' HD → Người đồng vay
+HD "1" *-- "0..*" DVV : có người đồng vay >
+
+' HD → Khế ước (1 HĐ có nhiều khế ước / lần giải ngân)
+HD "1" *-- "1..*" KU : phát sinh >
+
+' KU → Doanh số giải ngân, trả nợ
+KU "1" *-- "1..*" DSNG : ghi nhận >
+KU "1" *-- "0..*" DSTN : ghi nhận >
+
+' HD → TSBĐ (N:N — 1 HĐ nhiều TSBĐ, 1 TSBĐ nhiều HĐ)
+HD "1..*" -- "0..*" TSBD : bảo đảm bởi\n(TS009: ds số HĐ)
+
+' TSBĐ → Chủ sở hữu (nếu tài sản bên thứ 3)
+TSBD "1" o-- "0..*" CSH : thuộc sở hữu >
+
+' TSBĐ → Chi tiết theo loại (specialization)
+TSBD "1" o-- "0..1" DA : chi tiết nếu là dự án
+TSBD "1" o-- "0..1" BDS : chi tiết nếu là đất/nhà
+TSBD "1" o-- "0..1" PT : chi tiết nếu là phương tiện
+
+' NLQ tham chiếu chéo KH khác
+NLQ ..> KH : [MAKHLQ]\ntham chiếu KH khác
+
+' ============================================================
+' NOTES / BUSINESS RULES
+' ============================================================
+note top of NLQ
+  **Business Rule:**
+  Báo cáo khi dư nợ KH ≥ 0.1% VTC (TCTD)
+  hoặc ≥ 0.5% (TCTD phi NH)
+  hoặc ≥ 1% (Quỹ TDND)
+  Chỉ báo cáo khi người LQ đang được CTD
+end note
+
+note right of KU
+  **Business Rule — Nhóm nợ:**
+  KU012 = Tự phân loại tại TCTD
+  KU013 = Sau tham chiếu CIC
+  → Lấy nhóm rủi ro CAO NHẤT
+  → Cập nhật trong 3 ngày LV
+  sau khi nhận kết quả CIC
+end note
+
+note bottom of TSBD
+  **Quan hệ N:N đặc biệt:**
+  TS009: 1 TSBĐ → nhiều HĐ
+  TS010: 1 TSBĐ → nhiều CN/TCTD
+  TS011: 1 TSBĐ → nhiều KH chung
+end note
+
+note right of KH_CN
+  **Thực thể hỗn hợp:**
+  Cá nhân | Hộ gia đình | Hộ kinh doanh
+  Định danh ưu tiên: CCCD > CMT > HC
+end note
+
+@enduml

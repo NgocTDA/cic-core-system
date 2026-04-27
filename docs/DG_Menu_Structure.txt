@@ -1,0 +1,410 @@
+================================================================================
+CẤU TRÚC MENU — HỆ THỐNG DATA GOVERNANCE (T1–T3)
+================================================================================
+
+1. MENU TREE (JSON CONFIG)
+   Dùng để render sidebar navigation
+2. ROUTE LIST (Đường dẫn URL)
+   Dùng để cấu hình router (React Router / Vue Router / Next.js)
+3. GHI CHÚ KIẾN TRÚC NAVIGATION
+
+================================================================================
+PHẦN 1: MENU CONFIG (JSON)
+================================================================================
+
+{
+  "menu": [
+    {
+      "key": "dashboard",
+      "label": "Tổng quan",
+      "icon": "LayoutDashboard",
+      "path": "/dashboard",
+      "badge": null
+    },
+    {
+      "key": "search",
+      "label": "Tìm kiếm toàn cục",
+      "icon": "Search",
+      "path": "/search",
+      "badge": null,
+      "shortcut": "Ctrl+K"
+    },
+    {
+      "type": "divider",
+      "label": "Tài sản dữ liệu"
+    },
+    {
+      "key": "t1",
+      "label": "Tài sản dữ liệu",
+      "labelEn": "Data Assets",
+      "icon": "Database",
+      "badge": "T1",
+      "badgeColor": "purple",
+      "defaultOpen": true,
+      "children": [
+        {
+          "key": "t1-list",
+          "label": "Danh sách tài sản",
+          "path": "/assets",
+          "fnCode": "T1.4",
+          "icon": "List"
+        },
+        {
+          "key": "t1-new",
+          "label": "Đăng ký tài sản mới",
+          "path": "/assets/new",
+          "fnCode": "T1.1",
+          "icon": "Plus",
+          "highlight": true
+        },
+        {
+          "key": "t1-pending",
+          "label": "Chờ phê duyệt",
+          "path": "/assets?status=pending_review",
+          "fnCode": "T1.1 / T1.2",
+          "icon": "Clock",
+          "badgeDynamic": "pendingCount"
+        },
+        {
+          "key": "t1-my-assets",
+          "label": "Tài sản của tôi",
+          "path": "/assets?owner=me",
+          "fnCode": "T1.7",
+          "icon": "User"
+        }
+      ]
+    },
+    {
+      "key": "t2a",
+      "label": "Tài sản nghiệp vụ",
+      "labelEn": "Business Assets",
+      "icon": "Briefcase",
+      "badge": "T2A",
+      "badgeColor": "teal",
+      "note": "Sub-menu của T1 — chỉ hiện khi user đang trong context BA",
+      "children": [
+        {
+          "key": "t2a-list",
+          "label": "Danh sách BA",
+          "path": "/assets?type=business",
+          "fnCode": "T2A.5",
+          "icon": "List"
+        },
+        {
+          "key": "t2a-mapping",
+          "label": "BA ↔ TA Mapping",
+          "path": "/assets/mapping",
+          "fnCode": "T2A.4",
+          "icon": "ArrowLeftRight",
+          "highlight": true
+        },
+        {
+          "key": "t2a-unmapped",
+          "label": "Chưa có mapping",
+          "path": "/assets?type=business&mapped=false",
+          "fnCode": "T2A.4",
+          "icon": "AlertCircle",
+          "badgeDynamic": "unmappedBACount"
+        }
+      ]
+    },
+    {
+      "key": "t2b",
+      "label": "Tài sản kỹ thuật",
+      "labelEn": "Technical Assets",
+      "icon": "Server",
+      "badge": "T2B",
+      "badgeColor": "teal",
+      "children": [
+        {
+          "key": "t2b-list",
+          "label": "Danh sách TA",
+          "path": "/assets?type=technical",
+          "fnCode": "T2B.1",
+          "icon": "List"
+        },
+        {
+          "key": "t2b-discovery",
+          "label": "Auto-discovery",
+          "path": "/discovery",
+          "fnCode": "T2B.2",
+          "icon": "Radar",
+          "badgeDynamic": "newDiscoveryCount"
+        },
+        {
+          "key": "t2b-schema",
+          "label": "Thay đổi schema",
+          "path": "/assets/schema-changes",
+          "fnCode": "T2B.4",
+          "icon": "GitBranch",
+          "badgeDynamic": "pendingSchemaCount"
+        },
+        {
+          "key": "t2b-impact",
+          "label": "Phân tích tác động",
+          "path": "/assets/impact",
+          "fnCode": "T2B.5",
+          "icon": "Zap"
+        }
+      ]
+    },
+    {
+      "type": "divider",
+      "label": "Định nghĩa & Quy tắc"
+    },
+    {
+      "key": "t3a",
+      "label": "Thuật ngữ NV",
+      "labelEn": "Business Glossary",
+      "icon": "BookOpen",
+      "badge": "T3A",
+      "badgeColor": "coral",
+      "children": [
+        {
+          "key": "t3a-browse",
+          "label": "Tra cứu thuật ngữ",
+          "path": "/glossary",
+          "fnCode": "T3A.5",
+          "icon": "Search"
+        },
+        {
+          "key": "t3a-new",
+          "label": "Tạo thuật ngữ mới",
+          "path": "/glossary/new",
+          "fnCode": "T3A.1",
+          "icon": "Plus",
+          "highlight": true
+        },
+        {
+          "key": "t3a-review",
+          "label": "Phê duyệt",
+          "path": "/glossary/review",
+          "fnCode": "T3A.3",
+          "icon": "CheckSquare",
+          "badgeDynamic": "pendingTermCount"
+        },
+        {
+          "key": "t3a-needs-review",
+          "label": "Cần review (> 1 năm)",
+          "path": "/glossary?stale=true",
+          "fnCode": "T3A.2",
+          "icon": "AlertTriangle",
+          "badgeDynamic": "staleTermCount"
+        },
+        {
+          "key": "t3a-export",
+          "label": "Xuất Glossary",
+          "path": "/glossary/export",
+          "fnCode": "T3A.7",
+          "icon": "Download"
+        }
+      ]
+    },
+    {
+      "type": "divider",
+      "label": "Công cụ"
+    },
+    {
+      "key": "mx",
+      "label": "Liên kết & Lineage",
+      "labelEn": "Linking & Lineage",
+      "icon": "Network",
+      "badge": "MX",
+      "badgeColor": "gray",
+      "children": [
+        {
+          "key": "mx-lineage",
+          "label": "Data Lineage",
+          "path": "/lineage",
+          "fnCode": "MX.1",
+          "icon": "GitMerge"
+        },
+        {
+          "key": "mx-relations",
+          "label": "Sơ đồ quan hệ",
+          "path": "/relations",
+          "fnCode": "MX.2",
+          "icon": "Share2"
+        }
+      ]
+    },
+    {
+      "type": "divider",
+      "label": "Danh mục hệ thống"
+    },
+    {
+      "key": "admin",
+      "label": "Quản trị hệ thống",
+      "icon": "Settings",
+      "role": "admin",
+      "children": [
+        {
+          "key": "admin-domains",
+          "label": "Quản lý Domain",
+          "path": "/admin/domains",
+          "fnCode": "T4",
+          "icon": "Layers"
+        },
+        {
+          "key": "admin-users",
+          "label": "Người dùng & Phân quyền",
+          "path": "/admin/users",
+          "fnCode": "T6: Ownership",
+          "icon": "Users"
+        },
+        {
+          "key": "admin-connections",
+          "label": "Kết nối Data Source",
+          "path": "/admin/connections",
+          "fnCode": "T2B.2",
+          "icon": "Plug"
+        },
+        {
+          "key": "admin-codelists",
+          "label": "Bảng mã danh mục",
+          "path": "/admin/codelists",
+          "fnCode": "T7: DQ Rules",
+          "icon": "Tag"
+        }
+      ]
+    }
+  ]
+}
+
+================================================================================
+PHẦN 2: ROUTE LIST
+================================================================================
+
+/* ─── CORE PAGES ─────────────────────────────────────── */
+/                           → Redirect → /dashboard
+/dashboard                  → DashboardPage          (MX.4)
+/search                     → GlobalSearchPage       (MX.3)
+
+/* ─── DATA ASSET — T1 ───────────────────────────────── */
+/assets                     → AssetListPage          (T1.4)
+/assets/new                 → AssetCreatePage        (T1.1)
+/assets/mapping             → AssetMappingPage       (T2A.4)
+/assets/schema-changes      → SchemaChangesPage      (T2B.4)
+/assets/impact              → ImpactAnalysisPage     (T2B.5)
+
+/assets/:id                 → AssetDetailPage        (T1.5 — 360° View)
+  Tabs:
+  /assets/:id               → tab: overview          (T1.5)
+  /assets/:id?tab=metadata  → tab: metadata          (T3E)
+  /assets/:id?tab=terms     → tab: terms+rules       (T3A, T3B)
+  /assets/:id?tab=model     → tab: model+entity      (T3C, T3D)
+  /assets/:id?tab=lineage   → tab: lineage           (MX.1)
+  /assets/:id?tab=quality   → tab: DQ                (T6)
+  /assets/:id?tab=history   → tab: audit trail       (T1.8)
+
+/assets/:id/edit            → AssetEditPage          (T1.2)
+/assets/:id/classify        → AssetClassifyPage      (T1.3)
+/assets/:id/lifecycle       → AssetLifecyclePage     (T1.6)
+/assets/:id/ownership       → AssetOwnershipPage     (T1.7)
+
+/* ─── TECHNICAL ASSET — T2B ─────────────────────────── */
+/assets/:id/technical       → TechnicalExtPage       (T2B.1)
+/assets/:id/schema-history  → SchemaHistoryPage      (T2B.4)
+/assets/:id/impact          → ImpactDetailPage       (T2B.5)
+
+/* ─── BUSINESS ASSET — T2A ──────────────────────────── */
+/assets/:id/business        → BusinessExtPage        (T2A.1)
+/assets/:id/mapping         → BAMappingPage          (T2A.4)
+
+/* ─── AUTO-DISCOVERY — T2B.2 ────────────────────────── */
+/discovery                  → DiscoveryDashboard     (T2B.2)
+/discovery/:jobId           → DiscoveryReportPage    (T2B.2)
+
+/* ─── BUSINESS GLOSSARY — T3A ───────────────────────── */
+/glossary                   → GlossaryListPage       (T3A.5)
+/glossary/new               → TermCreatePage         (T3A.1)
+/glossary/review            → TermReviewPage         (T3A.3)
+/glossary/export            → GlossaryExportPage     (T3A.7)
+
+/glossary/:id               → TermDetailPage         (full detail)
+  Tabs:
+  /glossary/:id             → tab: definition        (T3A.1)
+  /glossary/:id?tab=relations → tab: relations       (T3A.4)
+  /glossary/:id?tab=technical → tab: tech mapping    (T3A.6)
+  /glossary/:id?tab=versions  → tab: version history (T3A.2)
+  /glossary/:id?tab=audit     → tab: audit trail
+
+/glossary/:id/edit          → TermEditPage           (T3A.2)
+/glossary/:id/review        → TermReviewDetailPage   (T3A.3)
+/glossary/:id/relations     → TermRelationsPage      (T3A.4)
+
+/* ─── LINEAGE & RELATIONS — MX ──────────────────────── */
+/lineage                    → LineageExplorerPage    (MX.1)
+/relations                  → RelationGraphPage      (MX.2)
+
+/* ─── ADMIN ──────────────────────────────────────────── */
+/admin/domains              → DomainManagePage       (T4)
+/admin/users                → UserManagePage         (T6: Ownership)
+/admin/connections          → ConnectionManagePage   (T2B.2 config)
+/admin/codelists            → CodelistManagePage     (T7: DQ)
+
+/* ─── CONTEXT PAGES (trong flow chỉnh sửa) ──────────── */
+/assets/:id/terms           → AssetTermLinkPage      (T2A.2)
+/assets/:id/rules           → AssetRuleLinkPage      (T2A.3)
+/assets/:id/business-mapping → TAtoBAPage            (T2B.3)
+/glossary/:id/technical     → TermTechLinkPage       (T3A.6)
+
+================================================================================
+PHẦN 3: GHI CHÚ KIẾN TRÚC NAVIGATION
+================================================================================
+
+1. NGUYÊN TẮC TỔ CHỨC MENU
+   ─────────────────────────────────────────────────────────────────
+   · T1 (Data Asset) là trung tâm — menu chính, luôn mở sẵn
+   · T2A / T2B là phần mở rộng trong context của một Asset cụ thể
+     → Không nên tách T2A/T2B thành sidebar riêng biệt
+     → Hiển thị như tab / section bên trong trang Asset
+   · T3A (Glossary) có menu riêng do có luồng độc lập
+     (tạo, phê duyệt, xuất file)
+   · MX (Lineage, Relations) là công cụ — menu phụ hoặc
+     accessible từ mọi trang qua button "Xem Lineage"
+
+2. DYNAMIC BADGES (số hiển thị trên menu)
+   ─────────────────────────────────────────────────────────────────
+   pendingCount        : Số asset đang chờ phê duyệt (Owner nhận)
+   unmappedBACount     : Số BA chưa có TA nào được map
+   newDiscoveryCount   : Số TA mới phát hiện từ auto-discovery
+   pendingSchemaCount  : Số schema thay đổi chờ review
+   pendingTermCount    : Số thuật ngữ đang chờ phê duyệt
+   staleTermCount      : Số thuật ngữ chưa review > 1 năm
+
+   → Gọi API 1 lần khi load menu, polling mỗi 5 phút
+   → Badge màu đỏ khi count > 0
+
+3. PHÂN QUYỀN HIỂN THỊ MENU
+   ─────────────────────────────────────────────────────────────────
+   Role              Hiển thị menu
+   ─────────────────────────────────────────────────────────────────
+   Business User     T1(read), T3A(read), MX(read)
+   Data Steward      T1(full), T2A(full), T2B(full), T3A(full), MX(full)
+   Data Owner        Toàn bộ + nút Approve
+   Developer / DBA   T1(read), T2B(full), MX(full)
+   Admin             Toàn bộ + /admin/*
+
+4. CONTEXT-SENSITIVE NAVIGATION
+   ─────────────────────────────────────────────────────────────────
+   Khi đang xem 1 Asset cụ thể (/assets/:id):
+   → Hiển thị breadcrumb: Tài sản > [Domain] > [Tên asset]
+   → Secondary nav (tab bar) thay cho việc dùng sidebar
+   → Các action liên quan (Sửa, Đổi trạng thái, Xem Lineage)
+      nằm trên header page, không nằm trong sidebar
+
+   Khi đang xem 1 Term (/glossary/:id):
+   → Breadcrumb: Thuật ngữ > [Domain] > [Tên term]
+   → Tab bar: Định nghĩa | Quan hệ | Kỹ thuật | Phiên bản | Audit
+
+5. SEARCH (Ctrl+K — Command Palette)
+   ─────────────────────────────────────────────────────────────────
+   Phím tắt Ctrl+K mở search overlay toàn cục
+   Kết quả nhóm theo:
+   · Tài sản dữ liệu (Data Assets)
+   · Thuật ngữ (Glossary Terms)
+   · Gần đây (Recent)
+   · Phê duyệt đang chờ (My Pending)
+
+================================================================================

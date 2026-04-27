@@ -1,0 +1,48 @@
+@startuml T1_Flow_Lifecycle
+
+' ============================================================
+' T1.6 — VÒNG ĐỜI TÀI SẢN
+' ============================================================
+title T1.6 · Vòng đời Tài sản Dữ liệu (State Machine)
+
+[*] --> Draft : T1.1 Tạo mới\n(Steward submit)
+
+Draft --> Active : Data Owner duyệt
+Draft --> Rejected : Data Owner từ chối
+Rejected --> Draft : Steward chỉnh sửa\n& submit lại
+
+Active --> UnderReview : Có yêu cầu\nthay đổi lớn\n(Steward đề xuất)
+UnderReview --> Active : Duyệt thay đổi\n(Owner approve)
+UnderReview --> Active : Từ chối thay đổi\n(giữ nguyên)
+
+Active --> Deprecated : Có tài sản mới\nthay thế\n(Owner quyết định)
+Deprecated --> Retired : Sau grace period\n(mặc định 90 ngày)\nhoặc Owner xác nhận
+
+Retired --> [*] : Chỉ xem,\nkhông sửa,\nkhông xóa
+
+note right of Draft
+  Chưa xuất hiện
+  trong Data Catalog
+end note
+
+note right of Active
+  Hiển thị công khai
+  trong Data Catalog
+  [→ T4: Data Catalog]
+end note
+
+note right of Deprecated
+  Vẫn hiển thị nhưng
+  có cảnh báo "sắp ngừng"
+  Downstream consumers
+  được thông báo
+  [→ T2B.5: Impact Analysis]
+end note
+
+note right of Retired
+  Lưu trữ vĩnh viễn
+  Audit trail giữ nguyên
+  [→ T1.8: Audit Trail]
+end note
+
+@enduml

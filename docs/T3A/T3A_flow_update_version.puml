@@ -1,0 +1,64 @@
+@startuml T3A_Flow_Update_Version
+title T3A.2 · Cập nhật & Quản lý Phiên bản Thuật ngữ
+
+|Người đề xuất\n(Steward / BU)|
+start
+:Phát hiện định nghĩa\ncần cập nhật;
+
+:Vào trang thuật ngữ\n→ Click "Đề xuất cập nhật";
+
+:Chọn loại thay đổi;
+
+switch (Loại thay đổi?)
+case (Sửa lỗi nhỏ\nchính tả / format)
+  :Minor change\n→ Steward tự duyệt\nKhông cần Owner;
+  :Phiên bản: v1.0 → v1.1;
+case (Bổ sung ví dụ /\nclarification)
+  :Minor change\n→ Steward tự duyệt;
+  :Phiên bản: v1.1 → v1.2;
+case (Thay đổi định nghĩa\ncốt lõi)
+  :Major change\n→ Bắt buộc Owner duyệt;
+  :Phiên bản: v1.x → v2.0;
+case (Thay đổi do\nquy định pháp luật\nthay đổi)
+  :Regulatory change\n→ Owner + Compliance duyệt\n[→ T10: Compliance];
+  :Phiên bản: vX.x → v(X+1).0;
+endswitch
+
+|Data Steward|
+:Nhập nội dung thay đổi\nvà lý do;
+
+|Hệ thống|
+:Lưu bản nháp mới\n(không ghi đè bản cũ);
+:Tạo "change request"\nvới diff so sánh;
+
+if (Cần Owner duyệt?) then (Có)
+  :Gửi thông báo Owner\nkèm diff view;
+  |Data Owner|
+  :Review diff\nPhê duyệt / Từ chối;
+  if (Phê duyệt?) then (Không)
+    :Ghi lý do;
+    |Hệ thống|
+    :Giữ nguyên phiên bản cũ;
+    stop
+  else (Có)
+  endif
+else (Không — Minor)
+endif
+
+|Hệ thống|
+:Cập nhật phiên bản mới\nthành "Active";
+:Lưu phiên bản cũ vào\nVersion History;
+
+note right
+  KHÔNG BAO GIỜ xóa
+  phiên bản cũ.
+  Mọi phiên bản đều
+  có thể xem lại.
+end note
+
+:Ghi Audit Log\n(ai, lúc nào, thay đổi gì,\ntừ v? → v?);
+:Thông báo người\ntheo dõi thuật ngữ này;
+:Cập nhật timestamp\n"Reviewed Date";
+stop
+
+@enduml

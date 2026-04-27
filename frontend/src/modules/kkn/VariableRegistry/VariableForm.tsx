@@ -136,20 +136,6 @@ const VariableForm: React.FC<VariableFormProps> = ({
               </Col>
             </Row>
 
-            <Form.Item
-              name="group"
-              label="Nhóm nghiệp vụ"
-              rules={[{ required: true, message: 'Vui lòng chọn nhóm biến' }]}
-            >
-              <Select placeholder="Chọn nhóm">
-                <Select.Option value="Khách hàng">Khách hàng</Select.Option>
-                <Select.Option value="Giao dịch">Giao dịch</Select.Option>
-                <Select.Option value="Tài khoản">Tài khoản</Select.Option>
-                <Select.Option value="Thẻ">Thẻ</Select.Option>
-                <Select.Option value="Khuyến mãi">Khuyến mãi</Select.Option>
-                <Select.Option value="Hệ thống">Hệ thống</Select.Option>
-              </Select>
-            </Form.Item>
 
             <Divider orientation={"left" as any} style={{ margin: '30px 0 20px' }}>
               <Space><DatabaseOutlined /> Cấu hình dữ liệu</Space>

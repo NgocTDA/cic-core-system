@@ -44,7 +44,7 @@ const VariableTable: React.FC<VariableTableProps> = ({
       title: 'Mã biến',
       dataIndex: 'code',
       key: 'code',
-      width: 180,
+      width: 250,
       render: (text, record) => (
         <Space>
           {record.isInUse && (
@@ -61,13 +61,6 @@ const VariableTable: React.FC<VariableTableProps> = ({
       dataIndex: 'displayName',
       key: 'displayName',
       width: 200,
-    },
-    {
-      title: 'Nhóm',
-      dataIndex: 'group',
-      key: 'group',
-      width: 140,
-      render: (group) => <Tag color="blue">{group}</Tag>
     },
     {
       title: 'Kiểu dữ liệu',

@@ -1,0 +1,200 @@
+@startuml Data Governance Concepts - Banking
+
+title Bản đồ khái niệm Quản trị Dữ liệu Ngân hàng
+
+skinparam {
+  BackgroundColor #FAFAFA
+  ArrowColor #666666
+  ArrowFontSize 10
+  RectangleBorderRadius 8
+  RectangleFontSize 12
+  RectangleBorderThickness 1
+  PackageBorderThickness 1
+  PackageFontSize 11
+  PackageFontStyle bold
+  DefaultFontName Arial
+  Padding 6
+  Margin 6
+}
+
+' ============================================================
+' TẦNG 0 — KHUNG QUẢN TRỊ TỔNG THỂ
+' ============================================================
+package "T0 · Data Governance Framework" #E8E4F8 {
+  rectangle "**Data Governance Framework**\n<size:10>Khung tổng thể quản trị dữ liệu\n(DAMA-DMBOK / DCAM / BCBS 239)</size>" as FW #C8C0EE
+}
+
+' ============================================================
+' TẦNG 1 — TÀI SẢN DỮ LIỆU
+' ============================================================
+package "T1 · Tài sản Dữ liệu" #EDE8F8 {
+  rectangle "**Data Asset**\n<size:10>Tài sản dữ liệu\nMọi dữ liệu có giá trị với tổ chức</size>" as DA #C8C0EE
+}
+
+' ============================================================
+' TẦNG 2 — HAI GÓC NHÌN
+' ============================================================
+package "T2 · Hai góc nhìn tài sản" #E0F5EE {
+  rectangle "**Business Asset**\n<size:10>Tài sản nghiệp vụ\nBáo cáo, KPI, quy trình, chính sách</size>" as BA #9FE1CB
+  rectangle "**Technical Asset**\n<size:10>Tài sản kỹ thuật\nBảng CSDL, file, API, pipeline</size>" as TA #F5C4B3
+}
+
+' ============================================================
+' TẦNG 3 — MÔ TẢ TÀI SẢN
+' ============================================================
+package "T3 · Mô tả Tài sản" #FDFAF0 {
+  rectangle "**Business Glossary**\n<size:10>Thuật ngữ nghiệp vụ\nVD: NPL, LTV, KYC, CASA</size>" as BG #C0DD97
+  rectangle "**Business Rule**\n<size:10>Quy tắc nghiệp vụ\nVD: tính dư nợ, phân loại nợ</size>" as BR #C0DD97
+  rectangle "**Data Model**\n<size:10>Mô hình dữ liệu\nConceptual / Logical / Physical</size>" as DM #F5C4B3
+  rectangle "**Data Entity**\n<size:10>Thực thể dữ liệu\nVD: Customer, Account, Transaction</size>" as DE #F5C4B3
+  rectangle "**Metadata**\n<size:10>Siêu dữ liệu\nTechnical / Business / Operational</size>" as MD #F5C4B3
+}
+
+' ============================================================
+' TẦNG 4 — CÔNG CỤ QUẢN LÝ
+' ============================================================
+package "T4 · Công cụ Quản lý" #E6F0FB {
+  rectangle "**Data Catalog**\n<size:10>Danh mục dữ liệu\nCollibra, Alation, Apache Atlas</size>" as DC #85B7EB
+  rectangle "**Data Dictionary**\n<size:10>Từ điển dữ liệu\nĐịnh nghĩa, kiểu, ràng buộc</size>" as DD #85B7EB
+  rectangle "**Data Domain**\n<size:10>Miền dữ liệu\nCustomer / Product / Risk / Finance</size>" as DOM #85B7EB
+  rectangle "**Reference Data**\n<size:10>Dữ liệu tham chiếu\nMã tiền tệ, mã quốc gia, mã sản phẩm</size>" as RD #F5C4B3
+  rectangle "**Data Lineage**\n<size:10>Vết dữ liệu\nTruy vết nguồn gốc & luồng dữ liệu</size>" as LIN #AFA9EC
+}
+
+' ============================================================
+' TẦNG 5 — NỀN TẢNG DỮ LIỆU
+' ============================================================
+package "T5 · Nền tảng Dữ liệu" #FEF4E5 {
+  rectangle "**Master Data (MDM)**\n<size:10>Dữ liệu chủ\nGolden Record, Customer MDM</size>" as MDM #FAC775
+  rectangle "**Data Architecture**\n<size:10>Kiến trúc dữ liệu\nDW / Data Lake / Lakehouse / Fabric</size>" as ARCH #85B7EB
+  rectangle "**Data Contract**\n<size:10>Hợp đồng dữ liệu\nSchema, SLA, Ownership, QA rules</size>" as CONT #85B7EB
+  rectangle "**Data Integration**\n<size:10>Tích hợp dữ liệu\nETL / ELT / CDC / API / Streaming</size>" as INT #F5C4B3
+  rectangle "**Data Quality (DQ)**\n<size:10>Chất lượng dữ liệu\nAccuracy, Completeness, Timeliness...</size>" as DQ #97C459
+}
+
+' ============================================================
+' TẦNG 6 — KIỂM SOÁT & ĐO LƯỜNG
+' ============================================================
+package "T6 · Kiểm soát & Đo lường" #FFF8E6 {
+  rectangle "**Data Ownership**\n<size:10>Sở hữu dữ liệu\nData Owner / Steward / Custodian</size>" as OWN #FAC775
+  rectangle "**Data Policy**\n<size:10>Chính sách dữ liệu\nQuy chuẩn, tiêu chuẩn dữ liệu</size>" as POL #85B7EB
+  rectangle "**Data Classification**\n<size:10>Phân loại dữ liệu\nPublic / Internal / Confidential / Restricted</size>" as CLS #AFA9EC
+  rectangle "**DQ Rules**\n<size:10>Quy tắc chất lượng\nValidation rules, profiling rules</size>" as DQR #97C459
+  rectangle "**Data KPI / Metric**\n<size:10>Chỉ số đo lường\nTỷ lệ đầy đủ, tỷ lệ lỗi, SLA DL</size>" as KPI #97C459
+}
+
+' ============================================================
+' TẦNG 7 — VẬN HÀNH HÀNG NGÀY
+' ============================================================
+package "T7 · Vận hành Hàng ngày" #FFF5EC {
+  rectangle "**Data Stewardship**\n<size:10>Quản lý dữ liệu\nNhiệm vụ hàng ngày của Data Steward</size>" as STW #FAC775
+  rectangle "**Data Lifecycle**\n<size:10>Vòng đời dữ liệu\nCreate→Store→Use→Share→Archive→Destroy</size>" as LFC #85B7EB
+  rectangle "**Data Issue Mgmt**\n<size:10>Quản lý vấn đề DL\nPhát hiện, phân loại, xử lý, đóng</size>" as ISS #AFA9EC
+  rectangle "**DQ Dimensions**\n<size:10>Chiều chất lượng\n6 chiều đo chất lượng dữ liệu</size>" as DQD #97C459
+  rectangle "**Audit Log**\n<size:10>Nhật ký kiểm toán\nGhi lại mọi thay đổi & truy cập DL</size>" as AUD #97C459
+}
+
+' ============================================================
+' TẦNG 8 — KIẾN TRÚC HIỆN ĐẠI
+' ============================================================
+package "T8 · Kiến trúc Hiện đại" #FEF4E5 {
+  rectangle "**Data Mesh**\n<size:10>Lưới dữ liệu\nDomain-oriented, decentralized ownership</size>" as MESH #FAC775
+  rectangle "**DW / Data Lake**\n<size:10>Kho / Hồ dữ liệu\nData Warehouse, Lake, Lakehouse</size>" as DWL #85B7EB
+  rectangle "**DG Council / CDO**\n<size:10>Hội đồng QTDL\nChief Data Officer, ủy ban dữ liệu</size>" as CDO #AFA9EC
+  rectangle "**Data Observability**\n<size:10>Quan sát dữ liệu\nMonitoring, alerting, health check DL</size>" as OBS #97C459
+  rectangle "**Data Sharing**\n<size:10>Chia sẻ dữ liệu\nOpen Banking API, liên ngân hàng</size>" as SHR #97C459
+}
+
+' ============================================================
+' TẦNG 9 — BẢO MẬT & TUÂN THỦ
+' ============================================================
+package "T9 · Bảo mật & Tuân thủ" #FDEAEA {
+  rectangle "**Data Privacy**\n<size:10>Quyền riêng tư DL\nNĐ 13/2023, GDPR, PDPA</size>" as PRV #F09595
+  rectangle "**Data Security**\n<size:10>Bảo mật dữ liệu\nMasking, Encryption, DLP, Access Control</size>" as SEC #F09595
+  rectangle "**Data Compliance**\n<size:10>Tuân thủ dữ liệu\nBCBS 239, TT NHNN, Basel III, AML/KYC</size>" as COM #F09595
+  rectangle "**Data Risk Mgmt**\n<size:10>Quản lý rủi ro DL\nRủi ro chất lượng, bảo mật, pháp lý</size>" as RSK #F09595
+  rectangle "**Data Ethics**\n<size:10>Đạo đức dữ liệu\nAI fairness, chống phân biệt đối xử</size>" as ETH #F09595
+}
+
+' ============================================================
+' TẦNG 10 — CHUẨN & FRAMEWORK PHÁP LÝ
+' ============================================================
+package "T10 · Chuẩn & Framework Pháp lý" #F1EFE8 {
+  rectangle "**DAMA-DMBOK**\n<size:10>Chuẩn DG toàn cầu\n11 Knowledge Areas</size>" as DAMA #D3D1C7
+  rectangle "**BCBS 239**\n<size:10>Chuẩn Basel rủi ro DL\n14 nguyên tắc quản trị DL rủi ro</size>" as BCBS #D3D1C7
+  rectangle "**ISO 8000 / 27001**\n<size:10>Chuẩn ISO\nChất lượng DL & Bảo mật thông tin</size>" as ISO #D3D1C7
+  rectangle "**NĐ 13/2023**\n<size:10>Luật BVDL cá nhân VN\nXử lý, lưu trữ, chuyển dữ liệu cá nhân</size>" as ND13 #D3D1C7
+  rectangle "**Thông tư NHNN**\n<size:10>Quy định nội địa\nTT09, TT35, báo cáo NHNN</size>" as TTNHNN #D3D1C7
+}
+
+' ============================================================
+' QUAN HỆ
+' ============================================================
+
+' T0 → T1
+FW --> DA : bao gồm
+
+' T1 → T2
+DA --> BA : nhìn từ góc nghiệp vụ
+DA --> TA : nhìn từ góc kỹ thuật
+
+' T2 → T3
+BA --> BG : được mô tả bằng
+BA --> BR : được mô tả bằng
+BA --> DM : được mô hình hoá bằng
+TA --> DE : được biểu diễn qua
+TA --> MD : được mô tả bằng
+
+' T3 → T4
+BG --> DC : được lưu trong
+BR --> DC : được lưu trong
+DM --> DD : được cụ thể hoá trong
+DE --> DOM : thuộc về
+MD --> DC : được quản lý trong
+MD --> LIN : tạo nên
+
+' T4 → T5
+DC --> MDM : hỗ trợ quản lý
+DD --> ARCH : là thành phần của
+DOM --> CONT : ràng buộc bởi
+RD --> MDM : bổ sung cho
+LIN --> DQ : phục vụ đánh giá
+
+' T5 → T6
+MDM --> OWN : cần xác định
+ARCH --> POL : tuân theo
+CONT --> DQR : định nghĩa
+DQ --> DQD : được đo bằng
+DQ --> KPI : phản ánh qua
+
+' T6 → T7
+OWN --> STW : thực thi bởi
+POL --> LFC : điều chỉnh
+CLS --> ISS : phát sinh
+DQR --> DQD : áp dụng đo
+KPI --> AUD : được ghi nhận trong
+
+' T7 → T8
+STW --> CDO : báo cáo lên
+LFC --> DWL : áp dụng trên
+ISS --> OBS : được phát hiện qua
+DQD --> OBS : giám sát qua
+AUD --> SHR : bảo vệ khi
+
+' T8 → T9
+MESH --> PRV : yêu cầu tuân thủ
+DWL --> SEC : cần bảo mật
+CDO --> COM : chịu trách nhiệm
+OBS --> RSK : hỗ trợ quản lý
+SHR --> ETH : đòi hỏi
+
+' T9 → T10
+PRV --> ND13 : tuân theo
+PRV --> ISO : tuân theo
+SEC --> ISO : tuân theo
+COM --> BCBS : tuân theo
+COM --> TTNHNN : tuân theo
+RSK --> BCBS : theo chuẩn
+ETH --> DAMA : tham chiếu
+
+@enduml
