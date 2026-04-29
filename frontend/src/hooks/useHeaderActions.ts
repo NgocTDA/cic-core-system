@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useLayoutEffect } from 'react';
 import { useHeaderContext, type HeaderAction } from '../context/HeaderContext';
 
 interface HeaderConfig {
@@ -16,7 +16,7 @@ interface HeaderConfig {
 const useHeaderActions = (configOrActions: HeaderConfig | HeaderAction[], deps: React.DependencyList = []) => {
   const { setPageActions, clearPageActions, setPageTitle, clearPageTitle } = useHeaderContext();
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (Array.isArray(configOrActions)) {
       // Legacy usage: useHeaderActions([...actions], deps)
       setPageActions(configOrActions);

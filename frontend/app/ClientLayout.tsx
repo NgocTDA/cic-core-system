@@ -103,7 +103,7 @@ const ClientLayout: React.FC<MainLayoutProps> = ({ children }) => {
                                     onCollapse={handleToggleCollapse}
                                     isMobile={isMobile}
                                 />
-                                <Content style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: isMobile ? 'auto' : 'hidden', transition: 'all 0.2s', background: colors.bg.page }}>
+                                <Content style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: isMobile ? 'auto' : 'hidden', background: colors.bg.page }}>
                                     {children}
                                 </Content>
                             </Layout>
