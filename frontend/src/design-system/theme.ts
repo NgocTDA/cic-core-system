@@ -56,11 +56,11 @@ export const antdTheme: ThemeConfig = {
 
     components: {
         // ─── Menu ────────────────────────────────────────────
+        // darkItemSelectedBg không set ở đây — được override động
+        // trong AppSidebar qua ConfigProvider theo activeSubSystem.color
         Menu: {
-            darkItemSelectedBg:    colors.subsystem.kkn, // orange highlight for dark menu
-            darkItemSelectedColor: colors.text.inverse,
-            darkItemColor:         'rgba(255, 255, 255, 0.75)',
-            darkSubMenuItemBg:     colors.sidebar.bgDeep,
+            darkItemColor:     colors.sidebar.text,
+            darkSubMenuItemBg: colors.sidebar.bgDeep,
         },
 
         // ─── Layout ──────────────────────────────────────────

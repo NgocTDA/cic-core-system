@@ -1,4 +1,5 @@
 import React from 'react';
+import { colors } from '../design-system';
 import {
     DashboardOutlined,
     ApiOutlined,
@@ -64,7 +65,7 @@ export const SUB_SYSTEMS: SubSystem[] = [
         id: 'kkn',
         name: 'Kênh kết nối (KKN)',
         icon: <ApiOutlined />,
-        color: '#fa8c16',
+        color: colors.subsystem.kkn,
         menuItems: [
             { key: 'kkn-dashboard', label: 'Dashboard', icon: <DashboardOutlined />, path: '/kkn-dashboard' },
         ]
@@ -73,7 +74,7 @@ export const SUB_SYSTEMS: SubSystem[] = [
         id: 'data-collection',
         name: 'Thu thập, xử lý dữ liệu',
         icon: <TableOutlined />,
-        color: '#1890ff',
+        color: colors.subsystem.collection,
         menuItems: [
             { key: 'data-collection-dashboard', label: 'Dashboard Thu thập', icon: <DashboardOutlined />, path: '/data-collection/dashboard' },
         ]
@@ -82,7 +83,7 @@ export const SUB_SYSTEMS: SubSystem[] = [
         id: 'product-mgmt',
         name: 'Quản lý, tạo lập sản phẩm',
         icon: <FolderOutlined />,
-        color: '#52c41a',
+        color: colors.subsystem.product,
         menuItems: [
             { key: 'product-mgmt-dashboard', label: 'Dashboard Sản phẩm', icon: <DashboardOutlined />, path: '/product-mgmt/dashboard' },
         ]
@@ -91,7 +92,7 @@ export const SUB_SYSTEMS: SubSystem[] = [
         id: 'ops-support',
         name: 'Hỗ trợ vận hành',
         icon: <TeamOutlined />,
-        color: '#722ed1',
+        color: colors.subsystem.ops,
         menuItems: [
             { key: 'ops-support-dashboard', label: 'Dashboard Vận hành', icon: <DashboardOutlined />, path: '/ops-support/dashboard' },
             {
@@ -116,7 +117,7 @@ export const SUB_SYSTEMS: SubSystem[] = [
         id: 'analytics-reporting',
         name: 'Báo cáo thống kê',
         icon: <BarChartOutlined />,
-        color: '#eb2f96',
+        color: colors.subsystem.analytics,
         menuItems: [
             { key: 'analytics-reporting-dashboard', label: 'Dashboard Báo cáo', icon: <DashboardOutlined />, path: '/analytics-reporting/dashboard' },
         ]
@@ -125,7 +126,7 @@ export const SUB_SYSTEMS: SubSystem[] = [
         id: 'data-governance',
         name: 'Quản trị dữ liệu',
         icon: <SettingOutlined />,
-        color: '#13c2c2',
+        color: colors.subsystem.governance,
         menuItems: [
             {
                 key: 'dashboard',

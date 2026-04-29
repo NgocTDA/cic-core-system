@@ -1,10 +1,16 @@
+'use client';
 import React from 'react';
-import { Select, Typography, Space, Tooltip } from 'antd';
+import { Select, Typography, Space, Tooltip, Dropdown } from 'antd';
 import { useSubSystem } from '../context/SubSystemContext';
 import { SUB_SYSTEMS } from '../config/navigation';
+import { colors, typography, layout, radius, zIndex } from '../design-system';
 
 const { Text } = Typography;
 const { Option } = Select;
+
+// CSS class dùng để scope dropdown styles — tránh leak toàn app
+const POPUP_CLASS = 'subsystem-switcher-dropdown';
+const SELECT_CLASS = 'subsystem-switcher-select';
 
 interface SubSystemSwitcherProps {
     mode?: 'light' | 'dark' | 'header';
@@ -17,132 +23,170 @@ const SubSystemSwitcher: React.FC<SubSystemSwitcherProps> = ({ mode = 'light', c
     const isDark = mode === 'dark' || mode === 'header';
     const isHeader = mode === 'header';
 
+    // ─── Collapsed: icon + Dropdown để chọn phân hệ ─────────
     if (collapsed) {
+        const collapsedMenuItems = {
+            items: SUB_SYSTEMS.map(sys => ({
+                key: sys.id,
+                label: (
+                    <Space>
+                        <span style={{ color: sys.color, fontSize: 16, display: 'flex', alignItems: 'center' }}>
+                            {sys.icon}
+                        </span>
+                        <span>{sys.name}</span>
+                    </Space>
+                ),
+            })),
+            onClick: ({ key }: { key: string }) => setActiveSubSystem(key),
+        };
+
         return (
             <div style={{
-                height: 64,
+                height: layout.headerHeight,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                borderBottom: isHeader ? '1px solid rgba(255,255,255,0.1)' : 'none'
+                borderBottom: isHeader ? `1px solid ${colors.sidebar.divider}` : 'none',
             }}>
-                <Tooltip title={`Chuyển phân hệ (Hiện tại: ${activeSubSystem.name})`} placement="right">
-                    <div style={{
-                        width: 40,
-                        height: 40,
-                        borderRadius: '6px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        background: isDark ? 'rgba(255,255,255,0.1)' : '#f0f2f5',
-                        color: activeSubSystem.color,
-                        cursor: 'pointer',
-                        fontSize: 24
-                    }}>
-                        {activeSubSystem.icon}
-                    </div>
-                </Tooltip>
+                <Dropdown menu={collapsedMenuItems} placement="bottomLeft" trigger={['click']}>
+                    <Tooltip title={`Chuyển phân hệ (Hiện tại: ${activeSubSystem.name})`} placement="right">
+                        <div style={{
+                            width: 40,
+                            height: 40,
+                            borderRadius: radius.md,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            background: isDark ? colors.sidebar.hoverBg : colors.neutral[100],
+                            color: activeSubSystem.color,
+                            cursor: 'pointer',
+                            fontSize: 24,
+                        }}>
+                            {activeSubSystem.icon}
+                        </div>
+                    </Tooltip>
+                </Dropdown>
             </div>
         );
     }
 
+    // ─── Header mode: Select mở rộng trong sidebar ────────────
     if (isHeader) {
         return (
             <div style={{
-                height: 64,
+                height: layout.headerHeight,
                 display: 'flex',
                 alignItems: 'center',
                 padding: '0 24px',
-                lineHeight: '64px',
-                borderBottom: '1px solid rgba(255,255,255,0.1)',
-                background: 'rgba(0,0,0,0.1)'
+                borderBottom: `1px solid ${colors.sidebar.divider}`,
+                background: 'rgba(0,0,0,0.12)',
             }}>
-                <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                    <Select
-                        value={activeSubSystem.id}
-                        onChange={setActiveSubSystem}
-                        style={{
-                            flex: 1,
-                            fontWeight: 700,
-                            fontSize: '16px'
-                        }}
-                        variant="borderless"
-                        dropdownStyle={{
-                            background: '#1f2024',
-                            borderRadius: 6,
-                            border: '1px solid rgba(255,255,255,0.1)'
-                        }}
-                        className="header-subsystem-select"
-                    >
-                        {SUB_SYSTEMS.map(sys => (
-                            <Option key={sys.id} value={sys.id} label={sys.name}>
-                                <Space>
-                                    <span style={{ color: sys.color, fontSize: 18, display: 'flex', alignItems: 'center' }}>{sys.icon}</span>
-                                    <span style={{ color: 'rgba(255,255,255,0.85)' }}>{sys.name}</span>
-                                </Space>
-                            </Option>
-                        ))}
-                    </Select>
-                </div>
+                <Select
+                    value={activeSubSystem.id}
+                    onChange={setActiveSubSystem}
+                    style={{
+                        flex: 1,
+                        fontWeight: typography.fontWeight.bold,
+                        fontSize: typography.fontSize.md,
+                    }}
+                    variant="borderless"
+                    className={SELECT_CLASS}
+                    popupClassName={POPUP_CLASS}
+                    dropdownStyle={{
+                        background: colors.sidebar.bgDeep,
+                        borderRadius: radius.md,
+                        border: `1px solid ${colors.sidebar.divider}`,
+                        zIndex: zIndex.overlay,
+                    }}
+                >
+                    {SUB_SYSTEMS.map(sys => (
+                        <Option key={sys.id} value={sys.id} label={sys.name}>
+                            <Space>
+                                <span style={{
+                                    color: sys.color,
+                                    fontSize: 18,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                }}>
+                                    {sys.icon}
+                                </span>
+                                <span style={{ color: colors.sidebar.text }}>{sys.name}</span>
+                            </Space>
+                        </Option>
+                    ))}
+                </Select>
+
+                {/* Scoped styles — chỉ ảnh hưởng đến dropdown của component này */}
                 <style jsx global>{`
-                    .header-subsystem-select .ant-select-selection-item {
-                        color: #fff !important;
-                        font-size: 16px !important;
+                    .${SELECT_CLASS} .ant-select-selection-item {
+                        color: ${colors.text.inverse} !important;
+                        font-size: ${typography.fontSize.md} !important;
                         display: flex !important;
                         align-items: center !important;
                     }
-                    .header-subsystem-select .ant-select-selection-item .ant-space {
+                    .${SELECT_CLASS} .ant-select-selection-item .ant-space {
                         gap: 12px !important;
                     }
-                    .header-subsystem-select .ant-select-arrow {
-                        color: rgba(255,255,255,0.45) !important;
+                    .${SELECT_CLASS} .ant-select-arrow {
+                        color: ${colors.sidebar.textSecond} !important;
                     }
-                    /* Dropdown styling */
-                    .ant-select-dropdown {
-                        background-color: #1f2024 !important;
+                    .${POPUP_CLASS} {
+                        background-color: ${colors.sidebar.bgDeep} !important;
                         padding: 4px !important;
                     }
-                    .ant-select-dropdown .ant-select-item {
-                        color: rgba(255,255,255,0.85) !important;
-                        border-radius: 4px !important;
+                    .${POPUP_CLASS} .ant-select-item {
+                        color: ${colors.sidebar.text} !important;
+                        border-radius: ${radius.sm} !important;
                         margin-bottom: 2px !important;
                     }
-                    .ant-select-dropdown .ant-select-item-option-active {
-                        background-color: rgba(255,255,255,0.08) !important;
+                    .${POPUP_CLASS} .ant-select-item-option-active {
+                        background-color: ${colors.sidebar.hoverBg} !important;
                     }
-                    .ant-select-dropdown .ant-select-item-option-selected {
-                        background-color: rgba(255,255,255,0.12) !important;
-                        font-weight: 600 !important;
+                    .${POPUP_CLASS} .ant-select-item-option-selected {
+                        background-color: rgba(255, 255, 255, 0.14) !important;
+                        font-weight: ${typography.fontWeight.semibold} !important;
                     }
                 `}</style>
             </div>
         );
     }
 
+    // ─── Light mode: dùng cho các vị trí khác (ít dùng) ──────
     return (
         <div style={{
             display: 'flex',
             alignItems: 'center',
-            background: isDark ? 'rgba(255,255,255,0.05)' : '#f0f2f5',
+            background: isDark ? colors.sidebar.hoverBg : colors.neutral[100],
             padding: '4px 12px',
-            borderRadius: '6px',
-            border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #d9d9d9',
-            margin: isDark ? '8px 16px' : '0'
+            borderRadius: radius.md,
+            border: isDark
+                ? `1px solid ${colors.sidebar.divider}`
+                : `1px solid ${colors.border.base}`,
+            margin: isDark ? '8px 16px' : '0',
         }}>
             <Space size="small" style={{ width: '100%' }}>
-                {!isDark && <Text type="secondary" style={{ fontSize: 12, marginRight: 8 }}>Phân hệ:</Text>}
+                {!isDark && (
+                    <Text type="secondary" style={{ fontSize: typography.fontSize.sm, marginRight: 8 }}>
+                        Phân hệ:
+                    </Text>
+                )}
                 <Select
                     value={activeSubSystem.id}
                     onChange={setActiveSubSystem}
-                    style={{ width: isDark ? '100%' : 220, fontWeight: 600 }}
+                    style={{
+                        width: isDark ? '100%' : 220,
+                        fontWeight: typography.fontWeight.semibold,
+                    }}
                     variant="borderless"
-                    dropdownStyle={{ borderRadius: 6 }}
+                    dropdownStyle={{ borderRadius: radius.md }}
                 >
                     {SUB_SYSTEMS.map(sys => (
                         <Option key={sys.id} value={sys.id}>
                             <Space>
                                 <span style={{ color: sys.color }}>{sys.icon}</span>
-                                <span style={{ color: isDark ? 'rgba(255,255,255,0.85)' : 'inherit' }}>{sys.name}</span>
+                                <span style={{ color: isDark ? colors.sidebar.text : 'inherit' }}>
+                                    {sys.name}
+                                </span>
                             </Space>
                         </Option>
                     ))}

@@ -12,6 +12,7 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useHeaderContext } from '../context/HeaderContext';
+import { colors, layout, shadows, zIndex } from '../design-system';
 
 const { Header } = Layout;
 const { Title } = Typography;
@@ -51,22 +52,23 @@ const AppHeader: React.FC<AppHeaderProps> = ({ collapsed, onCollapse, isMobile }
 
   return (
     <Header style={{
-      background: '#fff',
+      background: colors.bg.container,
       padding: isMobile ? '0 8px' : '0 24px',
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
-      height: 64,
-      lineHeight: '64px',
-      boxShadow: '0 2px 8px #f0f1f2',
-      zIndex: 1
+      height: layout.headerHeight,
+      lineHeight: `${layout.headerHeight}px`,
+      boxShadow: shadows.sm,
+      position: 'relative',
+      zIndex: zIndex.raised,
     }}>
       <Space size="middle">
         <Button
           type="text"
           icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
           onClick={() => onCollapse(!collapsed)}
-          style={{ fontSize: '16px', width: 64, height: 64 }}
+          style={{ fontSize: '16px', width: layout.headerHeight, height: layout.headerHeight }}
         />
         {!isMobile && (
           <Title level={4} style={{ margin: 0, fontWeight: 700 }}>
@@ -102,7 +104,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({ collapsed, onCollapse, isMobile }
               <Button
                 icon={<FileExcelOutlined />}
                 onClick={() => message.info('Tính năng đang phát triển')}
-                style={{ color: '#389e0d', borderColor: '#389e0d' }}
+                style={{ color: colors.success.dark, borderColor: colors.success.dark }}
               >
                 Xuất Excel
               </Button>
@@ -129,7 +131,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({ collapsed, onCollapse, isMobile }
 
         {/* Always visible: user avatar */}
         <Space size="small" style={{ cursor: 'pointer' }}>
-          <Avatar icon={<UserOutlined />} style={{ backgroundColor: '#1677ff' }} />
+          <Avatar icon={<UserOutlined />} style={{ backgroundColor: colors.primary[500] }} />
           {!isMobile && <span style={{ fontWeight: 500 }}>Admin</span>}
         </Space>
       </Space>
