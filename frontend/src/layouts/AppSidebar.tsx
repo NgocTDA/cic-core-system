@@ -1,5 +1,6 @@
 import React from 'react';
-import { Layout, Menu, Typography, Badge, ConfigProvider } from 'antd';
+import { Layout, Menu, Typography, Badge, ConfigProvider, Button } from 'antd';
+import { RightOutlined, LeftOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSubSystem } from '../context/SubSystemContext';
@@ -24,7 +25,7 @@ interface AppSidebarProps {
   isMobile: boolean;
 }
 
-const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, isMobile }) => {
+const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, onCollapse, isMobile }) => {
   const pathname = usePathname();
   const { activeSubSystem } = useSubSystem();
   const badgeCounts = useMenuBadges();
@@ -192,19 +193,39 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, isMobile }) => {
         {/* Version Info Footer */}
         <div
           style={{
-            padding: '16px 24px',
+            padding: collapsed ? '16px 8px' : '16px 24px',
             borderTop: `1px solid ${colors.sidebar.divider}`,
-            textAlign: collapsed ? 'center' : 'left',
             background: colors.sidebar.bgDeep,
+            display: 'flex',
+            flexDirection: collapsed ? 'column' : 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: collapsed ? '12px' : '0px',
           }}
         >
           {collapsed ? (
-            <Text style={{ color: colors.sidebar.textSecond, fontSize: 10 }}>v1.1</Text>
+            <>
+              <Button
+                type="text"
+                icon={<RightOutlined style={{ color: colors.sidebar.textSecond }} />}
+                onClick={() => onCollapse(!collapsed)}
+                style={{ padding: 0, height: 'auto' }}
+              />
+              <Text style={{ color: colors.sidebar.textSecond, fontSize: 10 }}>v1.1</Text>
+            </>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <Text style={{ color: colors.sidebar.text, fontSize: 12 }}>CIC Core System</Text>
-              <Text style={{ color: colors.sidebar.textSecond, fontSize: 10 }}>Phiên bản 1.1.0-alpha</Text>
-            </div>
+            <>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <Text style={{ color: colors.sidebar.text, fontSize: 12 }}>CIC Core System</Text>
+                <Text style={{ color: colors.sidebar.textSecond, fontSize: 10 }}>Phiên bản 1.1.0-alpha</Text>
+              </div>
+              <Button
+                type="text"
+                icon={<LeftOutlined style={{ color: colors.sidebar.textSecond }} />}
+                onClick={() => onCollapse(!collapsed)}
+                style={{ padding: 0, height: 'auto' }}
+              />
+            </>
           )}
         </div>
       </div>

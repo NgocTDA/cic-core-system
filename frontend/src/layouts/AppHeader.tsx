@@ -64,12 +64,14 @@ const AppHeader: React.FC<AppHeaderProps> = ({ collapsed, onCollapse, isMobile }
       zIndex: zIndex.raised,
     }}>
       <Space size="middle">
-        <Button
-          type="text"
-          icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-          onClick={() => onCollapse(!collapsed)}
-          style={{ fontSize: '16px', width: layout.headerHeight, height: layout.headerHeight }}
-        />
+        {isMobile && (
+          <Button
+            type="text"
+            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            onClick={() => onCollapse(!collapsed)}
+            style={{ fontSize: '16px', width: layout.headerHeight, height: layout.headerHeight }}
+          />
+        )}
         {!isMobile && (
           <Title level={4} style={{ margin: 0, fontWeight: 700 }}>
             {displayTitle}

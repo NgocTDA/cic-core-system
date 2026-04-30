@@ -48,7 +48,12 @@ const SubSystemSwitcher: React.FC<SubSystemSwitcherProps> = ({ mode = 'light', c
                 justifyContent: 'center',
                 borderBottom: isHeader ? `1px solid ${colors.sidebar.divider}` : 'none',
             }}>
-                <Dropdown menu={collapsedMenuItems} placement="bottomLeft" trigger={['click']}>
+                <Dropdown 
+                    menu={collapsedMenuItems} 
+                    placement="bottomLeft" 
+                    trigger={['click']}
+                    overlayStyle={{ zIndex: zIndex.overlay }}
+                >
                     <Tooltip title={`Chuyển phân hệ (Hiện tại: ${activeSubSystem.name})`} placement="right">
                         <div style={{
                             width: 40,
