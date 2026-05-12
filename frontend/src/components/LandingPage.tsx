@@ -63,7 +63,7 @@ const LandingPage: React.FC = () => {
         <div style={{
             height: '100vh',
             width: '100%',
-            background: `linear-gradient(160deg, rgba(0, 12, 30, 0.82), rgba(0, 21, 41, 0.88)), url('/system_landing_bg.png')`,
+            background: colors.bg.page,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundAttachment: 'fixed',
@@ -72,22 +72,37 @@ const LandingPage: React.FC = () => {
             alignItems: 'center',
             overflowX: 'hidden',
             overflowY: 'auto',
+            position: 'relative',
         }}>
+            {/* ─── Subtle accent gradient at top ─── */}
+            <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                height: '400px',
+                background: `linear-gradient(180deg, ${colors.primary[50]} 0%, rgba(255,255,255,0) 100%)`,
+                pointerEvents: 'none',
+                zIndex: 0,
+            }} />
+
             {/* ─── Header section ─── */}
             <div style={{
                 margin: '0 auto',
-                padding: '48px 24px 16px',
+                padding: '64px 24px 32px',
                 width: '100%',
                 maxWidth: 1280,
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 minHeight: 'fit-content',
-                flexShrink: 0
+                flexShrink: 0,
+                position: 'relative',
+                zIndex: 1,
             }}>
                 <div style={{
                     textAlign: 'center',
-                    marginBottom: 40,
+                    marginBottom: 48,
                     maxWidth: 800,
                     opacity: visible ? 1 : 0,
                     transform: visible ? 'translateY(0)' : 'translateY(-12px)',
@@ -97,28 +112,29 @@ const LandingPage: React.FC = () => {
                         display: 'inline-block',
                         padding: '6px 20px',
                         borderRadius: '100px',
-                        background: 'rgba(22, 119, 255, 0.12)',
-                        border: '1px solid rgba(22, 119, 255, 0.2)',
+                        background: colors.primary[50],
+                        border: `1px solid ${colors.primary[100]}`,
                         marginBottom: 20,
                     }}>
-                        <Text style={{ color: colors.primary[400], fontSize: '13px', fontWeight: 600, letterSpacing: '0.05em' }}>
+                        <Text style={{ color: colors.primary[500], fontSize: '13px', fontWeight: 600, letterSpacing: '0.05em' }}>
                             CREDIT INFORMATION CENTER
                         </Text>
                     </div>
                     <Title style={{
-                        color: '#fff',
-                        fontSize: 'clamp(30px, 4vw, 44px)',
+                        color: colors.text.primary,
+                        fontSize: 'clamp(32px, 4.5vw, 48px)',
                         fontWeight: 800,
-                        marginBottom: 12,
+                        marginBottom: 16,
                         letterSpacing: '-0.02em',
                         lineHeight: 1.15,
                     }}>
                         CIC CORE SYSTEM
                     </Title>
                     <Text style={{
-                        color: 'rgba(255, 255, 255, 0.5)',
-                        fontSize: 'clamp(15px, 1.5vw, 17px)',
+                        color: colors.text.secondary,
+                        fontSize: 'clamp(16px, 1.6vw, 18px)',
                         lineHeight: 1.6,
+                        fontWeight: 450,
                     }}>
                         Nền tảng quản trị và vận hành hệ thống thông tin tín dụng tập trung
                     </Text>
@@ -126,7 +142,7 @@ const LandingPage: React.FC = () => {
 
                 {/* ─── Card Grid ─── */}
                 <div style={{ width: '100%' }}>
-                    <Row gutter={[20, 20]}>
+                    <Row gutter={[24, 24]}>
                         {SUB_SYSTEMS.map((sys, index) => {
                             const meta = SUBSYSTEM_META[sys.id];
                             const menuCount = countMenuItems(sys.menuItems);
@@ -136,20 +152,20 @@ const LandingPage: React.FC = () => {
                                         hoverable
                                         onClick={() => handleEnterSubSystem(sys.id, sys.menuItems[0].path || '#')}
                                         style={{
-                                            background: 'rgba(255, 255, 255, 0.04)',
-                                            backdropFilter: 'blur(16px)',
-                                            border: '1px solid rgba(255, 255, 255, 0.07)',
-                                            borderRadius: '16px',
+                                            background: '#ffffff',
+                                            border: `1px solid ${colors.border.split}`,
+                                            borderRadius: '20px',
                                             height: '100%',
-                                            transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
+                                            transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
                                             cursor: 'pointer',
                                             opacity: visible ? 1 : 0,
-                                            transform: visible ? 'translateY(0)' : 'translateY(24px)',
-                                            transitionDelay: `${index * 70}ms`,
+                                            transform: visible ? 'translateY(0)' : 'translateY(32px)',
+                                            transitionDelay: `${index * 60}ms`,
                                             position: 'relative',
                                             overflow: 'hidden',
+                                            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.03)',
                                         }}
-                                        styles={{ body: { padding: '28px 28px 24px' } }}
+                                        styles={{ body: { padding: '32px 32px 28px' } }}
                                         className="landing-card"
                                     >
                                         {/* Accent line at top */}
@@ -158,9 +174,9 @@ const LandingPage: React.FC = () => {
                                             top: 0,
                                             left: 0,
                                             right: 0,
-                                            height: '2px',
+                                            height: '3px',
                                             background: `linear-gradient(90deg, transparent, ${sys.color}, transparent)`,
-                                            opacity: 0.5,
+                                            opacity: 0.7,
                                         }} />
 
                                         {/* Icon + Menu count row */}
@@ -168,32 +184,32 @@ const LandingPage: React.FC = () => {
                                             display: 'flex',
                                             alignItems: 'flex-start',
                                             justifyContent: 'space-between',
-                                            marginBottom: 16,
+                                            marginBottom: 20,
                                         }}>
                                             <div style={{
-                                                width: 52,
-                                                height: 52,
-                                                borderRadius: '14px',
-                                                background: `${sys.color}15`,
-                                                border: `1px solid ${sys.color}25`,
+                                                width: 56,
+                                                height: 56,
+                                                borderRadius: '16px',
+                                                background: `${sys.color}10`,
+                                                border: `1px solid ${sys.color}20`,
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
-                                                fontSize: 26,
+                                                fontSize: 28,
                                                 color: sys.color,
                                                 transition: 'all 0.3s ease',
                                             }} className="landing-card-icon">
                                                 {sys.icon}
                                             </div>
                                             <div style={{
-                                                padding: '4px 10px',
+                                                padding: '4px 12px',
                                                 borderRadius: '100px',
-                                                background: 'rgba(255, 255, 255, 0.06)',
-                                                border: '1px solid rgba(255, 255, 255, 0.08)',
+                                                background: colors.neutral[50],
+                                                border: `1px solid ${colors.neutral[200]}`,
                                             }}>
                                                 <Text style={{
-                                                    color: 'rgba(255, 255, 255, 0.4)',
-                                                    fontSize: '11px',
+                                                    color: colors.text.secondary,
+                                                    fontSize: '12px',
                                                     fontWeight: 500,
                                                 }}>
                                                     {menuCount} nhóm chức năng
@@ -203,9 +219,9 @@ const LandingPage: React.FC = () => {
 
                                         {/* Title */}
                                         <Title level={4} style={{
-                                            color: '#fff',
-                                            margin: '0 0 8px',
-                                            fontSize: '17px',
+                                            color: colors.text.primary,
+                                            margin: '0 0 10px',
+                                            fontSize: '18px',
                                             fontWeight: 700,
                                         }}>
                                             {sys.name}
@@ -213,12 +229,12 @@ const LandingPage: React.FC = () => {
 
                                         {/* Description */}
                                         <Text style={{
-                                            color: 'rgba(255, 255, 255, 0.4)',
+                                            color: colors.text.secondary,
                                             display: 'block',
-                                            marginBottom: 16,
-                                            fontSize: '13px',
+                                            marginBottom: 20,
+                                            fontSize: '14px',
                                             lineHeight: 1.6,
-                                            minHeight: '42px',
+                                            minHeight: '44px',
                                         }}>
                                             {meta?.description || `Ứng dụng nghiệp vụ hỗ trợ ${sys.name.toLowerCase()} cho hệ thống.`}
                                         </Text>
@@ -228,19 +244,18 @@ const LandingPage: React.FC = () => {
                                             <div style={{
                                                 display: 'flex',
                                                 flexWrap: 'wrap',
-                                                gap: '6px',
-                                                marginBottom: 18,
+                                                gap: '8px',
+                                                marginBottom: 24,
                                             }}>
                                                 {meta.features.map((f) => (
                                                     <span key={f} style={{
-                                                        padding: '3px 10px',
-                                                        borderRadius: '6px',
-                                                        background: `${sys.color}10`,
-                                                        border: `1px solid ${sys.color}18`,
+                                                        padding: '4px 12px',
+                                                        borderRadius: '8px',
+                                                        background: `${sys.color}08`,
+                                                        border: `1px solid ${sys.color}15`,
                                                         color: `${sys.color}`,
-                                                        fontSize: '11px',
+                                                        fontSize: '12px',
                                                         fontWeight: 500,
-                                                        opacity: 0.8,
                                                     }}>
                                                         {f}
                                                     </span>
@@ -253,19 +268,19 @@ const LandingPage: React.FC = () => {
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'space-between',
-                                            paddingTop: 14,
-                                            borderTop: '1px solid rgba(255, 255, 255, 0.06)',
+                                            paddingTop: 16,
+                                            borderTop: `1px solid ${colors.border.split}`,
                                             marginTop: 'auto',
                                         }}>
                                             <span style={{
                                                 color: sys.color,
                                                 fontWeight: 600,
-                                                fontSize: '13px',
+                                                fontSize: '14px',
                                                 display: 'flex',
                                                 alignItems: 'center',
-                                                gap: 6,
+                                                gap: 8,
                                             }}>
-                                                Truy cập <ArrowRightOutlined className="landing-arrow" style={{ fontSize: 11, transition: 'transform 0.25s ease' }} />
+                                                Truy cập <ArrowRightOutlined className="landing-arrow" style={{ fontSize: 12, transition: 'transform 0.25s ease' }} />
                                             </span>
                                         </div>
                                     </Card>
@@ -277,15 +292,15 @@ const LandingPage: React.FC = () => {
 
                 {/* ─── Footer info ─── */}
                 <div style={{
-                    marginTop: 48,
-                    paddingBottom: 32,
+                    marginTop: 64,
+                    paddingBottom: 40,
                     textAlign: 'center',
                     opacity: visible ? 1 : 0,
                     transition: 'opacity 0.8s ease 0.6s',
                 }}>
                     <Text style={{
-                        color: 'rgba(255, 255, 255, 0.2)',
-                        fontSize: '12px',
+                        color: colors.text.tertiary,
+                        fontSize: '13px',
                     }}>
                         © {new Date().getFullYear()} Trung tâm Thông tin tín dụng Quốc gia Việt Nam (CIC) — v1.0.0
                     </Text>
@@ -294,22 +309,22 @@ const LandingPage: React.FC = () => {
 
             <style jsx global>{`
                 .landing-card:hover {
-                    transform: translateY(-6px) !important;
-                    background: rgba(255, 255, 255, 0.07) !important;
-                    border-color: rgba(255, 255, 255, 0.15) !important;
+                    transform: translateY(-8px) !important;
+                    background: #ffffff !important;
+                    border-color: ${colors.primary[200]} !important;
                     box-shadow:
-                        0 20px 40px rgba(0, 0, 0, 0.35),
-                        0 0 0 1px rgba(255, 255, 255, 0.05) inset !important;
+                        0 20px 40px rgba(0, 0, 0, 0.08),
+                        0 0 0 1px ${colors.primary[50]} inset !important;
                 }
                 .landing-card:hover .landing-card-icon {
-                    transform: scale(1.08);
-                    box-shadow: 0 0 20px rgba(255, 255, 255, 0.06);
+                    transform: scale(1.1);
+                    background: ${colors.primary[50]};
                 }
                 .landing-card:hover .landing-arrow {
-                    transform: translateX(4px);
+                    transform: translateX(6px);
                 }
                 .landing-card:active {
-                    transform: translateY(-2px) scale(0.99) !important;
+                    transform: translateY(-3px) scale(0.985) !important;
                     transition-duration: 0.1s !important;
                 }
             `}</style>

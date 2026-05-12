@@ -57,7 +57,13 @@ import {
     SafetyCertificateOutlined,
     ExceptionOutlined,
     HistoryOutlined,
-    EditOutlined
+    EditOutlined,
+    LayoutOutlined,
+    BgColorsOutlined,
+    FontColorsOutlined,
+    ColumnHeightOutlined,
+    InteractionOutlined,
+    BuildOutlined,
 } from '@ant-design/icons';
 
 export interface MenuItem {
@@ -130,7 +136,9 @@ export const SUB_SYSTEMS: SubSystem[] = [
                 label: 'Thu thập dữ liệu',
                 icon: <DownloadOutlined />,
                 children: [
-                    { key: 'dc-receive', label: 'Tiếp nhận dữ liệu', path: '/data-collection/receive' },
+                    { key: 'dc-receive', label: 'Tệp có cấu trúc', path: '/data-collection/receive' },
+                    { key: 'dc-proc-unstructured', label: 'Tệp phi cấu trúc', path: '/data-collection/process/unstructured' },
+                    { key: 'dc-proc-manual', label: 'Tệp thu thập thủ công', path: '/data-collection/process/manual' },
                     { key: 'dc-compare', label: 'Đối chiếu file gửi đủ định kỳ', path: '/data-collection/compare' },
                 ]
             },
@@ -141,8 +149,6 @@ export const SUB_SYSTEMS: SubSystem[] = [
                 children: [
                     { key: 'dc-proc-fixed', label: 'XLDL định kỳ có cấu trúc xác định', path: '/data-collection/process/fixed' },
                     { key: 'dc-proc-unknown', label: 'XLDL định kỳ có cấu trúc chưa xác định', path: '/data-collection/process/unknown' },
-                    { key: 'dc-proc-unstructured', label: 'XLDL phi cấu trúc', path: '/data-collection/process/unstructured' },
-                    { key: 'dc-proc-manual', label: 'XLDL thu thập thủ công', path: '/data-collection/process/manual' },
                     { key: 'dc-proc-legal', label: 'XLDL hồ sơ pháp lý', path: '/data-collection/process/legal' },
                     { key: 'dc-proc-error', label: 'XLDL hồ sơ lỗi, chờ xem xét', path: '/data-collection/process/error' },
                     { key: 'dc-proc-adjust', label: 'XLDL tệp báo cáo điều chỉnh (tệp C, tệp E)', path: '/data-collection/process/adjust-files' },
@@ -219,7 +225,7 @@ export const SUB_SYSTEMS: SubSystem[] = [
             { key: 'dc-legal-verify', label: 'Xác thực thông tin pháp lý với C06', icon: <SafetyCertificateOutlined />, path: '/data-collection/legal-verify' },
             { key: 'dc-signing-auth', label: 'Quản lý thẩm quyền ký', icon: <SafetyOutlined />, path: '/data-collection/signing-authority' },
             { key: 'dc-product-check', label: 'Kiểm tra dữ liệu phục vụ tạo lập sản phẩm TTTD', icon: <CheckSquareOutlined />, path: '/data-collection/product-check' },
-            { key: 'dc-balance-verify', label: 'Quản lý đối chiếu thông tin cân đối', icon: <ReconciliationOutlined />, path: '/data-collection/balance-verify' },
+            { key: 'dc-balance-verify', label: 'Đối chiếu thông tin cân đối', icon: <ReconciliationOutlined />, path: '/data-collection/balance-verify' },
         ]
     },
     {
@@ -752,3 +758,99 @@ export const SUB_SYSTEMS: SubSystem[] = [
 ];
 
 export const SHARED_MENU: MenuItem[] = [];
+
+export const DESIGN_SYSTEM_SUB: SubSystem = {
+    id: 'design-system',
+    name: 'Design System',
+    icon: <BuildOutlined />,
+    color: colors.subsystem.design,
+    menuItems: [
+        { key: 'ds-overview', label: 'Tổng quan', icon: <DashboardOutlined />, path: '/design-system' },
+        { key: 'ds-layout-explorer', label: 'Layout hệ thống', icon: <LayoutOutlined />, path: '/design-system/layout-explorer' },
+        {
+            key: 'ds-layout',
+            label: 'Layout & Structure',
+            icon: <ContainerOutlined />,
+            children: [
+                { key: 'ds-page-layout', label: 'PageLayout', path: '/design-system/layout/page-layout' },
+                { key: 'ds-section-card', label: 'SectionCard', path: '/design-system/layout/section-card' },
+                { key: 'ds-filter-bar', label: 'FilterBar', path: '/design-system/layout/filter-bar' },
+            ],
+        },
+        {
+            key: 'ds-data-display',
+            label: 'Hiển thị dữ liệu',
+            icon: <TableOutlined />,
+            children: [
+                { key: 'ds-status-tag', label: 'StatusTag', path: '/design-system/data-display/status-tag' },
+                { key: 'ds-status-bar', label: 'StatusSummaryBar', path: '/design-system/data-display/status-summary-bar' },
+                { key: 'ds-action-menu', label: 'ActionMenu', path: '/design-system/data-display/action-menu' },
+                { key: 'ds-code-text', label: 'CodeText', path: '/design-system/data-display/code-text' },
+                { key: 'ds-table', label: 'Table & Pagination', path: '/design-system/data-display/table' },
+            ],
+        },
+        {
+            key: 'ds-form',
+            label: 'Form & Nhập liệu',
+            icon: <FormOutlined />,
+            children: [
+                { key: 'ds-textbox', label: 'Textbox / Input', path: '/design-system/form/textbox' },
+                { key: 'ds-number', label: 'Input Number', path: '/design-system/form/input-number' },
+                { key: 'ds-textarea', label: 'TextArea', path: '/design-system/form/textarea' },
+                { key: 'ds-select', label: 'Select / Dropdown', path: '/design-system/form/select' },
+                { key: 'ds-datepicker', label: 'DatePicker', path: '/design-system/form/date-picker' },
+                { key: 'ds-checkbox', label: 'Checkbox', path: '/design-system/form/checkbox' },
+                { key: 'ds-radio', label: 'Radio Button', path: '/design-system/form/radio' },
+                { key: 'ds-switch', label: 'Switch', path: '/design-system/form/switch' },
+                { key: 'ds-slider', label: 'Slider', path: '/design-system/form/slider' },
+                { key: 'ds-upload', label: 'Upload', path: '/design-system/form/upload' },
+                { key: 'ds-form-full', label: 'Form mẫu đầy đủ', path: '/design-system/form/full-form' },
+            ],
+        },
+        {
+            key: 'ds-button',
+            label: 'Button',
+            icon: <InteractionOutlined />,
+            children: [
+                { key: 'ds-btn-variants', label: 'Kiểu & trạng thái', path: '/design-system/button/variants' },
+                { key: 'ds-btn-patterns', label: 'Pattern thao tác', path: '/design-system/button/patterns' },
+            ],
+        },
+        {
+            key: 'ds-feedback',
+            label: 'Feedback & Overlay',
+            icon: <BellOutlined />,
+            children: [
+                { key: 'ds-modal', label: 'Modal & Drawer', path: '/design-system/feedback/modal' },
+                { key: 'ds-notification', label: 'Notification / Message', path: '/design-system/feedback/notification' },
+                { key: 'ds-alert', label: 'Alert', path: '/design-system/feedback/alert' },
+            ],
+        },
+        {
+            key: 'ds-dashboard',
+            label: 'Dashboard Components',
+            icon: <BarChartOutlined />,
+            children: [
+                { key: 'ds-stat-card', label: 'StatCard', path: '/design-system/dashboard/stat-card' },
+                { key: 'ds-chart-bar', label: 'Biểu đồ cột', path: '/design-system/dashboard/chart-bar' },
+                { key: 'ds-chart-line', label: 'Biểu đồ đường', path: '/design-system/dashboard/chart-line' },
+                { key: 'ds-chart-pie', label: 'Biểu đồ tròn / Donut', path: '/design-system/dashboard/chart-pie' },
+                { key: 'ds-chart-gauge', label: 'Gauge', path: '/design-system/dashboard/chart-gauge' },
+                { key: 'ds-chart-dual', label: 'Dual Axis', path: '/design-system/dashboard/chart-dual-axis' },
+            ],
+        },
+        {
+            key: 'ds-tokens',
+            label: 'Design Tokens',
+            icon: <TagOutlined />,
+            children: [
+                { key: 'ds-colors', label: 'Màu sắc', path: '/design-system/tokens/colors' },
+                { key: 'ds-typography', label: 'Typography', path: '/design-system/tokens/typography' },
+                { key: 'ds-spacing', label: 'Spacing', path: '/design-system/tokens/spacing' },
+                { key: 'ds-shadows', label: 'Shadows & Radius', path: '/design-system/tokens/shadows' },
+            ],
+        },
+    ],
+};
+
+SUB_SYSTEMS.push(DESIGN_SYSTEM_SUB);

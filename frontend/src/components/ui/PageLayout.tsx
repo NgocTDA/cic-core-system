@@ -18,7 +18,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, noPadding }) => {
         flex: 1,
         minHeight: 0,
         boxSizing: 'border-box',
-        overflow: 'hidden',
+        overflow: 'auto',
       }}
     >
       {children}

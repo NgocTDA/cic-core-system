@@ -23,12 +23,13 @@ export const colors = {
 
     // ─── Subsystem accent colors ─────────────────────────────
     subsystem: {
-        kkn:        '#fa8c16', // Kênh kết nối     — Orange
-        collection: '#1890ff', // Thu thập dữ liệu — Blue
-        product:    '#52c41a', // Quản lý sản phẩm — Green
-        ops:        '#722ed1', // Hỗ trợ vận hành  — Purple
-        analytics:  '#eb2f96', // Báo cáo thống kê — Pink
-        governance: '#13c2c2', // Quản trị dữ liệu — Teal
+        kkn:        '#fa8c16', // Kênh kết nối       — Orange
+        collection: '#1890ff', // Thu thập dữ liệu   — Blue
+        product:    '#52c41a', // Quản lý sản phẩm   — Green
+        ops:        '#722ed1', // Hỗ trợ vận hành    — Purple
+        analytics:  '#eb2f96', // Báo cáo thống kê   — Pink
+        governance: '#13c2c2', // Quản trị dữ liệu   — Teal
+        design:     '#7c3aed', // Design System      — Indigo
     },
 
     // ─── Semantic ─────────────────────────────────────────────
