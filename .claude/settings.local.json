@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell($modulesPath = \"c:\\\\Users\\\\ngoct\\\\Downloads\\\\Code\\\\cic-core-system\\\\frontend\\\\src\\\\modules\"; $items = @\\(Get-ChildItem $modulesPath -Force\\); Write-Host \"Total items: $\\($items.Count\\)\"; $items | ForEach-Object { $_.FullName })",
+      "PowerShell($pmPath = \"c:\\\\Users\\\\ngoct\\\\Downloads\\\\Code\\\\cic-core-system\\\\frontend\\\\src\\\\modules\\\\product-mgmt\"; Get-ChildItem -Recurse -Force $pmPath | ForEach-Object { $relPath = $_.FullName.Replace\\($pmPath, \"\"\\).TrimStart\\(\"\\\\\"\\); if \\($_.PSIsContainer\\) { \"[DIR]  $relPath\" } else { \"[FILE] $relPath\" } })",
+      "PowerShell($kkPath = \"c:\\\\Users\\\\ngoct\\\\Downloads\\\\Code\\\\cic-core-system\\\\frontend\\\\src\\\\modules\\\\kkn\"; Get-ChildItem -Recurse $kkPath | Select-Object -First 30 FullName | ForEach-Object { $_.Replace\\($kkPath, \"\"\\) })",
+      "PowerShell($kkPath = \"c:\\\\Users\\\\ngoct\\\\Downloads\\\\Code\\\\cic-core-system\\\\frontend\\\\src\\\\modules\\\\kkn\"; Get-ChildItem -Recurse $kkPath | Select-Object -First 30 @{Name='RelativePath'; Expression={$_.FullName.Replace\\($kkPath, \"\"\\)}} | Select-Object RelativePath)",
+      "PowerShell(Get-ChildItem \"c:\\\\Users\\\\ngoct\\\\Downloads\\\\Code\\\\cic-core-system\\\\frontend\\\\src\" | Where-Object { $_.PSIsContainer }| Select-Object Name)",
+      "PowerShell(Get-ChildItem \"c:\\\\Users\\\\ngoct\\\\Downloads\\\\Code\\\\cic-core-system\\\\frontend\\\\app\" -Recurse | ForEach-Object { $_.FullName.Replace\\(\"c:\\\\Users\\\\ngoct\\\\Downloads\\\\Code\\\\cic-core-system\\\\frontend\\\\app\", \"\"\\) } | Sort-Object)",
+      "Bash(mkdir -p \"c:\\\\Users\\\\ngoct\\\\Downloads\\\\Code\\\\cic-core-system\\\\frontend\\\\app\\\\product-mgmt\\\\catalog\\\\products\\\\[id]\" 2>/dev/null || true)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\ngoct\\Downloads\\Code\\cic-core-system\\frontend\\app\\product-mgmt\\catalog\\products"
+    ]
+  }
+}

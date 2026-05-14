@@ -1,0 +1,118 @@
+product:
+  code: K11
+  name: Báo cáo tín dụng cá nhân cơ bản
+  product_type:
+    - Sản phẩm truyền thống
+    - Sản phẩm định kỳ
+    - Sản phẩm theo yêu cầu
+    - Sản phẩm tùy biến
+    - Bài viết phân tích, cảnh báo
+  product_group:
+    - Sản phẩm thông tin quan hệ tín dụng khách hàng
+    - Sản phẩm chấm điểm, xếp hạng tín dụng
+    - Sản phẩm báo cáo thông tin doanh nghiệp
+    - Sản phẩm cảnh báo và sản phẩm theo user đang thực hiện hàng tháng
+    - Sản phẩm dành cho khách hàng vay 
+  subject_type:
+    - Cá nhân (INDIVIDUAL)
+    - Tổ chức (ORGANIZATION)
+    - Tập đoàn, Tổng công ty (GROUP_CORPORATION)
+  language:
+    - VN - Việt Nam
+    - EN - Tiếng Anh
+  version: 1.0
+  status:
+    - ACTIVE
+    - INACTIVE
+  effective_date: 01/06/2026
+  expired_date: 31/12/2030
+
+input:
+  inquiry_channels:
+    - WEB_FORM
+    - FILE_UPLOAD
+    - API
+    - SCHEDULER
+    - INTERNAL_JOB
+  inquiry_modes:
+    - Một đối tượng (SINGLE ITEM)
+    - Nhiều đối tượng (MULTI ITEMS)
+    - Hỏi theo lô (BATCH)????
+  input_formats:
+    - FORM
+    - EXCEL (.XLS)
+    - CSV
+    - JSON
+    - XML
+  required_identifiers:
+    subject_type: Cá nhân (INDIVIDUAL)
+      - Số định danh/ CCCD
+      - Họ và tên
+      - Địa chỉ
+    subject_type: Tổ chức (ORGANIZATION)
+      - Số đăng ký kinh doanh
+      - Tên tổ chức (VN)
+      - Địa chỉ
+    subject_type: Tập đoàn, Tổng công ty (GROUP_CORPORATION)
+      - Số đăng ký kinh doanh
+      - Tên tổ chức (VN)
+      - Địa chỉ
+  max_records_per_request:
+    web_ui: 1
+    file_upload: 200
+    api: 1000
+
+processing:
+  fulfillment_modes:
+    - IMMEDIATE
+    - ASYNC
+    - BATCH
+    - PERIODIC_PRECOMPUTED
+    - HYBRID????
+  data_mode:
+    - ON_DEMAND
+    - PRECOMPUTED
+  allow_partial_response: true
+  allow_retry: true
+  allow_reprocess: true
+  manual_review_required: conditional
+  pending_reasons:
+    - DATA_ADJUSTMENT
+    - INVALID_IDENTIFIER
+    - MANUAL_REVIEW
+    - DATA_NOT_READY
+
+output:
+  output_types:
+    - REPORT
+    - DATA_FILE
+    - API_RESPONSE
+  output_formats:
+    - PDF
+    - EXCEL
+    - JSON
+    - XML
+    - ZIP
+  configurable_fields: true
+  custom_alias_fields: true
+  template_based: true
+  versioned_template: true
+  digital_signature_required: optional
+  encryption_required: conditional
+
+delivery:
+  delivery_channels:
+    - WEB_FORM
+    - WEB_DOWNLOAD
+    - API_RESPONSE
+    - API_CALLBACK
+    - NOTIFICATION
+  partial_delivery_supported: true
+  delivery_ack_required: true
+
+governance:
+  permission_required: true
+  consent_required: conditional
+  audit_required: true
+  pricing_required: true
+  sla_required: true

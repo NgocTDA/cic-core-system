@@ -14,27 +14,27 @@ const { Title, Text } = Typography;
 const SUBSYSTEM_META: Record<string, { description: string; features: string[] }> = {
     'kkn': {
         description: 'Quản lý kênh trao đổi dữ liệu với các TCTD, đồng bộ và tổng hợp thông tin tín dụng.',
-        features: ['Kênh trao đổi', 'Nhật ký dữ liệu', 'Tổng hợp M5/XHTD'],
+        features: [],
     },
     'data-collection': {
         description: 'Thu thập, kiểm tra, xử lý và chuẩn hoá dữ liệu từ các tổ chức tín dụng.',
-        features: ['Tiếp nhận dữ liệu', 'Quản lý mã CIC', 'Kho dữ liệu'],
+        features: [],
     },
     'product-mgmt': {
         description: 'Tạo lập và quản lý sản phẩm thông tin tín dụng, phục vụ hỏi & trả lời tin.',
-        features: ['Sản phẩm định kỳ', 'Hỏi tin KH', 'Bài viết cảnh báo'],
+        features: [],
     },
     'ops-support': {
         description: 'Quản trị người dùng, phân quyền, cấu hình hệ thống và giám sát chất lượng.',
-        features: ['Người dùng & Quyền', 'Mẫu thông báo', 'Cấu hình hệ thống'],
+        features: [],
     },
     'analytics-reporting': {
         description: 'Tổng hợp báo cáo nghiệp vụ, thống kê theo kỳ và tạo báo cáo tuỳ chỉnh.',
-        features: ['Báo cáo nghiệp vụ', 'Thống kê TCTD', 'Lịch định kỳ'],
+        features: [],
     },
     'data-governance': {
         description: 'Quản trị tài sản dữ liệu, thuật ngữ nghiệp vụ và Data Lineage toàn hệ thống.',
-        features: ['Tài sản dữ liệu', 'Thuật ngữ NV', 'Data Lineage'],
+        features: [],
     },
 };
 
@@ -108,7 +108,7 @@ const LandingPage: React.FC = () => {
                     transform: visible ? 'translateY(0)' : 'translateY(-12px)',
                     transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
                 }}>
-                    <div style={{
+                    {/* <div style={{
                         display: 'inline-block',
                         padding: '6px 20px',
                         borderRadius: '100px',
@@ -119,7 +119,7 @@ const LandingPage: React.FC = () => {
                         <Text style={{ color: colors.primary[500], fontSize: '13px', fontWeight: 600, letterSpacing: '0.05em' }}>
                             CREDIT INFORMATION CENTER
                         </Text>
-                    </div>
+                    </div> */}
                     <Title style={{
                         color: colors.text.primary,
                         fontSize: 'clamp(32px, 4.5vw, 48px)',
