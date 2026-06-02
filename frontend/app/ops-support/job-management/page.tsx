@@ -1,9 +1,13 @@
-
 'use client';
 
-import React from 'react';
-import JobControlCenter from '@/modules/ops-support/JobManagement/JobControlCenter';
+export const dynamic = 'force-dynamic';
+
+import dynamicImport from 'next/dynamic';
+
+const JobManagement = dynamicImport(() => import('@/modules/ops-support/JobManagement'), {
+  ssr: false,
+});
 
 export default function JobManagementPage() {
-    return <JobControlCenter />;
+    return <JobManagement />;
 }

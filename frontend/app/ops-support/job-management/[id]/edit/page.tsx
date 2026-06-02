@@ -1,8 +1,12 @@
-
 'use client';
 
-import React from 'react';
-import JobFormPage from '@/modules/ops-support/JobManagement/JobFormPage';
+export const dynamic = 'force-dynamic';
+
+import dynamicImport from 'next/dynamic';
+
+const JobFormPage = dynamicImport(() => import('@/modules/ops-support/JobManagement/JobFormPage'), {
+  ssr: false,
+});
 
 export default function EditJobPage() {
     return <JobFormPage />;

@@ -7,6 +7,7 @@ import AppSidebar from '@/layouts/AppSidebar';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { HeaderProvider } from '@/context/HeaderContext';
 import { SubSystemProvider } from '@/context/SubSystemContext';
+import { RoleProvider } from '@/context/RoleContext';
 import { usePathname } from 'next/navigation';
 import CommandPalette from '@/components/CommandPalette';
 import viVN_ from 'antd/locale/vi_VN';
@@ -59,6 +60,7 @@ const ClientLayout: React.FC<MainLayoutProps> = ({ children }) => {
     }
 
     const isLandingPage = pathname === '/';
+    const isPortalPage = pathname?.startsWith('/web-portal');
 
     return (
         <ConfigProvider
@@ -66,50 +68,52 @@ const ClientLayout: React.FC<MainLayoutProps> = ({ children }) => {
             theme={antdTheme}
         >
             <SubSystemProvider>
-                <CommandPalette />
-                <HeaderProvider>
-                    {isLandingPage ? (
-                        <div style={{ height: '100vh', overflow: 'hidden' }}>
-                            {children}
-                        </div>
-                    ) : (
-                        <Layout style={{ height: '100vh', overflow: 'hidden', background: colors.bg.page }}>
-                            {isMobile ? (
-                                <Drawer
-                                    placement="left"
-                                    closable={false}
-                                    onClose={() => setCollapsed(true)}
-                                    open={!collapsed}
-                                    styles={{ body: { padding: 0 } }}
-                                    width={256}
-                                >
+                <RoleProvider>
+                    <HeaderProvider>
+                        <CommandPalette />
+                        {isLandingPage || isPortalPage ? (
+                            <div style={{ height: '100vh', overflow: 'hidden' }}>
+                                {children}
+                            </div>
+                        ) : (
+                            <Layout style={{ height: '100vh', overflow: 'hidden', background: colors.bg.page }}>
+                                {isMobile ? (
+                                    <Drawer
+                                        placement="left"
+                                        closable={false}
+                                        onClose={() => setCollapsed(true)}
+                                        open={!collapsed}
+                                        styles={{ body: { padding: 0 } }}
+                                        width={256}
+                                    >
+                                        <AppSidebar
+                                            collapsed={false}
+                                            onCollapse={handleToggleCollapse}
+                                            isMobile={true}
+                                        />
+                                    </Drawer>
+                                ) : (
                                     <AppSidebar
-                                        collapsed={false}
+                                        collapsed={collapsed}
                                         onCollapse={handleToggleCollapse}
-                                        isMobile={true}
+                                        isMobile={false}
                                     />
-                                </Drawer>
-                            ) : (
-                                <AppSidebar
-                                    collapsed={collapsed}
-                                    onCollapse={handleToggleCollapse}
-                                    isMobile={false}
-                                />
-                            )}
+                                )}
 
-                            <Layout style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                                <AppHeader
-                                    collapsed={collapsed}
-                                    onCollapse={handleToggleCollapse}
-                                    isMobile={isMobile}
-                                />
-                                <Content style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: isMobile ? 'auto' : 'hidden', background: colors.bg.page }}>
-                                    {children}
-                                </Content>
+                                <Layout style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                                    <AppHeader
+                                        collapsed={collapsed}
+                                        onCollapse={handleToggleCollapse}
+                                        isMobile={isMobile}
+                                    />
+                                    <Content style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: isMobile ? 'auto' : 'hidden', background: colors.bg.page }}>
+                                        {children}
+                                    </Content>
+                                </Layout>
                             </Layout>
-                        </Layout>
-                    )}
-                </HeaderProvider>
+                        )}
+                    </HeaderProvider>
+                </RoleProvider>
             </SubSystemProvider>
         </ConfigProvider>
     );

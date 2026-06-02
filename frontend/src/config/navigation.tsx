@@ -64,6 +64,7 @@ import {
     ColumnHeightOutlined,
     InteractionOutlined,
     BuildOutlined,
+    GlobalOutlined,
 } from '@ant-design/icons';
 
 export interface MenuItem {
@@ -753,6 +754,90 @@ export const SUB_SYSTEMS: SubSystem[] = [
                     }
                 ]
             }
+        ]
+    },
+    {
+        id: 'web-portal',
+        name: 'Web Portal (TCTD)',
+        icon: <GlobalOutlined />,
+        color: colors.subsystem.portal,
+        menuItems: [
+            { key: 'web-portal-dashboard', label: 'Trang chủ Portal', icon: <DashboardOutlined />, path: '/web-portal/dashboard' },
+            {
+                key: 'web-portal-send',
+                label: 'GỬI BÁO CÁO TÍN DỤNG',
+                icon: <CloudServerOutlined />,
+                children: [
+                    {
+                        key: 'web-portal-send-balance-group',
+                        label: 'Thông tin cân đối',
+                        icon: <ReconciliationOutlined />,
+                        children: [
+                            { key: 'web-portal-send-balance', label: 'Gửi thông tin cân đối', path: '/web-portal/send-balance' },
+                        ]
+                    },
+                    {
+                        key: 'web-portal-send-periodic-group',
+                        label: 'Báo cáo định kỳ',
+                        icon: <FileDoneOutlined />,
+                        children: [
+                            { key: 'web-portal-send-periodic', label: 'Gửi báo cáo định kỳ', path: '/web-portal/send-periodic' },
+                            { key: 'web-portal-search-periodic', label: 'Tra cứu báo cáo đã nộp', path: '/web-portal/search-periodic' },
+                        ]
+                    }
+                ]
+            },
+            {
+                key: 'web-portal-exploit',
+                label: 'KHAI THÁC BÁO CÁO',
+                icon: <SearchOutlined />,
+                children: [
+                    {
+                        key: 'web-portal-exploit-search',
+                        label: 'Khai thác TTTD',
+                        icon: <SearchOutlined />,
+                        children: [
+                            { key: 'web-portal-search-credit', label: 'Tra cứu TTTD khách hàng', path: '/web-portal/search-credit' },
+                            { key: 'web-portal-batch-inquiry', label: 'Hỏi tin khách hàng theo lô', path: '/web-portal/batch-inquiry' },
+                        ]
+                    },
+                    {
+                        key: 'web-portal-exploit-reports',
+                        label: 'Báo cáo tổng hợp',
+                        icon: <BarChartOutlined />,
+                        children: [
+                            { key: 'web-portal-risk-warnings', label: 'Cảnh báo rủi ro tín dụng', path: '/web-portal/risk-warnings' },
+                            { key: 'web-portal-industry-reports', label: 'Báo cáo tổng hợp ngành', path: '/web-portal/industry-reports' },
+                        ]
+                    }
+                ]
+            },
+            {
+                key: 'web-portal-products',
+                label: 'DANH MỤC SẢN PHẨM',
+                icon: <FolderOutlined />,
+                children: [
+                    {
+                        key: 'web-portal-products-traditional',
+                        label: 'Sản phẩm truyền thống',
+                        icon: <FileTextOutlined />,
+                        children: [
+                            { key: 'web-portal-products-indiv', label: 'Báo cáo tín dụng cá nhân', path: '/web-portal/products/individual' },
+                            { key: 'web-portal-products-corp', label: 'Báo cáo tín dụng doanh nghiệp', path: '/web-portal/products/corporate' },
+                        ]
+                    },
+                    {
+                        key: 'web-portal-products-value',
+                        label: 'Sản phẩm giá trị gia tăng',
+                        icon: <DollarOutlined />,
+                        children: [
+                            { key: 'web-portal-products-score', label: 'Báo cáo điểm số tín dụng', path: '/web-portal/products/score' },
+                            { key: 'web-portal-products-rating', label: 'Báo cáo xếp hạng tín dụng', path: '/web-portal/products/rating' },
+                        ]
+                    }
+                ]
+            },
+            { key: 'web-portal-templates', label: 'HỖ TRỢ/ TƯ VẤN', icon: <TeamOutlined />, path: '/web-portal/support' }
         ]
     }
 ];

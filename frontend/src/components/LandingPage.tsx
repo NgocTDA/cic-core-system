@@ -36,6 +36,10 @@ const SUBSYSTEM_META: Record<string, { description: string; features: string[] }
         description: 'Quản trị tài sản dữ liệu, thuật ngữ nghiệp vụ và Data Lineage toàn hệ thống.',
         features: [],
     },
+    'web-portal': {
+        description: 'Cổng giao tiếp điện tử dành cho các TCTD gửi báo cáo tín dụng và đối chiếu thông tin cân đối.',
+        features: ['Gửi thông tin cân đối', 'Menu ngang 3 cấp', 'Đối soát trạng thái tệp'],
+    },
 };
 
 // ─── Count top-level menu items (excluding dashboard) for badge ───

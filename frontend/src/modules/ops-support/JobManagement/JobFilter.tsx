@@ -1,77 +1,144 @@
+'use client';
 
 import React, { useState } from 'react';
-import { Card, Row, Col, Select, Input, Button, Space, Tooltip } from 'antd';
-import { SearchOutlined, ReloadOutlined, FilterOutlined } from '@ant-design/icons';
-
-const { Option } = Select;
+import { Select, Input, Button } from 'antd';
+import { FilterOutlined } from '@ant-design/icons';
+import { FilterBar, FilterCol } from '@/components/ui';
+import { useJobManagement } from './useJobManagement';
 
 const JobFilter: React.FC = () => {
-  const [searchValue, setSearchValue] = useState('');
+  const {
+    searchQuery,
+    filterStatus,
+    filterCategory,
+    filterOwner,
+    filterPriority,
+    filterRunStatus,
+    setSearchQuery,
+    setFilterStatus,
+    setFilterCategory,
+    setFilterOwner,
+    setFilterPriority,
+    setFilterRunStatus,
+    jobs,
+  } = useJobManagement();
+
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   const handleReset = () => {
-    setSearchValue('');
+    setSearchQuery('');
+    setFilterStatus('');
+    setFilterCategory('');
+    setFilterOwner('');
+    setFilterPriority('');
+    setFilterRunStatus('');
   };
 
+  const owners = [...new Set(jobs.map((j) => j.owner))];
+
   return (
-    <Card bordered={false} style={{ marginBottom: 16, borderRadius: 8, boxShadow: '0 1px 2px rgba(0,0,0,0.03)' }}>
-      <Row gutter={[16, 12]} wrap align="middle">
-        <Col xs={24} sm={12} md={6} lg={6}>
-          <Input
-            placeholder="Tìm kiếm theo Mã Job, Tên Job..."
-            prefix={<SearchOutlined style={{ color: '#bfbfbf' }} />}
-            allowClear
-            value={searchValue}
-            onChange={e => setSearchValue(e.target.value)}
-            size="middle"
-          />
-        </Col>
-        <Col xs={24} sm={12} md={4} lg={4}>
-          <Select
-            placeholder="Hệ thống nguồn"
-            style={{ width: '100%' }}
-            allowClear
-          >
-            <Option value="CORE">Core Banking</Option>
-            <Option value="CARD">Card System</Option>
-            <Option value="EBANK">E-Banking</Option>
-          </Select>
-        </Col>
-        <Col xs={24} sm={12} md={4} lg={4}>
-          <Select
-            placeholder="Loại tác vụ"
-            style={{ width: '100%' }}
-            allowClear
-          >
-            <Option value="Import">Nhập dữ liệu</Option>
-            <Option value="Export">Xuất dữ liệu</Option>
-            <Option value="Sync">Đồng bộ</Option>
-          </Select>
-        </Col>
-        <Col xs={24} sm={12} md={4} lg={4}>
-          <Select
-            placeholder="Trạng thái"
-            style={{ width: '100%' }}
-            allowClear
-            options={[
-              { value: 'RUNNING', label: 'Đang chạy' },
-              { value: 'IDLE', label: 'Chờ (Idle)' },
-              { value: 'FAILED', label: 'Lỗi' },
-            ]}
-          />
-        </Col>
-        <Col xs={24} sm={24} md={6} lg={6} style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <Space>
-            <Tooltip title="Thêm bộ lọc">
-              <Button icon={<FilterOutlined />}>Bộ lọc</Button>
-            </Tooltip>
-            <Tooltip title="Xóa bộ lọc">
-              <Button icon={<ReloadOutlined />} onClick={handleReset} />
-            </Tooltip>
-            <Button type="primary" icon={<SearchOutlined />}>Tìm kiếm</Button>
-          </Space>
-        </Col>
-      </Row>
-    </Card>
+    <FilterBar
+      inCard
+      onSearch={() => {}}
+      onReset={handleReset}
+      extra={
+        <Button
+          type="text"
+          icon={<FilterOutlined />}
+          onClick={() => setShowAdvanced(!showAdvanced)}
+        >
+          {showAdvanced ? 'Ít hơn' : 'Chi tiết'}
+        </Button>
+      }
+    >
+      <FilterCol minWidth={200}>
+        <Input
+          placeholder="Tìm kiếm Mã, Tên Job"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          allowClear
+        />
+      </FilterCol>
+
+      <FilterCol>
+        <Select
+          placeholder="Danh mục"
+          value={filterCategory || undefined}
+          onChange={setFilterCategory}
+          allowClear
+          options={[
+            { value: 'DATA_SYNC', label: 'Đồng bộ dữ liệu' },
+            { value: 'REPORT', label: 'Báo cáo' },
+            { value: 'CLEANUP', label: 'Dọn dẹp' },
+            { value: 'VALIDATION', label: 'Kiểm tra' },
+            { value: 'BATCH', label: 'Xử lý hàng loạt' },
+          ]}
+        />
+      </FilterCol>
+
+      <FilterCol>
+        <Select
+          placeholder="Trạng thái"
+          value={filterStatus || undefined}
+          onChange={setFilterStatus}
+          allowClear
+          options={[
+            { value: 'ACTIVE', label: 'Hoạt động' },
+            { value: 'INACTIVE', label: 'Tạm dừng' },
+            { value: 'ARCHIVED', label: 'Lưu trữ' },
+          ]}
+        />
+      </FilterCol>
+
+      <FilterCol>
+        <Select
+          placeholder="Chủ sở hữu"
+          value={filterOwner || undefined}
+          onChange={setFilterOwner}
+          allowClear
+          options={owners.map((owner) => ({
+            value: owner,
+            label: owner,
+          }))}
+        />
+      </FilterCol>
+
+      {showAdvanced && (
+        <>
+          <FilterCol>
+            <Select
+              placeholder="Độ ưu tiên"
+              value={filterPriority || undefined}
+              onChange={(val) => setFilterPriority(val as number | '')}
+              allowClear
+              options={[
+                { value: 1, label: 'Level 1 - Cực kỳ cao' },
+                { value: 2, label: 'Level 2 - Cao' },
+                { value: 3, label: 'Level 3 - Bình thường' },
+                { value: 4, label: 'Level 4 - Thấp' },
+                { value: 5, label: 'Level 5 - Cực thấp' },
+              ]}
+            />
+          </FilterCol>
+
+          <FilterCol>
+            <Select
+              placeholder="Trạng thái chạy"
+              value={filterRunStatus || undefined}
+              onChange={setFilterRunStatus}
+              allowClear
+              options={[
+                { value: 'RUNNING', label: 'Đang chạy' },
+                { value: 'IDLE', label: 'Chờ' },
+                { value: 'SCHEDULED', label: 'Đã lên lịch' },
+                { value: 'FAILED', label: 'Thất bại' },
+                { value: 'PAUSED', label: 'Tạm dừng' },
+              ]}
+            />
+          </FilterCol>
+        </>
+      )}
+    </FilterBar>
   );
 };
 

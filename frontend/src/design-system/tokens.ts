@@ -30,6 +30,7 @@ export const colors = {
         analytics:  '#eb2f96', // Báo cáo thống kê   — Pink
         governance: '#13c2c2', // Quản trị dữ liệu   — Teal
         design:     '#7c3aed', // Design System      — Indigo
+        portal:     '#0050b3', // Web Portal         — Navy Blue
     },
 
     // ─── Semantic ─────────────────────────────────────────────
