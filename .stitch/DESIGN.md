@@ -27,6 +27,7 @@ These rules are non-negotiable and must be applied to every interactive element:
     - **Height**: 32px.
     - **Radius**: 6px.
     - **Style**: Flat or subtle gradient. No outer glows.
+    - **Alignment**: Cụm nút hành động chính của Form/Khai báo phải được căn giữa theo chiều ngang của form (Center align).
 - **Inputs & Forms**:
     - **Height**: 32px.
     - **Radius**: 6px.

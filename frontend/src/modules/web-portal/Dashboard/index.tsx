@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Row, Col, Card, Statistic, Typography, Button, Space, Table } from 'antd';
+import { Row, Col, Card, Statistic, Typography, Button, Space, Table, message } from 'antd';
 import {
   FileDoneOutlined,
   CheckCircleOutlined,
@@ -16,7 +16,7 @@ import Link from 'next/link';
 import { colors, radius, shadows } from '@/design-system';
 import PageLayout from '@/components/ui/PageLayout';
 
-const { Title, Paragraph, Text } = Typography;
+const { Text } = Typography;
 
 const PortalDashboard: React.FC = () => {
   // Dữ liệu giả lập các tệp gửi gần nhất
@@ -116,39 +116,6 @@ const PortalDashboard: React.FC = () => {
 
   return (
     <PageLayout>
-      {/* Khối lời chào thông tin */}
-      <div style={{
-        background: `linear-gradient(135deg, ${colors.subsystem.portal} 0%, ${colors.primary[800]} 100%)`,
-        borderRadius: radius.xl,
-        padding: '32px 40px',
-        color: '#ffffff',
-        marginBottom: 24,
-        boxShadow: shadows.md,
-        position: 'relative',
-        overflow: 'hidden'
-      }}>
-        <div style={{ position: 'relative', zIndex: 2, maxWidth: 700 }}>
-          <Title level={2} style={{ color: '#ffffff', margin: '0 0 8px', fontWeight: 800 }}>
-            Chào mừng bạn trở lại, BIDV!
-          </Title>
-          <Paragraph style={{ color: 'rgba(255,255,255,0.85)', fontSize: 14, lineHeight: 1.6, margin: 0 }}>
-            Đây là cổng giao tiếp điện tử Web Portal chính thức của BIDV kết nối trực tiếp với Trung tâm Thông tin Tín dụng Quốc gia Việt Nam (CIC). Bạn có thể thực hiện nộp báo cáo cân đối chỉ số tín dụng, tra cứu đối soát tệp dữ liệu, tải mẫu biểu quy chuẩn và trao đổi trực tiếp với giám sát viên CIC.
-          </Paragraph>
-        </div>
-        
-        {/* Họa tiết tròn mờ trang trí phía sau */}
-        <div style={{
-          position: 'absolute',
-          right: '-10%',
-          top: '-30%',
-          width: 300,
-          height: 300,
-          borderRadius: '50%',
-          background: 'rgba(255, 255, 255, 0.06)',
-          pointerEvents: 'none'
-        }} />
-      </div>
-
       {/* Khối thống kê nhanh */}
       <Row gutter={[20, 20]} style={{ marginBottom: 24 }}>
         <Col xs={24} sm={12} lg={6}>

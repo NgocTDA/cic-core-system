@@ -303,10 +303,10 @@ const DetailPage: React.FC = () => {
           </Form.Item>
           {/* ... */}
           <Form.Item>
-            <Space>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: 12 }}>
               <Button type="primary" icon={<SaveOutlined />}>Lưu</Button>
               <Button onClick={() => router.back()}>Huỷ</Button>
-            </Space>
+            </div>
           </Form.Item>
         </Form>
       </Card>
