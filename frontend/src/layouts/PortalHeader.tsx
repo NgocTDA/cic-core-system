@@ -77,7 +77,7 @@ const PortalHeader: React.FC<PortalHeaderProps> = ({ currentLang = 'VI', onLangC
         }}>
           CIC
         </div>
-        
+
         <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.2 }}>
           <Text style={{
             color: '#e53e3e',
@@ -101,7 +101,7 @@ const PortalHeader: React.FC<PortalHeaderProps> = ({ currentLang = 'VI', onLangC
 
       {/* ─── CỤM TIỆN ÍCH PHẢI ─────────────────────────────────────────────── */}
       <Space size={20} align="center">
-        
+
         {/* Chọn ngôn ngữ */}
         <Dropdown menu={langMenu} trigger={['click']} placement="bottomRight">
           <div style={{
@@ -136,8 +136,8 @@ const PortalHeader: React.FC<PortalHeaderProps> = ({ currentLang = 'VI', onLangC
             color: colors.text.secondary,
             transition: 'all 0.2s'
           }}
-          className="header-icon-btn"
-          onClick={() => message.info('Không có thông báo mới')}
+            className="header-icon-btn"
+            onClick={() => message.info('Không có thông báo mới')}
           >
             <BellOutlined style={{ fontSize: 18 }} />
           </div>
@@ -156,8 +156,8 @@ const PortalHeader: React.FC<PortalHeaderProps> = ({ currentLang = 'VI', onLangC
           color: colors.text.secondary,
           transition: 'all 0.2s'
         }}
-        className="header-icon-btn"
-        onClick={() => message.info('Đang tải tài liệu hướng dẫn vận hành Portal')}
+          className="header-icon-btn"
+          onClick={() => message.info('Đang tải tài liệu hướng dẫn vận hành Portal')}
         >
           <QuestionCircleOutlined style={{ fontSize: 18 }} />
         </div>
@@ -182,14 +182,14 @@ const PortalHeader: React.FC<PortalHeaderProps> = ({ currentLang = 'VI', onLangC
         {/* Thông tin tài khoản người dùng */}
         <Dropdown menu={userMenu} trigger={['click']} placement="bottomRight">
           <Space style={{ cursor: 'pointer', paddingLeft: 4 }} size={8}>
-            <Avatar 
-              icon={<UserOutlined />} 
-              style={{ backgroundColor: colors.subsystem.portal }} 
+            <Avatar
+              icon={<UserOutlined />}
+              style={{ backgroundColor: colors.subsystem.portal }}
               size={36}
             />
             <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
               <span style={{ fontWeight: 600, fontSize: 13, color: colors.text.primary }}>Nguyễn Văn A</span>
-              <span style={{ fontSize: 10, color: colors.text.secondary }}>Cán bộ gửi — BIDV</span>
+              <span style={{ fontSize: 10, color: colors.text.secondary }}>Cán bộ gửi báo cáo</span>
             </div>
             <DownOutlined style={{ fontSize: 10, color: colors.text.secondary }} />
           </Space>

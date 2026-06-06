@@ -67,7 +67,7 @@ const SectionCard: React.FC<SectionCardProps> = ({
             : {}),
         },
         ...(hasHeader
-          ? { header: { borderBottom: 'none', padding: '16px 20px 0' } }
+          ? { header: { borderBottom: 'none', padding: '16px 20px 12px' } }
           : {}),
       }}
       title={

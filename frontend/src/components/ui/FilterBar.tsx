@@ -51,6 +51,7 @@ interface FilterBarProps {
   loading?: boolean;
   inCard?: boolean;
   extra?: React.ReactNode;
+  showAddFilter?: boolean;
 }
 
 const FilterBar: React.FC<FilterBarProps> = ({
@@ -60,6 +61,7 @@ const FilterBar: React.FC<FilterBarProps> = ({
   loading,
   inCard = false,
   extra,
+  showAddFilter = true,
 }) => {
   const content = (
     <div
@@ -74,9 +76,11 @@ const FilterBar: React.FC<FilterBarProps> = ({
       <div style={{ marginLeft: 'auto', flexShrink: 0 }}>
         <Space>
           {extra}
-          <Tooltip title="Thêm điều kiện lọc nâng cao">
-            <Button icon={<FilterOutlined />}>Thêm bộ lọc</Button>
-          </Tooltip>
+          {showAddFilter && (
+            <Tooltip title="Thêm điều kiện lọc nâng cao">
+              <Button icon={<FilterOutlined />}>Thêm bộ lọc</Button>
+            </Tooltip>
+          )}
           {onReset && (
             <Tooltip title="Xóa tất cả bộ lọc">
               <Button icon={<ReloadOutlined />} onClick={onReset} />

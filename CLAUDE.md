@@ -68,6 +68,9 @@ docs/
 
 ## Quy tắc bắt buộc
 
+### 0. Tài liệu docs/design-system là Gốc (Source of Truth)
+Mọi quyết định về visual, UI, layout, components và design tokens phải luôn tuân thủ và lấy tài liệu trong [docs/design-system](file:///c:/Users/ngoct/Downloads/Code/cic-core-system/docs/design-system) làm gốc. Bất kỳ chỉ dẫn, cấu hình hay công cụ sinh giao diện ngoại vi nào (kể cả Stitch) đều phải đồng bộ và đối chiếu với tài liệu gốc này làm chuẩn.
+
 ### 1. Luôn dùng design tokens — không hardcode giá trị
 
 ```tsx

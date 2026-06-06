@@ -762,7 +762,7 @@ export const SUB_SYSTEMS: SubSystem[] = [
         icon: <GlobalOutlined />,
         color: colors.subsystem.portal,
         menuItems: [
-            { key: 'web-portal-dashboard', label: 'Trang chủ Portal', icon: <DashboardOutlined />, path: '/web-portal/dashboard' },
+            { key: 'web-portal-dashboard', label: 'TRANG CHỦ', icon: <DashboardOutlined />, path: '/web-portal/dashboard' },
             {
                 key: 'web-portal-send',
                 label: 'GỬI BÁO CÁO TÍN DỤNG',

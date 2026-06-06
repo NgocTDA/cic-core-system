@@ -37,11 +37,21 @@ import {
   RightOutlined,
   InfoCircleOutlined,
   StopOutlined,
-  PlusOutlined
+  PlusOutlined,
+  HolderOutlined
 } from '@ant-design/icons';
 import { colors, radius, shadows } from '@/design-system';
-import PageLayout from '@/components/ui/PageLayout';
-import SectionCard from '@/components/ui/SectionCard';
+import {
+  PageLayout,
+  FilterBar,
+  FilterCol,
+  SectionCard,
+  StatusTag,
+  ActionMenu,
+  CodeText,
+  tablePagination
+} from '@/components/ui';
+import useHeaderActions from '@/hooks/useHeaderActions';
 
 const { Title, Text } = Typography;
 const { RangePicker } = DatePicker;
@@ -860,14 +870,126 @@ const columnOptions = [
 ];
 
 const SendBalanceModule: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('search');
+  const [uploadModalVisible, setUploadModalVisible] = useState(false);
   const [data, setData] = useState<BalanceReport[]>(INITIAL_DATA);
   const [loading, setLoading] = useState(false);
+
+  useHeaderActions({
+    title: 'Danh sách báo cáo thông tin cân đối',
+    actions: [
+      {
+        key: 'add',
+        label: 'Gửi báo cáo mới',
+        icon: <CloudUploadOutlined />,
+        type: 'primary',
+        onClick: () => {
+          setUploadModalVisible(true);
+          handleResetForm();
+        }
+      }
+    ]
+  }, []);
+
+  // States cho thứ tự cột của 3 bảng
+  const [mainColumnOrder, setMainColumnOrder] = useState<string[]>([
+    'stt', 'nguonDuLieu', 'tenTep', 'maDauMoi', 'ngayBaoCao', 'loaiFile', 'nghiepVu',
+    'soLuongKhachHang', 'soLuongHopDong', 'maTienTe', 'duNo', 'tongDuNo', 'phatSinhGiaiNgan',
+    'phatSinhTraNo', 'tongGiaTriBaoDam', 'giaTriBaoDamKhoanVay', 'doanhSoGiamNo',
+    'duPhongPhaiTrich', 'duPhongDaTrich', 'trangThai', 'action'
+  ]);
+
+  const [editColumnOrder, setEditColumnOrder] = useState<string[]>([
+    'stt', 'nguonDuLieu', 'nghiepVu', 'soLuongKhachHang', 'soLuongHopDong', 'maTienTe',
+    'duNo', 'tongDuNo', 'phatSinhGiaiNgan', 'phatSinhTraNo', 'tongGiaTriBaoDam',
+    'giaTriBaoDamKhoanVay', 'doanhSoGiamNo', 'duPhongPhaiTrich', 'duPhongDaTrich', 'action'
+  ]);
+
+  const [detailColumnOrder, setDetailColumnOrder] = useState<string[]>([
+    'stt', 'nguonDuLieu', 'nghiepVu', 'soLuongKhachHang', 'soLuongHopDong', 'maTienTe',
+    'duNo', 'tongDuNo', 'phatSinhGiaiNgan', 'phatSinhTraNo', 'tongGiaTriBaoDam',
+    'giaTriBaoDamKhoanVay', 'doanhSoGiamNo', 'duPhongPhaiTrich', 'duPhongDaTrich'
+  ]);
+
+  const handleMainColumnReorder = (sourceKey: string, targetKey: string) => {
+    setMainColumnOrder(prev => {
+      const next = [...prev];
+      const sourceIdx = next.indexOf(sourceKey);
+      const targetIdx = next.indexOf(targetKey);
+      if (sourceIdx !== -1 && targetIdx !== -1) {
+        const [dragged] = next.splice(sourceIdx, 1);
+        next.splice(targetIdx, 0, dragged);
+      }
+      return next;
+    });
+  };
+
+  const handleEditColumnReorder = (sourceKey: string, targetKey: string) => {
+    setEditColumnOrder(prev => {
+      const next = [...prev];
+      const sourceIdx = next.indexOf(sourceKey);
+      const targetIdx = next.indexOf(targetKey);
+      if (sourceIdx !== -1 && targetIdx !== -1) {
+        const [dragged] = next.splice(sourceIdx, 1);
+        next.splice(targetIdx, 0, dragged);
+      }
+      return next;
+    });
+  };
+
+  const handleDetailColumnReorder = (sourceKey: string, targetKey: string) => {
+    setDetailColumnOrder(prev => {
+      const next = [...prev];
+      const sourceIdx = next.indexOf(sourceKey);
+      const targetIdx = next.indexOf(targetKey);
+      if (sourceIdx !== -1 && targetIdx !== -1) {
+        const [dragged] = next.splice(sourceIdx, 1);
+        next.splice(targetIdx, 0, dragged);
+      }
+      return next;
+    });
+  };
+
+  const renderDraggableHeader = (title: React.ReactNode, key: string, onReorder: (src: string, tgt: string) => void) => {
+    return (
+      <div
+        draggable
+        onDragStart={(e) => {
+          e.dataTransfer.setData('text/plain', key);
+          e.currentTarget.style.opacity = '0.5';
+        }}
+        onDragEnd={(e) => {
+          e.currentTarget.style.opacity = '1';
+        }}
+        onDragOver={(e) => {
+          e.preventDefault();
+        }}
+        onDrop={(e) => {
+          const sourceKey = e.dataTransfer.getData('text/plain');
+          const targetKey = key;
+          if (sourceKey !== targetKey) {
+            onReorder(sourceKey, targetKey);
+          }
+        }}
+        style={{
+          cursor: 'grab',
+          userSelect: 'none',
+          display: 'block',
+          width: '100%',
+          textAlign: 'center',
+          padding: '4px 0'
+        }}
+        className="draggable-col-header"
+      >
+        {title}
+      </div>
+    );
+  };
 
   // Form states cho bộ lọc
   const [tenTepFilter, setTenTepFilter] = useState('');
   const [loaiTepFilter, setLoaiTepFilter] = useState<string[]>([]);
   const [trangThaiFilter, setTrangThaiFilter] = useState<string>('');
+  const [columnSearchTerm, setColumnSearchTerm] = useState('');
 
   // Upload & Form Nhập thông tin cân đối states
   const [uploadLoading, setUploadLoading] = useState(false);
@@ -879,6 +1001,72 @@ const SendBalanceModule: React.FC = () => {
   const [customDetailsMap, setCustomDetailsMap] = useState<Record<string, ReconciliationDetailRow[]>>({});
   const [loadedExistingReport, setLoadedExistingReport] = useState<BalanceReport | null>(null);
   const isReadOnly = loadedExistingReport ? loadedExistingReport.trangThai !== 'TAO_MOI' : false;
+
+  const getAutoGeneratedFileName = (
+    loaiTep: string,
+    maDauMoi: string,
+    ngayBaoCao: dayjs.Dayjs | null,
+    ext: string = 'JSON'
+  ) => {
+    if (!ngayBaoCao) return '';
+    const dateStr = ngayBaoCao.format('YYYYMMDD');
+    const prefix = `${loaiTep}${maDauMoi}${dateStr}`;
+
+    const matching = data.filter(item =>
+      item.phanLoaiTep === loaiTep &&
+      item.maDauMoi === maDauMoi &&
+      item.ngayBaoCao === ngayBaoCao.format('DD/MM/YYYY')
+    );
+
+    let nextSeq = 1;
+    if (matching.length > 0) {
+      const seqs = matching.map(item => {
+        const parts = item.tenTep.split('.');
+        if (parts.length >= 2) {
+          const seqNum = parseInt(parts[parts.length - 2], 10);
+          return isNaN(seqNum) ? 0 : seqNum;
+        }
+        return 0;
+      });
+      const maxSeq = Math.max(...seqs, 0);
+      nextSeq = maxSeq + 1;
+    }
+
+    const seqStr = String(nextSeq).padStart(3, '0');
+    return `${prefix}.${seqStr}.${ext}`;
+  };
+
+  const validateFileName = (fileName: string): string | null => {
+    const name = fileName.trim();
+    if (!name) return 'Vui lòng nhập hoặc chọn Tên tệp!';
+
+    const parts = name.split('.');
+    if (parts.length !== 3) {
+      return 'Tên tệp phải gồm đúng 3 thành phần phân tách bởi dấu chấm: [Tên].[Số thứ tự zzz].[Định dạng (JSON/XLS/XLSX)]';
+    }
+
+    const [ten, zzz, ext] = parts;
+
+    const expectedPrefix = `${uploadPhanLoai}${uploadMaDauMoi}${uploadNgayBaoCao ? uploadNgayBaoCao.format('YYYYMMDD') : ''}`;
+    if (ten !== expectedPrefix) {
+      return `Thành phần Tên tệp phải là "${expectedPrefix}" khớp với các thông tin chung đã chọn!`;
+    }
+
+    if (!/^\d{3}$/.test(zzz)) {
+      return 'Thành phần Số thứ tự phải gồm đúng 3 chữ số (ví dụ: 001, 002)!';
+    }
+
+    const upperExt = ext.toUpperCase();
+    if (upperExt !== 'JSON' && upperExt !== 'XLS' && upperExt !== 'XLSX') {
+      return 'Định dạng tệp (đuôi tệp) phải là JSON, XLS hoặc XLSX!';
+    }
+
+    return null;
+  };
+
+  const isFixedColumn = (key: string) => {
+    return ['stt', 'nguonDuLieu', 'tenTep', 'action'].includes(key);
+  };
 
   // ─── ĐỐI CHIẾU SỐ LIỆU DETAIL MODAL STATES ──────────────────────────
 
@@ -1013,7 +1201,7 @@ const SendBalanceModule: React.FC = () => {
 
       setData(filtered);
       setLoading(false);
-      message.success('Đã hoàn tất tìm kiếm tệp báo cáo');
+      message.success('Đã hoàn tất tìm kiếm');
     }, 300);
   };
 
@@ -1171,7 +1359,8 @@ const SendBalanceModule: React.FC = () => {
       }
     } else {
       setLoadedExistingReport(null);
-      setUploadTenTep('');
+      const generatedName = getAutoGeneratedFileName(uploadPhanLoai, uploadMaDauMoi, uploadNgayBaoCao);
+      setUploadTenTep(generatedName);
       setEditDetails(generateEmptyEditDetails(uploadPhanLoai));
     }
   }, [uploadPhanLoai, uploadNgayBaoCao, data, uploadMaDauMoi]);
@@ -1211,28 +1400,15 @@ const SendBalanceModule: React.FC = () => {
 
     const parentRow = treeData.find(item => item.parentKey === latestReport.key && item.isParent);
     if (parentRow && parentRow.children) {
-      setEditDetails(current => current.map(row => {
-        const match = parentRow.children?.find(c =>
-          c.nghiepVu === row.nghiepVu &&
-          c.maTienTe === row.maTienTe
-        );
-        if (match) {
-          return {
-            ...row,
-            nhomNo: match.nhomNo,
-            duNo: match.duNo,
-            tongDuNo: match.tongDuNo,
-            phatSinhGiaiNgan: match.phatSinhGiaiNgan,
-            phatSinhTraNo: match.phatSinhTraNo,
-            tongGiaTriBaoDam: match.tongGiaTriBaoDam,
-            giaTriBaoDamKhoanVay: match.giaTriBaoDamKhoanVay,
-            doanhSoGiamNo: match.doanhSoGiamNo,
-            duPhongPhaiTrich: match.duPhongPhaiTrich,
-            duPhongDaTrich: match.duPhongDaTrich,
-          };
-        }
-        return row;
+      const newDetails = parentRow.children.map((child, index) => ({
+        ...child,
+        key: `edit_child_latest_${Date.now()}_${index}_${Math.random().toString(36).substr(2, 5)}`,
+        tenTep: uploadTenTep,
+        parentKey: '',
+        trangThai: 'TAO_MOI' as TrangThaiTep,
+        maDauMoi: uploadMaDauMoi
       }));
+      setEditDetails(newDetails);
       message.success(`Đã tải dữ liệu cân đối gần nhất từ kỳ báo cáo ngày ${latestReport.ngayBaoCao}`);
     } else {
       message.warning(`Không tìm thấy chi tiết đối soát của kỳ ngày ${latestReport.ngayBaoCao}`);
@@ -1248,7 +1424,7 @@ const SendBalanceModule: React.FC = () => {
 
   const handleCancelUpload = () => {
     handleResetForm();
-    setActiveTab('search');
+    setUploadModalVisible(false);
   };
 
   const handleSaveReport = (saveAsDraft: boolean) => {
@@ -1258,6 +1434,12 @@ const SendBalanceModule: React.FC = () => {
     }
     if (!uploadNgayBaoCao) {
       message.error('Vui lòng chọn Ngày báo cáo!');
+      return;
+    }
+
+    const validationError = validateFileName(uploadTenTep);
+    if (validationError) {
+      message.error(validationError);
       return;
     }
 
@@ -1326,7 +1508,7 @@ const SendBalanceModule: React.FC = () => {
 
       message.success(saveAsDraft ? 'Đã lưu nháp báo cáo thành công!' : 'Đã lưu và gửi báo cáo lên CIC thành công!');
       handleResetForm();
-      setActiveTab('search');
+      setUploadModalVisible(false);
     }, 1200);
   };
 
@@ -1340,50 +1522,12 @@ const SendBalanceModule: React.FC = () => {
 
   const renderTrangThaiTag = (status: TrangThaiTep) => {
     if (status === 'TAO_MOI') {
-      return (
-        <span style={{
-          color: colors.primary[600],
-          border: `1px solid ${colors.primary[300]}`,
-          background: colors.primary[50],
-          padding: '3px 10px',
-          borderRadius: 4,
-          fontSize: 11,
-          fontWeight: 650,
-          whiteSpace: 'nowrap'
-        }}>
-          Tạo mới
-        </span>
-      );
+      return <StatusTag status="RUNNING" label="Tạo mới" />;
     }
     if (status === 'DA_GUI_CIC') {
-      return (
-        <span style={{
-          color: colors.warning.dark,
-          border: `1px solid ${colors.warning.base}`,
-          background: colors.warning.light,
-          padding: '3px 10px',
-          borderRadius: 4,
-          fontSize: 11,
-          fontWeight: 650,
-          whiteSpace: 'nowrap'
-        }}>
-          Đã gửi CIC
-        </span>
-      );
+      return <StatusTag status="PENDING" label="Đã gửi CIC" />;
     }
-    return (
-      <span style={{
-        color: '#ffffff',
-        background: colors.success.base,
-        padding: '4px 10px',
-        borderRadius: 4,
-        fontSize: 11,
-        fontWeight: 650,
-        whiteSpace: 'nowrap'
-      }}>
-        Đã tiếp nhận
-      </span>
-    );
+    return <StatusTag status="APPROVED" label="Đã tiếp nhận" />;
   };
 
   // ─── TABLE COLUMN DEFINITION WITH CONDITION ACTIONS ──────────────
@@ -1542,6 +1686,12 @@ const SendBalanceModule: React.FC = () => {
         key: 'nguonDuLieu',
         width: 90,
         align: 'center' as const,
+        filters: [
+          { text: 'TCTD', value: 'TCTD' },
+          { text: 'Chi nhánh NH nước ngoài', value: 'Chi nhánh NH nước ngoài' },
+          { text: 'Công ty tài chính', value: 'Công ty tài chính' }
+        ],
+        onFilter: (value: any, record: any) => record.nguonDuLieu === value,
         render: (text: string) => <span style={{ fontWeight: 600 }}>{text}</span>
       },
       {
@@ -1549,6 +1699,8 @@ const SendBalanceModule: React.FC = () => {
         dataIndex: 'nghiepVu',
         key: 'nghiepVu',
         width: 180,
+        filters: Array.from(new Set(editDetails.map(item => item.nghiepVu).filter(Boolean))).map(nv => ({ text: nv, value: nv })),
+        onFilter: (value: any, record: any) => record.nghiepVu === value,
         render: (text: string, record: ReconciliationDetailRow) => {
           if (operations.length > 1) {
             return (
@@ -1609,6 +1761,12 @@ const SendBalanceModule: React.FC = () => {
         key: 'maTienTe',
         width: 110,
         align: 'center' as const,
+        filters: [
+          { text: 'VND', value: 'VND' },
+          { text: 'USD', value: 'USD' },
+          { text: 'XAU', value: 'XAU' }
+        ],
+        onFilter: (value: any, record: any) => record.maTienTe === value,
         render: (val: string | null, record: ReconciliationDetailRow) => (
           <Select
             value={val || undefined}
@@ -1654,10 +1812,51 @@ const SendBalanceModule: React.FC = () => {
       )
     });
 
-    return [...baseCols, ...condCols];
+    const preparedEditCols = [...baseCols, ...condCols]
+      .map(col => {
+        const colKey = col.key as string;
+        const isFixed = ['stt', 'action'].includes(colKey);
+        return {
+          ...col,
+          onHeaderCell: (column: any) => {
+            if (isFixed) return {};
+            return {
+              draggable: true,
+              onDragStart: (e: any) => {
+                e.dataTransfer.setData('text/plain', colKey);
+              },
+              onDragOver: (e: any) => {
+                e.preventDefault();
+                e.currentTarget.classList.add('drag-over');
+              },
+              onDragLeave: (e: any) => {
+                e.currentTarget.classList.remove('drag-over');
+              },
+              onDrop: (e: any) => {
+                e.currentTarget.classList.remove('drag-over');
+                const sourceKey = e.dataTransfer.getData('text/plain');
+                const targetKey = colKey;
+                if (sourceKey && targetKey && sourceKey !== targetKey && !['stt', 'action'].includes(sourceKey)) {
+                  handleEditColumnReorder(sourceKey, targetKey);
+                }
+              },
+              style: { cursor: 'grab' }
+            };
+          }
+        };
+      })
+      .sort((a, b) => {
+        const aKey = a.key as string;
+        const bKey = b.key as string;
+        const aIdx = editColumnOrder.indexOf(aKey);
+        const bIdx = editColumnOrder.indexOf(bKey);
+        return (aIdx !== -1 ? aIdx : 99) - (bIdx !== -1 ? bIdx : 99);
+      });
+
+    return preparedEditCols;
   };
 
-  const getDetailTableColumns = (loaiFile: string) => {
+  const getDetailTableColumns = (loaiFile: string, rows: ReconciliationDetailRow[] = []) => {
     const rule = RAW_FILE_RULES.find(r => r.loaiFile === loaiFile);
     if (!rule) return [];
 
@@ -1675,6 +1874,12 @@ const SendBalanceModule: React.FC = () => {
         key: 'nguonDuLieu',
         width: 90,
         align: 'center' as const,
+        filters: [
+          { text: 'TCTD', value: 'TCTD' },
+          { text: 'Chi nhánh NH nước ngoài', value: 'Chi nhánh NH nước ngoài' },
+          { text: 'Công ty tài chính', value: 'Công ty tài chính' }
+        ],
+        onFilter: (value: any, record: any) => record.nguonDuLieu === value,
         render: (text: string) => <span style={{ fontWeight: 600 }}>{text}</span>
       },
       {
@@ -1682,6 +1887,8 @@ const SendBalanceModule: React.FC = () => {
         dataIndex: 'nghiepVu',
         key: 'nghiepVu',
         width: 150,
+        filters: Array.from(new Set(rows.map(item => item.nghiepVu).filter(Boolean))).map(nv => ({ text: nv, value: nv })),
+        onFilter: (value: any, record: any) => record.nghiepVu === value,
         render: (text: string) => <span style={{ fontWeight: 650, color: colors.primary[700] }}>{text}</span>
       }
     ];
@@ -1724,6 +1931,12 @@ const SendBalanceModule: React.FC = () => {
         key: 'maTienTe',
         width: 110,
         align: 'center' as const,
+        filters: [
+          { text: 'VND', value: 'VND' },
+          { text: 'USD', value: 'USD' },
+          { text: 'XAU', value: 'XAU' }
+        ],
+        onFilter: (value: any, record: any) => record.maTienTe === value,
         render: (val: string | null) => (
           val ? (
             <span style={{
@@ -1745,7 +1958,48 @@ const SendBalanceModule: React.FC = () => {
     if (rule.duPhongPhaiTrichRule !== null) condCols.push(renderReadOnlyCell('duPhongPhaiTrich', rule.duPhongPhaiTrichRule));
     if (rule.duPhongDaTrichRule !== null) condCols.push(renderReadOnlyCell('duPhongDaTrich', rule.duPhongDaTrichRule));
 
-    return [...baseCols, ...condCols];
+    const preparedDetailCols = [...baseCols, ...condCols]
+      .map(col => {
+        const colKey = col.key as string;
+        const isFixed = ['stt'].includes(colKey);
+        return {
+          ...col,
+          onHeaderCell: (column: any) => {
+            if (isFixed) return {};
+            return {
+              draggable: true,
+              onDragStart: (e: any) => {
+                e.dataTransfer.setData('text/plain', colKey);
+              },
+              onDragOver: (e: any) => {
+                e.preventDefault();
+                e.currentTarget.classList.add('drag-over');
+              },
+              onDragLeave: (e: any) => {
+                e.currentTarget.classList.remove('drag-over');
+              },
+              onDrop: (e: any) => {
+                e.currentTarget.classList.remove('drag-over');
+                const sourceKey = e.dataTransfer.getData('text/plain');
+                const targetKey = colKey;
+                if (sourceKey && targetKey && sourceKey !== targetKey && !['stt'].includes(sourceKey)) {
+                  handleDetailColumnReorder(sourceKey, targetKey);
+                }
+              },
+              style: { cursor: 'grab' }
+            };
+          }
+        };
+      })
+      .sort((a, b) => {
+        const aKey = a.key as string;
+        const bKey = b.key as string;
+        const aIdx = detailColumnOrder.indexOf(aKey);
+        const bIdx = detailColumnOrder.indexOf(bKey);
+        return (aIdx !== -1 ? aIdx : 99) - (bIdx !== -1 ? bIdx : 99);
+      });
+
+    return preparedDetailCols;
   };
 
   const getDetailRows = (report: BalanceReport): ReconciliationDetailRow[] => {
@@ -1845,6 +2099,12 @@ const SendBalanceModule: React.FC = () => {
       width: 90,
       align: 'center' as const,
       fixed: 'left' as const,
+      filters: [
+        { text: 'TCTD', value: 'TCTD' },
+        { text: 'Chi nhánh NH nước ngoài', value: 'Chi nhánh NH nước ngoài' },
+        { text: 'Công ty tài chính', value: 'Công ty tài chính' }
+      ],
+      onFilter: (value: any, record: any) => record.nguonDuLieu === value,
       render: (text: string, record: ReconciliationDetailRow) => {
         if (!record.isParent) return "-";
         return (
@@ -1875,18 +2135,18 @@ const SendBalanceModule: React.FC = () => {
             renderDisplay={(val) => (
               <span
                 style={{
-                  fontFamily: 'monospace',
-                  fontSize: 12,
-                  color: colors.subsystem.portal,
-                  fontWeight: 600,
-                  textDecoration: 'underline'
+                  textDecoration: 'underline',
+                  fontWeight: 500,
+                  cursor: 'pointer'
                 }}
                 onClick={(e) => {
                   e.stopPropagation();
                   handleViewDetail(record);
                 }}
               >
-                {val}
+                <CodeText muted style={{ fontSize: '11.5px', fontWeight: 500, color: colors.primary[500] }}>
+                  {val}
+                </CodeText>
               </span>
             )}
           />
@@ -1899,6 +2159,12 @@ const SendBalanceModule: React.FC = () => {
       key: 'maDauMoi',
       width: 160,
       align: 'center' as const,
+      filters: [
+        { text: '31358001', value: '31358001' },
+        { text: '01201001', value: '01201001' },
+        { text: '01203002', value: '01203002' }
+      ],
+      onFilter: (value: any, record: any) => record.maDauMoi === value,
       render: (text: string, record: ReconciliationDetailRow) => {
         if (!record.isParent) return "";
         return (
@@ -1937,6 +2203,24 @@ const SendBalanceModule: React.FC = () => {
       key: 'loaiFile',
       width: 90,
       align: 'center' as const,
+      filters: [
+        { text: 'D10', value: 'D10' },
+        { text: 'D11', value: 'D11' },
+        { text: 'D12', value: 'D12' },
+        { text: 'D20', value: 'D20' },
+        { text: 'D31', value: 'D31' },
+        { text: 'D32', value: 'D32' },
+        { text: 'D33', value: 'D33' },
+        { text: 'D34', value: 'D34' },
+        { text: 'D35', value: 'D35' },
+        { text: 'D36', value: 'D36' },
+        { text: 'D40', value: 'D40' },
+        { text: 'D50', value: 'D50' },
+        { text: 'D60', value: 'D60' },
+        { text: 'D70', value: 'D70' },
+        { text: 'DKQ', value: 'DKQ' }
+      ],
+      onFilter: (value: any, record: any) => record.loaiFile === value,
       render: (text: string, record: ReconciliationDetailRow) => {
         if (!record.isParent) return "";
         return (
@@ -1990,6 +2274,17 @@ const SendBalanceModule: React.FC = () => {
       key: 'maTienTe',
       width: 100,
       align: 'center' as const,
+      filters: [
+        { text: 'VND', value: 'VND' },
+        { text: 'USD', value: 'USD' },
+        { text: 'XAU', value: 'XAU' }
+      ],
+      onFilter: (value: any, record: ReconciliationDetailRow) => {
+        if (record.isParent) {
+          return record.children?.some(child => child.maTienTe === value) || false;
+        }
+        return record.maTienTe === value;
+      },
       render: (val: string | null, record: ReconciliationDetailRow) => {
         if (record.isParent) return "-";
         if (!record.maTienTeRule) {
@@ -2107,6 +2402,12 @@ const SendBalanceModule: React.FC = () => {
       key: 'trangThai',
       width: 130,
       align: 'center' as const,
+      filters: [
+        { text: 'Tạo mới', value: 'TAO_MOI' },
+        { text: 'Đã gửi CIC', value: 'DA_GUI_CIC' },
+        { text: 'Đã tiếp nhận', value: 'DA_TIEP_NHAN' }
+      ],
+      onFilter: (value: any, record: any) => record.trangThai === value,
       render: (status: TrangThaiTep, record: ReconciliationDetailRow) => {
         if (!record.isParent) return "";
         return (
@@ -2134,16 +2435,34 @@ const SendBalanceModule: React.FC = () => {
       render: (_: any, record: ReconciliationDetailRow) => {
         if (!record.isParent) return "";
 
-        const menuItems = [
-          { key: 'view', label: 'Xem chi tiết', icon: <EyeOutlined /> }
-        ];
+        const menuItems: Array<{
+          key: string;
+          label: string;
+          icon: React.ReactNode;
+          onClick?: () => void;
+          danger?: boolean;
+        }> = [
+            {
+              key: 'view',
+              label: 'Xem chi tiết',
+              icon: <EyeOutlined />,
+              onClick: () => {
+                const parentReport = data.find(item => item.key === record.parentKey);
+                if (parentReport) handleViewDetail(record);
+              }
+            }
+          ];
 
         // Thu hồi (Chỉ hiển thị nếu trạng thái là Đã gửi CIC)
         if (record.trangThai === 'DA_GUI_CIC') {
           menuItems.push({
             key: 'revoke',
             label: 'Thu hồi',
-            icon: <UndoOutlined style={{ color: colors.warning.dark }} />
+            icon: <UndoOutlined style={{ color: colors.warning.dark }} />,
+            onClick: () => {
+              const parentReport = data.find(item => item.key === record.parentKey);
+              if (parentReport) handleRevoke(parentReport);
+            }
           });
         }
 
@@ -2153,25 +2472,15 @@ const SendBalanceModule: React.FC = () => {
             key: 'delete',
             label: 'Xóa tệp nháp',
             icon: <DeleteOutlined style={{ color: colors.error.base }} />,
-            // @ts-ignore
-            danger: true
+            danger: true,
+            onClick: () => {
+              const parentReport = data.find(item => item.key === record.parentKey);
+              if (parentReport) handleDelete(parentReport);
+            }
           });
         }
 
-        const handleMenuClick = ({ key }: { key: string }) => {
-          const parentReport = data.find(item => item.key === record.parentKey);
-          if (!parentReport) return;
-
-          if (key === 'view') handleViewDetail(record);
-          if (key === 'revoke') handleRevoke(parentReport);
-          if (key === 'delete') handleDelete(parentReport);
-        };
-
-        return (
-          <Dropdown menu={{ items: menuItems, onClick: handleMenuClick }} trigger={['click']} placement="bottomRight">
-            <Button type="text" shape="circle" icon={<MoreOutlined />} />
-          </Dropdown>
-        );
+        return <ActionMenu items={menuItems} />;
       }
     }
   ];
@@ -2204,531 +2513,571 @@ const SendBalanceModule: React.FC = () => {
   // ─── DRAG AND DROP CONFIG ──────────────────────────────────────────
 
   const renderColumnSettings = () => {
+    const sortedConfigureColumns = mainColumnOrder
+      .map(key => columnOptions.find(opt => opt.key === key))
+      .filter((opt): opt is typeof columnOptions[number] => opt !== undefined);
+
+    const filteredConfigureColumns = sortedConfigureColumns.filter(opt =>
+      opt.label.toLowerCase().includes(columnSearchTerm.toLowerCase())
+    );
+
+    const selectedCount = visibleColumns.filter(k => columnOptions.some(opt => opt.key === k)).length;
+    const totalCount = columnOptions.length;
+
     return (
-      <div style={{ width: 440, padding: '8px 12px' }}>
-        <div style={{ fontWeight: 700, marginBottom: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: 14, color: colors.text.primary }}>Cài đặt hiển thị cột</span>
-          <Button size="small" type="link" style={{ padding: 0 }} onClick={() => {
-            setVisibleColumns([
-              'stt', 'nguonDuLieu', 'tenTep', 'maDauMoi', 'ngayBaoCao', 'loaiFile', 'nghiepVu',
-              'soLuongKhachHang', 'soLuongHopDong', 'maTienTe',
-              'duNo', 'tongDuNo', 'phatSinhGiaiNgan', 'phatSinhTraNo', 'tongGiaTriBaoDam', 'giaTriBaoDamKhoanVay',
-              'doanhSoGiamNo', 'duPhongPhaiTrich', 'duPhongDaTrich', 'trangThai', 'action'
-            ]);
-          }}>
-            Đặt lại mặc định
-          </Button>
+      <div style={{ width: 280, padding: '8px 4px 4px' }}>
+        <div style={{ fontWeight: 700, fontSize: 15, color: colors.text.primary, marginBottom: 10, paddingLeft: 8 }}>
+          Cài đặt hiển thị
         </div>
-        <Divider style={{ margin: '8px 0 12px' }} />
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 16px' }}>
-          {columnOptions.map(opt => (
-            <Checkbox
-              key={opt.key}
-              disabled={opt.disabled}
-              checked={visibleColumns.includes(opt.key)}
-              onChange={(e) => {
-                const checked = e.target.checked;
-                if (checked) {
-                  setVisibleColumns(prev => [...prev, opt.key]);
-                } else {
-                  setVisibleColumns(prev => prev.filter(k => k !== opt.key));
-                }
+
+        {/* Search Input */}
+        <div style={{ padding: '0 8px 10px' }}>
+          <Input
+            placeholder="Tìm kiếm trường thông tin"
+            prefix={<SearchOutlined style={{ color: colors.text.tertiary }} />}
+            value={columnSearchTerm}
+            onChange={e => setColumnSearchTerm(e.target.value)}
+            allowClear
+            size="small"
+            style={{ borderRadius: radius.md }}
+          />
+        </div>
+
+        {/* Scrollable List */}
+        <div style={{
+          maxHeight: 280,
+          overflowY: 'auto',
+          padding: '0 4px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 2
+        }} className="popover-column-list">
+          {filteredConfigureColumns.map((opt) => {
+            const isFixed = isFixedColumn(opt.key);
+            return (
+              <div
+                key={opt.key}
+                draggable={!isFixed}
+                onDragStart={(e) => {
+                  if (!isFixed) {
+                    e.dataTransfer.setData('text/plain', opt.key);
+                  }
+                }}
+                onDragOver={(e) => {
+                  if (!isFixed) {
+                    e.preventDefault();
+                    e.currentTarget.classList.add('popover-drag-over');
+                  }
+                }}
+                onDragLeave={(e) => {
+                  e.currentTarget.classList.remove('popover-drag-over');
+                }}
+                onDrop={(e) => {
+                  e.currentTarget.classList.remove('popover-drag-over');
+                  const sourceKey = e.dataTransfer.getData('text/plain');
+                  const targetKey = opt.key;
+                  if (sourceKey && targetKey && sourceKey !== targetKey && !isFixedColumn(sourceKey) && !isFixedColumn(targetKey)) {
+                    handleMainColumnReorder(sourceKey, targetKey);
+                  }
+                }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '6px 8px',
+                  borderRadius: radius.sm,
+                  cursor: isFixed ? 'default' : 'grab',
+                  transition: 'background-color 0.2s',
+                }}
+                className="popover-column-item"
+              >
+                {/* Drag handle */}
+                {!isFixed ? (
+                  <HolderOutlined style={{ color: colors.text.tertiary, marginRight: 8, cursor: 'grab' }} />
+                ) : (
+                  <div style={{ width: 22 }} /> // spacing to align
+                )}
+
+                {/* Checkbox */}
+                <Checkbox
+                  disabled={opt.disabled}
+                  checked={visibleColumns.includes(opt.key)}
+                  onChange={(e) => {
+                    const checked = e.target.checked;
+                    if (checked) {
+                      setVisibleColumns(prev => [...prev, opt.key]);
+                    } else {
+                      setVisibleColumns(prev => prev.filter(k => k !== opt.key));
+                    }
+                  }}
+                >
+                  <span style={{ fontSize: 13, color: colors.text.primary }}>{opt.label}</span>
+                </Checkbox>
+              </div>
+            );
+          })}
+          {filteredConfigureColumns.length === 0 && (
+            <div style={{ textAlign: 'center', padding: '16px 0', color: colors.text.tertiary, fontSize: 13 }}>
+              Không tìm thấy trường thông tin
+            </div>
+          )}
+        </div>
+
+        <Divider style={{ margin: '8px 0' }} />
+
+        {/* Footer */}
+        <div style={{ padding: '0 8px 4px' }}>
+          <div style={{ fontSize: 12, color: colors.text.secondary, marginBottom: 8, paddingLeft: 4 }}>
+            Đã chọn {selectedCount}/{totalCount}
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Button
+              type="link"
+              size="small"
+              style={{ padding: 0, fontSize: 13, fontWeight: 600, color: colors.primary[600] }}
+              onClick={() => {
+                const mandatoryKeys = columnOptions.filter(opt => opt.disabled).map(opt => opt.key);
+                setVisibleColumns(mandatoryKeys);
               }}
             >
-              {opt.label}
-            </Checkbox>
-          ))}
+              Bỏ chọn
+            </Button>
+            <Button
+              type="link"
+              size="small"
+              style={{ padding: 0, fontSize: 13, fontWeight: 600, color: colors.primary[600] }}
+              onClick={() => {
+                setVisibleColumns(columnOptions.map(opt => opt.key));
+              }}
+            >
+              Chọn tất cả
+            </Button>
+          </div>
         </div>
       </div>
     );
   };
 
   return (
-    <PageLayout noPadding>
+    <PageLayout>
+      {/* ─── TRA CỨU BÁO CÁO ĐÃ NHẬP ──────────────────────────────── */}
+      <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
 
-      {/* CỤM TIÊU ĐỀ NGHIỆP VỤ */}
-      <div style={{
-        background: `linear-gradient(135deg, ${colors.subsystem.portal}15 0%, rgba(255,255,255,0) 100%)`,
-        padding: '24px 24px 8px',
-        borderBottom: `1px solid ${colors.border.split}`,
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center'
-      }}>
-        <Space direction="vertical" size={2}>
-          <Title level={3} style={{ margin: 0, color: colors.subsystem.portal, fontWeight: 800 }}>
-            GỬI THÔNG TIN CÂN ĐỐI
-          </Title>
-          <Text type="secondary">
-            Cổng quản lý nộp và đối chiếu số liệu báo cáo tín dụng cân đối dành cho các Tổ chức tín dụng.
-          </Text>
-        </Space>
+        {/* Bộ lọc Tìm kiếm - Sử dụng FilterBar & FilterCol */}
+        <FilterBar inCard onSearch={handleSearch} onReset={handleReset} loading={loading} showAddFilter={false}>
+          {/* 1. Tên tệp: text field */}
+          <FilterCol minWidth={200}>
+            <Tooltip title="Tên tệp" placement="top" arrow>
+              <Input
+                placeholder="Tìm theo tên tệp..."
+                value={tenTepFilter}
+                onChange={e => setTenTepFilter(e.target.value)}
+                style={{ width: '100%' }}
+              />
+            </Tooltip>
+          </FilterCol>
 
-        {/* Cụm Tabs chuyển đổi nhanh */}
-        <div style={{
-          background: '#ffffff',
-          padding: '4px',
-          borderRadius: radius.lg,
-          boxShadow: shadows.xs,
-          border: `1px solid ${colors.border.split}`
-        }}>
-          <Button
-            type={activeTab === 'search' ? 'primary' : 'text'}
-            style={{
-              borderRadius: radius.md,
-              background: activeTab === 'search' ? colors.subsystem.portal : 'transparent',
-              borderColor: activeTab === 'search' ? colors.subsystem.portal : 'transparent',
-            }}
-            onClick={() => setActiveTab('search')}
-          >
-            Tra cứu tệp đã nộp
-          </Button>
-          <Button
-            type={activeTab === 'upload' ? 'primary' : 'text'}
-            style={{
-              borderRadius: radius.md,
-              background: activeTab === 'upload' ? colors.subsystem.portal : 'transparent',
-              borderColor: activeTab === 'upload' ? colors.subsystem.portal : 'transparent',
-              marginLeft: 4
-            }}
-            onClick={() => setActiveTab('upload')}
-            icon={<CloudUploadOutlined />}
-          >
-            Gửi báo cáo mới
-          </Button>
-        </div>
-      </div>
+          {/* 2. Loại tệp: droplist, multi select */}
+          <FilterCol minWidth={220}>
+            <Tooltip title="Loại tệp" placement="top" arrow>
+              <Select
+                mode="multiple"
+                placeholder="Chọn loại tệp (chọn nhiều)..."
+                value={loaiTepFilter}
+                onChange={setLoaiTepFilter}
+                style={{ width: '100%' }}
+                maxTagCount="responsive"
+              >
+                <Select.Option value="D10">D10 — Thông tin định danh khách hàng vay phát sinh</Select.Option>
+                <Select.Option value="D11">D11 — Thông tin định danh khách hàng vay cuối tháng</Select.Option>
+                <Select.Option value="D12">D12 — Thông tin về người có liên quan của khách hàng vay</Select.Option>
+                <Select.Option value="D20">D20 — Thông tin tài chính khách hàng vay là doanh nghiệp</Select.Option>
+                <Select.Option value="D31">D31 — Thông tin quan hệ tín dụng rút gọn</Select.Option>
+                <Select.Option value="D32">D32 — Thông tin quan hệ tín dụng cuối tháng</Select.Option>
+                <Select.Option value="D33">D33 — Thông tin thẻ tín dụng rút gọn</Select.Option>
+                <Select.Option value="D34">D34 — Thông tin thẻ tín dụng cuối tháng</Select.Option>
+                <Select.Option value="D35">D35 — Thông tin thống kê tình hình giải ngân, trả nợ của khách hàng</Select.Option>
+                <Select.Option value="D36">D36 — Thông tin trích lập dự phòng rủi ro cuối quý</Select.Option>
+                <Select.Option value="D40">D40 — Thông tin về biện pháp bảo đảm cấp tín dụng</Select.Option>
+                <Select.Option value="D50">D50 — Thông tin mua và ủy thác mua trái phiếu doanh nghiệp (không bao gồm TCTD)</Select.Option>
+                <Select.Option value="D60">D60 — Thông tin hoạt động xử lý nợ xấu nội bảng</Select.Option>
+                <Select.Option value="D70">D70 — Thông tin dư nợ tại VAMC</Select.Option>
+                <Select.Option value="DKQ">DKQ — Báo cáo phân loại nợ & cam kết ngoại bảng</Select.Option>
+              </Select>
+            </Tooltip>
+          </FilterCol>
 
-      <div style={{ padding: '16px 24px 24px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+          {/* 3. Ngày báo cáo (từ ngày đến ngày) */}
+          <FilterCol minWidth={220}>
+            <Tooltip title="Ngày báo cáo" placement="top" arrow>
+              <RangePicker style={{ width: '100%' }} placeholder={['Từ ngày', 'Đến ngày']} format="DD/MM/YYYY" />
+            </Tooltip>
+          </FilterCol>
 
-        {/* ─── TAB 1: TRA CỨU BÁO CÁO ĐÃ NHẬP ──────────────────────────────── */}
-        {activeTab === 'search' && (
-          <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+          {/* 4. Ngày gửi (từ ngày đến ngày) */}
+          <FilterCol minWidth={220}>
+            <Tooltip title="Ngày gửi" placement="top" arrow>
+              <RangePicker style={{ width: '100%' }} placeholder={['Từ ngày', 'Đến ngày']} format="DD/MM/YYYY" />
+            </Tooltip>
+          </FilterCol>
 
-            {/* Bộ lọc Tìm kiếm - Xếp đúng thứ tự từ trái qua phải */}
-            <div style={{
-              background: '#ffffff',
-              borderRadius: radius.lg,
-              border: `1px solid ${colors.border.split}`,
-              boxShadow: shadows.xs,
-              padding: 20,
-              marginBottom: 16
-            }}>
-              <div style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: '12px 16px',
-                alignItems: 'center'
-              }}>
+          {/* 5. Trạng thái: droplist */}
+          <FilterCol minWidth={160}>
+            <Tooltip title="Trạng thái" placement="top" arrow>
+              <Select value={trangThaiFilter} onChange={setTrangThaiFilter} style={{ width: '100%' }}>
+                <Select.Option value="">Tất cả</Select.Option>
+                <Select.Option value="TAO_MOI">Tạo mới</Select.Option>
+                <Select.Option value="DA_GUI_CIC">Đã gửi CIC</Select.Option>
+                <Select.Option value="DA_TIEP_NHAN">Đã tiếp nhận</Select.Option>
+              </Select>
+            </Tooltip>
+          </FilterCol>
+        </FilterBar>
 
-                {/* 1. Tên tệp: text field */}
-                <div style={{ flex: '2 1 200px', minWidth: 200 }}>
-                  <Text style={{ fontSize: 11, fontWeight: 600, color: colors.text.secondary, display: 'block', marginBottom: 4 }}>
-                    Tên tệp
-                  </Text>
-                  <Input
-                    placeholder="Tìm theo tên tệp..."
-                    value={tenTepFilter}
-                    onChange={e => setTenTepFilter(e.target.value)}
-                    style={{ width: '100%' }}
-                  />
-                </div>
+        {/* Bảng danh sách rút gọn */}
+        <SectionCard
+          flex
+          noPadding
+          title="Danh sách báo cáo thông tin cân đối"
+          count={`Mở rộng dòng để xem chi tiết đối soát`}
+          extra={
+            <Space>
+              <Button
+                type="primary"
+                icon={<CloudUploadOutlined />}
+                style={{ background: colors.subsystem.portal, borderColor: colors.subsystem.portal }}
+                onClick={() => {
+                  setUploadModalVisible(true);
+                  handleResetForm();
+                }}
+              >
+                Gửi báo cáo mới
+              </Button>
+              <Popover
+                content={renderColumnSettings()}
+                trigger="click"
+                placement="bottomRight"
+              >
+                <Button icon={<SettingOutlined />}>Cài đặt hiển thị</Button>
+              </Popover>
+              <Button
+                icon={<FileExcelOutlined />}
+                style={{ color: colors.success.dark, borderColor: colors.success.dark }}
+                onClick={() => message.success('Xuất Excel thành công!')}
+              >
+                Xuất Excel
+              </Button>
+            </Space>
+          }
+        >
+          <div style={{ flex: 1, overflowY: 'auto' }}>
+            {(() => {
+              const preparedMainColumns = columns
+                .map(col => {
+                  const colKey = (col.key || col.dataIndex) as string;
+                  const isFixed = ['stt', 'nguonDuLieu', 'tenTep', 'action'].includes(colKey);
 
-                {/* 2. Loại tệp: droplist, multi select */}
-                <div style={{ flex: '2 1 220px', minWidth: 220 }}>
-                  <Text style={{ fontSize: 11, fontWeight: 600, color: colors.text.secondary, display: 'block', marginBottom: 4 }}>
-                    Loại tệp
-                  </Text>
-                  <Select
-                    mode="multiple"
-                    placeholder="Chọn loại tệp (chọn nhiều)..."
-                    value={loaiTepFilter}
-                    onChange={setLoaiTepFilter}
-                    style={{ width: '100%' }}
-                    maxTagCount="responsive"
-                  >
-                    <Select.Option value="D10">D10 — Thông tin định danh khách hàng vay phát sinh</Select.Option>
-                    <Select.Option value="D11">D11 — Thông tin định danh khách hàng vay cuối tháng</Select.Option>
-                    <Select.Option value="D12">D12 — Thông tin về người có liên quan của khách hàng vay</Select.Option>
-                    <Select.Option value="D20">D20 — Thông tin tài chính khách hàng vay là doanh nghiệp</Select.Option>
-                    <Select.Option value="D31">D31 — Thông tin quan hệ tín dụng rút gọn</Select.Option>
-                    <Select.Option value="D32">D32 — Thông tin quan hệ tín dụng cuối tháng</Select.Option>
-                    <Select.Option value="D33">D33 — Thông tin thẻ tín dụng rút gọn</Select.Option>
-                    <Select.Option value="D34">D34 — Thông tin thẻ tín dụng cuối tháng</Select.Option>
-                    <Select.Option value="D35">D35 — Thông tin thống kê tình hình giải ngân, trả nợ của khách hàng</Select.Option>
-                    <Select.Option value="D36">D36 — Thông tin trích lập dự phòng rủi ro cuối quý</Select.Option>
-                    <Select.Option value="D40">D40 — Thông tin về biện pháp bảo đảm cấp tín dụng</Select.Option>
-                    <Select.Option value="D50">D50 — Thông tin mua và ủy thác mua trái phiếu doanh nghiệp (không bao gồm TCTD)</Select.Option>
-                    <Select.Option value="D60">D60 — Thông tin hoạt động xử lý nợ xấu nội bảng</Select.Option>
-                    <Select.Option value="D70">D70 — Thông tin dư nợ tại VAMC</Select.Option>
-                    <Select.Option value="DKQ">DKQ — Báo cáo phân loại nợ & cam kết ngoại bảng</Select.Option>
-                  </Select>
-                </div>
+                  const baseCol = {
+                    ...col,
+                    onHeaderCell: (column: any) => {
+                      if (isFixed) return {};
+                      return {
+                        draggable: true,
+                        onDragStart: (e: any) => {
+                          e.dataTransfer.setData('text/plain', colKey);
+                        },
+                        onDragOver: (e: any) => {
+                          e.preventDefault();
+                          e.currentTarget.classList.add('drag-over');
+                        },
+                        onDragLeave: (e: any) => {
+                          e.currentTarget.classList.remove('drag-over');
+                        },
+                        onDrop: (e: any) => {
+                          e.currentTarget.classList.remove('drag-over');
+                          const sourceKey = e.dataTransfer.getData('text/plain');
+                          const targetKey = colKey;
+                          if (sourceKey && targetKey && sourceKey !== targetKey && !['stt', 'nguonDuLieu', 'tenTep', 'action'].includes(sourceKey)) {
+                            handleMainColumnReorder(sourceKey, targetKey);
+                          }
+                        },
+                        style: { cursor: 'grab' }
+                      };
+                    }
+                  };
 
-                {/* 3. Ngày báo cáo (từ ngày đến ngày) */}
-                <div style={{ flex: '2 1 220px', minWidth: 220 }}>
-                  <Text style={{ fontSize: 11, fontWeight: 600, color: colors.text.secondary, display: 'block', marginBottom: 4 }}>
-                    Ngày báo cáo
-                  </Text>
-                  <RangePicker style={{ width: '100%' }} placeholder={['Từ ngày', 'Đến ngày']} format="DD/MM/YYYY" />
-                </div>
+                  if (colKey === 'nghiepVu') {
+                    const uniqueNghiepVus = Array.from(new Set(
+                      treeData.flatMap(parent => parent.children || []).map(child => child.nghiepVu).filter(Boolean)
+                    ));
+                    return {
+                      ...baseCol,
+                      filters: uniqueNghiepVus.map(nv => ({ text: nv, value: nv })),
+                      onFilter: (value: any, record: ReconciliationDetailRow) => {
+                        if (record.isParent) {
+                          return record.children?.some(child => child.nghiepVu === value) || false;
+                        }
+                        return record.nghiepVu === value;
+                      }
+                    };
+                  }
+                  return baseCol;
+                })
+                .sort((a, b) => {
+                  const aKey = (a.key || a.dataIndex) as string;
+                  const bKey = (b.key || b.dataIndex) as string;
+                  const aIdx = mainColumnOrder.indexOf(aKey);
+                  const bIdx = mainColumnOrder.indexOf(bKey);
+                  return (aIdx !== -1 ? aIdx : 99) - (bIdx !== -1 ? bIdx : 99);
+                })
+                .filter(col => visibleColumns.includes(col.key || ''));
 
-                {/* 4. Ngày gửi (từ ngày đến ngày) */}
-                <div style={{ flex: '2 1 220px', minWidth: 220 }}>
-                  <Text style={{ fontSize: 11, fontWeight: 600, color: colors.text.secondary, display: 'block', marginBottom: 4 }}>
-                    Ngày gửi
-                  </Text>
-                  <RangePicker style={{ width: '100%' }} placeholder={['Từ ngày', 'Đến ngày']} format="DD/MM/YYYY" />
-                </div>
-
-                {/* 5. Trạng thái: droplist */}
-                <div style={{ flex: '1.5 1 160px', minWidth: 160 }}>
-                  <Text style={{ fontSize: 11, fontWeight: 600, color: colors.text.secondary, display: 'block', marginBottom: 4 }}>
-                    Trạng thái
-                  </Text>
-                  <Select value={trangThaiFilter} onChange={setTrangThaiFilter} style={{ width: '100%' }}>
-                    <Select.Option value="">Tất cả</Select.Option>
-                    <Select.Option value="TAO_MOI">Tạo mới</Select.Option>
-                    <Select.Option value="DA_GUI_CIC">Đã gửi CIC</Select.Option>
-                    <Select.Option value="DA_TIEP_NHAN">Đã tiếp nhận</Select.Option>
-                  </Select>
-                </div>
-
-                {/* Cụm nút hành động tìm kiếm */}
-                <div style={{ display: 'flex', gap: 8, alignSelf: 'flex-end', flexShrink: 0, paddingBottom: 2 }}>
-                  <Tooltip title="Tải lại bảng dữ liệu">
-                    <Button icon={<ReloadOutlined />} onClick={handleReset} />
-                  </Tooltip>
-                  <Button
-                    type="primary"
-                    icon={<SearchOutlined />}
-                    onClick={handleSearch}
-                    loading={loading}
-                    style={{
-                      background: colors.subsystem.portal,
-                      borderColor: colors.subsystem.portal
-                    }}
-                  >
-                    Tìm kiếm
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            {/* Bảng danh sách rút gọn */}
-            <SectionCard
-              flex
-              noPadding
-              title="Danh sách tệp thông tin cân đối"
-              count={`Hiển thị ${data.length} tệp tin nộp (Mở rộng dòng để xem chi tiết đối soát)`}
-              extra={
-                <Space>
-                  <Popover
-                    content={renderColumnSettings()}
-                    trigger="click"
-                    placement="bottomRight"
-                  >
-                    <Button icon={<SettingOutlined />}>Cài đặt hiển thị</Button>
-                  </Popover>
-                  <Button
-                    icon={<FileExcelOutlined />}
-                    style={{ color: colors.success.dark, borderColor: colors.success.dark }}
-                    onClick={() => message.success('Xuất dữ liệu Excel đối soát thành công!')}
-                  >
-                    Kết xuất Excel
-                  </Button>
-                </Space>
-              }
-            >
-              <div style={{ flex: 1, overflowY: 'auto' }}>
+              return (
                 <Table
                   dataSource={treeData}
-                  columns={columns.filter(col => visibleColumns.includes(col.key || ''))}
-                  pagination={false}
+                  columns={preparedMainColumns}
+                  pagination={tablePagination({ pageSize: 10 })}
                   loading={loading}
                   size="middle"
                   scroll={{ x: 2500, y: 500 }}
                   bordered
                 />
-              </div>
-
-              {/* Phân trang */}
-              <div style={{
-                padding: '16px 20px',
-                borderTop: `1px solid ${colors.border.split}`,
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                flexWrap: 'wrap',
-                gap: 12
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <Text style={{ fontSize: 13 }}>Hiển thị:</Text>
-                  <Select defaultValue="10" style={{ width: 70 }} size="small">
-                    <Select.Option value="10">10</Select.Option>
-                    <Select.Option value="20">20</Select.Option>
-                    <Select.Option value="50">50</Select.Option>
-                  </Select>
-                  <Text style={{ fontSize: 13, color: colors.text.secondary, marginLeft: 8 }}>
-                    kết quả | Từ 1 đến {data.length} trong tổng số {data.length} tệp tin báo cáo
-                  </Text>
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <Pagination
-                    total={data.length}
-                    pageSize={20}
-                    current={1}
-                    showSizeChanger={false}
-                    size="small"
-                  />
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, borderLeft: `1px solid ${colors.border.base}`, paddingLeft: 12 }}>
-                    <Text style={{ fontSize: 13 }}>Go to:</Text>
-                    <Input defaultValue="1" style={{ width: 45, textAlign: 'center' }} size="small" />
-                    <Button
-                      type="primary"
-                      icon={<RightOutlined style={{ fontSize: 10 }} />}
-                      size="small"
-                      style={{
-                        width: 24,
-                        height: 24,
-                        padding: 0,
-                        background: colors.subsystem.portal,
-                        borderColor: colors.subsystem.portal
-                      }}
-                    />
-                  </div>
-                </div>
-              </div>
-            </SectionCard>
+              );
+            })()}
           </div>
-        )}
+        </SectionCard>
+      </div>
 
-        {/* ─── TAB 2: GỬI BÁO CÁO CÂN ĐỐI MỚI ─────────────────────────────── */}
-        {activeTab === 'upload' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 20, flex: 1 }}>
-
-            {/* Cảnh báo nếu đã có bản ghi tồn tại */}
-            {loadedExistingReport && (
-              <Alert
-                message={
-                  loadedExistingReport.trangThai === 'TAO_MOI' ? (
-                    <span>
-                      <strong>Kỳ báo cáo này đã tồn tại bản ghi nháp!</strong> Trạng thái hiện tại: <strong style={{ color: colors.primary[600] }}>Tạo mới</strong>. Hệ thống đã tự động nạp dữ liệu. Bạn có thể tiếp tục chỉnh sửa, thực hiện Lưu hoặc Lưu và gửi CIC.
-                    </span>
-                  ) : (
-                    <span>
-                      <strong>Kỳ báo cáo này đã tồn tại bản ghi dữ liệu!</strong> Trạng thái hiện tại: <strong style={{ color: colors.primary[600] }}>{renderTrangThaiText(loadedExistingReport.trangThai)}</strong>. Hệ thống đã tự động nạp dữ liệu và khóa tính năng chỉnh sửa để đảm bảo an toàn số liệu.
-                    </span>
-                  )
-                }
-                type={loadedExistingReport.trangThai === 'TAO_MOI' ? "info" : "warning"}
-                showIcon
-                style={{ borderRadius: radius.md }}
-              />
-            )}
-
-            {/* Khối thông tin chung */}
-            <div style={{
-              background: '#ffffff',
-              borderRadius: radius.lg,
-              border: `1px solid ${colors.border.split}`,
-              boxShadow: shadows.xs,
-              padding: '24px',
-            }}>
-              <div style={{ fontWeight: 700, fontSize: 15, color: colors.subsystem.portal, marginBottom: 16 }}>
-                KHỐI THÔNG TIN CHUNG
-              </div>
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                gap: '16px'
-              }}>
-                <div>
-                  <Text strong style={{ fontSize: 12, display: 'block', marginBottom: 6 }}>
-                    Mã đầu mối báo cáo
-                  </Text>
-                  <Input value={uploadMaDauMoi} disabled style={{ width: '100%', height: 36 }} />
-                </div>
-
-                <div>
-                  <Text strong style={{ fontSize: 12, display: 'block', marginBottom: 6 }}>
-                    Loại tệp
-                  </Text>
-                  <Select
-                    value={uploadPhanLoai}
-                    onChange={setUploadPhanLoai}
-                    style={{ width: '100%' }}
-                    size="middle"
-                  >
-                    <Select.Option value="D10">D10 — Thông tin định danh khách hàng vay phát sinh</Select.Option>
-                    <Select.Option value="D11">D11 — Thông tin định danh khách hàng vay cuối tháng</Select.Option>
-                    <Select.Option value="D12">D12 — Thông tin về người có liên quan của khách hàng vay</Select.Option>
-                    <Select.Option value="D20">D20 — Thông tin tài chính khách hàng vay là doanh nghiệp</Select.Option>
-                    <Select.Option value="D31">D31 — Thông tin quan hệ tín dụng rút gọn</Select.Option>
-                    <Select.Option value="D32">D32 — Thông tin quan hệ tín dụng cuối tháng</Select.Option>
-                    <Select.Option value="D33">D33 — Thông tin thẻ tín dụng rút gọn</Select.Option>
-                    <Select.Option value="D34">D34 — Thông tin thẻ tín dụng cuối tháng</Select.Option>
-                    <Select.Option value="D35">D35 — Thông tin thống kê tình hình giải ngân, trả nợ của khách hàng</Select.Option>
-                    <Select.Option value="D36">D36 — Thông tin trích lập dự phòng rủi ro cuối quý</Select.Option>
-                    <Select.Option value="D40">D40 — Thông tin về biện pháp bảo đảm cấp tín dụng</Select.Option>
-                    <Select.Option value="D50">D50 — Thông tin mua và ủy thác mua trái phiếu doanh nghiệp (không bao gồm TCTD)</Select.Option>
-                    <Select.Option value="D60">D60 — Thông tin hoạt động xử lý nợ xấu nội bảng</Select.Option>
-                    <Select.Option value="D70">D70 — Thông tin dư nợ tại VAMC</Select.Option>
-                    <Select.Option value="DKQ">DKQ — Báo cáo phân loại nợ & cam kết ngoại bảng</Select.Option>
-                  </Select>
-                </div>
-
-                <div>
-                  <Text strong style={{ fontSize: 12, display: 'block', marginBottom: 6 }}>
-                    Ngày báo cáo
-                  </Text>
-                  <DatePicker
-                    value={uploadNgayBaoCao}
-                    onChange={setUploadNgayBaoCao}
-                    format="DD/MM/YYYY"
-                    style={{ width: '100%', height: 36 }}
-                  />
-                </div>
-
-                <div>
-                  <Text strong style={{ fontSize: 12, display: 'block', marginBottom: 6 }}>
-                    Tên tệp
-                  </Text>
-                  <AutoComplete
-                    value={uploadTenTep}
-                    onChange={setUploadTenTep}
-                    options={getFilteredFileNames()}
-                    placeholder="Nhập hoặc chọn tên tệp..."
-                    style={{ width: '100%' }}
-                    filterOption={(inputValue, option) =>
-                      option?.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
-                    }
-                    disabled={isReadOnly}
-                  >
-                    <Input style={{ height: 36 }} />
-                  </AutoComplete>
-                </div>
-              </div>
-            </div>
-
-            {/* Khối chi tiết thông tin cân đối */}
-            <div style={{
-              background: '#ffffff',
-              borderRadius: radius.lg,
-              border: `1px solid ${colors.border.split}`,
-              boxShadow: shadows.xs,
-              padding: '24px',
-            }}>
-              <div style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginBottom: 16
-              }}>
-                <div style={{ fontWeight: 700, fontSize: 15, color: colors.subsystem.portal }}>
-                  KHỐI CHI TIẾT THÔNG TIN CÂN ĐỐI
-                </div>
-                <Space size="small">
-                  <Button
-                    type="primary"
-                    icon={<PlusOutlined />}
-                    onClick={handleAddRow}
-                    style={{
-                      background: colors.success.base,
-                      borderColor: colors.success.base,
-                      fontWeight: 600
-                    }}
-                    size="small"
-                    disabled={isReadOnly}
-                  >
-                    Thêm dòng
-                  </Button>
-                  <Button
-                    type="default"
-                    icon={<ReloadOutlined />}
-                    onClick={handleLoadLatestData}
-                    style={{
-                      color: colors.subsystem.portal,
-                      borderColor: colors.subsystem.portal,
-                      fontWeight: 600
-                    }}
-                    size="small"
-                    disabled={isReadOnly}
-                  >
-                    Lấy dữ liệu gần nhất
-                  </Button>
-                </Space>
-              </div>
-
-              <div style={{ overflowX: 'auto' }}>
-                <Table
-                  dataSource={editDetails}
-                  columns={getEditTableColumns()}
-                  pagination={false}
-                  bordered
-                  size="middle"
-                  scroll={{ x: 'max-content' }}
-                />
-              </div>
-            </div>
-
-            {/* Các nút Hủy, Lưu, Lưu và Gửi CIC */}
-            <div style={{
-              display: 'flex',
-              justifyContent: 'center',
-              gap: 12,
-              background: '#ffffff',
-              padding: '16px 24px',
-              borderRadius: radius.lg,
-              border: `1px solid ${colors.border.split}`,
-              boxShadow: shadows.xs,
-            }}>
-              <Button
-                onClick={handleCancelUpload}
-                style={{ minWidth: 100, borderRadius: radius.md }}
-              >
-                Hủy
-              </Button>
-              <Button
-                onClick={() => handleSaveReport(true)}
-                loading={uploadLoading}
-                style={{ minWidth: 100, borderRadius: radius.md }}
-                disabled={isReadOnly}
-              >
-                Lưu
-              </Button>
-              <Button
-                type="primary"
-                onClick={() => handleSaveReport(false)}
-                loading={uploadLoading}
-                style={{
-                  minWidth: 150,
+      {/* ─── POPUP: GỬI BÁO CÁO CÂN ĐỐI MỚI ─────────────────────────────── */}
+      <Modal
+        title="Gửi báo cáo cân đối mới"
+        open={uploadModalVisible}
+        onCancel={handleCancelUpload}
+        width="75%"
+        style={{ top: '8vh' }}
+        bodyStyle={{
+          maxHeight: 'calc(80vh - 120px)',
+          overflowY: 'auto',
+          padding: '16px 24px 24px'
+        }}
+        maskClosable={false}
+        destroyOnClose
+        footer={
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 12 }}>
+            <Button key="cancel" onClick={handleCancelUpload} style={{ minWidth: 100, borderRadius: radius.md }}>
+              Hủy
+            </Button>
+            <Button
+              key="save"
+              onClick={() => handleSaveReport(true)}
+              loading={uploadLoading}
+              disabled={isReadOnly}
+              style={{ minWidth: 100, borderRadius: radius.md }}
+            >
+              Lưu nháp
+            </Button>
+            <Button
+              key="submit"
+              type="primary"
+              onClick={() => handleSaveReport(false)}
+              loading={uploadLoading}
+              disabled={isReadOnly}
+              style={{
+                minWidth: 150,
+                borderRadius: radius.md,
+                ...(!isReadOnly ? {
                   background: colors.subsystem.portal,
                   borderColor: colors.subsystem.portal,
-                  borderRadius: radius.md
-                }}
-                disabled={isReadOnly}
-              >
-                Lưu và Gửi CIC
-              </Button>
+                } : {})
+              }}
+            >
+              Lưu và Gửi CIC
+            </Button>
+          </div>
+        }
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 20, paddingTop: 8 }}>
+
+          {/* Khối thông tin chung */}
+          <div style={{
+            background: '#ffffff',
+            borderRadius: radius.lg,
+            border: `1px solid ${colors.border.split}`,
+            padding: '20px',
+          }}>
+            <div style={{ fontWeight: 700, fontSize: 14, color: colors.subsystem.portal, marginBottom: 16 }}>
+              KHỐI THÔNG TIN CHUNG
+            </div>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+              gap: '16px'
+            }}>
+              <div>
+                <Text strong style={{ fontSize: 12, display: 'block', marginBottom: 6 }}>
+                  Mã đầu mối báo cáo
+                </Text>
+                <Input value={uploadMaDauMoi} disabled style={{ width: '100%', height: 36 }} />
+              </div>
+
+              <div>
+                <Text strong style={{ fontSize: 12, display: 'block', marginBottom: 6 }}>
+                  Loại tệp
+                </Text>
+                <Select
+                  value={uploadPhanLoai}
+                  onChange={setUploadPhanLoai}
+                  style={{ width: '100%' }}
+                  size="middle"
+                >
+                  <Select.Option value="D10">D10 — Thông tin định danh khách hàng vay phát sinh</Select.Option>
+                  <Select.Option value="D11">D11 — Thông tin định danh khách hàng vay cuối tháng</Select.Option>
+                  <Select.Option value="D12">D12 — Thông tin về người có liên quan của khách hàng vay</Select.Option>
+                  <Select.Option value="D20">D20 — Thông tin tài chính khách hàng vay là doanh nghiệp</Select.Option>
+                  <Select.Option value="D31">D31 — Thông tin quan hệ tín dụng rút gọn</Select.Option>
+                  <Select.Option value="D32">D32 — Thông tin quan hệ tín dụng cuối tháng</Select.Option>
+                  <Select.Option value="D33">D33 — Thông tin thẻ tín dụng rút gọn</Select.Option>
+                  <Select.Option value="D34">D34 — Thông tin thẻ tín dụng cuối tháng</Select.Option>
+                  <Select.Option value="D35">D35 — Thông tin thống kê tình hình giải ngân, trả nợ của khách hàng</Select.Option>
+                  <Select.Option value="D36">D36 — Thông tin trích lập dự phòng rủi ro cuối quý</Select.Option>
+                  <Select.Option value="D40">D40 — Thông tin về biện pháp bảo đảm cấp tín dụng</Select.Option>
+                  <Select.Option value="D50">D50 — Thông tin mua và ủy thác mua trái phiếu doanh nghiệp (không bao gồm TCTD)</Select.Option>
+                  <Select.Option value="D60">D60 — Thông tin hoạt động xử lý nợ xấu nội bảng</Select.Option>
+                  <Select.Option value="D70">D70 — Thông tin dư nợ tại VAMC</Select.Option>
+                  <Select.Option value="DKQ">DKQ — Báo cáo phân loại nợ & cam kết ngoại bảng</Select.Option>
+                </Select>
+              </div>
+
+              <div>
+                <Text strong style={{ fontSize: 12, display: 'block', marginBottom: 6 }}>
+                  Ngày báo cáo
+                </Text>
+                <DatePicker
+                  value={uploadNgayBaoCao}
+                  onChange={setUploadNgayBaoCao}
+                  format="DD/MM/YYYY"
+                  style={{ width: '100%', height: 36 }}
+                  disabledDate={(current) => {
+                    return current && current.isAfter(dayjs().add(1, 'month').endOf('month'), 'day');
+                  }}
+                />
+              </div>
+
+              <div>
+                <Text strong style={{ fontSize: 12, display: 'block', marginBottom: 6 }}>
+                  Tên tệp
+                </Text>
+                <AutoComplete
+                  value={uploadTenTep}
+                  onChange={setUploadTenTep}
+                  options={getFilteredFileNames()}
+                  placeholder="Nhập hoặc chọn tên tệp..."
+                  style={{ width: '100%' }}
+                  filterOption={(inputValue, option) =>
+                    option?.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+                  }
+                  disabled={isReadOnly}
+                >
+                  <Input style={{ height: 36 }} />
+                </AutoComplete>
+              </div>
+            </div>
+          </div>
+
+          {/* Cảnh báo nếu đã có bản ghi tồn tại */}
+          {loadedExistingReport && (
+            <Alert
+              message={
+                loadedExistingReport.trangThai === 'TAO_MOI' ? (
+                  <span>
+                    <strong>Kỳ báo cáo này đã tồn tại bản ghi nháp!</strong> Trạng thái hiện tại: <strong style={{ color: colors.primary[600] }}>Tạo mới</strong>. Hệ thống đã tự động nạp dữ liệu để tiếp tục chỉnh sửa.
+                  </span>
+                ) : (
+                  <span>
+                    <strong>Kỳ báo cáo này đã tồn tại bản ghi dữ liệu!</strong> Trạng thái hiện tại: <strong style={{ color: colors.primary[600] }}>{renderTrangThaiText(loadedExistingReport.trangThai)}</strong>. Hệ thống đã tự động nạp dữ liệu và khóa tính năng chỉnh sửa để đảm bảo an toàn số liệu.
+                  </span>
+                )
+              }
+              type={loadedExistingReport.trangThai === 'TAO_MOI' ? "info" : "warning"}
+              showIcon
+              style={{ borderRadius: radius.md }}
+            />
+          )}
+
+          {/* Khối chi tiết thông tin cân đối */}
+          <div style={{
+            background: '#ffffff',
+            borderRadius: radius.lg,
+            border: `1px solid ${colors.border.split}`,
+            padding: '20px',
+          }}>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: 16
+            }}>
+              <div style={{ fontWeight: 700, fontSize: 14, color: colors.subsystem.portal }}>
+                KHỐI CHI TIẾT THÔNG TIN CÂN ĐỐI
+              </div>
+              <Space size="small">
+                <Button
+                  type="primary"
+                  icon={<PlusOutlined />}
+                  onClick={handleAddRow}
+                  style={{
+                    fontWeight: 600,
+                    ...(!isReadOnly ? {
+                      background: colors.subsystem.portal,
+                      borderColor: colors.subsystem.portal,
+                    } : {})
+                  }}
+                  size="small"
+                  disabled={isReadOnly}
+                >
+                  Thêm dòng
+                </Button>
+                <Button
+                  type="default"
+                  icon={<ReloadOutlined />}
+                  onClick={handleLoadLatestData}
+                  style={{
+                    fontWeight: 600,
+                    ...(!isReadOnly ? {
+                      color: colors.subsystem.portal,
+                      borderColor: colors.subsystem.portal,
+                    } : {})
+                  }}
+                  size="small"
+                  disabled={isReadOnly}
+                >
+                  Lấy dữ liệu gần nhất
+                </Button>
+              </Space>
             </div>
 
+            <div style={{ overflowX: 'auto' }}>
+              <Table
+                dataSource={editDetails}
+                columns={getEditTableColumns()}
+                pagination={false}
+                bordered
+                size="middle"
+                scroll={{ x: 'max-content', y: 380 }}
+              />
+            </div>
           </div>
-        )}
-      </div>
+        </div>
+      </Modal>
 
       {/* ─── MODAL CHI TIẾT SỐ LIỆU CÂN ĐỐI THEO TỆP ──────── */}
       <Modal
         title={
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, paddingBottom: 6 }}>
-            <span style={{ fontSize: 16, fontWeight: 800, color: colors.subsystem.portal }}>
-              Chi tiết số liệu cân đối
-            </span>
+          <Space size={12}>
+            <span>Chi tiết số liệu cân đối</span>
             {selectedReport && renderTrangThaiTag(selectedReport.trangThai)}
-          </div>
+          </Space>
         }
-        visible={detailModalVisible}
+        open={detailModalVisible}
         onCancel={() => setDetailModalVisible(false)}
         width={1000}
         footer={[
@@ -2800,14 +3149,14 @@ const SendBalanceModule: React.FC = () => {
               <div style={{ fontWeight: 700, fontSize: 14, color: colors.text.primary, marginBottom: 12 }}>
                 BẢNG ĐỐI SOÁT CHI TIẾT SỐ LIỆU
               </div>
-              <div style={{ overflowX: 'auto', maxHeight: 400 }}>
+              <div style={{ overflowX: 'auto' }}>
                 <Table
                   dataSource={detailRows}
-                  columns={getDetailTableColumns(selectedReport.phanLoaiTep)}
+                  columns={getDetailTableColumns(selectedReport.phanLoaiTep, detailRows)}
                   pagination={false}
                   bordered
                   size="middle"
-                  scroll={{ x: 'max-content' }}
+                  scroll={{ x: 'max-content', y: 380 }}
                 />
               </div>
             </div>
@@ -2818,6 +3167,23 @@ const SendBalanceModule: React.FC = () => {
       <style jsx global>{`
         .editable-cell-hover:hover {
           background-color: #f1f5f9;
+        }
+        .ant-table-wrapper .ant-table-thead > tr > th {
+          text-align: center !important;
+        }
+        .ant-table-wrapper .ant-table-thead > tr > th .ant-table-cell-content {
+          justify-content: center !important;
+        }
+        .ant-table-wrapper .ant-table-thead > tr > th.drag-over {
+          border-left: 2px dashed #0284c7 !important;
+          background-color: #e0f2fe !important;
+        }
+        .popover-column-item:hover {
+          background-color: #f1f5f9;
+        }
+        .popover-column-item.popover-drag-over {
+          background-color: #e0f2fe !important;
+          border-left: 2px dashed #0284c7 !important;
         }
       `}</style>
     </PageLayout>
