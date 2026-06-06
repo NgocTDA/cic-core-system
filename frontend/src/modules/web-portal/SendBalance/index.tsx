@@ -2846,7 +2846,7 @@ const SendBalanceModule: React.FC = () => {
                 <Table
                   dataSource={treeData}
                   columns={preparedMainColumns}
-                  pagination={tablePagination({ pageSize: 10 })}
+                  pagination={tablePagination()}
                   loading={loading}
                   size="middle"
                   scroll={{ x: 2500, y: 500 }}
@@ -3070,7 +3070,7 @@ const SendBalanceModule: React.FC = () => {
               <Table
                 dataSource={editDetails}
                 columns={getEditTableColumns()}
-                pagination={false}
+                pagination={tablePagination()}
                 bordered
                 size="middle"
                 scroll={{ x: 'max-content', y: 380 }}
@@ -3174,13 +3174,13 @@ const SendBalanceModule: React.FC = () => {
 
               {/* Bảng chi tiết số liệu cân đối */}
               <div style={{ fontWeight: 700, fontSize: 14, color: colors.text.primary, marginBottom: 12 }}>
-                BẢNG ĐỐI SOÁT CHI TIẾT SỐ LIỆU
+                BẢNG CHI TIẾT SỐ LIỆU CÂN ĐỐI
               </div>
               <div style={{ overflowX: 'auto' }}>
                 <Table
                   dataSource={detailRows}
                   columns={getDetailTableColumns(selectedReport.phanLoaiTep, detailRows)}
-                  pagination={false}
+                  pagination={tablePagination()}
                   bordered
                   size="middle"
                   scroll={{ x: 'max-content', y: 380 }}

@@ -23,8 +23,8 @@ const viVN = {
     ...baseLocale,
     Pagination: {
         ...baseLocale.Pagination,
-        jump_to: 'Đi tới',
-        page: 'Trang',
+        jump_to: 'Đến trang',
+        page: '',
     },
 };
 

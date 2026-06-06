@@ -9,5 +9,9 @@ export const tablePagination = (
     `Hiển thị ${range[0]}-${range[1]} trong tổng ${total} bản ghi`,
   pageSizeOptions: ['10', '20', '50', '100'],
   pageSize: 20,
+  locale: {
+    jump_to: 'Đến trang',
+    page: '',
+  },
   ...overrides,
 });
