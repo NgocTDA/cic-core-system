@@ -152,6 +152,17 @@ const getLoaiToChucByMaDauMoi = (maDauMoi: string): string => {
   return 'TCTD';
 };
 
+const getFormattedDonViGui = (maDauMoi: string): string => {
+  const code = maDauMoi || '31358001';
+  let tenDonVi = 'Ngân hàng TMCP Tiên phong - Hội sở';
+  if (code === '01201001') {
+    tenDonVi = 'Ngân hàng TMCP Ngoại thương Việt Nam - Hội sở';
+  } else if (code === '01203002') {
+    tenDonVi = 'Ngân hàng TMCP Đầu tư và Phát triển Việt Nam - Hội sở';
+  }
+  return `${code} - ${tenDonVi}`;
+};
+
 const RAW_FILE_RULES: FileRule[] = [
   {
     loaiFile: 'D10',
@@ -3080,11 +3091,23 @@ const SendBalanceModule: React.FC = () => {
         open={detailModalVisible}
         onCancel={() => setDetailModalVisible(false)}
         width={1000}
-        footer={[
-          <Button key="close" type="primary" onClick={() => setDetailModalVisible(false)} style={{ background: colors.subsystem.portal, borderColor: colors.subsystem.portal }}>
-            Đóng cửa sổ
-          </Button>
-        ]}
+        footer={
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <Button
+              key="close"
+              type="primary"
+              onClick={() => setDetailModalVisible(false)}
+              style={{
+                minWidth: 100,
+                borderRadius: radius.md,
+                background: colors.subsystem.portal,
+                borderColor: colors.subsystem.portal
+              }}
+            >
+              Đóng
+            </Button>
+          </div>
+        }
         bodyStyle={{ padding: '16px 24px 20px' }}
         style={{ top: 50 }}
         destroyOnClose
@@ -3101,24 +3124,28 @@ const SendBalanceModule: React.FC = () => {
                 padding: '14px 20px',
                 marginBottom: 16,
                 display: 'flex',
-                flexWrap: 'wrap',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                gap: 16
+                flexDirection: 'column',
+                gap: 10
               }}>
-                <div>
-                  <Text style={{ fontSize: 13, color: colors.text.secondary }}>Tên tệp báo cáo nguồn: </Text>
-                  <strong style={{ fontFamily: 'monospace', color: colors.primary[700] }}>{selectedReport.tenTep}</strong>
-                </div>
-                <div style={{ display: 'flex', gap: 20 }}>
+                <div style={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  gap: 16
+                }}>
+                  <div>
+                    <Text style={{ fontSize: 13, color: colors.text.secondary }}>Tên tệp báo cáo nguồn: </Text>
+                    <strong style={{ fontFamily: 'monospace', color: colors.primary[700] }}>{selectedReport.tenTep}</strong>
+                  </div>
                   <div>
                     <Text style={{ fontSize: 13, color: colors.text.secondary }}>Kỳ báo cáo: </Text>
                     <strong>{selectedReport.ngayBaoCao}</strong>
                   </div>
-                  <div>
-                    <Text style={{ fontSize: 13, color: colors.text.secondary }}>Đơn vị gửi: </Text>
-                    <strong>TPBANK - Hội sở (31358001)</strong>
-                  </div>
+                </div>
+                <div style={{ borderTop: `1px dashed ${colors.border.split}`, paddingTop: 8 }}>
+                  <Text style={{ fontSize: 13, color: colors.text.secondary }}>Đơn vị gửi: </Text>
+                  <strong>{getFormattedDonViGui(selectedReport.maDauMoi)}</strong>
                 </div>
               </div>
 
