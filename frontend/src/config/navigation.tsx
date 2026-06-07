@@ -765,24 +765,25 @@ export const SUB_SYSTEMS: SubSystem[] = [
             { key: 'web-portal-dashboard', label: 'TRANG CHỦ', icon: <DashboardOutlined />, path: '/web-portal/dashboard' },
             {
                 key: 'web-portal-send',
-                label: 'GỬI BÁO CÁO TÍN DỤNG',
+                label: 'GỬI BÁO CÁO',
                 icon: <CloudServerOutlined />,
                 children: [
+                    {
+                        key: 'web-portal-send-periodic-group',
+                        label: 'Báo cáo tín dụng',
+                        icon: <FileDoneOutlined />,
+                        children: [
+                            { key: 'web-portal-send-periodic', label: 'Gửi báo cáo tín dụng', path: '/web-portal/send-periodic' },
+                            { key: 'web-portal-search-periodic', label: 'Tra cứu báo cáo', path: '/web-portal/search-periodic' },
+                        ]
+                    },
                     {
                         key: 'web-portal-send-balance-group',
                         label: 'Thông tin cân đối',
                         icon: <ReconciliationOutlined />,
                         children: [
-                            { key: 'web-portal-send-balance', label: 'Gửi thông tin cân đối', path: '/web-portal/send-balance' },
-                        ]
-                    },
-                    {
-                        key: 'web-portal-send-periodic-group',
-                        label: 'Báo cáo định kỳ',
-                        icon: <FileDoneOutlined />,
-                        children: [
-                            { key: 'web-portal-send-periodic', label: 'Gửi báo cáo định kỳ', path: '/web-portal/send-periodic' },
-                            { key: 'web-portal-search-periodic', label: 'Tra cứu báo cáo đã nộp', path: '/web-portal/search-periodic' },
+                            { key: 'web-portal-send-balance-new', label: 'Gửi thông tin cân đối', path: '/web-portal/send-balance/new' },
+                            { key: 'web-portal-send-balance', label: 'Tra cứu thông tin cân đối', path: '/web-portal/send-balance' },
                         ]
                     }
                 ]

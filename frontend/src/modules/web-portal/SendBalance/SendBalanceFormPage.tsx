@@ -1,0 +1,820 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import {
+  Typography,
+  Space,
+  Input,
+  Select,
+  DatePicker,
+  Button,
+  Table,
+  Tooltip,
+  Upload,
+  message,
+  Alert,
+  AutoComplete,
+} from 'antd';
+import dayjs from 'dayjs';
+import {
+  CloudUploadOutlined,
+  ArrowLeftOutlined,
+  PlusOutlined,
+  ReloadOutlined,
+  DeleteOutlined,
+  StopOutlined,
+} from '@ant-design/icons';
+import { colors, radius, shadows } from '@/design-system';
+import {
+  PageLayout,
+  StatusTag
+} from '@/components/ui';
+import useHeaderActions from '@/hooks/useHeaderActions';
+import { useSendBalance } from './useSendBalance';
+import { ReconciliationDetailRow, BalanceReport, TrangThaiTep } from './types';
+import { RAW_FILE_RULES, getLoaiToChucByMaDauMoi, generateTreeReconciliationData } from './mockData';
+import { EditableCell } from './EditableCell';
+
+const { Text } = Typography;
+
+const SendBalanceFormPage: React.FC = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const reportKey = searchParams.get('key');
+
+  const {
+    data,
+    customDetailsMap,
+    isLoaded,
+    saveReport,
+    generateEmptyDetails
+  } = useSendBalance();
+
+  // State chung cho form nhập liệu
+  const [uploadLoading, setUploadLoading] = useState(false);
+  const [uploadMaDauMoi, setUploadMaDauMoi] = useState('31358001');
+  const [uploadPhanLoai, setUploadPhanLoai] = useState('D40');
+  const [uploadNgayBaoCao, setUploadNgayBaoCao] = useState<dayjs.Dayjs | null>(dayjs('31/08/2025', 'DD/MM/YYYY'));
+  const [uploadTenTep, setUploadTenTep] = useState('');
+  const [editDetails, setEditDetails] = useState<ReconciliationDetailRow[]>([]);
+  const [loadedExistingReport, setLoadedExistingReport] = useState<BalanceReport | null>(null);
+
+  const isReadOnly = loadedExistingReport ? loadedExistingReport.trangThai !== 'TAO_MOI' : false;
+
+  // Thứ tự cột bảng nhập liệu
+  const [editColumnOrder, setEditColumnOrder] = useState<string[]>([
+    'stt', 'nguonDuLieu', 'nghiepVu', 'soLuongKhachHang', 'soLuongHopDong', 'maTienTe',
+    'duNo', 'tongDuNo', 'phatSinhGiaiNgan', 'phatSinhTraNo', 'tongGiaTriBaoDam',
+    'giaTriBaoDamKhoanVay', 'doanhSoGiamNo', 'duPhongPhaiTrich', 'duPhongDaTrich', 'action'
+  ]);
+
+  // Cấu hình thứ tự cột khi kéo thả
+  const handleEditColumnReorder = (sourceKey: string, targetKey: string) => {
+    setEditColumnOrder(prev => {
+      const next = [...prev];
+      const sourceIdx = next.indexOf(sourceKey);
+      const targetIdx = next.indexOf(targetKey);
+      if (sourceIdx !== -1 && targetIdx !== -1) {
+        const [dragged] = next.splice(sourceIdx, 1);
+        next.splice(targetIdx, 0, dragged);
+      }
+      return next;
+    });
+  };
+
+  // Nạp dữ liệu khi sửa bản ghi cụ thể theo URL query param (?key=xxx)
+  useEffect(() => {
+    if (reportKey && isLoaded) {
+      const found = data.find(item => item.key === reportKey);
+      if (found) {
+        setUploadMaDauMoi(found.maDauMoi);
+        setUploadPhanLoai(found.phanLoaiTep);
+        setUploadNgayBaoCao(dayjs(found.ngayBaoCao, 'DD/MM/YYYY'));
+        setUploadTenTep(found.tenTep);
+        setLoadedExistingReport(found);
+
+        // Load chi tiết đối soát của bản ghi
+        const custom = customDetailsMap[found.key];
+        if (custom) {
+          setEditDetails(custom);
+        } else {
+          const parentRow = generateTreeReconciliationData([found]).find(item => item.isParent);
+          if (parentRow && parentRow.children) {
+            setEditDetails(parentRow.children);
+          } else {
+            setEditDetails(generateEmptyDetails(found.phanLoaiTep, found.maDauMoi));
+          }
+        }
+      }
+    }
+  }, [reportKey, data, isLoaded, customDetailsMap, generateEmptyDetails]);
+
+  // Tự động kiểm tra bản ghi tồn tại dựa trên các điều kiện lọc chung
+  useEffect(() => {
+    // Nếu có tham số query key thì dừng logic auto-check này để tránh ghi đè
+    if (reportKey) return;
+
+    if (!uploadNgayBaoCao) {
+      setLoadedExistingReport(null);
+      setEditDetails(generateEmptyDetails(uploadPhanLoai, uploadMaDauMoi));
+      return;
+    }
+
+    const formattedDate = uploadNgayBaoCao.format('DD/MM/YYYY');
+    const existing = data.find(item =>
+      item.maDauMoi === uploadMaDauMoi &&
+      item.phanLoaiTep === uploadPhanLoai &&
+      item.ngayBaoCao === formattedDate
+    );
+
+    if (existing) {
+      setLoadedExistingReport(existing);
+      setUploadTenTep(existing.tenTep);
+
+      const custom = customDetailsMap[existing.key];
+      if (custom) {
+        setEditDetails(custom);
+      } else {
+        const parentRow = generateTreeReconciliationData([existing]).find(item => item.isParent);
+        if (parentRow && parentRow.children) {
+          setEditDetails(parentRow.children);
+        } else {
+          setEditDetails(generateEmptyDetails(uploadPhanLoai, uploadMaDauMoi));
+        }
+      }
+    } else {
+      setLoadedExistingReport(null);
+      const generatedName = getAutoGeneratedFileName(uploadPhanLoai, uploadMaDauMoi, uploadNgayBaoCao);
+      setUploadTenTep(generatedName);
+      setEditDetails(generateEmptyDetails(uploadPhanLoai, uploadMaDauMoi));
+    }
+  }, [uploadPhanLoai, uploadNgayBaoCao, data, uploadMaDauMoi, reportKey, generateEmptyDetails]);
+
+  const getAutoGeneratedFileName = (
+    loaiTep: string,
+    maDauMoi: string,
+    ngayBaoCao: dayjs.Dayjs | null,
+    ext: string = 'JSON'
+  ) => {
+    if (!ngayBaoCao) return '';
+    const dateStr = ngayBaoCao.format('YYYYMMDD');
+    const prefix = `${loaiTep}${maDauMoi}${dateStr}`;
+
+    const matching = data.filter(item =>
+      item.phanLoaiTep === loaiTep &&
+      item.maDauMoi === maDauMoi &&
+      item.ngayBaoCao === ngayBaoCao.format('DD/MM/YYYY')
+    );
+
+    let nextSeq = 1;
+    if (matching.length > 0) {
+      const seqs = matching.map(item => {
+        const parts = item.tenTep.split('.');
+        if (parts.length >= 2) {
+          const seqNum = parseInt(parts[parts.length - 2], 10);
+          return isNaN(seqNum) ? 0 : seqNum;
+        }
+        return 0;
+      });
+      const maxSeq = Math.max(...seqs, 0);
+      nextSeq = maxSeq + 1;
+    }
+
+    const seqStr = String(nextSeq).padStart(3, '0');
+    return `${prefix}.${seqStr}.${ext}`;
+  };
+
+  const validateFileName = (fileName: string): string | null => {
+    const name = fileName.trim();
+    if (!name) return 'Vui lòng nhập hoặc chọn Tên tệp!';
+
+    const parts = name.split('.');
+    if (parts.length !== 3) {
+      return 'Tên tệp phải gồm đúng 3 thành phần phân tách bởi dấu chấm: [Tên].[Số thứ tự zzz].[Định dạng (JSON/XLS/XLSX)]';
+    }
+
+    const [ten, zzz, ext] = parts;
+
+    const expectedPrefix = `${uploadPhanLoai}${uploadMaDauMoi}${uploadNgayBaoCao ? uploadNgayBaoCao.format('YYYYMMDD') : ''}`;
+    if (ten !== expectedPrefix) {
+      return `Thành phần Tên tệp phải là "${expectedPrefix}" khớp với các thông tin chung đã chọn!`;
+    }
+
+    if (!/^\d{3}$/.test(zzz)) {
+      return 'Thành phần Số thứ tự phải gồm đúng 3 chữ số (ví dụ: 001, 002)!';
+    }
+
+    const upperExt = ext.toUpperCase();
+    if (upperExt !== 'JSON' && upperExt !== 'XLS' && upperExt !== 'XLSX') {
+      return 'Định dạng tệp (đuôi tệp) phải là JSON, XLS hoặc XLSX!';
+    }
+
+    return null;
+  };
+
+  const getFilteredFileNames = () => {
+    const dateStr = uploadNgayBaoCao ? uploadNgayBaoCao.format('DD/MM/YYYY') : '';
+    return data
+      .filter(item =>
+        item.maDauMoi === uploadMaDauMoi &&
+        item.phanLoaiTep === uploadPhanLoai &&
+        (!dateStr || item.ngayBaoCao === dateStr)
+      )
+      .map(item => ({ value: item.tenTep }));
+  };
+
+  // Đăng ký Page Header Actions
+  useHeaderActions({
+    title: loadedExistingReport 
+      ? `Chỉnh sửa báo cáo cân đối: ${loadedExistingReport.tenTep}` 
+      : 'Gửi thông tin cân đối mới',
+    actions: [
+      {
+        key: 'back',
+        label: 'Quay lại',
+        icon: <ArrowLeftOutlined />,
+        onClick: () => router.push('/web-portal/send-balance')
+      }
+    ]
+  }, [loadedExistingReport, router]);
+
+  // Hành động với dòng nghiệp vụ trong bảng nhập liệu
+  const handleAddRow = () => {
+    const rule = RAW_FILE_RULES.find(r => r.loaiFile === uploadPhanLoai);
+    if (!rule) return;
+
+    const isNoDetails = ['D10', 'D11', 'D12', 'D20', 'D40', 'D60', 'D70'].includes(rule.loaiFile);
+    const operations = isNoDetails ? [rule.loaiFile] : rule.nghiepVuRaw.split('/');
+
+    const newRow: ReconciliationDetailRow = {
+      key: `edit_child_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+      loaiFile: uploadPhanLoai,
+      tenTep: uploadTenTep,
+      nghiepVu: operations[0] || uploadPhanLoai,
+      nguonDuLieu: getLoaiToChucByMaDauMoi(uploadMaDauMoi),
+
+      soLuongKhachHang: null,
+      soLuongKhachHangRule: rule.soLuongKhachHangRule,
+      soLuongHopDong: null,
+      soLuongHopDongRule: rule.soLuongHopDongRule,
+
+      maTienTe: rule.maTienTeRule ? 'VND' : null,
+      maTienTeRule: rule.maTienTeRule,
+
+      nhomNo: null,
+      nhomNoRule: null,
+
+      duNo: null,
+      duNoRule: rule.duNoRule,
+
+      tongDuNo: null,
+      tongDuNoRule: rule.tongDuNoRule,
+
+      phatSinhGiaiNgan: null,
+      phatSinhGiaiNganRule: rule.phatSinhGiaiNganRule,
+
+      phatSinhTraNo: null,
+      phatSinhTraNoRule: rule.phatSinhTraNoRule,
+
+      tongGiaTriBaoDam: null,
+      tongGiaTriBaoDamRule: rule.tongGiaTriBaoDamRule,
+
+      giaTriBaoDamKhoanVay: null,
+      giaTriBaoDamKhoanVayRule: rule.giaTriBaoDamKhoanVayRule,
+
+      doanhSoGiamNo: null,
+      doanhSoGiamNoRule: rule.doanhSoGiamNoRule,
+
+      duPhongPhaiTrich: null,
+      duPhongPhaiTrichRule: rule.duPhongPhaiTrichRule,
+
+      duPhongDaTrich: null,
+      duPhongDaTrichRule: rule.duPhongDaTrichRule,
+
+      parentKey: '',
+      ngayBaoCao: uploadNgayBaoCao ? uploadNgayBaoCao.format('DD/MM/YYYY') : '',
+      trangThai: 'TAO_MOI',
+      moTaTep: '',
+      maDauMoi: uploadMaDauMoi,
+      isParent: false
+    };
+
+    setEditDetails(prev => [...prev, newRow]);
+  };
+
+  const handleDeleteRow = (rowKey: string) => {
+    setEditDetails(prev => prev.filter(row => row.key !== rowKey));
+  };
+
+  const handleEditCellChange = (rowKey: string, field: keyof ReconciliationDetailRow, value: any) => {
+    setEditDetails(prev => prev.map(row => {
+      if (row.key === rowKey) {
+        return { ...row, [field]: value };
+      }
+      return row;
+    }));
+  };
+
+  const handleLoadLatestData = () => {
+    const matchingReports = data.filter(item =>
+      item.maDauMoi === uploadMaDauMoi &&
+      item.phanLoaiTep === uploadPhanLoai
+    );
+
+    if (matchingReports.length === 0) {
+      message.warning(`Không tìm thấy dữ liệu kỳ trước cho mã đầu mối ${uploadMaDauMoi} và loại tệp ${uploadPhanLoai}`);
+      return;
+    }
+
+    let latestReport = matchingReports[0];
+    let latestDate = dayjs(latestReport.ngayBaoCao, 'DD/MM/YYYY');
+
+    for (let i = 1; i < matchingReports.length; i++) {
+      const d = dayjs(matchingReports[i].ngayBaoCao, 'DD/MM/YYYY');
+      if (d.isAfter(latestDate)) {
+        latestDate = d;
+        latestReport = matchingReports[i];
+      }
+    }
+
+    // Load data from detail map
+    const custom = customDetailsMap[latestReport.key];
+    let children: ReconciliationDetailRow[] | undefined;
+    if (custom) {
+      children = custom;
+    } else {
+      const parentRow = generateTreeReconciliationData([latestReport]).find(item => item.isParent);
+      children = parentRow?.children;
+    }
+
+    if (children) {
+      const newDetails = children.map((child, index) => ({
+        ...child,
+        key: `edit_child_latest_${Date.now()}_${index}_${Math.random().toString(36).substr(2, 5)}`,
+        tenTep: uploadTenTep,
+        parentKey: '',
+        trangThai: 'TAO_MOI' as TrangThaiTep,
+        maDauMoi: uploadMaDauMoi
+      }));
+      setEditDetails(newDetails);
+      message.success(`Đã tải dữ liệu cân đối gần nhất từ kỳ báo cáo ngày ${latestReport.ngayBaoCao}`);
+    } else {
+      message.warning(`Không tìm thấy chi tiết đối soát của kỳ ngày ${latestReport.ngayBaoCao}`);
+    }
+  };
+
+  const handleSave = (saveAsDraft: boolean) => {
+    if (!uploadTenTep.trim()) {
+      message.error('Vui lòng nhập hoặc chọn Tên tệp!');
+      return;
+    }
+    if (!uploadNgayBaoCao) {
+      message.error('Vui lòng chọn Ngày báo cáo!');
+      return;
+    }
+
+    const validationError = validateFileName(uploadTenTep);
+    if (validationError) {
+      message.error(validationError);
+      return;
+    }
+
+    setUploadLoading(true);
+    setTimeout(() => {
+      const formattedDate = uploadNgayBaoCao.format('DD/MM/YYYY');
+      const reportPayload = {
+        key: loadedExistingReport?.key,
+        maDauMoi: uploadMaDauMoi,
+        phanLoaiTep: uploadPhanLoai,
+        ngayBaoCao: formattedDate,
+        tenTep: uploadTenTep.trim(),
+        moTaTep: loadedExistingReport?.moTaTep || `Báo cáo cân đối thông tin tín dụng loại ${uploadPhanLoai}`,
+        ngayGui: loadedExistingReport?.ngayGui || '-',
+        trangThai: (saveAsDraft ? 'TAO_MOI' : 'DA_GUI_CIC') as TrangThaiTep,
+        stt: loadedExistingReport?.stt || (data.length + 1)
+      };
+
+      saveReport(reportPayload, editDetails, saveAsDraft);
+      setUploadLoading(false);
+      message.success(saveAsDraft ? 'Đã lưu nháp báo cáo thành công!' : 'Đã lưu và gửi báo cáo lên CIC thành công!');
+      router.push('/web-portal/send-balance');
+    }, 1000);
+  };
+
+  const getEditTableColumns = () => {
+    const rule = RAW_FILE_RULES.find(r => r.loaiFile === uploadPhanLoai);
+    if (!rule) return [];
+
+    const isNoDetails = ['D10', 'D11', 'D12', 'D20', 'D40', 'D60', 'D70'].includes(rule.loaiFile);
+    const operations = isNoDetails ? [rule.loaiFile] : rule.nghiepVuRaw.split('/');
+
+    const baseCols = [
+      {
+        title: 'STT',
+        key: 'stt',
+        width: 60,
+        align: 'center' as const,
+        render: (_: any, __: any, index: number) => index + 1
+      },
+      {
+        title: 'Nguồn',
+        dataIndex: 'nguonDuLieu',
+        key: 'nguonDuLieu',
+        width: 90,
+        align: 'center' as const,
+        render: (text: string) => <span style={{ fontWeight: 600 }}>{text}</span>,
+        filters: Array.from(new Set(editDetails.map(item => item.nguonDuLieu).filter((val): val is string => !!val))).sort().map(val => ({ text: val, value: val })),
+        onFilter: (value: any, record: ReconciliationDetailRow) => record.nguonDuLieu === value,
+      },
+      {
+        title: 'Nghiệp vụ',
+        dataIndex: 'nghiepVu',
+        key: 'nghiepVu',
+        width: 180,
+        render: (text: string, record: ReconciliationDetailRow) => {
+          if (operations.length > 1) {
+            return (
+              <Select
+                value={text}
+                onChange={(newVal) => handleEditCellChange(record.key, 'nghiepVu', newVal)}
+                style={{ width: '100%' }}
+                size="small"
+                disabled={isReadOnly}
+              >
+                {operations.map(op => (
+                  <Select.Option key={op} value={op}>{op}</Select.Option>
+                ))}
+              </Select>
+            );
+          }
+          return <span style={{ fontWeight: 650, color: colors.primary[600] }}>{text}</span>;
+        },
+        filters: Array.from(new Set(editDetails.map(item => item.nghiepVu).filter((val): val is string => !!val))).sort().map(val => ({ text: val, value: val })),
+        onFilter: (value: any, record: ReconciliationDetailRow) => record.nghiepVu === value,
+      }
+    ];
+
+    const condCols = [];
+
+    const renderNumericInput = (field: keyof ReconciliationDetailRow, ruleCode: string | null, label: string) => {
+      return {
+        title: (
+          <Tooltip title={ruleCode} placement="top" arrow>
+            <span style={{ cursor: 'help', borderBottom: '1px dashed #fa8c16' }}>
+              {label}
+            </span>
+          </Tooltip>
+        ),
+        dataIndex: field,
+        key: field,
+        width: 150,
+        align: 'right' as const,
+        render: (val: string | null, record: ReconciliationDetailRow) => (
+          <Input
+            value={val || ''}
+            onChange={(e) => handleEditCellChange(record.key, field, e.target.value)}
+            placeholder={ruleCode || undefined}
+            size="small"
+            style={{ textAlign: 'right', width: '100%' }}
+            disabled={isReadOnly}
+          />
+        )
+      };
+    };
+
+    if (rule.soLuongKhachHangRule !== null) condCols.push(renderNumericInput('soLuongKhachHang', rule.soLuongKhachHangRule, 'Số lượng khách hàng'));
+    if (rule.soLuongHopDongRule !== null) condCols.push(renderNumericInput('soLuongHopDong', rule.soLuongHopDongRule, 'Số lượng hợp đồng'));
+
+    if (rule.maTienTeRule !== null) {
+      condCols.push({
+        title: 'Mã tiền tệ',
+        dataIndex: 'maTienTe',
+        key: 'maTienTe',
+        width: 110,
+        align: 'center' as const,
+        render: (val: string | null, record: ReconciliationDetailRow) => (
+          <Select
+            value={val || undefined}
+            onChange={(newVal) => handleEditCellChange(record.key, 'maTienTe', newVal)}
+            style={{ width: '100%' }}
+            placeholder="Tiền tệ"
+            size="small"
+            disabled={isReadOnly}
+          >
+            <Select.Option value="VND">VND</Select.Option>
+            <Select.Option value="USD">USD</Select.Option>
+            <Select.Option value="XAU">XAU</Select.Option>
+          </Select>
+        ),
+        filters: Array.from(new Set(editDetails.map(item => item.maTienTe).filter((val): val is string => !!val))).sort().map(val => ({ text: val, value: val })),
+        onFilter: (value: any, record: ReconciliationDetailRow) => record.maTienTe === value,
+      });
+    }
+
+    if (rule.duNoRule !== null) condCols.push(renderNumericInput('duNo', rule.duNoRule, 'Dư nợ'));
+    if (rule.tongDuNoRule !== null) condCols.push(renderNumericInput('tongDuNo', rule.tongDuNoRule, 'Tổng dư nợ'));
+    if (rule.phatSinhGiaiNganRule !== null) condCols.push(renderNumericInput('phatSinhGiaiNgan', rule.phatSinhGiaiNganRule, 'Số tiền giải ngân'));
+    if (rule.phatSinhTraNoRule !== null) condCols.push(renderNumericInput('phatSinhTraNo', rule.phatSinhTraNoRule, 'Số tiền trả nợ'));
+    if (rule.tongGiaTriBaoDamRule !== null) condCols.push(renderNumericInput('tongGiaTriBaoDam', rule.tongGiaTriBaoDamRule, 'Giá trị tài sản bảo đảm'));
+    if (rule.giaTriBaoDamKhoanVayRule !== null) condCols.push(renderNumericInput('giaTriBaoDamKhoanVay', rule.giaTriBaoDamKhoanVayRule, 'Giá trị bảo đảm khoản vay'));
+    if (rule.doanhSoGiamNoRule !== null) condCols.push(renderNumericInput('doanhSoGiamNo', rule.doanhSoGiamNoRule, 'Doanh số giảm'));
+    if (rule.duPhongPhaiTrichRule !== null) condCols.push(renderNumericInput('duPhongPhaiTrich', rule.duPhongPhaiTrichRule, 'Dự phòng phải trích nội bảng'));
+    if (rule.duPhongDaTrichRule !== null) condCols.push(renderNumericInput('duPhongDaTrich', rule.duPhongDaTrichRule, 'Dự phòng đã trích nội bảng'));
+
+    // Thêm cột Thao tác ở cuối
+    condCols.push({
+      title: 'Thao tác',
+      key: 'action',
+      width: 80,
+      align: 'center' as const,
+      render: (_: any, record: ReconciliationDetailRow) => (
+        <Button
+          type="text"
+          danger
+          icon={<DeleteOutlined />}
+          onClick={() => handleDeleteRow(record.key)}
+          size="small"
+          disabled={isReadOnly}
+        />
+      )
+    });
+
+    const preparedEditCols = [...baseCols, ...condCols]
+      .map(col => {
+        const colKey = col.key as string;
+        const isFixed = ['stt', 'action'].includes(colKey);
+        return {
+          ...col,
+          onHeaderCell: (column: any) => {
+            if (isFixed) return {};
+            return {
+              draggable: true,
+              onDragStart: (e: any) => {
+                e.dataTransfer.setData('text/plain', colKey);
+              },
+              onDragOver: (e: any) => {
+                e.preventDefault();
+                e.currentTarget.classList.add('drag-over');
+              },
+              onDragLeave: (e: any) => {
+                e.currentTarget.classList.remove('drag-over');
+              },
+              onDrop: (e: any) => {
+                e.currentTarget.classList.remove('drag-over');
+                const sourceKey = e.dataTransfer.getData('text/plain');
+                const targetKey = colKey;
+                if (sourceKey && targetKey && sourceKey !== targetKey && !['stt', 'action'].includes(sourceKey)) {
+                  handleEditColumnReorder(sourceKey, targetKey);
+                }
+              },
+              style: { cursor: 'grab' }
+            };
+          }
+        };
+      })
+      .sort((a, b) => {
+        const aKey = a.key as string;
+        const bKey = b.key as string;
+        const aIdx = editColumnOrder.indexOf(aKey);
+        const bIdx = editColumnOrder.indexOf(bKey);
+        return (aIdx !== -1 ? aIdx : 99) - (bIdx !== -1 ? bIdx : 99);
+      });
+
+    return preparedEditCols;
+  };
+
+  return (
+    <PageLayout noPadding>
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 20,
+        padding: '24px 24px 24px'
+      }}>
+        
+        {/* Khối thông tin chung */}
+        <div style={{
+          background: '#ffffff',
+          borderRadius: radius.lg,
+          border: `1px solid ${colors.border.split}`,
+          padding: '20px',
+          boxShadow: shadows.sm
+        }}>
+          <div style={{ fontWeight: 700, fontSize: 14, color: colors.subsystem.portal, marginBottom: 16 }}>
+            KHỐI THÔNG TIN CHUNG
+          </div>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: '16px'
+          }}>
+            <div>
+              <Text strong style={{ fontSize: 12, display: 'block', marginBottom: 6 }}>
+                Mã đầu mối báo cáo
+              </Text>
+              <Input value={uploadMaDauMoi} disabled style={{ width: '100%', height: 36 }} />
+            </div>
+
+            <div>
+              <Text strong style={{ fontSize: 12, display: 'block', marginBottom: 6 }}>
+                Loại tệp
+              </Text>
+              <Select
+                value={uploadPhanLoai}
+                onChange={setUploadPhanLoai}
+                style={{ width: '100%' }}
+                size="middle"
+                disabled={!!reportKey} // Khóa trường nếu sửa bản ghi cụ thể
+              >
+                <Select.Option value="D10">D10 — Thông tin định danh khách hàng vay phát sinh</Select.Option>
+                <Select.Option value="D11">D11 — Thông tin định danh khách hàng vay cuối tháng</Select.Option>
+                <Select.Option value="D12">D12 — Thông tin về người có liên quan của khách hàng vay</Select.Option>
+                <Select.Option value="D20">D20 — Thông tin tài chính khách hàng vay là doanh nghiệp</Select.Option>
+                <Select.Option value="D31">D31 — Thông tin quan hệ tín dụng rút gọn</Select.Option>
+                <Select.Option value="D32">D32 — Thông tin quan hệ tín dụng cuối tháng</Select.Option>
+                <Select.Option value="D33">D33 — Thông tin thẻ tín dụng rút gọn</Select.Option>
+                <Select.Option value="D34">D34 — Thông tin thẻ tín dụng cuối tháng</Select.Option>
+                <Select.Option value="D35">D35 — Thông tin thống kê tình hình giải ngân, trả nợ của khách hàng</Select.Option>
+                <Select.Option value="D36">D36 — Thông tin trích lập dự phòng rủi ro cuối quý</Select.Option>
+                <Select.Option value="D40">D40 — Thông tin về biện pháp bảo đảm cấp tín dụng</Select.Option>
+                <Select.Option value="D50">D50 — Thông tin mua và ủy thác mua trái phiếu doanh nghiệp (không bao gồm TCTD)</Select.Option>
+                <Select.Option value="D60">D60 — Thông tin hoạt động xử lý nợ xấu nội bảng</Select.Option>
+                <Select.Option value="D70">D70 — Thông tin dư nợ tại VAMC</Select.Option>
+                <Select.Option value="DKQ">DKQ — Báo cáo phân loại nợ & cam kết ngoại bảng</Select.Option>
+              </Select>
+            </div>
+
+            <div>
+              <Text strong style={{ fontSize: 12, display: 'block', marginBottom: 6 }}>
+                Ngày báo cáo
+              </Text>
+              <DatePicker
+                value={uploadNgayBaoCao}
+                onChange={setUploadNgayBaoCao}
+                format="DD/MM/YYYY"
+                style={{ width: '100%', height: 36 }}
+                disabled={!!reportKey} // Khóa trường nếu sửa bản ghi cụ thể
+                disabledDate={(current) => {
+                  return current && current.isAfter(dayjs().add(1, 'month').endOf('month'), 'day');
+                }}
+              />
+            </div>
+
+            <div>
+              <Text strong style={{ fontSize: 12, display: 'block', marginBottom: 6 }}>
+                Tên tệp
+              </Text>
+              <AutoComplete
+                value={uploadTenTep}
+                onChange={setUploadTenTep}
+                options={getFilteredFileNames()}
+                placeholder="Nhập hoặc chọn tên tệp..."
+                style={{ width: '100%' }}
+                filterOption={(inputValue, option) =>
+                  option?.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+                }
+                disabled={isReadOnly}
+              >
+                <Input style={{ height: 36 }} />
+              </AutoComplete>
+            </div>
+          </div>
+        </div>
+
+        {/* Cảnh báo nếu đã có bản ghi tồn tại */}
+        {loadedExistingReport && (
+          <Alert
+            message={
+              loadedExistingReport.trangThai === 'TAO_MOI' ? (
+                <span>
+                  <strong>Kỳ báo cáo này đã tồn tại bản ghi nháp!</strong> Trạng thái hiện tại: <strong style={{ color: colors.primary[600] }}>Tạo mới</strong>. Hệ thống đã tự động nạp dữ liệu để tiếp tục chỉnh sửa.
+                </span>
+              ) : (
+                <span>
+                  <strong>Kỳ báo cáo này đã tồn tại bản ghi dữ liệu!</strong> Trạng thái hiện tại: <strong style={{ color: colors.primary[600] }}>{loadedExistingReport.trangThai === 'DA_GUI_CIC' ? 'Đã gửi CIC' : 'Đã tiếp nhận'}</strong>. Hệ thống đã tự động nạp dữ liệu và khóa tính năng chỉnh sửa để đảm bảo an toàn số liệu.
+                </span>
+              )
+            }
+            type={loadedExistingReport.trangThai === 'TAO_MOI' ? "info" : "warning"}
+            showIcon
+            style={{ borderRadius: radius.md }}
+          />
+        )}
+
+        {/* Khối chi tiết thông tin cân đối */}
+        <div style={{
+          background: '#ffffff',
+          borderRadius: radius.lg,
+          border: `1px solid ${colors.border.split}`,
+          padding: '20px',
+          boxShadow: shadows.sm
+        }}>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: 16
+          }}>
+            <div style={{ fontWeight: 700, fontSize: 14, color: colors.subsystem.portal }}>
+              KHỐI CHI TIẾT THÔNG TIN CÂN ĐỐI
+            </div>
+            <Space size="small">
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={handleAddRow}
+                style={{
+                  fontWeight: 600,
+                  ...(!isReadOnly ? {
+                    background: colors.subsystem.portal,
+                    borderColor: colors.subsystem.portal,
+                  } : {})
+                }}
+                size="small"
+                disabled={isReadOnly}
+              >
+                Thêm dòng
+              </Button>
+              <Button
+                type="default"
+                icon={<ReloadOutlined />}
+                onClick={handleLoadLatestData}
+                style={{
+                  fontWeight: 600,
+                  ...(!isReadOnly ? {
+                    color: colors.subsystem.portal,
+                    borderColor: colors.subsystem.portal,
+                  } : {})
+                }}
+                size="small"
+                disabled={isReadOnly}
+              >
+                Lấy dữ liệu gần nhất
+              </Button>
+            </Space>
+          </div>
+
+            <Table
+              dataSource={editDetails}
+              columns={getEditTableColumns()}
+              pagination={false}
+              bordered
+              size="middle"
+              scroll={{ x: 'max-content' }}
+              sticky
+            />
+        </div>
+
+        {/* Khối nút bấm thao tác biểu mẫu ở cuối trang */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          gap: 12,
+          padding: '16px 0 32px'
+        }}>
+          <Button 
+            onClick={() => router.push('/web-portal/send-balance')} 
+            style={{ minWidth: 120, height: 40, borderRadius: radius.md }}
+          >
+            Quay lại
+          </Button>
+          <Button
+            onClick={() => handleSave(true)}
+            loading={uploadLoading}
+            disabled={isReadOnly}
+            style={{ minWidth: 120, height: 40, borderRadius: radius.md }}
+          >
+            Lưu nháp
+          </Button>
+          <Button
+            type="primary"
+            onClick={() => handleSave(false)}
+            loading={uploadLoading}
+            disabled={isReadOnly}
+            style={{
+              minWidth: 160,
+              height: 40,
+              borderRadius: radius.md,
+              ...(!isReadOnly ? {
+                background: colors.subsystem.portal,
+                borderColor: colors.subsystem.portal,
+              } : {})
+            }}
+          >
+            Lưu và Gửi CIC
+          </Button>
+        </div>
+      </div>
+      
+      <style jsx global>{`
+        .ant-table-wrapper .ant-table-thead > tr > th.drag-over {
+          border-left: 2px dashed #0284c7 !important;
+          background-color: #e0f2fe !important;
+        }
+      `}</style>
+    </PageLayout>
+  );
+};
+
+export default SendBalanceFormPage;
