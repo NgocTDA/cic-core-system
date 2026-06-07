@@ -226,8 +226,8 @@ const SendBalanceFormPage: React.FC = () => {
 
   // Đăng ký Page Header Actions
   useHeaderActions({
-    title: loadedExistingReport 
-      ? `Chỉnh sửa báo cáo cân đối: ${loadedExistingReport.tenTep}` 
+    title: loadedExistingReport
+      ? `Chỉnh sửa báo cáo cân đối: ${loadedExistingReport.tenTep}`
       : 'Gửi thông tin cân đối mới',
     actions: [
       {
@@ -592,7 +592,7 @@ const SendBalanceFormPage: React.FC = () => {
         gap: 20,
         padding: '24px 24px 24px'
       }}>
-        
+
         {/* Khối thông tin chung */}
         <div style={{
           background: '#ffffff',
@@ -755,15 +755,15 @@ const SendBalanceFormPage: React.FC = () => {
             </Space>
           </div>
 
-            <Table
-              dataSource={editDetails}
-              columns={getEditTableColumns()}
-              pagination={false}
-              bordered
-              size="middle"
-              scroll={{ x: 'max-content' }}
-              sticky
-            />
+          <Table
+            dataSource={editDetails}
+            columns={getEditTableColumns()}
+            pagination={false}
+            bordered
+            size="middle"
+            scroll={{ x: 'max-content' }}
+            sticky
+          />
         </div>
 
         {/* Khối nút bấm thao tác biểu mẫu ở cuối trang */}
@@ -773,11 +773,11 @@ const SendBalanceFormPage: React.FC = () => {
           gap: 12,
           padding: '16px 0 32px'
         }}>
-          <Button 
-            onClick={() => router.push('/web-portal/send-balance')} 
+          <Button
+            onClick={() => router.push('/web-portal/send-balance')}
             style={{ minWidth: 120, height: 40, borderRadius: radius.md }}
           >
-            Quay lại
+            Trở về danh sách
           </Button>
           <Button
             onClick={() => handleSave(true)}
@@ -806,7 +806,7 @@ const SendBalanceFormPage: React.FC = () => {
           </Button>
         </div>
       </div>
-      
+
       <style jsx global>{`
         .ant-table-wrapper .ant-table-thead > tr > th.drag-over {
           border-left: 2px dashed #0284c7 !important;
