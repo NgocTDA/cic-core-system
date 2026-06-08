@@ -373,7 +373,7 @@ useEffect(() => {
                                         },
                                         {
                                             title: 'Người cập nhật', dataIndex: 'nguoiCapNhat', key: 'nguoiCapNhat',
-                                            width: 130,
+                                            width: 155,
                                             filters: USER_FILTERS,
                                             onFilter: (value, record) => record.nguoiCapNhat === value,
                                             filterMultiple: true,
