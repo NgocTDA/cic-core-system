@@ -873,6 +873,8 @@ export const DESIGN_SYSTEM_SUB: SubSystem = {
                 { key: 'ds-action-menu', label: 'ActionMenu', path: '/design-system/data-display/action-menu' },
                 { key: 'ds-code-text', label: 'CodeText', path: '/design-system/data-display/code-text' },
                 { key: 'ds-table', label: 'Table & Pagination', path: '/design-system/data-display/table' },
+                { key: 'ds-column-settings', label: 'Cài đặt hiển thị', path: '/design-system/data-display/column-settings' },
+                { key: 'ds-audit-log', label: 'Lịch sử thay đổi', path: '/design-system/data-display/audit-log' },
             ],
         },
         {
@@ -932,8 +934,8 @@ export const DESIGN_SYSTEM_SUB: SubSystem = {
             children: [
                 { key: 'ds-colors', label: 'Màu sắc', path: '/design-system/tokens/colors' },
                 { key: 'ds-typography', label: 'Typography', path: '/design-system/tokens/typography' },
-                { key: 'ds-spacing', label: 'Spacing', path: '/design-system/tokens/spacing' },
-                { key: 'ds-shadows', label: 'Shadows & Radius', path: '/design-system/tokens/shadows' },
+                { key: 'ds-spacing', label: 'Spacing & Radius', path: '/design-system/tokens/spacing' },
+                { key: 'ds-shadows', label: 'Shadows & Transitions', path: '/design-system/tokens/shadows' },
             ],
         },
     ],

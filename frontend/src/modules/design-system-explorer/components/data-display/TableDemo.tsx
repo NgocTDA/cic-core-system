@@ -144,7 +144,7 @@ const TableDemo: React.FC = () => {
                 'Text: căn trái | Ngày/STT/Thao tác: căn giữa',
                 'Cột STT và Thao tác cố định (sticky left/right)',
                 'Batch action bar hiển thị khi chọn ít nhất 1 dòng',
-                'Phân trang: options 20/30/40/50/80/100, hiển thị tổng bản ghi',
+                'Phân trang: options 10/20/50/100, hiển thị tổng bản ghi, quick jumper "Đến trang"',
             ]}
             wide
             demoMinHeight={400}
@@ -227,7 +227,7 @@ const columns: ColumnsType<T> = [
                         rowKey="id"
                         size="small"
                         scroll={{ x: 900, y: 320 }}
-                        pagination={tablePagination({ pageSize: 20, pageSizeOptions: ['20', '30', '40', '50', '80', '100'] })}
+                        pagination={tablePagination({ pageSize: 20 })}
                         rowSelection={{
                             selectedRowKeys: selected,
                             onChange: setSelected,

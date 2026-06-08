@@ -50,7 +50,8 @@
       "Bash(docker stop *)",
       "Bash(docker run *)",
       "Bash(docker rm *)",
-      "Bash(docker container *)"
+      "Bash(docker container *)",
+      "Bash(npx tsc *)"
     ],
     "additionalDirectories": [
       "c:\\Users\\ngoct\\Downloads\\Code\\cic-core-system\\frontend\\app\\product-mgmt\\catalog\\products"

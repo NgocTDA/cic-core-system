@@ -72,6 +72,7 @@ const StatusTagDemo: React.FC = () => {
                         { group: 'Activation', statuses: ['ACTIVE', 'INACTIVE'] as StatusKey[] },
                         { group: 'Job execution', statuses: ['RUNNING', 'IDLE', 'SCHEDULED', 'FAILED', 'PAUSED'] as StatusKey[] },
                         { group: 'Approval workflow', statuses: ['PENDING', 'APPROVED', 'REJECTED'] as StatusKey[] },
+                        { group: 'Thông báo (Notification)', statuses: ['UNREAD', 'READ'] as StatusKey[] },
                         { group: 'Data quality', statuses: ['VALID', 'INVALID', 'ERROR', 'REVIEWING', 'CLOSED'] as StatusKey[] },
                     ].map((grp) => (
                         <Col key={grp.group} xs={24} sm={12}>

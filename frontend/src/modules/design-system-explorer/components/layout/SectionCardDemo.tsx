@@ -1,20 +1,20 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button, Switch, Typography, Tag, Table } from 'antd';
+import { Button, Switch, Space, Typography, Table } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import { PageLayout, SectionCard, tablePagination } from '@/components/ui';
-import { colors, typography, spacing } from '@/design-system';
+import { PageLayout, SectionCard, StatusTag, tablePagination } from '@/components/ui';
+import { colors, typography, spacing, radius } from '@/design-system';
 import ComponentShowcase from '../../ComponentShowcase';
 import useHeaderActions from '@/hooks/useHeaderActions';
 
 const { Text } = Typography;
 
-const MOCK_DATA = Array.from({ length: 5 }, (_, i) => ({
+const MOCK_DATA = Array.from({ length: 25 }, (_, i) => ({
     key: i,
     id: `CIC-${1000 + i}`,
     name: `Khách hàng ${i + 1}`,
-    status: i % 2 === 0 ? 'Hoạt động' : 'Chờ duyệt',
+    status: ['ACTIVE', 'PENDING', 'APPROVED', 'INACTIVE', 'REJECTED'][i % 5],
 }));
 
 const SectionCardDemo: React.FC = () => {
@@ -48,22 +48,22 @@ const SectionCardDemo: React.FC = () => {
 >
   <Table ... />
 </SectionCard>`}
-        >
-            <div style={{ display: 'flex', flexDirection: 'column', gap: spacing[5] }}>
-                {/* Controls */}
-                <div style={{ display: 'flex', gap: spacing[5], flexWrap: 'wrap' }}>
+            controls={
+                <Space direction="vertical" style={{ width: '100%' }}>
                     {[
                         { label: 'count', value: showCount, set: setShowCount },
                         { label: 'extra (Button)', value: showExtra, set: setShowExtra },
                         { label: 'noPadding', value: noPadding, set: setNoPadding },
                     ].map(({ label, value, set }) => (
-                        <div key={label} style={{ display: 'flex', alignItems: 'center', gap: spacing[2] }}>
-                            <Switch checked={value} onChange={set} size="small" />
+                        <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <Text style={{ fontSize: typography.fontSize.sm }}>{label}</Text>
+                            <Switch checked={value} onChange={set} size="small" />
                         </div>
                     ))}
-                </div>
-
+                </Space>
+            }
+        >
+            <div style={{ display: 'flex', flexDirection: 'column', gap: spacing[5] }}>
                 {/* Live demo */}
                 <SectionCard
                     title="Danh sách hồ sơ tín dụng"
@@ -76,19 +76,19 @@ const SectionCardDemo: React.FC = () => {
                     <Table
                         dataSource={MOCK_DATA}
                         size="small"
-                        pagination={tablePagination({ pageSize: 5, total: 5 })}
+                        pagination={tablePagination({ pageSize: 10 })}
                         columns={[
                             { title: 'Mã CIC', dataIndex: 'id', width: 100 },
                             { title: 'Họ tên', dataIndex: 'name' },
-                            { title: 'Trạng thái', dataIndex: 'status', render: (v) => (
-                                <Tag color={v === 'Hoạt động' ? 'success' : 'warning'}>{v}</Tag>
+                            { title: 'Trạng thái', dataIndex: 'status', render: (v: string) => (
+                                <StatusTag status={v} />
                             )},
                         ]}
                     />
                 </SectionCard>
 
                 {/* Props table */}
-                <div style={{ background: colors.bg.subtle, borderRadius: 8, padding: spacing[4] }}>
+                <div style={{ background: colors.bg.subtle, borderRadius: radius.lg, padding: spacing[4] }}>
                     <Text style={{ fontSize: typography.fontSize.sm, fontWeight: typography.fontWeight.semibold, display: 'block', marginBottom: spacing[2] }}>Props</Text>
                     {[
                         { prop: 'title?', type: 'string', desc: 'Tiêu đề card header' },

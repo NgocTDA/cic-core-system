@@ -198,7 +198,7 @@ export const shadows = {
     lg:   '0 8px 24px rgba(0, 0, 0, 0.10)',
     xl:   '0 16px 48px rgba(0, 0, 0, 0.14)',
     card: '0 2px 8px rgba(0, 0, 0, 0.05)',
-    menu: '0 6px 16px rgba(0, 0, 0, 0.08), 0 3px 6px rgba(0, 0, 0, 0.04)',
+    menu: '0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05)',
 } as const;
 
 // ─── TRANSITIONS ─────────────────────────────────────────────
@@ -228,12 +228,12 @@ export const transitions = {
 // ─── BREAKPOINTS ─────────────────────────────────────────────
 
 export const breakpoints = {
-    xs: 480,
-    sm: 576,
-    md: 768,
-    lg: 992,
-    xl: 1200,
-    '2xl': 1600,
+    xs:  0,    // base — tương đương AntD Col xs (all screens, < sm)
+    sm:  576,
+    md:  768,
+    lg:  992,
+    xl:  1200,
+    xxl: 1600, // align AntD xxl (trước là '2xl')
 } as const;
 
 // ─── Z-INDEX LAYERS ──────────────────────────────────────────
@@ -265,7 +265,7 @@ export const layout = {
 
 export const size = {
     xs:  24,
-    sm:  28,
+    sm:  24, // align AntD controlHeightSM default
     md:  32, // Ant Design default controlHeight
     lg:  40,
     xl:  48,

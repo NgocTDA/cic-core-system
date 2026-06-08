@@ -34,7 +34,7 @@ export const antdTheme: ThemeConfig = {
         borderRadiusLG:       radius.lg as unknown as number,      // 8
         borderRadiusXS:       radius.xs as unknown as number,      // 2
         controlHeight:        size.md,      // 32
-        controlHeightSM:      size.sm,      // 28
+        controlHeightSM:      size.sm,      // 24 (align AntD default)
         controlHeightLG:      size.lg,      // 40
         controlHeightXS:      size.xs,      // 24
 

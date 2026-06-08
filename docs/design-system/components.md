@@ -67,6 +67,7 @@ const { RangePicker } = DatePicker;
 | `loading` | `boolean` | `false` | Loading state cho Search button |
 | `inCard` | `boolean` | `false` | Wrap trong `Card` với shadow xs |
 | `extra` | `ReactNode` | — | Slot thêm button trước Search (hiếm dùng) |
+| `showAddFilter` | `boolean` | `true` | Hiển thị nút "Thêm bộ lọc". Đặt `false` khi filter đơn giản không cần filter nâng cao. |
 
 **FilterCol Props:**
 
@@ -289,5 +290,9 @@ import { tablePagination } from '@/components/ui';
   showTotal: (total, range) => `Hiển thị ${range[0]}-${range[1]} trong tổng ${total} bản ghi`,
   pageSizeOptions: ['10', '20', '50', '100'],
   pageSize: 20,
+  locale: {
+    jump_to: 'Đến trang',  // Quick jumper hiển thị: "Đến trang [ô nhập]"
+    page: '',
+  },
 }
 ```

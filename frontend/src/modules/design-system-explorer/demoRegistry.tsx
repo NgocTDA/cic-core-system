@@ -11,6 +11,8 @@ import StatusSummaryBarDemo  from './components/data-display/StatusSummaryBarDem
 import ActionMenuDemo        from './components/data-display/ActionMenuDemo';
 import CodeTextDemo          from './components/data-display/CodeTextDemo';
 import TableDemo             from './components/data-display/TableDemo';
+import ColumnSettingsDemo    from './components/data-display/ColumnSettingsDemo';
+import AuditLogDemo          from './components/data-display/AuditLogDemo';
 
 // Form & Input
 import TextboxDemo           from './components/form/TextboxDemo';
@@ -35,12 +37,16 @@ import AlertDemo             from './components/feedback/AlertDemo';
 // Dashboard
 import StatCardDemo          from './components/dashboard/StatCardDemo';
 import ChartBarDemo          from './components/dashboard/ChartBarDemo';
+import ChartLineDemo         from './components/dashboard/ChartLineDemo';
 import ChartPieDemo          from './components/dashboard/ChartPieDemo';
 import ChartGaugeDemo        from './components/dashboard/ChartGaugeDemo';
 
 // Tokens
 import ColorsDemo            from './components/tokens/ColorsDemo';
 import TypographySpacingDemo from './components/tokens/TypographySpacingDemo';
+import TypographyDemo        from './components/tokens/TypographyDemo';
+import SpacingDemo           from './components/tokens/SpacingDemo';
+import ShadowsDemo           from './components/tokens/ShadowsDemo';
 
 export const DEMO_REGISTRY: Record<string, React.ComponentType> = {
     // Layout
@@ -54,6 +60,8 @@ export const DEMO_REGISTRY: Record<string, React.ComponentType> = {
     'data-display/action-menu':        ActionMenuDemo,
     'data-display/code-text':          CodeTextDemo,
     'data-display/table':              TableDemo,
+    'data-display/column-settings':   ColumnSettingsDemo,
+    'data-display/audit-log':         AuditLogDemo,
 
     // Form
     'form/textbox':        TextboxDemo,
@@ -80,14 +88,14 @@ export const DEMO_REGISTRY: Record<string, React.ComponentType> = {
     // Dashboard
     'dashboard/stat-card':     StatCardDemo,
     'dashboard/chart-bar':     ChartBarDemo,
-    'dashboard/chart-line':    ChartBarDemo,
+    'dashboard/chart-line':    ChartLineDemo,
     'dashboard/chart-pie':     ChartPieDemo,
     'dashboard/chart-gauge':   ChartGaugeDemo,
     'dashboard/chart-dual-axis': ChartPieDemo,
 
     // Tokens
     'tokens/colors':      ColorsDemo,
-    'tokens/typography':  TypographySpacingDemo,
-    'tokens/spacing':     TypographySpacingDemo,
-    'tokens/shadows':     TypographySpacingDemo,
+    'tokens/typography':  TypographyDemo,
+    'tokens/spacing':     SpacingDemo,
+    'tokens/shadows':     ShadowsDemo,
 };

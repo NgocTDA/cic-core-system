@@ -28,6 +28,8 @@
 | `colors.subsystem.ops` | `#722ed1` | Hỗ trợ vận hành |
 | `colors.subsystem.analytics` | `#eb2f96` | Báo cáo thống kê |
 | `colors.subsystem.governance` | `#13c2c2` | Quản trị dữ liệu |
+| `colors.subsystem.design` | `#7c3aed` | Design System |
+| `colors.subsystem.portal` | `#0050b3` | Web Portal |
 
 > Dùng khi cần màu badge, icon, hoặc accent theo subsystem context. **Không dùng cho text thông thường.**
 
@@ -120,11 +122,14 @@
 |---|---|---|
 | `typography.fontSize.xs` | `11px` | Section label, badge text |
 | `typography.fontSize.sm` | `12px` | Caption, tooltip |
-| `typography.fontSize.base` | `14px` | Body text (default) |
+| `typography.fontSize.base` | `14px` | Body text (default, align AntD) |
 | `typography.fontSize.md` | `16px` | Sub-heading |
 | `typography.fontSize.lg` | `18px` | |
 | `typography.fontSize.xl` | `20px` | Page title (H4) |
 | `typography.fontSize['2xl']` | `24px` | Statistic value |
+| `typography.fontSize['3xl']` | `30px` | |
+| `typography.fontSize['4xl']` | `36px` | |
+| `typography.fontSize['5xl']` | `48px` | Display |
 
 ### Font Weight
 
@@ -134,6 +139,26 @@
 | `typography.fontWeight.medium` | `500` | Username, small label |
 | `typography.fontWeight.semibold` | `600` | Highlighted menu, subheading |
 | `typography.fontWeight.bold` | `700` | Table header, heading |
+| `typography.fontWeight.extrabold` | `800` | Display heading |
+
+### Line Height
+
+| Token | Giá trị | Dùng cho |
+|---|---|---|
+| `typography.lineHeight.tight` | `1.25` | Heading compact |
+| `typography.lineHeight.snug` | `1.375` | |
+| `typography.lineHeight.normal` | `1.5` | Body text (default) |
+| `typography.lineHeight.relaxed` | `1.625` | Label, caption |
+| `typography.lineHeight.loose` | `2` | |
+
+### Letter Spacing
+
+| Token | Giá trị | Dùng cho |
+|---|---|---|
+| `typography.letterSpacing.tight` | `-0.025em` | Display heading |
+| `typography.letterSpacing.normal` | `0em` | Default |
+| `typography.letterSpacing.wide` | `0.025em` | Button text |
+| `typography.letterSpacing.wider` | `0.05em` | Badge, uppercase label |
 
 ---
 
@@ -161,10 +186,12 @@
 |---|---|---|
 | `radius.xs` | `2px` | Badge |
 | `radius.sm` | `4px` | Tag, small button |
-| `radius.md` | `6px` | **Default** (Ant Design), input, button |
-| `radius.lg` | `8px` | Card, SectionCard |
-| `radius.xl` | `12px` | Modal, drawer |
+| `radius.md` | `6px` | **Default** (align AntD), input, button |
+| `radius.lg` | `8px` | Card, SectionCard, Modal/Drawer built-in |
+| `radius.xl` | `12px` | Large card, elevated panel tùy chỉnh |
 | `radius.full` | `9999px` | Avatar, pill |
+
+> **Lưu ý**: AntD Modal/Drawer built-in dùng `borderRadiusLG = radius.lg = 8px` (xem `theme.ts`). Dùng `radius.xl` cho custom container, không phải AntD component.
 
 ---
 
@@ -172,12 +199,14 @@
 
 | Token | Giá trị | Dùng cho |
 |---|---|---|
+| `shadows.none` | `'none'` | Reset shadow |
 | `shadows.xs` | `0 1px 2px rgba(0,0,0,0.04)` | SectionCard, FilterBar card |
 | `shadows.sm` | `0 2px 8px rgba(0,0,0,0.06)` | AppHeader |
 | `shadows.md` | `0 4px 16px rgba(0,0,0,0.08)` | |
 | `shadows.lg` | `0 8px 24px rgba(0,0,0,0.10)` | |
+| `shadows.xl` | `0 16px 48px rgba(0,0,0,0.14)` | |
 | `shadows.card` | `0 2px 8px rgba(0,0,0,0.05)` | Card hover |
-| `shadows.menu` | `0 6px 16px rgba(0,0,0,0.08), ...` | Dropdown menu |
+| `shadows.menu` | `0 6px 16px 0 rgba(0,0,0,0.08), 0 3px 6px -4px rgba(0,0,0,0.12), 0 9px 28px 8px rgba(0,0,0,0.05)` | Dropdown, popup menu (align AntD) |
 
 ---
 
@@ -189,8 +218,61 @@
 | `layout.sidebarCollapsedWidth` | `64` (px) | Collapsed sider |
 | `layout.headerHeight` | `56` (px) | AppHeader height |
 | `layout.contentPadding` | `'24px'` | |
+| `layout.contentPaddingMobile` | `'16px'` | Padding trên mobile |
 
 > Page padding thực tế: `'16px 24px 24px'` — dùng `<PageLayout>` thay vì tự set.
+
+---
+
+## Breakpoints
+
+Align hoàn toàn với Ant Design Grid breakpoints.
+
+| Token | Px | AntD Grid tương ứng |
+|---|---|---|
+| `breakpoints.xs` | `0` | xs — base, áp dụng mọi màn hình (< sm) |
+| `breakpoints.sm` | `576` | sm |
+| `breakpoints.md` | `768` | md |
+| `breakpoints.lg` | `992` | lg |
+| `breakpoints.xl` | `1200` | xl |
+| `breakpoints.xxl` | `1600` | xxl |
+
+> **Lưu ý**: `breakpoints.xs = 0` là base tier, không dùng trong `@media (min-width: 0px)`. Dùng làm tham chiếu cho AntD `<Col xs={...}>` responsive props. Token chưa tích hợp tự động với AntD Grid — cần import và dùng thủ công khi viết media query tùy chỉnh.
+
+---
+
+## Transitions
+
+Token format dùng **milliseconds** (`'100ms'`). Khi set `motionDuration*` trong `theme.ts`, AntD yêu cầu format **giây** (`'0.1s'`) — không truyền `transitions.duration.*` trực tiếp vào ThemeConfig.
+
+### Duration
+
+| Token | Giá trị | AntD ThemeConfig mapping |
+|---|---|---|
+| `transitions.duration.fast` | `'100ms'` | `motionDurationFast: '0.1s'` |
+| `transitions.duration.normal` | `'200ms'` | `motionDurationMid: '0.2s'` |
+| `transitions.duration.slow` | `'300ms'` | `motionDurationSlow: '0.3s'` |
+| `transitions.duration.slower` | `'500ms'` | Không có AntD equivalent — custom |
+
+### Easing
+
+| Token | Giá trị |
+|---|---|
+| `transitions.easing.standard` | `cubic-bezier(0.4, 0, 0.2, 1)` |
+| `transitions.easing.enter` | `cubic-bezier(0.0, 0, 0.2, 1)` |
+| `transitions.easing.exit` | `cubic-bezier(0.4, 0, 1, 1)` |
+| `transitions.easing.spring` | `cubic-bezier(0.34, 1.56, 0.64, 1)` |
+
+### Shorthands (dùng trong CSS `transition` property)
+
+| Token | Dùng cho |
+|---|---|
+| `transitions.all` | `all 200ms standard` |
+| `transitions.allFast` | `all 100ms standard` |
+| `transitions.allSlow` | `all 300ms standard` |
+| `transitions.transform` | transform only |
+| `transitions.opacity` | opacity only |
+| `transitions.colors` | color + background-color + border-color |
 
 ---
 
@@ -213,10 +295,10 @@
 
 ## Component Sizes (control height)
 
-| Token | Px | Ant Design tương ứng |
-|---|---|---|
-| `size.xs` | `24` | `controlHeightXS` |
-| `size.sm` | `28` | `controlHeightSM` |
-| `size.md` | `32` | `controlHeight` (default) |
-| `size.lg` | `40` | `controlHeightLG` |
-| `size.xl` | `48` | |
+| Token | Px | AntD ThemeConfig | Ghi chú |
+|---|---|---|---|
+| `size.xs` | `24` | `controlHeightXS` | |
+| `size.sm` | `24` | `controlHeightSM` | Align AntD default |
+| `size.md` | `32` | `controlHeight` | Default |
+| `size.lg` | `40` | `controlHeightLG` | |
+| `size.xl` | `48` | — | Custom extension, không có AntD equivalent |
