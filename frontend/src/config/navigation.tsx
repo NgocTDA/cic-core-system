@@ -131,16 +131,18 @@ export const SUB_SYSTEMS: SubSystem[] = [
         icon: <TableOutlined />,
         color: colors.subsystem.collection,
         menuItems: [
-            { key: 'data-collection-dashboard', label: 'Dashboard Thu thập', icon: <DashboardOutlined />, path: '/data-collection/dashboard' },
+            { key: 'data-collection-dashboard', label: 'Dashboard', icon: <DashboardOutlined />, path: '/data-collection/dashboard' },
             {
                 key: 'dc-collection',
                 label: 'Thu thập dữ liệu',
                 icon: <DownloadOutlined />,
                 children: [
-                    { key: 'dc-receive', label: 'Tệp có cấu trúc', path: '/data-collection/receive' },
-                    { key: 'dc-proc-unstructured', label: 'Tệp phi cấu trúc', path: '/data-collection/process/unstructured' },
-                    { key: 'dc-proc-manual', label: 'Tệp thu thập thủ công', path: '/data-collection/process/manual' },
-                    { key: 'dc-compare', label: 'Đối chiếu file gửi đủ định kỳ', path: '/data-collection/compare' },
+                    { key: 'dc-coll-structured-known', label: 'Tệp có cấu trúc xác định', path: '/data-collection/collect/structured-known' },
+                    { key: 'dc-coll-structured-unknown', label: 'Tệp có cấu trúc chưa xác định', path: '/data-collection/collect/structured-unknown' },
+                    { key: 'dc-coll-unstructured', label: 'Tệp phi cấu trúc', path: '/data-collection/collect/unstructured' },
+                    { key: 'dc-coll-manual', label: 'Thu thập thủ công', path: '/data-collection/collect/manual' },
+                    { key: 'dc-coll-compare', label: 'Đối chiếu file gửi đủ định kỳ', path: '/data-collection/collect/compare' },
+                    { key: 'dc-coll-balance', label: 'Thông tin cân đối', path: '/data-collection/collect/balance' },
                 ]
             },
             {
@@ -148,11 +150,12 @@ export const SUB_SYSTEMS: SubSystem[] = [
                 label: 'Xử lý dữ liệu',
                 icon: <FileSyncOutlined />,
                 children: [
-                    { key: 'dc-proc-fixed', label: 'XLDL định kỳ có cấu trúc xác định', path: '/data-collection/process/fixed' },
-                    { key: 'dc-proc-unknown', label: 'XLDL định kỳ có cấu trúc chưa xác định', path: '/data-collection/process/unknown' },
+                    { key: 'dc-proc-structured-known', label: 'XLDL định kỳ có cấu trúc xác định', path: '/data-collection/process/structured-known' },
+                    { key: 'dc-proc-structured-unknown', label: 'XLDL định kỳ có cấu trúc chưa xác định', path: '/data-collection/process/structured-unknown' },
+                    { key: 'dc-proc-unstructured', label: 'XLDL phi cấu trúc', path: '/data-collection/process/unstructured' },
                     { key: 'dc-proc-legal', label: 'XLDL hồ sơ pháp lý', path: '/data-collection/process/legal' },
                     { key: 'dc-proc-error', label: 'XLDL hồ sơ lỗi, chờ xem xét', path: '/data-collection/process/error' },
-                    { key: 'dc-proc-adjust', label: 'XLDL tệp báo cáo điều chỉnh (tệp C, tệp E)', path: '/data-collection/process/adjust-files' },
+                    { key: 'dc-proc-adjust', label: 'XLDL tệp báo cáo điều chỉnh', path: '/data-collection/process/adjust' },
                 ]
             },
             {
@@ -180,8 +183,8 @@ export const SUB_SYSTEMS: SubSystem[] = [
                 label: 'Kho dữ liệu',
                 icon: <ContainerOutlined />,
                 children: [
-                    { key: 'dc-wh-search', label: 'Tra cứu dữ liệu', path: '/data-collection/warehouse/search' },
-                    { key: 'dc-wh-control', label: 'Kiểm soát dữ liệu', path: '/data-collection/warehouse/control' },
+                    { key: 'dc-wh-pending', label: 'Tra cứu kho xem xét', path: '/data-collection/warehouse/pending' },
+                    { key: 'dc-wh-standard', label: 'Tra cứu kho chuẩn', path: '/data-collection/warehouse/standard' },
                 ]
             },
             {
@@ -194,24 +197,15 @@ export const SUB_SYSTEMS: SubSystem[] = [
                 ]
             },
             {
-                key: 'dc-reconciliation',
-                label: 'Tra soát, Đối soát',
-                icon: <ReconciliationOutlined />,
-                children: [
-                    { key: 'dc-recon-data', label: 'Đối soát dữ liệu', path: '/data-collection/reconciliation/data' },
-                    { key: 'dc-recon-request', label: 'Yêu cầu tra soát', path: '/data-collection/reconciliation/request' },
-                ]
-            },
-            {
-                key: 'dc-indicator-mgmt',
+                key: 'dc-indicators',
                 label: 'Quản lý chỉ tiêu, mẫu tệp',
                 icon: <UnorderedListOutlined />,
                 children: [
-                    { key: 'dc-ind-list', label: 'Quản lý chỉ tiêu', path: '/data-collection/indicators' },
-                    { key: 'dc-tpl-list', label: 'Quản lý mẫu tệp', path: '/data-collection/templates' },
-                    { key: 'dc-rule-ind', label: 'Quy tắc kiểm tra chỉ tiêu', path: '/data-collection/rules/indicators' },
-                    { key: 'dc-rule-file', label: 'Quy tắc kiểm tra tệp', path: '/data-collection/rules/files' },
-                    { key: 'dc-rule-type', label: 'Quản lý loại quy tắc', path: '/data-collection/rules/types' },
+                    { key: 'dc-ind-list', label: 'Quản lý chỉ tiêu', path: '/data-collection/indicators/list' },
+                    { key: 'dc-ind-templates', label: 'Quản lý mẫu tệp', path: '/data-collection/indicators/templates' },
+                    { key: 'dc-ind-rules-ind', label: 'Quy tắc kiểm tra chỉ tiêu', path: '/data-collection/indicators/rules-ind' },
+                    { key: 'dc-ind-rules-file', label: 'Quy tắc kiểm tra tệp', path: '/data-collection/indicators/rules-file' },
+                    { key: 'dc-ind-rule-types', label: 'Quản lý loại quy tắc', path: '/data-collection/indicators/rule-types' },
                 ]
             },
             {
@@ -223,10 +217,45 @@ export const SUB_SYSTEMS: SubSystem[] = [
                     { key: 'dc-ex-config', label: 'Cấu hình nguồn đồng bộ tỷ giá', path: '/data-collection/exchange-rate/config' },
                 ]
             },
-            { key: 'dc-legal-verify', label: 'Xác thực thông tin pháp lý với C06', icon: <SafetyCertificateOutlined />, path: '/data-collection/legal-verify' },
-            { key: 'dc-signing-auth', label: 'Quản lý thẩm quyền ký', icon: <SafetyOutlined />, path: '/data-collection/signing-authority' },
-            { key: 'dc-product-check', label: 'Kiểm tra dữ liệu phục vụ tạo lập sản phẩm TTTD', icon: <CheckSquareOutlined />, path: '/data-collection/product-check' },
-            { key: 'dc-balance-verify', label: 'Đối chiếu thông tin cân đối', icon: <ReconciliationOutlined />, path: '/data-collection/balance-verify' },
+            {
+                key: 'dc-legal-verify',
+                label: 'Xác thực thông tin pháp lý với C06',
+                icon: <SafetyCertificateOutlined />,
+                children: [
+                    { key: 'dc-legal-verified', label: 'Danh sách đã xác thực', path: '/data-collection/legal-verify/verified' },
+                    { key: 'dc-legal-pending', label: 'Danh sách chờ xác thực', path: '/data-collection/legal-verify/pending' },
+                ]
+            },
+            {
+                key: 'dc-signing-auth',
+                label: 'Quản lý thẩm quyền ký',
+                icon: <SafetyOutlined />,
+                path: '/data-collection/signing-authority'
+            },
+            {
+                key: 'dc-product-check',
+                label: 'Kiểm tra dữ liệu phục vụ tạo lập sản phẩm TTTD',
+                icon: <CheckSquareOutlined />,
+                path: '/data-collection/product-check'
+            },
+            {
+                key: 'dc-balance-reconciliation',
+                label: 'Quản lý đối chiếu thông tin cân đối',
+                icon: <ReconciliationOutlined />,
+                children: [
+                    { key: 'dc-balance-mgmt', label: 'Quản lý thông tin cân đối', path: '/data-collection/balance/management' },
+                    { key: 'dc-balance-compare', label: 'Đối chiếu thông tin cân đối với số liệu tổng hợp cùng kỳ báo cáo', path: '/data-collection/balance/compare-summary' },
+                ]
+            },
+            {
+                key: 'dc-suspect-data-control',
+                label: 'Quản lý dữ liệu nghi ngờ (KSDL)',
+                icon: <WarningOutlined />,
+                children: [
+                    { key: 'dc-suspect-criteria', label: 'Cấu hình các tiêu chí và quy tắc kiểm soát chất lượng dữ liệu', path: '/data-collection/suspect/criteria' },
+                    { key: 'dc-suspect-list', label: 'Quản lý dữ liệu nghi ngờ', path: '/data-collection/suspect/list' },
+                ]
+            }
         ]
     },
     {
@@ -235,82 +264,29 @@ export const SUB_SYSTEMS: SubSystem[] = [
         icon: <FolderOutlined />,
         color: colors.subsystem.product,
         menuItems: [
-            { key: 'product-mgmt-dashboard', label: 'Dashboard Sản phẩm', icon: <DashboardOutlined />, path: '/product-mgmt/dashboard' },
+            { key: 'product-mgmt-dashboard', label: 'Dashboard', icon: <DashboardOutlined />, path: '/product-mgmt/dashboard' },
             {
                 key: 'pm-catalog',
                 label: 'Quản lý danh mục',
                 icon: <ContainerOutlined />,
                 children: [
-                    { key: 'pm-ind-catalog', label: 'Danh mục chỉ tiêu sản phẩm', path: '/product-mgmt/catalog/indicators' },
-                    { key: 'pm-tpl-catalog', label: 'Danh mục mẫu sản phẩm', path: '/product-mgmt/catalog/templates' },
-                    { key: 'pm-prod-catalog', label: 'Danh mục sản phẩm', path: '/product-mgmt/catalog/products' },
-                    { key: 'pm-type-catalog', label: 'Danh mục Loại sản phẩm', path: '/product-mgmt/catalog/types' },
+                    { key: 'pm-catalog-ind', label: 'Danh mục chỉ tiêu sản phẩm', path: '/product-mgmt/catalog/indicators' },
+                    { key: 'pm-catalog-templates', label: 'Danh mục mẫu sản phẩm (mẫu báo cáo đầu ra)', path: '/product-mgmt/catalog/templates' },
+                    { key: 'pm-catalog-products', label: 'Danh mục sản phẩm', path: '/product-mgmt/catalog/products' },
+                    { key: 'pm-catalog-types', label: 'Danh mục Loại sản phẩm', path: '/product-mgmt/catalog/types' },
                 ]
             },
-            {
-                key: 'pm-rules',
-                label: 'Cấu hình các quy tắc',
-                icon: <SettingOutlined />,
-                children: [
-                    { key: 'pm-rule-cic', label: 'Quy tắc xác định mã CIC', path: '/product-mgmt/rules/cic-code' },
-                    { key: 'pm-rule-confirm', label: 'Quy tắc YCHT cần xác nhận của CTTT', path: '/product-mgmt/rules/owner-confirm' },
-                    { key: 'pm-rule-change', label: 'Quy tắc kiểm tra KH cần đổi mã sản phẩm', path: '/product-mgmt/rules/product-change' },
-                    { key: 'pm-rule-create', label: 'Quy tắc kiểm tra tạo lập sản phẩm', path: '/product-mgmt/rules/creation' },
-                    { key: 'pm-block-info', label: 'Chặn cung cấp thông tin', path: '/product-mgmt/rules/blocking' },
-                ]
-            },
-            {
-                key: 'pm-data-agg',
-                label: 'Tổng hợp dữ liệu phục vụ tạo lập sản phẩm',
-                icon: <MergeCellsOutlined />,
-                children: [
-                    { key: 'pm-agg-job', label: 'Thiết lập Job tổng hợp dữ liệu định kỳ', path: '/product-mgmt/aggregation/jobs' },
-                    { key: 'pm-agg-rules', label: 'Quy tắc kiểm tra dữ liệu tổng hợp', path: '/product-mgmt/aggregation/rules' },
-                    { key: 'pm-agg-search', label: 'Tra cứu dữ liệu tổng hợp', path: '/product-mgmt/aggregation/search' },
-                ]
-            },
-            { key: 'pm-background', label: 'Các chức năng hệ thống chạy ngầm', icon: <RobotOutlined />, path: '/product-mgmt/background-jobs' },
             {
                 key: 'pm-periodic',
                 label: 'Sản phẩm định kỳ',
                 icon: <FileDoneOutlined />,
                 children: [
-                    { key: 'pm-periodic-reg', label: 'Đăng ký khai thác báo cáo định kỳ', path: '/product-mgmt/periodic/register' },
                     { key: 'pm-periodic-list', label: 'Danh sách sản phẩm định kỳ', path: '/product-mgmt/periodic/list' },
                     { key: 'pm-periodic-log', label: 'Nhật ký tra cứu sản phẩm định kỳ', path: '/product-mgmt/periodic/log' },
-                    { key: 'pm-periodic-integ', label: 'Tích hợp hệ thống khác', path: '/product-mgmt/periodic/integration' },
-                    { key: 'pm-periodic-revoke', label: 'Thu hồi sản phẩm định kỳ', path: '/product-mgmt/periodic/revoke' },
-                ]
-            },
-            {
-                key: 'pm-inquiry',
-                label: 'Hỏi và trả lời tin khách hàng',
-                icon: <MessageOutlined />,
-                children: [
-                    { key: 'pm-inq-reg', label: 'Quản lý yêu cầu đăng ký khai thác của TCTD', path: '/product-mgmt/inquiry/register' },
-                    { key: 'pm-inq-suspect', label: 'Danh sách đối tượng gán tạm mã CIC', path: '/product-mgmt/inquiry/suspect-cic' },
-                    { key: 'pm-inq-list', label: 'Danh sách yêu cầu hỏi tin SP truyền thống', path: '/product-mgmt/inquiry/list' },
-                    { key: 'pm-inq-batch', label: 'Hỏi tin sản phẩm theo lô', path: '/product-mgmt/inquiry/batch' },
-                ]
-            },
-            {
-                key: 'pm-confirmation',
-                label: 'Quản lý yêu cầu xác nhận của CTTT',
-                icon: <CheckSquareOutlined />,
-                children: [
-                    { key: 'pm-conf-list', label: 'Danh sách yêu cầu hỏi tin cần xác nhận', path: '/product-mgmt/confirmation/list' },
-                    { key: 'pm-conf-declare', label: 'Khai báo xác nhận của CTTT', path: '/product-mgmt/confirmation/declare' },
-                ]
-            },
-            {
-                key: 'pm-rework',
-                label: 'Kiểm soát và tạo lập lại sản phẩm',
-                icon: <SyncOutlined />,
-                children: [
-                    { key: 'pm-rework-suspect', label: 'Quản lý dữ liệu nghi ngờ sai sót', path: '/product-mgmt/rework/suspect' },
-                    { key: 'pm-rework-search', label: 'Tra cứu dữ liệu cần tạo lập lại', path: '/product-mgmt/rework/search' },
-                    { key: 'pm-rework-agg', label: 'Tổng hợp nội dung SP đã bị thu hồi', path: '/product-mgmt/rework/aggregation' },
-                    { key: 'pm-rework-list', label: 'Danh sách SP định kỳ tạo lập lại', path: '/product-mgmt/rework/list' },
+                    { key: 'pm-periodic-hide-cust', label: 'Quản lý ẩn khách hàng trong file sản phẩm', path: '/product-mgmt/periodic/hide-customers' },
+                    { key: 'pm-periodic-adjusted-data', label: 'Quản lý dữ liệu sau điều chỉnh', path: '/product-mgmt/periodic/adjusted-data' },
+                    { key: 'pm-periodic-r18-rebuild', label: 'Quản lý dữ liệu R18 tổng hợp lại', path: '/product-mgmt/periodic/r18-rebuild' },
+                    { key: 'pm-periodic-r18-impacted', label: 'Quản lý dữ liệu ảnh hưởng R18 đã gửi', path: '/product-mgmt/periodic/r18-impacted' },
                 ]
             },
             {
@@ -319,18 +295,8 @@ export const SUB_SYSTEMS: SubSystem[] = [
                 icon: <FormOutlined />,
                 children: [
                     { key: 'pm-art-upload', label: 'Quản lý file upload', path: '/product-mgmt/articles/upload' },
-                    { key: 'pm-art-list', label: 'Quản lý bài viết, phân tích cảnh báo', path: '/product-mgmt/articles' },
-                    { key: 'pm-art-pub', label: 'Hệ thống đăng bài/ẩn bài và tích hợp Web SBV', path: '/product-mgmt/articles/publish' },
-                ]
-            },
-            {
-                key: 'pm-sbv',
-                label: 'Tiếp nhận, tạo lập, cung cấp SP đặc thù SBV',
-                icon: <SafetyOutlined />,
-                children: [
-                    { key: 'pm-sbv-req', label: 'Danh sách yêu cầu khai thác SP đặc thù', path: '/product-mgmt/sbv/requests' },
-                    { key: 'pm-sbv-create', label: 'Tạo lập báo cáo', path: '/product-mgmt/sbv/creation' },
-                    { key: 'pm-sbv-ind', label: 'Danh sách yêu cầu cung cấp chỉ tiêu', path: '/product-mgmt/sbv/indicators' },
+                    { key: 'pm-art-list', label: 'Quản lý bài viết, phân tích cảnh báo', path: '/product-mgmt/articles/list' },
+                    { key: 'pm-art-publish', label: 'Hệ thống đăng bài/ẩn bài và tích hợp đăng bài trên web SBV', path: '/product-mgmt/articles/publish' },
                 ]
             },
             {
@@ -338,12 +304,129 @@ export const SUB_SYSTEMS: SubSystem[] = [
                 label: 'Tổng hợp dữ liệu cho hệ thống M5',
                 icon: <ShareAltOutlined />,
                 children: [
-                    { key: 'pm-m5-check', label: 'Nhận và kiểm tra yêu cầu từ M5', path: '/product-mgmt/m5/check' },
-                    { key: 'pm-m5-agg', label: 'Tổng hợp dữ liệu', path: '/product-mgmt/m5/aggregation' },
-                    { key: 'pm-m5-send', label: 'Gửi dữ liệu sang hệ thống M5', path: '/product-mgmt/m5/send' },
+                    { key: 'pm-m5-requests', label: 'Danh sách yêu cầu từ hệ thống M5', path: '/product-mgmt/m5/requests' },
+                    { key: 'pm-m5-sent-data', label: 'Tra cứu dữ liệu đã gửi hệ thống M5', path: '/product-mgmt/m5/sent-data' },
                 ]
             },
-            { key: 'pm-post-audit', label: 'Hậu kiểm sau trả lời tin', icon: <AuditOutlined />, path: '/product-mgmt/post-audit' },
+            {
+                key: 'pm-aggregation',
+                label: 'Tổng hợp dữ liệu phục vụ tạo lập sản phẩm',
+                icon: <MergeCellsOutlined />,
+                children: [
+                    { key: 'pm-agg-check', label: 'Kiểm tra dữ liệu phục vụ TLSP', path: '/product-mgmt/aggregation/check' },
+                    { key: 'pm-agg-rules', label: 'Quy tắc kiểm tra dữ liệu tổng hợp phục vụ tạo lập sản phẩm', path: '/product-mgmt/aggregation/rules' },
+                    { key: 'pm-agg-job-setup', label: 'Thiết lập Job tổng hợp dữ liệu định kỳ phục vụ tạo lập sản phẩm', path: '/product-mgmt/aggregation/job-setup' },
+                    { key: 'pm-agg-search', label: 'Tra cứu dữ liệu tổng hợp phục vụ tạo lập sản phẩm', path: '/product-mgmt/aggregation/search' },
+                ]
+            },
+            {
+                key: 'pm-register-exploitation',
+                label: 'Quản lý đăng ký khai thác sản phẩm',
+                icon: <SolutionOutlined />,
+                children: [
+                    { key: 'pm-reg-requests', label: 'Danh sách yêu cầu đăng ký', path: '/product-mgmt/register/requests' },
+                    { key: 'pm-reg-build-adhoc', label: 'Xây dựng SP theo yêu cầu', path: '/product-mgmt/register/build-adhoc' },
+                ]
+            },
+            {
+                key: 'pm-products-adhoc',
+                label: 'Quản lý sản phẩm theo yêu cầu',
+                icon: <ProjectOutlined />,
+                children: [
+                    { key: 'pm-adhoc-list', label: 'Danh sách SP theo yêu cầu', path: '/product-mgmt/adhoc/list' },
+                    { key: 'pm-adhoc-inquiries', label: 'Danh sách hỏi tin SP theo yêu cầu', path: '/product-mgmt/adhoc/inquiries' },
+                    { key: 'pm-adhoc-provided', label: 'SP theo yêu cầu đã cung cấp', path: '/product-mgmt/adhoc/provided' },
+                ]
+            },
+            {
+                key: 'pm-instant-inquiry',
+                label: 'Hỏi và trả lời tin tức thời',
+                icon: <MessageOutlined />,
+                children: [
+                    { key: 'pm-instant-tickets', label: 'Danh sách phiếu hỏi tin', path: '/product-mgmt/instant/tickets' },
+                    { key: 'pm-instant-provided', label: 'Danh sách sản phẩm đã cung cấp', path: '/product-mgmt/instant/provided' },
+                    { key: 'pm-instant-log', label: 'Nhật ký hỏi tin sản phẩm', path: '/product-mgmt/instant/log' },
+                ]
+            },
+            {
+                key: 'pm-batch-inquiry',
+                label: 'Hỏi và trả lời tin theo lô',
+                icon: <TableOutlined />,
+                children: [
+                    { key: 'pm-batch-inquiries', label: 'Danh sách hỏi tin', path: '/product-mgmt/batch/inquiries' },
+                    { key: 'pm-batch-responses', label: 'Danh sách bản trả lời tin', path: '/product-mgmt/batch/responses' },
+                ]
+            },
+            {
+                key: 'pm-rating-inquiry',
+                label: 'Hỏi tin Xếp hạng tín dụng',
+                icon: <FundOutlined />,
+                children: [
+                    { key: 'pm-rating-cust', label: 'Danh sách hỏi tin khách hàng', path: '/product-mgmt/rating/customer' },
+                    { key: 'pm-rating-bulk', label: 'Danh sách hỏi tin số lượng lớn', path: '/product-mgmt/rating/bulk' },
+                    { key: 'pm-rating-owner-confirm', label: 'Khai báo xác nhận của chủ thể thông tin', path: '/product-mgmt/rating/owner-confirm' },
+                ]
+            },
+            {
+                key: 'pm-foreign-inquiry',
+                label: 'Hỏi tin doanh nghiệp nước ngoài',
+                icon: <GlobalOutlined />,
+                children: [
+                    { key: 'pm-foreign-inquiries', label: 'Danh sách hỏi tin doanh nghiệp nước ngoài', path: '/product-mgmt/foreign/inquiries' },
+                    { key: 'pm-foreign-cic-code-req', label: 'Danh sách khách hàng yêu cầu cấp mã CIC', path: '/product-mgmt/foreign/cic-code-requests' },
+                    { key: 'pm-foreign-reports', label: 'Báo cáo cung cấp bởi hãng thông tin quốc tế', path: '/product-mgmt/foreign/reports' },
+                ]
+            },
+            {
+                key: 'pm-suspect-cic',
+                label: 'Quản lý mã CIC nghi ngờ',
+                icon: <IdcardOutlined />,
+                children: [
+                    { key: 'pm-suspect-cic-rules', label: 'Cấu hình quy tắc xác định mã CIC', path: '/product-mgmt/suspect-cic/rules' },
+                    { key: 'pm-suspect-cic-list', label: 'Danh sách mã CIC nghi ngờ', path: '/product-mgmt/suspect-cic/list' },
+                ]
+            },
+            {
+                key: 'pm-recreation',
+                label: 'Kiểm soát và tạo lập lại sản phẩm (sau cung cấp)',
+                icon: <SyncOutlined />,
+                children: [
+                    { key: 'pm-recreate-suspect', label: 'Quản lý dữ liệu nghi ngờ sai sót (sau cung cấp)', path: '/product-mgmt/recreate/suspect' },
+                    { key: 'pm-recreate-needed', label: 'Tra cứu dữ liệu cần tạo lập lại sản phẩm', path: '/product-mgmt/recreate/needed' },
+                    { key: 'pm-recreate-action', label: 'Tạo lập lại sản phẩm (sau cung cấp)', path: '/product-mgmt/recreate/action' },
+                ]
+            },
+            {
+                key: 'pm-standardization',
+                label: 'Danh sách yêu cầu chuẩn hóa dữ liệu (Điều chỉnh dữ liệu)',
+                icon: <CheckSquareOutlined />,
+                children: [
+                    { key: 'pm-std-legal', label: 'Yêu cầu chuẩn hóa thông tin pháp lý', path: '/product-mgmt/standardize/legal' },
+                    { key: 'pm-std-credit', label: 'Yêu cầu chuẩn hóa thông tin tín dụng', path: '/product-mgmt/standardize/credit' },
+                ]
+            },
+            {
+                key: 'pm-bulk-results',
+                label: 'Kết quả xử lý hàng loạt',
+                icon: <UnorderedListOutlined />,
+                path: '/product-mgmt/bulk-results'
+            },
+            {
+                key: 'pm-rules-config',
+                label: 'Cấu hình quy tắc',
+                icon: <SettingOutlined />,
+                children: [
+                    { key: 'pm-rules-reply-time', label: 'Cấu hình thời gian trả lời tin', path: '/product-mgmt/rules/reply-time' },
+                    { key: 'pm-rules-feedback-deadline', label: 'Cấu hình thời hạn phản hồi sản phẩm  - dành cho đơn vị hỏi tin', path: '/product-mgmt/rules/feedback-deadline' },
+                    { key: 'pm-rules-creation-check', label: 'Cấu hình quy tắc kiểm tra dữ liệu tạo lập sản phẩm', path: '/product-mgmt/rules/creation-check' },
+                    { key: 'pm-rules-auto-provision', label: 'Cấu hình sản phẩm cung cấp tự động', path: '/product-mgmt/rules/auto-provision' },
+                    { key: 'pm-rules-block-provision', label: 'Chặn cung cấp thông tin', path: '/product-mgmt/rules/block-provision' },
+                    { key: 'pm-rules-freeze-tctd', label: 'Đóng băng TCTD', path: '/product-mgmt/rules/freeze-tctd' },
+                    { key: 'pm-rules-file-template', label: 'Cấu hình mẫu file hỏi tin', path: '/product-mgmt/rules/file-template' },
+                    { key: 'pm-rules-recreate-deadline', label: 'Cấu hình thời hạn tạo lập lại sản phẩm', path: '/product-mgmt/rules/recreate-deadline' },
+                    { key: 'pm-rules-recreate-confirm-deadline', label: 'Cấu hình thời hạn xác nhận tạo lập lại sản phẩm - dành cho đơn vị hỏi tin', path: '/product-mgmt/rules/recreate-confirm-deadline' },
+                ]
+            }
         ]
     },
     {
@@ -352,7 +435,7 @@ export const SUB_SYSTEMS: SubSystem[] = [
         icon: <TeamOutlined />,
         color: colors.subsystem.ops,
         menuItems: [
-            { key: 'ops-support-dashboard', label: 'Dashboard Vận hành', icon: <DashboardOutlined />, path: '/ops-support/dashboard' },
+            { key: 'ops-support-dashboard', label: 'Dashboard', icon: <DashboardOutlined />, path: '/ops-support/dashboard' },
             {
                 key: 'ops-users',
                 label: 'Người dùng & Phân quyền',
@@ -370,28 +453,29 @@ export const SUB_SYSTEMS: SubSystem[] = [
                 icon: <NodeIndexOutlined />,
                 children: [
                     { key: 'ops-assign-auto', label: 'Phân công tự động', path: '/ops-support/assignment/auto' },
+                    { key: 'ops-assign-criteria', label: 'Thiết lập tiêu chí phân công', path: '/ops-support/assignment/criteria' },
                     { key: 'ops-assign-staff', label: 'Cán bộ phụ trách Tập đoàn, TCT', path: '/ops-support/assignment/staff' },
                 ]
             },
             {
-                key: 'ops-function',
-                label: 'Quản lý chức năng',
-                icon: <AppstoreOutlined />,
+                key: 'ops-system-admin',
+                label: 'Quản trị hệ thống',
+                icon: <SettingOutlined />,
                 children: [
-                    { key: 'ops-func-cat', label: 'Quản lý danh mục', path: '/ops-support/functions/categories' },
-                    { key: 'ops-func-list', label: 'Quản lý chức năng', path: '/ops-support/functions' },
-                    { key: 'job-management', label: 'Quản lý job', icon: <ProjectOutlined />, path: '/ops-support/job-management' },
+                    { key: 'ops-admin-catalog', label: 'Quản lý danh mục', path: '/ops-support/system/categories' },
+                    { key: 'ops-admin-functions', label: 'Quản lý chức năng', path: '/ops-support/system/functions' },
+                    { key: 'ops-admin-jobs', label: 'Quản lý job', path: '/ops-support/system/jobs' },
+                    { key: 'ops-admin-errors', label: 'Quản lý mã lỗi', path: '/ops-support/system/error-codes' },
                 ]
             },
             {
-                key: 'template-management',
-                label: 'Tra cứu & Cấu hình thông báo',
+                key: 'ops-notifications',
+                label: 'Quản lý thông báo',
                 icon: <BellOutlined />,
                 children: [
-                    { key: 'notifications', label: 'Tra cứu thông báo', path: '/ops-support/notifications' },
-                    { key: 'notifications-core', label: 'Tra cứu thông báo (Core)', path: '/ops-support/notifications-core' },
-                    { key: 'notification-template', label: 'Mẫu thông báo', path: '/ops-support/notification-template' },
-                    { key: 'variable-registry', label: 'Biến thông báo', path: '/ops-support/variable-registry' },
+                    { key: 'ops-notify-portal', label: 'Tra cứu thông báo (Web Portal)', path: '/ops-support/notifications/portal' },
+                    { key: 'ops-notify-core', label: 'Tra cứu thông báo (Core)', path: '/ops-support/notifications/core' },
+                    { key: 'ops-notify-templates', label: 'Quản lý mẫu thông báo', path: '/ops-support/notifications/templates' },
                 ]
             },
             {
@@ -415,23 +499,22 @@ export const SUB_SYSTEMS: SubSystem[] = [
                 ]
             },
             {
-                key: 'ops-feedback',
-                label: 'Tra soát và phản hồi thông tin',
-                icon: <SwapOutlined />,
-                children: [
-                    { key: 'ops-fb-ext', label: 'Đơn vị bên ngoài đến CIC', path: '/ops-support/feedback/external' },
-                    { key: 'ops-fb-int', label: 'CIC đến đơn vị bên ngoài', path: '/ops-support/feedback/internal' },
-                ]
-            },
-            {
                 key: 'ops-config',
                 label: 'Cấu hình hệ thống',
                 icon: <SettingOutlined />,
                 children: [
-                    { key: 'ops-cfg-policy', label: 'Chính sách tài khoản', icon: <KeyOutlined />, path: '/ops-support/config/policy' },
+                    { key: 'ops-cfg-policy', label: 'Chính sách tài khoản', path: '/ops-support/config/policy' },
                     { key: 'ops-cfg-params', label: 'Cấu hình tham số hệ thống', path: '/ops-support/config/parameters' },
-                    { key: 'ops-cfg-workday', label: 'Cấu hình ngày làm việc', icon: <CalendarOutlined />, path: '/ops-support/config/workdays' },
-                    { key: 'ops-cfg-errors', label: 'Quản lý mã lỗi', path: '/ops-support/config/error-codes' },
+                    { key: 'ops-cfg-workday', label: 'Cấu hình ngày làm việc', path: '/ops-support/config/workdays' },
+                ]
+            },
+            {
+                key: 'ops-investigation',
+                label: 'Quản lý tra soát',
+                icon: <SwapOutlined />,
+                children: [
+                    { key: 'ops-invest-to-credit', label: 'Tra soát gửi TCTD', path: '/ops-support/investigation/send-tctd' },
+                    { key: 'ops-invest-from-credit', label: 'Tra soát từ TCTD', path: '/ops-support/investigation/receive-tctd' },
                 ]
             },
         ]
@@ -501,257 +584,66 @@ export const SUB_SYSTEMS: SubSystem[] = [
         color: colors.subsystem.governance,
         menuItems: [
             {
-                key: 'dashboard',
-                label: 'Tổng quan',
-                icon: <DashboardOutlined />,
-                path: '/data-governance/dashboard',
-            },
-            {
-                key: 'search',
-                label: 'Tìm kiếm toàn cục',
-                icon: <SearchOutlined />,
-                path: '/data-governance/search',
-                badge: 'Ctrl+K'
-            },
-            {
-                type: 'divider',
-                key: 'divider-assets',
-                label: 'Tài sản dữ liệu'
-            },
-            {
-                key: 't1',
-                label: 'Tài sản dữ liệu',
-                labelEn: 'Data Assets',
+                key: 'dg-metadata-mgmt',
+                label: 'Quản trị siêu dữ liệu',
                 icon: <DatabaseOutlined />,
-                badge: 'T1',
-                badgeColor: 'purple',
                 children: [
-                    {
-                        key: 't1-list',
-                        label: 'Danh sách tài sản',
-                        path: '/data-governance/assets',
-                        fnCode: 'T1.4',
-                        icon: <UnorderedListOutlined />
-                    },
-                    {
-                        key: 't1-new',
-                        label: 'Đăng ký tài sản mới',
-                        path: '/data-governance/assets/new',
-                        fnCode: 'T1.1',
-                        icon: <PlusOutlined />,
-                        highlight: true
-                    },
-                    {
-                        key: 't1-pending',
-                        label: 'Chờ phê duyệt',
-                        path: '/data-governance/assets?status=pending_review',
-                        fnCode: 'T1.1 / T1.2',
-                        icon: <ClockCircleOutlined />,
-                        badgeDynamic: 'pendingCount'
-                    },
-                    {
-                        key: 't1-my-assets',
-                        label: 'Tài sản của tôi',
-                        path: '/data-governance/assets?owner=me',
-                        fnCode: 'T1.7',
-                        icon: <UserOutlined />
-                    }
+                    { key: 'dg-meta-search', label: 'Tra cứu thông tin đặc tính dữ liệu (metadata)', path: '/data-governance/metadata/search' },
+                    { key: 'dg-meta-update', label: 'Cập nhật thông tin về đặc tính dữ liệu', path: '/data-governance/metadata/update' },
                 ]
             },
             {
-                key: 't2a',
-                label: 'Tài sản nghiệp vụ',
-                labelEn: 'Business Assets',
+                key: 'dg-business-assets',
+                label: 'Quản lý tài sản nghiệp vụ',
                 icon: <AuditOutlined />,
-                badge: 'T2A',
-                badgeColor: 'teal',
                 children: [
-                    {
-                        key: 't2a-list',
-                        label: 'Danh sách BA',
-                        path: '/data-governance/assets?type=business',
-                        fnCode: 'T2A.5',
-                        icon: <UnorderedListOutlined />
-                    },
-                    {
-                        key: 't2a-mapping',
-                        label: 'BA ↔ TA Mapping',
-                        path: '/data-governance/assets/mapping',
-                        fnCode: 'T2A.4',
-                        icon: <SwapOutlined />,
-                        highlight: true
-                    },
-                    {
-                        key: 't2a-unmapped',
-                        label: 'Chưa có mapping',
-                        path: '/data-governance/assets?type=business&mapped=false',
-                        fnCode: 'T2A.4',
-                        icon: <ExclamationCircleOutlined />,
-                        badgeDynamic: 'unmappedBACount'
-                    }
+                    { key: 'dg-biz-search', label: 'Tra cứu danh sách thông tin tài sản nghiệp vụ cần quản trị', path: '/data-governance/business/search' },
+                    { key: 'dg-biz-config', label: 'Cấu hình thông tin thuộc tính của tài sản nghiệp vụ cần quản trị', path: '/data-governance/business/config' },
+                    { key: 'dg-biz-config-search', label: 'Tra cứu thông tin cấu hình thông tin thuộc tính của tài sản nghiệp vụ cần quản trị', path: '/data-governance/business/config-search' },
+                    { key: 'dg-biz-exploit', label: 'Tra cứu/Khai thác thông tin quản trị dữ liệu về tài sản nghiệp vụ', path: '/data-governance/business/exploit' },
                 ]
             },
             {
-                key: 't2b',
-                label: 'Tài sản kỹ thuật',
-                labelEn: 'Technical Assets',
+                key: 'dg-technical-assets',
+                label: 'Quản lý tài sản kỹ thuật',
                 icon: <CloudServerOutlined />,
-                badge: 'T2B',
-                badgeColor: 'teal',
                 children: [
-                    {
-                        key: 't2b-list',
-                        label: 'Danh sách TA',
-                        path: '/data-governance/assets?type=technical',
-                        fnCode: 'T2B.1',
-                        icon: <UnorderedListOutlined />
-                    },
-                    {
-                        key: 't2b-discovery',
-                        label: 'Auto-discovery',
-                        path: '/data-governance/discovery',
-                        fnCode: 'T2B.2',
-                        icon: <AimOutlined />,
-                        badgeDynamic: 'newDiscoveryCount'
-                    },
-                    {
-                        key: 't2b-schema',
-                        label: 'Thay đổi schema',
-                        path: '/data-governance/assets/schema-changes',
-                        fnCode: 'T2B.4',
-                        icon: <BranchesOutlined />,
-                        badgeDynamic: 'pendingSchemaCount'
-                    },
-                    {
-                        key: 't2b-impact',
-                        label: 'Phân tích tác động',
-                        path: '/data-governance/assets/impact',
-                        fnCode: 'T2B.5',
-                        icon: <ThunderboltOutlined />
-                    }
+                    { key: 'dg-tech-update', label: 'Cập nhật thông tin giá trị về tài sản kỹ thuật', path: '/data-governance/technical/update' },
+                    { key: 'dg-tech-exploit', label: 'Tra cứu/khai thác thông tin quản trị dữ liệu về tài sản kỹ thuật', path: '/data-governance/technical/exploit' },
+                    { key: 'dg-tech-both-exploit', label: 'Tra cứu/Khai thác thông tin quản trị dữ liệu về tài sản nghiệp vụ và tài sản kỹ thuật', path: '/data-governance/technical/both-exploit' },
                 ]
             },
             {
-                type: 'divider',
-                key: 'divider-glossary',
-                label: 'Định nghĩa & Quy tắc'
-            },
-            {
-                key: 't3a',
-                label: 'Thuật ngữ NV',
-                labelEn: 'Business Glossary',
-                icon: <BookOutlined />,
-                badge: 'T3A',
-                badgeColor: 'orange',
-                children: [
-                    {
-                        key: 't3a-browse',
-                        label: 'Tra cứu thuật ngữ',
-                        path: '/data-governance/glossary',
-                        fnCode: 'T3A.5',
-                        icon: <SearchOutlined />
-                    },
-                    {
-                        key: 't3a-new',
-                        label: 'Tạo thuật ngữ mới',
-                        path: '/data-governance/glossary/new',
-                        fnCode: 'T3A.1',
-                        icon: <PlusOutlined />,
-                        highlight: true
-                    },
-                    {
-                        key: 't3a-review',
-                        label: 'Phê duyệt',
-                        path: '/data-governance/glossary/review',
-                        fnCode: 'T3A.3',
-                        icon: <CheckSquareOutlined />,
-                        badgeDynamic: 'pendingTermCount'
-                    },
-                    {
-                        key: 't3a-needs-review',
-                        label: 'Cần review (> 1 năm)',
-                        path: '/data-governance/glossary?stale=true',
-                        fnCode: 'T3A.2',
-                        icon: <WarningOutlined />,
-                        badgeDynamic: 'staleTermCount'
-                    },
-                    {
-                        key: 't3a-export',
-                        label: 'Xuất Glossary',
-                        path: '/data-governance/glossary/export',
-                        fnCode: 'T3A.7',
-                        icon: <DownloadOutlined />
-                    }
-                ]
-            },
-            {
-                type: 'divider',
-                key: 'divider-tools',
-                label: 'Công cụ'
-            },
-            {
-                key: 'mx',
-                label: 'Liên kết & Lineage',
-                labelEn: 'Linking & Lineage',
+                key: 'dg-lineage-mgmt',
+                label: 'Quản lý lineage (dòng dữ liệu)',
                 icon: <ClusterOutlined />,
-                badge: 'MX',
-                badgeColor: 'gray',
                 children: [
-                    {
-                        key: 'mx-lineage',
-                        label: 'Data Lineage',
-                        path: '/data-governance/lineage',
-                        fnCode: 'MX.1',
-                        icon: <MergeCellsOutlined />
-                    },
-                    {
-                        key: 'mx-relations',
-                        label: 'Sơ đồ quan hệ',
-                        path: '/data-governance/relations',
-                        fnCode: 'MX.2',
-                        icon: <ShareAltOutlined />
-                    }
+                    { key: 'dg-lineage-track-list', label: 'Quản lý danh sách thông tin loại dữ liệu cần theo dõi dòng dữ liệu', path: '/data-governance/lineage/track-list' },
+                    { key: 'dg-lineage-search-list', label: 'Tra cứu danh sách thông tin loại dữ liệu cần theo dõi dòng dữ liệu', path: '/data-governance/lineage/search-list' },
+                    { key: 'dg-lineage-schema-exploit', label: 'Tra cứu/Khai thác lược đồ về luồng dữ liệu', path: '/data-governance/lineage/schema-exploit' },
                 ]
             },
             {
-                type: 'divider',
-                key: 'divider-admin',
-                label: 'Danh mục hệ thống'
+                key: 'dg-quality-mgmt',
+                label: 'Quản lý chất lượng dữ liệu (Data Quality Management)',
+                icon: <CheckSquareOutlined />,
+                children: [
+                    { key: 'dg-qual-criteria', label: 'Bộ tiêu chí đánh giá chất lượng dữ liệu', path: '/data-governance/quality/criteria' },
+                    { key: 'dg-qual-rules-biz', label: 'Quy tắc về chất lượng tài sản nghiệp vụ', path: '/data-governance/quality/rules-business' },
+                    { key: 'dg-qual-rules-tech', label: 'Quy tắc về chất lượng tài sản kỹ thuật', path: '/data-governance/quality/rules-technical' },
+                    { key: 'dg-qual-thresholds', label: 'Ngưỡng đánh giá chất lượng dữ liệu', path: '/data-governance/quality/thresholds' },
+                    { key: 'dg-qual-rules-mgmt', label: 'Quy tắc quản lý chất lượng dữ liệu', path: '/data-governance/quality/rules-mgmt' },
+                    { key: 'dg-qual-eval-issues', label: 'Đánh giá và xử lý các vấn đề về chất lượng dữ liệu', path: '/data-governance/quality/eval-issues' },
+                    { key: 'dg-qual-warn-thresholds', label: 'Thông báo cảnh báo vượt ngưỡng', path: '/data-governance/quality/warning-thresholds' },
+                    { key: 'dg-qual-investigate-thresholds', label: 'Tra soát, xử lý dữ liệu vượt ngưỡng', path: '/data-governance/quality/investigate-thresholds' },
+                ]
             },
             {
-                key: 'admin',
-                label: 'Quản trị hệ thống',
-                icon: <SettingOutlined />,
-                role: 'admin',
+                key: 'dg-sync-config',
+                label: 'Cấu hình thời gian đồng bộ từ dữ liệu tác nghiệp về vùng dữ liệu phục vụ công tác quản trị dữ liệu',
+                icon: <SyncOutlined />,
                 children: [
-                    {
-                        key: 'admin-domains',
-                        label: 'Quản lý Domain',
-                        path: '/data-governance/admin/domains',
-                        fnCode: 'T4',
-                        icon: <GroupOutlined />
-                    },
-                    {
-                        key: 'admin-users',
-                        label: 'Người dùng & Phân quyền',
-                        path: '/data-governance/admin/users',
-                        fnCode: 'T6: Ownership',
-                        icon: <TeamOutlined />
-                    },
-                    {
-                        key: 'admin-connections',
-                        label: 'Kết nối Data Source',
-                        path: '/data-governance/admin/connections',
-                        fnCode: 'T2B.2',
-                        icon: <ApiOutlined />
-                    },
-                    {
-                        key: 'admin-codelists',
-                        label: 'Bảng mã danh mục',
-                        path: '/data-governance/admin/codelists',
-                        fnCode: 'T7: DQ Rules',
-                        icon: <TagOutlined />
-                    }
+                    { key: 'dg-sync-time-config', label: 'Cấu hình thời gian đồng bộ dữ liệu phục vụ công tác quản trị dữ liệu', path: '/data-governance/sync/time-config' }
                 ]
             }
         ]
@@ -762,83 +654,275 @@ export const SUB_SYSTEMS: SubSystem[] = [
         icon: <GlobalOutlined />,
         color: colors.subsystem.portal,
         menuItems: [
-            { key: 'web-portal-dashboard', label: 'TRANG CHỦ', icon: <DashboardOutlined />, path: '/web-portal/dashboard' },
             {
-                key: 'web-portal-send',
-                label: 'GỬI BÁO CÁO',
+                key: 'web-portal-home',
+                label: 'Trang chủ',
+                icon: <DashboardOutlined />,
+                path: '/web-portal/dashboard'
+            },
+            {
+                key: 'web-portal-report-delivery',
+                label: 'Gửi báo cáo',
                 icon: <CloudServerOutlined />,
                 children: [
                     {
-                        key: 'web-portal-send-periodic-group',
-                        label: 'Báo cáo tín dụng',
-                        icon: <FileDoneOutlined />,
+                        key: 'web-portal-report-delivery-send',
+                        label: 'Gửi báo cáo',
+                        path: '/web-portal/report-delivery/send'
+                    },
+                    {
+                        key: 'web-portal-report-delivery-search',
+                        label: 'Tra cứu báo cáo đã gửi',
+                        path: '/web-portal/report-delivery/search'
+                    },
+                    {
+                        key: 'web-portal-send-balance-new',
+                        label: 'Gửi thông tin cân đối',
+                        path: '/web-portal/send-balance/new'
+                    },
+                    {
+                        key: 'web-portal-send-balance',
+                        label: 'Tra cứu thông tin cân đối',
+                        path: '/web-portal/send-balance'
+                    }
+                ]
+            },
+            {
+                key: 'web-portal-catalog-mgmt',
+                label: 'Đăng ký khai thác',
+                icon: <BookOutlined />,
+                children: [
+                    {
+                        key: 'web-portal-catalog-mgmt-search',
+                        label: 'Tra cứu catalogue sản phẩm',
+                        path: '/web-portal/catalog-mgmt/search'
+                    },
+                    {
+                        key: 'web-portal-catalog-mgmt-cic-search',
+                        label: 'Tra cứu mã CIC',
+                        path: '/web-portal/catalog-mgmt/cic-search'
+                    },
+                    {
+                        key: 'web-portal-catalog-mgmt-register',
+                        label: 'Đăng ký nhu cầu khai thác báo cáo',
+                        path: '/web-portal/catalog-mgmt/register'
+                    }
+                ]
+            },
+            {
+                key: 'web-portal-exploitation',
+                label: 'Khai thác sản phẩm',
+                icon: <FileTextOutlined />,
+                children: [
+                    {
+                        key: 'web-portal-exploitation-request',
+                        label: 'Sản phẩm theo yêu cầu',
                         children: [
-                            { key: 'web-portal-send-periodic', label: 'Gửi báo cáo tín dụng', path: '/web-portal/send-periodic' },
-                            { key: 'web-portal-search-periodic', label: 'Tra cứu báo cáo', path: '/web-portal/search-periodic' },
+                            {
+                                key: 'web-portal-exploitation-request-register',
+                                label: 'Đăng ký SP theo yêu cầu',
+                                path: '/web-portal/exploitation/request/register'
+                            },
+                            {
+                                key: 'web-portal-exploitation-request-inquiry',
+                                label: 'Hỏi tin SP theo yêu cầu',
+                                path: '/web-portal/exploitation/request/inquiry'
+                            }
                         ]
                     },
                     {
-                        key: 'web-portal-send-balance-group',
-                        label: 'Thông tin cân đối',
-                        icon: <ReconciliationOutlined />,
+                        key: 'web-portal-exploitation-customer',
+                        label: 'Hỏi tin khách hàng',
                         children: [
-                            { key: 'web-portal-send-balance-new', label: 'Gửi thông tin cân đối', path: '/web-portal/send-balance/new' },
-                            { key: 'web-portal-send-balance', label: 'Tra cứu thông tin cân đối', path: '/web-portal/send-balance' },
+                            {
+                                key: 'web-portal-exploitation-customer-instant',
+                                label: 'Hỏi trả lời tin tức thời',
+                                children: [
+                                    {
+                                        key: 'web-portal-exploitation-customer-instant-inquiry',
+                                        label: 'Hỏi tin khách hàng',
+                                        path: '/web-portal/exploitation/customer/instant/inquiry'
+                                    },
+                                    {
+                                        key: 'web-portal-exploitation-customer-instant-response',
+                                        label: 'Trả lời tin khách hàng',
+                                        path: '/web-portal/exploitation/customer/instant/response'
+                                    },
+                                    {
+                                        key: 'web-portal-exploitation-customer-instant-history',
+                                        label: 'Lịch sử hỏi tin',
+                                        path: '/web-portal/exploitation/customer/instant/history'
+                                    }
+                                ]
+                            },
+                            {
+                                key: 'web-portal-exploitation-customer-batch',
+                                label: 'Hỏi trả lời tin theo lô',
+                                children: [
+                                    {
+                                        key: 'web-portal-exploitation-customer-batch-inquiry',
+                                        label: 'Hỏi tin theo lô',
+                                        path: '/web-portal/exploitation/customer/batch/inquiry'
+                                    },
+                                    {
+                                        key: 'web-portal-exploitation-customer-batch-response',
+                                        label: 'Trả lời tin theo lô',
+                                        path: '/web-portal/exploitation/customer/batch/response'
+                                    },
+                                    {
+                                        key: 'web-portal-exploitation-customer-batch-history',
+                                        label: 'Lịch sử hỏi tin',
+                                        path: '/web-portal/exploitation/customer/batch/history'
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        key: 'web-portal-exploitation-foreign',
+                        label: 'Hỏi tin doanh nghiệp nước ngoài',
+                        children: [
+                            {
+                                key: 'web-portal-exploitation-foreign-inquiry',
+                                label: 'Hỏi tin doanh nghiệp nước ngoài',
+                                path: '/web-portal/exploitation/foreign/inquiry'
+                            },
+                            {
+                                key: 'web-portal-exploitation-foreign-responses',
+                                label: 'Danh sách bản trả lời tin',
+                                path: '/web-portal/exploitation/foreign/responses'
+                            }
+                        ]
+                    },
+                    {
+                        key: 'web-portal-exploitation-rating',
+                        label: 'Hỏi tin xếp hạng tín dụng',
+                        children: [
+                            {
+                                key: 'web-portal-exploitation-rating-customer',
+                                label: 'Hỏi tin khách hàng',
+                                path: '/web-portal/exploitation/rating/customer'
+                            },
+                            {
+                                key: 'web-portal-exploitation-rating-batch',
+                                label: 'Hỏi tin theo lô',
+                                path: '/web-portal/exploitation/rating/batch'
+                            }
+                        ]
+                    },
+                    {
+                        key: 'web-portal-exploitation-periodic',
+                        label: 'Khai thác sản phẩm định kỳ',
+                        children: [
+                            {
+                                key: 'web-portal-exploitation-periodic-search',
+                                label: 'Tra cứu sản phẩm định kỳ',
+                                path: '/web-portal/exploitation/periodic/search'
+                            },
+                            {
+                                key: 'web-portal-exploitation-periodic-adjust',
+                                label: 'Tra cứu công văn điều chỉnh sản phẩm định kỳ',
+                                path: '/web-portal/exploitation/periodic/adjust'
+                            }
+                        ]
+                    },
+                    {
+                        key: 'web-portal-analytics',
+                        label: 'Bài viết phân tích, cảnh báo',
+                        children: [
+                            {
+                                key: 'web-portal-analytics-r52',
+                                label: 'Bài viết phân tích, cảnh báo',
+                                path: '/web-portal/analytics/r52'
+                            }
                         ]
                     }
                 ]
             },
             {
-                key: 'web-portal-exploit',
-                label: 'KHAI THÁC BÁO CÁO',
-                icon: <SearchOutlined />,
+                key: 'web-portal-support',
+                label: 'Hỗ trợ/ Tư vấn',
+                icon: <TeamOutlined />,
+                path: '/web-portal/support'
+            },
+            {
+                key: 'web-portal-billing-investigation-parent',
+                label: 'Hóa đơn & Tra soát',
+                icon: <DollarOutlined />,
                 children: [
                     {
-                        key: 'web-portal-exploit-search',
-                        label: 'Khai thác TTTD',
-                        icon: <SearchOutlined />,
+                        key: 'web-portal-billing',
+                        label: 'Thanh toán & Hóa đơn',
                         children: [
-                            { key: 'web-portal-search-credit', label: 'Tra cứu TTTD khách hàng', path: '/web-portal/search-credit' },
-                            { key: 'web-portal-batch-inquiry', label: 'Hỏi tin khách hàng theo lô', path: '/web-portal/batch-inquiry' },
+                            {
+                                key: 'web-portal-billing-invoices',
+                                label: 'Tra cứu hóa đơn',
+                                path: '/web-portal/billing/invoices'
+                            },
+                            {
+                                key: 'web-portal-billing-stats',
+                                label: 'Thống kê số lượng hỏi tin',
+                                path: '/web-portal/billing/stats'
+                            }
                         ]
                     },
                     {
-                        key: 'web-portal-exploit-reports',
-                        label: 'Báo cáo tổng hợp',
-                        icon: <BarChartOutlined />,
+                        key: 'web-portal-investigation',
+                        label: 'Quản lý tra soát',
                         children: [
-                            { key: 'web-portal-risk-warnings', label: 'Cảnh báo rủi ro tín dụng', path: '/web-portal/risk-warnings' },
-                            { key: 'web-portal-industry-reports', label: 'Báo cáo tổng hợp ngành', path: '/web-portal/industry-reports' },
+                            {
+                                key: 'web-portal-investigation-from-cic',
+                                label: 'Tra soát nhận từ CIC',
+                                path: '/web-portal/investigation/from-cic'
+                            },
+                            {
+                                key: 'web-portal-investigation-to-cic',
+                                label: 'Tra soát gửi CIC',
+                                path: '/web-portal/investigation/to-cic'
+                            }
                         ]
                     }
                 ]
             },
             {
-                key: 'web-portal-products',
-                label: 'DANH MỤC SẢN PHẨM',
-                icon: <FolderOutlined />,
+                key: 'web-portal-admin-parent',
+                label: 'Quản trị',
+                icon: <SettingOutlined />,
                 children: [
                     {
-                        key: 'web-portal-products-traditional',
-                        label: 'Sản phẩm truyền thống',
-                        icon: <FileTextOutlined />,
+                        key: 'web-portal-account-mgmt',
+                        label: 'Quản trị tài khoản',
                         children: [
-                            { key: 'web-portal-products-indiv', label: 'Báo cáo tín dụng cá nhân', path: '/web-portal/products/individual' },
-                            { key: 'web-portal-products-corp', label: 'Báo cáo tín dụng doanh nghiệp', path: '/web-portal/products/corporate' },
+                            {
+                                key: 'web-portal-account-mgmt-list',
+                                label: 'Danh sách tài khoản ngoài CIC',
+                                path: '/web-portal/account-mgmt/list'
+                            },
+                            {
+                                key: 'web-portal-account-mgmt-permissions',
+                                label: 'Phân quyền tài khoản ngoài CIC',
+                                path: '/web-portal/account-mgmt/permissions'
+                            }
                         ]
                     },
                     {
-                        key: 'web-portal-products-value',
-                        label: 'Sản phẩm giá trị gia tăng',
-                        icon: <DollarOutlined />,
+                        key: 'web-portal-cms',
+                        label: 'Quản lý tin tức (CMS)',
                         children: [
-                            { key: 'web-portal-products-score', label: 'Báo cáo điểm số tín dụng', path: '/web-portal/products/score' },
-                            { key: 'web-portal-products-rating', label: 'Báo cáo xếp hạng tín dụng', path: '/web-portal/products/rating' },
+                            {
+                                key: 'web-portal-cms-news',
+                                label: 'Quản lý tin tức',
+                                path: '/web-portal/cms/news'
+                            },
+                            {
+                                key: 'web-portal-cms-contacts',
+                                label: 'Quản lý thông tin liên hệ',
+                                path: '/web-portal/cms/contacts'
+                            }
                         ]
                     }
                 ]
-            },
-            { key: 'web-portal-templates', label: 'HỖ TRỢ/ TƯ VẤN', icon: <TeamOutlined />, path: '/web-portal/support' }
+            }
         ]
     }
 ];
