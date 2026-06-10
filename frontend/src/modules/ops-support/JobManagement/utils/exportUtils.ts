@@ -6,7 +6,7 @@ export interface ExportOptions {
   includeLogs: boolean;
 }
 
-export const DEFAULT_EXPORT_OPTIONS: ExportOptions = {
+/* export */ const DEFAULT_EXPORT_OPTIONS: ExportOptions = {
   format: 'json',
   includeFields: ['id', 'status', 'startTime', 'duration', 'triggeredBy'],
   includeLogs: false,

@@ -1,10 +1,10 @@
 export type TemplateStatus = 'ACTIVE' | 'INACTIVE' | 'DRAFT' | 'APPROVED';
 export type ChannelType = 'SMS' | 'EMAIL' | 'IN_APP' | 'WEB_PUSH';
-export type PriorityLevel = 'HIGH' | 'MEDIUM' | 'LOW';
+/* export */ type PriorityLevel = 'HIGH' | 'MEDIUM' | 'LOW';
 export type ActionType = 'NONE' | 'OPEN_URL' | 'OPEN_SCREEN';
 export type TemplateLanguage = 'vi' | 'en';
 
-export interface IChannelContent {
+/* export */ interface IChannelContent {
   subject?: string;
   body: string;
   actionType: ActionType;
@@ -14,7 +14,7 @@ export interface IChannelContent {
   retryCount: number;
 }
 
-export type LanguageContentMap = Partial<Record<ChannelType, IChannelContent>>;
+/* export */ type LanguageContentMap = Partial<Record<ChannelType, IChannelContent>>;
 
 export interface INotificationTemplate {
   id: string;

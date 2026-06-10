@@ -311,14 +311,14 @@ export const RAW_FILE_RULES: FileRule[] = [
 ];
 
 // Hàm sinh mã nhóm nợ giả lập ổn định
-export const generateMockNhomNo = (op: string, currency: string | null): string => {
+/* export */ const generateMockNhomNo = (op: string, currency: string | null): string => {
   const sumChar = op.length + (currency ? currency.length : 0);
   const num = (sumChar % 5) + 1;
   return `Nhóm ${num}`;
 };
 
 // Hàm sinh số tiền giả lập ổn định chuyên nghiệp (XAU đo bằng Lượng, VND/USD định dạng chuẩn)
-export const generateMockAmount = (min: number, max: number, op: string, currency: string | null): string => {
+/* export */ const generateMockAmount = (min: number, max: number, op: string, currency: string | null): string => {
   const actualCurrency = currency || 'VND';
   const salt = op.charCodeAt(0) || 42;
   const factor = (salt % 10) / 10;
@@ -336,7 +336,7 @@ export const generateMockAmount = (min: number, max: number, op: string, currenc
 };
 
 // Hàm sinh cấu trúc JSON giả lập đẹp mắt cho Modal Xem chi tiết
-export const generateMockJsonContent = (report: BalanceReport): string => {
+/* export */ const generateMockJsonContent = (report: BalanceReport): string => {
   const baseJson = {
     Header: {
       PhanLoaiTep: report.phanLoaiTep,

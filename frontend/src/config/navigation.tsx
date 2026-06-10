@@ -845,7 +845,7 @@ export const SUB_SYSTEMS: SubSystem[] = [
 
 export const SHARED_MENU: MenuItem[] = [];
 
-export const DESIGN_SYSTEM_SUB: SubSystem = {
+/* export */ const DESIGN_SYSTEM_SUB: SubSystem = {
     id: 'design-system',
     name: 'Design System',
     icon: <BuildOutlined />,

@@ -227,7 +227,7 @@ export const transitions = {
 
 // ─── BREAKPOINTS ─────────────────────────────────────────────
 
-export const breakpoints = {
+/* export */ const breakpoints = {
     xs:  0,    // base — tương đương AntD Col xs (all screens, < sm)
     sm:  576,
     md:  768,

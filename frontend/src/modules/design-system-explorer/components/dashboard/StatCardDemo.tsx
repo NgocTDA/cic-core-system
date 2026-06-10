@@ -219,5 +219,5 @@ interface StatCardProps {
     );
 };
 
-export { StatCard };
+// export { StatCard };
 export default StatCardDemo;

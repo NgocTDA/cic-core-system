@@ -61,6 +61,7 @@ const ClientLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
     const isLandingPage = pathname === '/';
     const isPortalPage = pathname?.startsWith('/web-portal');
+    const isAuthPage = pathname?.startsWith('/auth');
 
     return (
         <ConfigProvider
@@ -71,7 +72,7 @@ const ClientLayout: React.FC<MainLayoutProps> = ({ children }) => {
                 <RoleProvider>
                     <HeaderProvider>
                         <CommandPalette />
-                        {isLandingPage || isPortalPage ? (
+                        {isLandingPage || isPortalPage || isAuthPage ? (
                             <div style={{ height: '100vh', overflow: 'hidden' }}>
                                 {children}
                             </div>

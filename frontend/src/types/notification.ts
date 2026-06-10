@@ -1,4 +1,4 @@
-export interface IFeedback {
+/* export */ interface IFeedback {
   id: string;
   senderName: string;
   content: string;

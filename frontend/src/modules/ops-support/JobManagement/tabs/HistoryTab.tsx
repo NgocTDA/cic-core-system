@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Table, Space, Button, Tag, Drawer, Empty, Row, Col, Statistic, Descriptions, Modal, Select, Checkbox, message } from 'antd';
-import { FileTextOutlined, DownloadOutlined, CompareOutlined } from '@ant-design/icons';
+import { FileTextOutlined, DownloadOutlined, DiffOutlined } from '@ant-design/icons';
 import type { TableProps } from 'antd';
 import { mockJobRuns } from '../mockData';
 import type { IJobRun } from '../types';
@@ -190,7 +190,7 @@ const HistoryTab: React.FC<HistoryTabProps> = ({ jobId }) => {
           Xuất ({selectedRuns.length > 0 ? selectedRuns.length : 'tất cả'})
         </Button>
         <Button
-          icon={<CompareOutlined />}
+          icon={<DiffOutlined />}
           onClick={handleCompare}
           disabled={selectedRuns.length !== 2}
         >

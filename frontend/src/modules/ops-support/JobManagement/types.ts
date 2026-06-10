@@ -7,10 +7,10 @@ export type JobCategory = 'DATA_SYNC' | 'REPORT' | 'CLEANUP' | 'VALIDATION' | 'B
 export type JobStatus = 'ACTIVE' | 'INACTIVE' | 'ARCHIVED';
 
 // Runtime status (last execution state)
-export type JobRunStatus = 'RUNNING' | 'IDLE' | 'SCHEDULED' | 'FAILED' | 'PAUSED';
+/* export */ type JobRunStatus = 'RUNNING' | 'IDLE' | 'SCHEDULED' | 'FAILED' | 'PAUSED';
 
 // Execution history status
-export type JobExecutionStatus = 'SUCCESS' | 'FAILED' | 'RUNNING' | 'CANCELLED';
+/* export */ type JobExecutionStatus = 'SUCCESS' | 'FAILED' | 'RUNNING' | 'CANCELLED';
 
 export type JobPriority = 1 | 2 | 3 | 4 | 5;
 
@@ -25,13 +25,13 @@ export interface IJobSchedule {
   lastRunTime?: string;
 }
 
-export interface IRetryPolicy {
+/* export */ interface IRetryPolicy {
   maxRetries: number;
   delayMs: number;
   backoffMultiplier: number;
 }
 
-export interface IJobNotificationRule {
+/* export */ interface IJobNotificationRule {
   templateId: string;
   templateCode: string;
   channels: ChannelType[];
@@ -39,12 +39,12 @@ export interface IJobNotificationRule {
   enabled: boolean;
 }
 
-export interface IJobNotificationConfig {
+/* export */ interface IJobNotificationConfig {
   onSuccess?: IJobNotificationRule;
   onFailure?: IJobNotificationRule;
 }
 
-export interface IJobDependency {
+/* export */ interface IJobDependency {
   jobId: string;
   dependsOnJobId: string;
   dependencyType: 'HARD' | 'SOFT';
@@ -89,7 +89,7 @@ export interface IJob {
   updatedAt: string;
 }
 
-export interface IRunLog {
+/* export */ interface IRunLog {
   timestamp: string;
   level: 'INFO' | 'WARN' | 'ERROR' | 'DEBUG';
   step?: string;
