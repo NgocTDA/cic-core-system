@@ -600,5 +600,71 @@ export const INITIAL_DATA: BalanceReport[] = [
     moTaTep: 'Báo cáo phân loại nợ & cam kết ngoại bảng kỳ tháng 4/2025',
     trangThai: 'DA_TIEP_NHAN',
     maDauMoi: '31358001'
+  },
+  {
+    key: '10',
+    stt: 10,
+    ngayBaoCao: '31/08/2025',
+    ngayGui: '31/08/2025 11:30:22',
+    tenTep: 'D353135800120250831.003.JSON',
+    phanLoaiTep: 'D35',
+    moTaTep: 'Báo cáo doanh số giải ngân kỳ tháng 8/2025',
+    trangThai: 'DA_GUI_CIC',
+    maDauMoi: '31358001'
+  },
+  {
+    key: '11',
+    stt: 11,
+    ngayBaoCao: '31/08/2025',
+    ngayGui: '31/08/2025 14:05:44',
+    tenTep: 'D400120100120250831.002.JSON',
+    phanLoaiTep: 'D40',
+    moTaTep: 'Báo cáo biện pháp bảo đảm kỳ tháng 8/2025 (VCB)',
+    trangThai: 'DA_GUI_CIC',
+    maDauMoi: '01201001'
+  },
+  {
+    key: '12',
+    stt: 12,
+    ngayBaoCao: '30/09/2025',
+    ngayGui: '30/09/2025 09:12:15',
+    tenTep: 'D323135800120250930.001.JSON',
+    phanLoaiTep: 'D32',
+    moTaTep: 'Báo cáo quan hệ tín dụng kỳ tháng 9/2025',
+    trangThai: 'TAO_MOI',
+    maDauMoi: '31358001'
+  },
+  {
+    key: '13',
+    stt: 13,
+    ngayBaoCao: '30/09/2025',
+    ngayGui: '30/09/2025 10:15:30',
+    tenTep: 'D100120300220250930.001.JSON',
+    phanLoaiTep: 'D10',
+    moTaTep: 'Báo cáo định danh khách hàng kỳ tháng 9/2025 (BIDV)',
+    trangThai: 'DA_GUI_CIC',
+    maDauMoi: '01203002'
+  },
+  {
+    key: '14',
+    stt: 14,
+    ngayBaoCao: '15/09/2025',
+    ngayGui: '15/09/2025 15:45:00',
+    tenTep: 'D360120100120250915.001.JSON',
+    phanLoaiTep: 'D36',
+    moTaTep: 'Báo cáo dự phòng rủi ro kỳ tháng 9/2025 (VCB)',
+    trangThai: 'DA_TIEP_NHAN',
+    maDauMoi: '01201001'
+  },
+  {
+    key: '15',
+    stt: 15,
+    ngayBaoCao: '15/09/2025',
+    ngayGui: '15/09/2025 16:10:18',
+    tenTep: 'D113135800120250915.001.JSON',
+    phanLoaiTep: 'D11',
+    moTaTep: 'Báo cáo định danh cuối tháng kỳ tháng 9/2025',
+    trangThai: 'DA_GUI_CIC',
+    maDauMoi: '31358001'
   }
 ];

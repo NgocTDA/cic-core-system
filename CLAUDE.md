@@ -131,6 +131,11 @@ useHeaderActions({
 }, []);
 ```
 
+### 7. Kiểm tra sự tuân thủ thiết kế (Design Compliance Check)
+Trước khi tạo mới hoặc sửa đổi bất kỳ giao diện, component nào (như Modal, Form, Card, v.v.), **BẮT BUỘC** phải đối chiếu thiết kế của chúng với các component mẫu trong thư mục `frontend/src/modules/design-system-explorer/components` hoặc các tài liệu hướng dẫn trong `docs/design-system`.
+- **Modal:** Tiêu đề ở dạng chữ thường viết hoa chữ đầu (không viết IN HOA toàn bộ), lược bỏ icon tiêu đề, các nút footer phải được căn giữa (`justifyContent: 'center'`) và đồng bộ kích thước/bo góc.
+- **Form/Card:** Không tự tạo màu nền/khoảng cách/kiểu dáng khác biệt mà không sử dụng tokens.
+
 ---
 
 ## Naming conventions

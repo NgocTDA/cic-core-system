@@ -38,7 +38,7 @@ const SectionCard: React.FC<SectionCardProps> = ({
 
   return (
     <Card
-      bordered={false}
+      variant="borderless"
       style={{
         borderRadius: radius.lg,
         boxShadow: shadows.xs,

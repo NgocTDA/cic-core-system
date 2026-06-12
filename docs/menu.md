@@ -152,12 +152,13 @@ Cấu trúc menu của hệ thống được quản lý thông qua cấu hình t
 - **Quản trị hệ thống**
   - Quản lý danh mục (`/ops-support/system/categories`)
   - Quản lý chức năng (`/ops-support/system/functions`)
-  - Quản lý job (`/ops-support/system/jobs`)
+  - Quản lý job (`/ops-support/job-management`)
   - Quản lý mã lỗi (`/ops-support/system/error-codes`)
 - **Quản lý thông báo**
-  - Tra cứu thông báo (Web Portal) (`/ops-support/notifications/portal`)
-  - Tra cứu thông báo (Core) (`/ops-support/notifications/core`)
-  - Quản lý mẫu thông báo (`/ops-support/notifications/templates`)
+  - Tra cứu thông báo (Web Portal) (`/ops-support/notifications`)
+  - Tra cứu thông báo (Core) (`/ops-support/notifications`)
+  - Quản lý mẫu thông báo (`/ops-support/notification-template`)
+  - Quản lý biến thông báo (`/ops-support/variable-registry`)
 - **Đánh giá chất lượng báo cáo TTTD**
   - Danh sách đánh giá (`/ops-support/quality/list`)
   - Kết quả đánh giá (`/ops-support/quality/results`)

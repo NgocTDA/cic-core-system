@@ -464,7 +464,7 @@ export const SUB_SYSTEMS: SubSystem[] = [
                 children: [
                     { key: 'ops-admin-catalog', label: 'Quản lý danh mục', path: '/ops-support/system/categories' },
                     { key: 'ops-admin-functions', label: 'Quản lý chức năng', path: '/ops-support/system/functions' },
-                    { key: 'ops-admin-jobs', label: 'Quản lý job', path: '/ops-support/system/jobs' },
+                    { key: 'ops-admin-jobs', label: 'Quản lý job', path: '/ops-support/job-management' },
                     { key: 'ops-admin-errors', label: 'Quản lý mã lỗi', path: '/ops-support/system/error-codes' },
                 ]
             },
@@ -473,9 +473,10 @@ export const SUB_SYSTEMS: SubSystem[] = [
                 label: 'Quản lý thông báo',
                 icon: <BellOutlined />,
                 children: [
-                    { key: 'ops-notify-portal', label: 'Tra cứu thông báo (Web Portal)', path: '/ops-support/notifications/portal' },
-                    { key: 'ops-notify-core', label: 'Tra cứu thông báo (Core)', path: '/ops-support/notifications/core' },
-                    { key: 'ops-notify-templates', label: 'Quản lý mẫu thông báo', path: '/ops-support/notifications/templates' },
+                    { key: 'ops-notify-portal', label: 'Tra cứu thông báo (Web Portal)', path: '/ops-support/notifications' },
+                    { key: 'ops-notify-core', label: 'Tra cứu thông báo (Core)', path: '/ops-support/notifications' },
+                    { key: 'ops-notify-templates', label: 'Quản lý mẫu thông báo', path: '/ops-support/notification-template' },
+                    { key: 'ops-notify-variables', label: 'Quản lý biến thông báo', path: '/ops-support/variable-registry' },
                 ]
             },
             {

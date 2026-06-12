@@ -102,7 +102,7 @@ const FilterBar: React.FC<FilterBarProps> = ({
   if (inCard) {
     return (
       <Card
-        bordered={false}
+        variant="borderless"
         style={{
           marginBottom: 16,
           borderRadius: radius.lg,

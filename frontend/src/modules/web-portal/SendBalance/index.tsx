@@ -1164,7 +1164,7 @@ const SendBalanceModule: React.FC = () => {
           flex
           noPadding
           title="Danh sách báo cáo thông tin cân đối"
-          count={`Mở rộng dòng để xem chi tiết đối soát`}
+          // count={`Mở rộng dòng để xem chi tiết đối soát`}
           extra={
             <Space>
               <Button
@@ -1300,13 +1300,15 @@ const SendBalanceModule: React.FC = () => {
             </Button>
           </div>
         }
-        bodyStyle={{
-          maxHeight: 'calc(80vh - 120px)',
-          overflowY: 'auto',
-          padding: '0 24px 20px'
+        styles={{
+          body: {
+            maxHeight: 'calc(80vh - 120px)',
+            overflowY: 'auto',
+            padding: '0 24px 20px'
+          }
         }}
         style={{ top: '10vh', maxWidth: '80vw' }}
-        destroyOnClose
+        destroyOnHidden
       >
         {selectedReport && (() => {
           const detailRows = getDetailRows(selectedReport);

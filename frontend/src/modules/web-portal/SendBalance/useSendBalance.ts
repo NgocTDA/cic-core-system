@@ -12,13 +12,28 @@ export const useSendBalance = () => {
     if (typeof window !== 'undefined') {
       const storedData = localStorage.getItem('send_balance_reports');
       const storedDetails = localStorage.getItem('send_balance_details_map');
+      
+      let parsedData = INITIAL_DATA;
       if (storedData) {
         try {
-          setData(JSON.parse(storedData));
+          const loadedData = JSON.parse(storedData);
+          if (Array.isArray(loadedData) && loadedData.length > 0) {
+            const loadedKeys = new Set(loadedData.map((x: any) => String(x.key)));
+            const missing = INITIAL_DATA.filter(item => !loadedKeys.has(String(item.key)));
+            if (missing.length > 0) {
+              parsedData = [...loadedData, ...missing].sort((a, b) => parseInt(a.key, 10) - parseInt(b.key, 10));
+              parsedData = parsedData.map((item, idx) => ({ ...item, stt: idx + 1 }));
+            } else {
+              parsedData = loadedData;
+            }
+          }
         } catch (e) {
           console.error('Lỗi khi đọc send_balance_reports từ localStorage:', e);
         }
       }
+      
+      setData(parsedData);
+
       if (storedDetails) {
         try {
           setCustomDetailsMap(JSON.parse(storedDetails));

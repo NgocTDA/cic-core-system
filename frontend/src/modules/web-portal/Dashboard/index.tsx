@@ -380,7 +380,7 @@ const PortalDashboard: React.FC = () => {
               </Space>
 
               <Space size={12} wrap>
-                <Link href="/login">
+                <Link href="/auth/login">
                   <Button
                     type="primary"
                     size="large"
@@ -609,7 +609,7 @@ const PortalDashboard: React.FC = () => {
           </Col>
           <Col xs={24} md={12}>
             <ActionBanner
-              tabs={['Hỗ trợ kỹ thuật', 'Liên hệ CIC']}  
+              tabs={['Hỗ trợ kỹ thuật', 'Liên hệ CIC']}
               activeTab="Liên hệ CIC"
               heading="HỖ TRỢ VẬN HÀNH & TƯ VẤN NGHIỆP VỤ 24/7"
               stats={[

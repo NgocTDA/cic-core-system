@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, message } from 'antd';
+import { useRouter } from 'next/navigation';
 import { colors } from '@/design-system';
 
 interface Timezone {
@@ -23,11 +24,25 @@ const timezones: Timezone[] = [
 ];
 
 export default function LoginClient() {
+    const router = useRouter();
     const [utcTime, setUtcTime] = useState<Date | null>(null);
+    const [failedAttempts, setFailedAttempts] = useState(0);
+    const [showCaptcha, setShowCaptcha] = useState(false);
+    const [captchaText, setCaptchaText] = useState('');
+
+    const generateCaptchaText = () => {
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        let result = '';
+        for (let i = 0; i < 5; i++) {
+            result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        setCaptchaText(result);
+    };
 
     useEffect(() => {
         // Set initial time on mount to prevent SSR hydration mismatch
         setUtcTime(new Date());
+        generateCaptchaText();
         const timer = setInterval(() => {
             setUtcTime(new Date());
         }, 1000);
@@ -51,8 +66,39 @@ export default function LoginClient() {
     };
 
     const onFinish = (values: any) => {
-        message.success(`Đăng nhập thành công với tài khoản: ${values.email}`);
-        console.log('Login values:', values);
+        // If captcha is shown, validate it
+        if (showCaptcha) {
+            if (!values.captcha || values.captcha.toUpperCase() !== captchaText) {
+                message.error('Mã xác thực không chính xác!');
+                generateCaptchaText();
+                return;
+            }
+        }
+
+        // Mock authentication simulation
+        // Success credentials: admin / admin or admin@cic.org.vn / admin
+        const isMockSuccess = 
+            (values.usernameOrEmail === 'admin' || values.usernameOrEmail === 'admin@cic.org.vn') && 
+            values.password === 'admin';
+
+        if (isMockSuccess) {
+            message.success('Đăng nhập thành công!');
+            setFailedAttempts(0);
+            setShowCaptcha(false);
+            // Redirect to home screen (which displays list of subsystems)
+            router.push('/');
+        } else {
+            const nextFailed = failedAttempts + 1;
+            setFailedAttempts(nextFailed);
+            
+            if (nextFailed >= 5) {
+                setShowCaptcha(true);
+                generateCaptchaText();
+                message.error('Tài khoản hoặc mật khẩu không đúng! Vui lòng nhập mã xác thực.');
+            } else {
+                message.error(`Tài khoản hoặc mật khẩu không đúng! (Còn ${5 - nextFailed} lần đăng nhập sai trước khi yêu cầu Captcha)`);
+            }
+        }
     };
 
     return (
@@ -98,7 +144,7 @@ export default function LoginClient() {
                         <div className="flex flex-col items-center mb-6">
                             <div className="flex items-center gap-2 mb-1.5">
                                 <svg 
-                                    className="w-8 h-8 text-[#1677ff]" 
+                                    className="w-8 h-8" 
                                     fill="none" 
                                     viewBox="0 0 24 24" 
                                     stroke="currentColor" 
@@ -116,49 +162,6 @@ export default function LoginClient() {
                             </p>
                         </div>
 
-                        {/* SSO Sign In Buttons */}
-                        <div className="flex flex-col gap-2.5">
-                            <button
-                                id="google-login-btn"
-                                type="button"
-                                className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-md font-semibold text-sm transition-all duration-200 bg-[#262626] text-white hover:bg-black active:scale-[0.98] cursor-pointer border-none"
-                                onClick={() => message.info('Đăng nhập bằng Google đang phát triển')}
-                            >
-                                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
-                                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/>
-                                </svg>
-                                <span>Đăng nhập bằng Google</span>
-                            </button>
-                            
-                            <button
-                                id="microsoft-login-btn"
-                                type="button"
-                                className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-md font-semibold text-sm transition-all duration-200 bg-[#f5f5f5] text-gray-800 border border-gray-200 hover:bg-[#e8e8e8] active:scale-[0.98] cursor-pointer"
-                                onClick={() => message.info('Đăng nhập bằng Microsoft đang phát triển')}
-                            >
-                                <svg className="w-4 h-4" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M0 0h11v11H0z" fill="#F25022"/>
-                                    <path d="M12 0h11v11H12z" fill="#7FBA00"/>
-                                    <path d="M0 12h11v11H0z" fill="#00A1F1"/>
-                                    <path d="M12 12h11v11H12z" fill="#FFB900"/>
-                                </svg>
-                                <span>Đăng nhập bằng Microsoft</span>
-                            </button>
-                        </div>
-
-                        {/* Divider */}
-                        <div className="relative my-6 flex items-center justify-center">
-                            <div className="absolute inset-0 flex items-center">
-                                <div className="w-full border-t border-gray-200"></div>
-                            </div>
-                            <span className="relative px-3 bg-white text-xs text-gray-400 uppercase tracking-wider font-semibold">
-                                hoặc
-                            </span>
-                        </div>
-
                         {/* Form Credentials */}
                         <Form
                             name="login_form"
@@ -168,16 +171,15 @@ export default function LoginClient() {
                             className="space-y-4"
                         >
                             <Form.Item
-                                label={<span className="font-semibold text-xs text-gray-700">Email</span>}
-                                name="email"
+                                label={<span className="font-semibold text-xs text-gray-700">Tài khoản hoặc Email</span>}
+                                name="usernameOrEmail"
                                 rules={[
-                                    { required: true, message: 'Vui lòng nhập email!' },
-                                    { type: 'email', message: 'Email không đúng định dạng!' }
+                                    { required: true, message: 'Vui lòng nhập tài khoản hoặc email!' }
                                 ]}
                             >
                                 <Input 
-                                    id="email"
-                                    placeholder="you@example.com" 
+                                    id="usernameOrEmail"
+                                    placeholder="username hoặc username@cic.org.vn" 
                                     size="large" 
                                     className="rounded-md border-gray-300 focus:border-[#1677ff] focus:ring-1 focus:ring-[#1677ff]"
                                 />
@@ -194,7 +196,7 @@ export default function LoginClient() {
                                 }
                                 name="password"
                                 rules={[{ required: true, message: 'Vui lòng nhập mật khẩu!' }]}
-                                className="mb-6"
+                                className="mb-4"
                             >
                                 <Input.Password 
                                     id="password"
@@ -203,6 +205,59 @@ export default function LoginClient() {
                                     className="rounded-md border-gray-300 focus:border-[#1677ff] focus:ring-1 focus:ring-[#1677ff]"
                                 />
                             </Form.Item>
+
+                            {/* Captcha Field (Visible after 5 failed attempts) */}
+                            {showCaptcha && (
+                                <Form.Item
+                                    label={<span className="font-semibold text-xs text-gray-700">Mã xác thực (Captcha)</span>}
+                                    name="captcha"
+                                    rules={[{ required: true, message: 'Vui lòng nhập mã xác thực!' }]}
+                                    className="mb-6"
+                                >
+                                    <div className="flex gap-3 items-center">
+                                        {/* Styled Captcha Display Box */}
+                                        <div 
+                                            className="flex-1 h-[40px] rounded-md border border-gray-300 flex items-center justify-center font-mono font-bold text-lg tracking-widest relative overflow-hidden select-none"
+                                            style={{
+                                                backgroundImage: `radial-gradient(circle, ${colors.border.base} 8%, transparent 9%)`,
+                                                backgroundSize: '10px 10px',
+                                                backgroundColor: colors.bg.subtle,
+                                                color: colors.primary[500],
+                                            }}
+                                        >
+                                            {/* Noise lines */}
+                                            <div className="absolute inset-0 opacity-15 pointer-events-none">
+                                                <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                                                    <line x1="0" y1="10" x2="150" y2="30" stroke={colors.primary[500]} strokeWidth="1.5" />
+                                                    <line x1="10" y1="35" x2="140" y2="5" stroke={colors.primary[500]} strokeWidth="1.5" />
+                                                </svg>
+                                            </div>
+                                            <span className="relative z-10 skew-x-12 pointer-events-none">
+                                                {captchaText}
+                                            </span>
+                                        </div>
+                                        
+                                        {/* Refresh Button */}
+                                        <Button 
+                                            type="default" 
+                                            onClick={generateCaptchaText}
+                                            className="h-[40px] px-3 flex items-center justify-center rounded-md border-gray-300 hover:border-[#1677ff] hover:text-[#1677ff]"
+                                        >
+                                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 7.89M9 11l3-3 3 3m-3-3v12" />
+                                            </svg>
+                                        </Button>
+                                    </div>
+                                    
+                                    <Input 
+                                        id="captcha"
+                                        placeholder="Nhập 5 ký tự ở trên" 
+                                        size="large"
+                                        className="rounded-md border-gray-300 focus:border-[#1677ff] focus:ring-1 focus:ring-[#1677ff] mt-2"
+                                        autoComplete="off"
+                                    />
+                                </Form.Item>
+                            )}
 
                             <Form.Item className="mb-0">
                                 <Button
@@ -220,20 +275,6 @@ export default function LoginClient() {
                                 </Button>
                             </Form.Item>
                         </Form>
-                    </div>
-
-                    {/* Card Footer */}
-                    <div 
-                        className="border-t border-gray-100 px-8 py-4 flex items-center justify-center gap-2 text-xs font-medium text-gray-500"
-                        style={{ backgroundColor: colors.bg.subtle }}
-                    >
-                        <a href="/auth/register" className="hover:text-gray-900 transition-colors">
-                            Tạo tài khoản
-                        </a>
-                        <span>•</span>
-                        <a href="/auth/saml" className="hover:text-gray-900 transition-colors">
-                            Đăng nhập bằng SAML/OIDC
-                        </a>
                     </div>
                 </div>
             </main>
