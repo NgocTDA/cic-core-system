@@ -35,6 +35,7 @@ const PortalMenu: React.FC = () => {
           icon: item.icon,
           label: label,
           children: renderMenuItems(item.children),
+          popupClassName: 'portal-submenu-popup',
         };
       }
 
@@ -87,7 +88,6 @@ const PortalMenu: React.FC = () => {
               height: 48,
               lineHeight: '48px',
             }}
-            popupClassName="portal-submenu-popup"
           />
         </div>
 

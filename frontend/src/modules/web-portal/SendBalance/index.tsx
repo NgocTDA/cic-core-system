@@ -288,7 +288,7 @@ const SendBalanceModule: React.FC = () => {
   const handleRevoke = (record: BalanceReport) => {
     Modal.confirm({
       title: 'Xác nhận thu hồi tệp báo cáo',
-      content: `Bạn có chắc chắn muốn thu hồi tệp ${record.tenTep}? Trạng thái tệp sẽ chuyển về "Tạo mới" để bạn chỉnh sửa hoặc xóa.`,
+      content: `Bạn có chắc chắn muốn thu hồi tệp ${record.tenTep}? Trạng thái tệp sẽ chuyển về "Tạo mới" để chỉnh sửa hoặc xóa.`,
       okText: 'Thu hồi',
       okType: 'danger',
       cancelText: 'Hủy',
