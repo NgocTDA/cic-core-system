@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "predev": "node scripts/cleanup-port.js && node scripts/clean-cache.js",
-    "dev": "next dev --port 8700",
+    "dev": "next dev",
     "prebuild": "node scripts/clean-cache.js",
     "build": "next build",
     "start": "next start",

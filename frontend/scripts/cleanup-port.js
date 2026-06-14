@@ -2,7 +2,7 @@ import { execSync } from 'child_process';
 import process from 'process';
 
 try {
-  const port = 8700;
+  const port = Number(process.env.DEV_PORT || process.env.PORT || 3000);
   console.log(`[cleanup-port] Checking port ${port}...`);
   if (process.platform === 'win32') {
     try {
@@ -46,5 +46,5 @@ try {
   }
   console.log(`[cleanup-port] Port ${port} is clear.`);
 } catch (error) {
-  console.log('[cleanup-port] Port 8700 is already free or no process was found.');
+  console.log('[cleanup-port] Dev port is already free or no process was found.');
 }

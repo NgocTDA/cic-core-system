@@ -159,10 +159,12 @@ const AppHeader: React.FC<AppHeaderProps> = ({ collapsed, onCollapse, isMobile }
         </Link>
 
         {/* Always visible: user avatar */}
-        <Space size={userInfoGap} align="center" style={{ cursor: 'pointer', paddingLeft: spacing[1], height: size.lg }}>
-          <Avatar icon={<UserOutlined />} style={{ backgroundColor: colors.primary[500] }} />
-          {!isMobile && <span style={{ fontWeight: 500 }}>Admin</span>}
-        </Space>
+        <Link href="/" style={{ color: 'inherit', textDecoration: 'none' }}>
+          <Space size={userInfoGap} align="center" style={{ cursor: 'pointer', paddingLeft: spacing[1], height: size.lg }}>
+            <Avatar icon={<UserOutlined />} style={{ backgroundColor: colors.primary[500] }} />
+            {!isMobile && <span style={{ fontWeight: 500 }}>Admin</span>}
+          </Space>
+        </Link>
       </div>
     </Header>
   );
