@@ -510,8 +510,9 @@ export const INITIAL_DATA: BalanceReport[] = [
     tenTep: 'D403135800120250831.001.JSON',
     phanLoaiTep: 'D40',
     moTaTep: 'Báo cáo cân đối tài chính TPBANK kỳ tháng 8/2025',
-    trangThai: 'TAO_MOI',
-    maDauMoi: '31358001'
+    trangThai: 'YEU_CAU_SUA',
+    maDauMoi: '31358001',
+    lyDoTuChoi: 'Tổng dư nợ không khớp với chi tiết nhóm nợ, đề nghị rà soát lại.'
   },
   {
     key: '2',
@@ -666,5 +667,137 @@ export const INITIAL_DATA: BalanceReport[] = [
     moTaTep: 'Báo cáo định danh cuối tháng kỳ tháng 9/2025',
     trangThai: 'DA_GUI_CIC',
     maDauMoi: '31358001'
+  },
+  {
+    key: '16',
+    stt: 16,
+    ngayBaoCao: '31/10/2025',
+    ngayGui: '31/10/2025 08:45:10',
+    tenTep: 'D313135800120251031.001.JSON',
+    phanLoaiTep: 'D31',
+    moTaTep: 'Báo cáo dư nợ chi tiết kỳ tháng 10/2025',
+    trangThai: 'DANG_KIEM_TRA',
+    maDauMoi: '31358001'
+  },
+  {
+    key: '17',
+    stt: 17,
+    ngayBaoCao: '31/10/2025',
+    ngayGui: '31/10/2025 09:30:42',
+    tenTep: 'D120120100120251031.001.JSON',
+    phanLoaiTep: 'D12',
+    moTaTep: 'Báo cáo dư nợ cấp tín dụng kỳ tháng 10/2025 (VCB)',
+    trangThai: 'DANG_KIEM_TRA',
+    maDauMoi: '01201001'
+  },
+  {
+    key: '18',
+    stt: 18,
+    ngayBaoCao: '31/10/2025',
+    ngayGui: '31/10/2025 10:05:33',
+    tenTep: 'D320120300220251031.001.JSON',
+    phanLoaiTep: 'D32',
+    moTaTep: 'Báo cáo quan hệ tín dụng kỳ tháng 10/2025 (BIDV)',
+    trangThai: 'DA_GUI_CIC',
+    maDauMoi: '01203002'
+  },
+  {
+    key: '19',
+    stt: 19,
+    ngayBaoCao: '31/10/2025',
+    ngayGui: '31/10/2025 11:20:18',
+    tenTep: 'D333135800120251031.001.JSON',
+    phanLoaiTep: 'D33',
+    moTaTep: 'Báo cáo hợp đồng bảo đảm kỳ tháng 10/2025',
+    trangThai: 'DA_GUI_CIC',
+    maDauMoi: '31358001'
+  },
+  {
+    key: '20',
+    stt: 20,
+    ngayBaoCao: '31/10/2025',
+    ngayGui: '31/10/2025 13:40:55',
+    tenTep: 'D353135800120251031.001.JSON',
+    phanLoaiTep: 'D35',
+    moTaTep: 'Báo cáo doanh số giải ngân kỳ tháng 10/2025',
+    trangThai: 'DA_GUI_CIC',
+    maDauMoi: '31358001'
+  },
+  {
+    key: '21',
+    stt: 21,
+    ngayBaoCao: '30/09/2025',
+    ngayGui: '30/09/2025 14:25:00',
+    tenTep: 'D363135800120250930.001.JSON',
+    phanLoaiTep: 'D36',
+    moTaTep: 'Báo cáo trích lập dự phòng kỳ tháng 9/2025',
+    trangThai: 'DA_TIEP_NHAN',
+    maDauMoi: '31358001'
+  },
+  {
+    key: '22',
+    stt: 22,
+    ngayBaoCao: '30/09/2025',
+    ngayGui: '30/09/2025 15:50:12',
+    tenTep: 'D400120100120250930.001.JSON',
+    phanLoaiTep: 'D40',
+    moTaTep: 'Báo cáo biện pháp bảo đảm kỳ tháng 9/2025 (VCB)',
+    trangThai: 'DA_TIEP_NHAN',
+    maDauMoi: '01201001'
+  },
+  {
+    key: '23',
+    stt: 23,
+    ngayBaoCao: '31/07/2025',
+    ngayGui: '31/07/2025 09:15:00',
+    tenTep: 'D503135800120250731.001.JSON',
+    phanLoaiTep: 'D50',
+    moTaTep: 'Báo cáo đầu tư trái phiếu kỳ tháng 7/2025',
+    trangThai: 'DA_TIEP_NHAN',
+    maDauMoi: '31358001'
+  },
+  {
+    key: '24',
+    stt: 24,
+    ngayBaoCao: '30/06/2025',
+    ngayGui: '30/06/2025 10:40:30',
+    tenTep: 'D603135800120250630.001.JSON',
+    phanLoaiTep: 'D60',
+    moTaTep: 'Báo cáo doanh số giảm nợ ngoại bảng kỳ tháng 6/2025',
+    trangThai: 'DA_TIEP_NHAN',
+    maDauMoi: '31358001'
+  },
+  {
+    key: '25',
+    stt: 25,
+    ngayBaoCao: '31/10/2025',
+    ngayGui: '31/10/2025 15:10:25',
+    tenTep: 'DKQ0120300220251031.001.JSON',
+    phanLoaiTep: 'DKQ',
+    moTaTep: 'Báo cáo phân loại nợ & cam kết ngoại bảng kỳ tháng 10/2025 (BIDV)',
+    trangThai: 'DA_GUI_CIC',
+    maDauMoi: '01203002'
+  },
+  {
+    key: '26',
+    stt: 26,
+    ngayBaoCao: '31/10/2025',
+    ngayGui: '31/10/2025 16:05:48',
+    tenTep: 'D103135800120251031.001.JSON',
+    phanLoaiTep: 'D10',
+    moTaTep: 'Báo cáo định danh khách hàng vay phát sinh kỳ tháng 10/2025',
+    trangThai: 'DA_GUI_CIC',
+    maDauMoi: '31358001'
+  },
+  {
+    key: '27',
+    stt: 27,
+    ngayBaoCao: '31/10/2025',
+    ngayGui: '31/10/2025 16:35:09',
+    tenTep: 'D110120100120251031.001.JSON',
+    phanLoaiTep: 'D11',
+    moTaTep: 'Báo cáo định danh cuối tháng kỳ tháng 10/2025 (VCB)',
+    trangThai: 'DA_GUI_CIC',
+    maDauMoi: '01201001'
   }
 ];

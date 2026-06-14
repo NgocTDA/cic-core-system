@@ -25,10 +25,11 @@ import {
   SettingOutlined,
   FileExcelOutlined,
   HolderOutlined,
-  FilterOutlined,
   SaveOutlined,
   CheckCircleOutlined,
   CloseCircleOutlined,
+  AuditOutlined,
+  UnlockOutlined,
 } from '@ant-design/icons';
 import {
   PageLayout,
@@ -39,13 +40,17 @@ import {
   FilterCol,
   SectionCard,
   ActionMenu,
+  StatusSummaryBar,
 } from '@/components/ui';
-import { colors, radius, shadows } from '@/design-system';
+import { colors, radius } from '@/design-system';
 import { useCollectBalance } from './useCollectBalance';
-import { BalanceReport, ReconciliationDetailRow, TrangThaiTep } from './types';
+import { useReportReview } from './useReportReview';
+import { RejectReasonModal } from './RejectReasonModal';
+import { buildEditTableColumns, getDetailTableWidth } from './collectBalanceColumns';
+import { BalanceReport, ReconciliationDetailRow, TrangThaiTep, TRANG_THAI_TAG, canCicEdit } from './types';
 import useHeaderActions from '@/hooks/useHeaderActions';
 import dayjs, { Dayjs } from 'dayjs';
-import { generateTreeReconciliationData, RAW_FILE_RULES } from '@/modules/web-portal/SendBalance/mockData';
+import { generateTreeReconciliationData } from '@/modules/web-portal/SendBalance/mockData';
 
 const columnOptions = [
   { key: 'stt', label: 'STT', disabled: true },
@@ -70,30 +75,9 @@ const columnOptions = [
   { key: 'trangThai', label: 'Trạng thái', disabled: false },
 ];
 
-const getDetailTableWidth = (loaiFile: string): number => {
-  const rule = RAW_FILE_RULES.find(r => r.loaiFile === loaiFile);
-  if (!rule) return 600;
-
-  let width = 60 + 90 + 180; // base columns (STT: 60, Nguồn: 90, Nghiệp vụ: 180)
-  if (rule.soLuongKhachHangRule !== null) width += 150;
-  if (rule.soLuongHopDongRule !== null) width += 150;
-  if (rule.maTienTeRule !== null) width += 110;
-  if (rule.duNoRule !== null) width += 150;
-  if (rule.tongDuNoRule !== null) width += 150;
-  if (rule.phatSinhGiaiNganRule !== null) width += 150;
-  if (rule.phatSinhTraNoRule !== null) width += 150;
-  if (rule.tongGiaTriBaoDamRule !== null) width += 150;
-  if (rule.giaTriBaoDamKhoanVayRule !== null) width += 150;
-  if (rule.doanhSoGiamNoRule !== null) width += 150;
-  if (rule.duPhongPhaiTrichRule !== null) width += 150;
-  if (rule.duPhongDaTrichRule !== null) width += 150;
-
-  return width + 120;
-};
-
 export const CollectBalanceListPage: React.FC = () => {
   const router = useRouter();
-  const { data, customDetailsMap, isLoaded, saveReportChanges, acceptReport, rejectReport } = useCollectBalance();
+  const { data, customDetailsMap, isLoaded, getMeta, saveReportChanges, startReview, reopenReview, acceptReport, requestRevision } = useCollectBalance();
   const [loading, setLoading] = useState(false);
 
   // Temporary filter states (applied on Search click)
@@ -131,8 +115,34 @@ export const CollectBalanceListPage: React.FC = () => {
   // Modal states for Xem chi tiết & Phê duyệt
   const [detailModalVisible, setDetailModalVisible] = useState(false);
   const [selectedReport, setSelectedReport] = useState<BalanceReport | null>(null);
-  const [editDetails, setEditDetails] = useState<ReconciliationDetailRow[]>([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [rejectModalVisible, setRejectModalVisible] = useState(false);
+
+  // Khởi tạo số liệu chi tiết cho báo cáo đang xem
+  const initialDetails = React.useMemo<ReconciliationDetailRow[]>(() => {
+    if (!selectedReport) return [];
+    const custom = customDetailsMap[selectedReport.key];
+    if (custom) return custom;
+    const parentRow = generateTreeReconciliationData([selectedReport]).find(item => item.isParent);
+    return parentRow?.children ?? [];
+  }, [selectedReport, customDetailsMap]);
+
+  const {
+    editDetails,
+    editedFields,
+    editedCount,
+    isReadOnly,
+    isSubmitting,
+    handleCellChange,
+    handleSave: reviewSave,
+    handleStartReview: reviewStart,
+    handleReopenReview: reviewReopen,
+    handleAccept: reviewAccept,
+    handleRequestRevision: reviewRequestRevision,
+  } = useReportReview({
+    report: selectedReport,
+    initialDetails,
+    actions: { saveReportChanges, startReview, reopenReview, acceptReport, requestRevision },
+  });
 
   // Generate tree data on data changes
   useEffect(() => {
@@ -221,60 +231,45 @@ export const CollectBalanceListPage: React.FC = () => {
     const parentReport = data.find(item => item.key === record.parentKey);
     if (parentReport) {
       setSelectedReport(parentReport);
-      const custom = customDetailsMap[parentReport.key];
-      if (custom) {
-        setEditDetails(custom);
-      } else {
-        const parentRow = generateTreeReconciliationData([parentReport]).find(item => item.isParent);
-        if (parentRow && parentRow.children) {
-          setEditDetails(parentRow.children);
-        } else {
-          setEditDetails([]);
-        }
-      }
       setDetailModalVisible(true);
     }
   };
 
-  const handleEditCellChange = (rowKey: string, field: keyof ReconciliationDetailRow, value: any) => {
-    setEditDetails(prev => prev.map(row => {
-      if (row.key === rowKey) {
-        return { ...row, [field]: value };
-      }
-      return row;
-    }));
-  };
+  // Giữ selectedReport đồng bộ trạng thái với data (sau khi bắt đầu
+  // kiểm tra / mở lại, modal vẫn mở nên cần cập nhật trạng thái).
+  useEffect(() => {
+    if (!selectedReport) return;
+    const fresh = data.find(item => item.key === selectedReport.key);
+    if (fresh && fresh.trangThai !== selectedReport.trangThai) {
+      setSelectedReport(fresh);
+    }
+  }, [data, selectedReport]);
 
   const handleSave = () => {
-    if (!selectedReport) return;
-    setIsSubmitting(true);
-    setTimeout(() => {
-      saveReportChanges(selectedReport.key, editDetails);
-      setIsSubmitting(false);
-      message.success('Đã lưu thay đổi số liệu!');
-    }, 500);
+    reviewSave(() => message.success('Đã lưu thay đổi số liệu!'));
+  };
+
+  const handleStartReview = () => {
+    reviewStart(() => message.success('Đã bắt đầu kiểm tra. Báo cáo được khóa chỉnh sửa.'));
+  };
+
+  const handleReopenReview = () => {
+    reviewReopen(() => message.info('Đã mở lại báo cáo để chỉnh sửa.'));
   };
 
   const handleAccept = () => {
-    if (!selectedReport) return;
-    setIsSubmitting(true);
-    setTimeout(() => {
-      acceptReport(selectedReport.key, editDetails);
-      setIsSubmitting(false);
+    reviewAccept(() => {
       setDetailModalVisible(false);
       message.success('Đã tiếp nhận báo cáo thành công!');
-    }, 800);
+    });
   };
 
-  const handleReject = () => {
-    if (!selectedReport) return;
-    setIsSubmitting(true);
-    setTimeout(() => {
-      rejectReport(selectedReport.key);
-      setIsSubmitting(false);
+  const handleRejectConfirm = (reason: string) => {
+    reviewRequestRevision(reason, () => {
+      setRejectModalVisible(false);
       setDetailModalVisible(false);
-      message.success('Đã từ chối và trả lại báo cáo cho TCTD!');
-    }, 800);
+      message.success('Đã trả lại báo cáo cho TCTD kèm yêu cầu sửa!');
+    });
   };
 
   // Dynamic filter options generated from dataset
@@ -291,6 +286,19 @@ export const CollectBalanceListPage: React.FC = () => {
     const matchTrangThai = !filterTrangThai || item.trangThai === filterTrangThai;
     return matchTenTep && matchMaDauMoi && matchPhanLoaiTep && matchNgayBaoCao && matchTrangThai;
   });
+
+  // Số liệu hàng đợi cho StatusSummaryBar
+  const choKiemTraCount = data.filter(r => r.trangThai === 'DA_GUI_CIC').length;
+  const dangKiemTraCount = data.filter(r => r.trangThai === 'DANG_KIEM_TRA').length;
+  const daTiepNhanCount = data.filter(r => r.trangThai === 'DA_TIEP_NHAN').length;
+
+  // Bấm badge để lọc nhanh theo trạng thái (toggle); đồng bộ cả
+  // bộ lọc đang áp dụng lẫn select trong FilterBar.
+  const toggleStatusFilter = (status: string) => {
+    const next = filterTrangThai === status ? '' : status;
+    setFilterTrangThai(next);
+    setTempTrangThai(next);
+  };
 
   const columns = [
     {
@@ -522,13 +530,8 @@ export const CollectBalanceListPage: React.FC = () => {
       align: 'center' as const,
       render: (status: string, record: ReconciliationDetailRow) => {
         if (!record.isParent) return "";
-        return (
-          <StatusTag 
-            status={status === 'DA_GUI_CIC' ? 'PENDING' : 'APPROVED'}
-            label={status === 'DA_GUI_CIC' ? 'Chờ tiếp nhận' : 'Đã tiếp nhận'}
-          />
-        );
-      }
+        return renderTrangThaiTag(status);
+      },
     },
     {
       title: 'Thao tác',
@@ -698,130 +701,9 @@ export const CollectBalanceListPage: React.FC = () => {
     );
   };
 
-  const getEditTableColumns = (report: BalanceReport, isReadOnly: boolean) => {
-    const rule = RAW_FILE_RULES.find(r => r.loaiFile === report.phanLoaiTep);
-    if (!rule) return [];
-
-    const isNoDetails = ['D10', 'D11', 'D12', 'D20', 'D40', 'D60', 'D70'].includes(rule.loaiFile);
-    const operations = isNoDetails ? [rule.loaiFile] : rule.nghiepVuRaw.split('/');
-
-    const baseCols = [
-      {
-        title: 'STT',
-        key: 'stt',
-        width: 60,
-        align: 'center' as const,
-        render: (_: any, __: any, index: number) => index + 1
-      },
-      {
-        title: 'Nguồn',
-        dataIndex: 'nguonDuLieu',
-        key: 'nguonDuLieu',
-        width: 90,
-        align: 'center' as const,
-        render: (text: string) => <span style={{ fontWeight: 600 }}>{text}</span>,
-      },
-      {
-        title: 'Nghiệp vụ',
-        dataIndex: 'nghiepVu',
-        key: 'nghiepVu',
-        width: 180,
-        render: (text: string, record: ReconciliationDetailRow) => {
-          if (operations.length > 1) {
-            return (
-              <Select
-                value={text}
-                onChange={(newVal) => handleEditCellChange(record.key, 'nghiepVu', newVal)}
-                style={{ width: '100%' }}
-                size="small"
-                disabled={isReadOnly}
-              >
-                {operations.map(op => (
-                  <Select.Option key={op} value={op}>{op}</Select.Option>
-                ))}
-              </Select>
-            );
-          }
-          return <span style={{ fontWeight: 650, color: colors.primary[600] }}>{text}</span>;
-        }
-      }
-    ];
-
-    const condCols = [];
-
-    const renderNumericInput = (field: keyof ReconciliationDetailRow, ruleCode: string | null, label: string) => {
-      return {
-        title: (
-          <Tooltip title={ruleCode} placement="top" arrow>
-            <span style={{ cursor: 'help', borderBottom: '1px dashed #fa8c16' }}>
-              {label}
-            </span>
-          </Tooltip>
-        ),
-        dataIndex: field,
-        key: field,
-        width: 150,
-        align: 'right' as const,
-        render: (val: string | null, record: ReconciliationDetailRow) => (
-          <Input
-            value={val || ''}
-            onChange={(e) => handleEditCellChange(record.key, field, e.target.value)}
-            placeholder={ruleCode || undefined}
-            size="small"
-            style={{ textAlign: 'right', width: '100%' }}
-            disabled={isReadOnly}
-          />
-        )
-      };
-    };
-
-    if (rule.soLuongKhachHangRule !== null) condCols.push(renderNumericInput('soLuongKhachHang', rule.soLuongKhachHangRule, 'Số lượng khách hàng'));
-    if (rule.soLuongHopDongRule !== null) condCols.push(renderNumericInput('soLuongHopDong', rule.soLuongHopDongRule, 'Số lượng hợp đồng'));
-
-    if (rule.maTienTeRule !== null) {
-      condCols.push({
-        title: 'Mã tiền tệ',
-        dataIndex: 'maTienTe',
-        key: 'maTienTe',
-        width: 110,
-        align: 'center' as const,
-        render: (val: string | null, record: ReconciliationDetailRow) => (
-          <Select
-            value={val || undefined}
-            onChange={(newVal) => handleEditCellChange(record.key, 'maTienTe', newVal)}
-            style={{ width: '100%' }}
-            placeholder="Tiền tệ"
-            size="small"
-            disabled={isReadOnly}
-          >
-            <Select.Option value="VND">VND</Select.Option>
-            <Select.Option value="USD">USD</Select.Option>
-            <Select.Option value="XAU">XAU</Select.Option>
-          </Select>
-        )
-      });
-    }
-
-    if (rule.duNoRule !== null) condCols.push(renderNumericInput('duNo', rule.duNoRule, 'Dư nợ'));
-    if (rule.tongDuNoRule !== null) condCols.push(renderNumericInput('tongDuNo', rule.tongDuNoRule, 'Tổng dư nợ'));
-    if (rule.phatSinhGiaiNganRule !== null) condCols.push(renderNumericInput('phatSinhGiaiNgan', rule.phatSinhGiaiNganRule, 'Số tiền giải ngân'));
-    if (rule.phatSinhTraNoRule !== null) condCols.push(renderNumericInput('phatSinhTraNo', rule.phatSinhTraNoRule, 'Số tiền trả nợ'));
-    if (rule.tongGiaTriBaoDamRule !== null) condCols.push(renderNumericInput('tongGiaTriBaoDam', rule.tongGiaTriBaoDamRule, 'Giá trị tài sản bảo đảm'));
-    if (rule.giaTriBaoDamKhoanVayRule !== null) condCols.push(renderNumericInput('giaTriBaoDamKhoanVay', rule.giaTriBaoDamKhoanVayRule, 'Giá trị bảo đảm khoản vay'));
-    if (rule.doanhSoGiamNoRule !== null) condCols.push(renderNumericInput('doanhSoGiamNo', rule.doanhSoGiamNoRule, 'Doanh số giảm'));
-    if (rule.duPhongPhaiTrichRule !== null) condCols.push(renderNumericInput('duPhongPhaiTrich', rule.duPhongPhaiTrichRule, 'Dự phòng phải trích nội bảng'));
-    if (rule.duPhongDaTrichRule !== null) condCols.push(renderNumericInput('duPhongDaTrich', rule.duPhongDaTrichRule, 'Dự phòng đã trích nội bảng'));
-
-    return [...baseCols, ...condCols];
-  };
-
   const renderTrangThaiTag = (status: string) => {
-    return (
-      <StatusTag 
-        status={status === 'DA_GUI_CIC' ? 'PENDING' : 'APPROVED'}
-        label={status === 'DA_GUI_CIC' ? 'Chờ tiếp nhận' : 'Đã tiếp nhận'}
-      />
-    );
+    const meta = TRANG_THAI_TAG[status as TrangThaiTep] ?? { statusKey: 'default', label: status };
+    return <StatusTag status={meta.statusKey} label={meta.label} />;
   };
 
   return (
@@ -911,19 +793,48 @@ export const CollectBalanceListPage: React.FC = () => {
                 style={{ width: '100%' }}
                 allowClear
               >
-                <Select.Option value="DA_GUI_CIC">Chờ tiếp nhận</Select.Option>
+                <Select.Option value="DA_GUI_CIC">Chờ kiểm tra</Select.Option>
+                <Select.Option value="DANG_KIEM_TRA">Đang kiểm tra</Select.Option>
                 <Select.Option value="DA_TIEP_NHAN">Đã tiếp nhận</Select.Option>
               </Select>
             </Tooltip>
           </FilterCol>
         </FilterBar>
 
+        {/* Thanh đếm hàng đợi xử lý */}
+        <StatusSummaryBar
+          align="left"
+          items={[
+            {
+              count: choKiemTraCount,
+              label: 'Chờ kiểm tra',
+              color: 'warning',
+              active: filterTrangThai === 'DA_GUI_CIC',
+              onClick: () => toggleStatusFilter('DA_GUI_CIC'),
+            },
+            {
+              count: dangKiemTraCount,
+              label: 'Đang kiểm tra',
+              color: 'info',
+              active: filterTrangThai === 'DANG_KIEM_TRA',
+              onClick: () => toggleStatusFilter('DANG_KIEM_TRA'),
+            },
+            {
+              count: daTiepNhanCount,
+              label: 'Đã tiếp nhận',
+              color: 'success',
+              active: filterTrangThai === 'DA_TIEP_NHAN',
+              onClick: () => toggleStatusFilter('DA_TIEP_NHAN'),
+            },
+          ]}
+        />
+
         {/* Khối Bảng Dữ Liệu */}
         <SectionCard
           flex
           noPadding
         >
-          <div style={{ flex: 1, overflowY: 'auto' }}>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '0 20px 16px' }}>
             {(() => {
               const preparedMainColumns = columns
                 .map(col => {
@@ -1022,7 +933,9 @@ export const CollectBalanceListPage: React.FC = () => {
             >
               Đóng
             </Button>
-            {selectedReport && selectedReport.trangThai !== 'DA_TIEP_NHAN' && (
+
+            {/* Chờ kiểm tra: sửa hộ + bắt đầu kiểm tra */}
+            {selectedReport && selectedReport.trangThai === 'DA_GUI_CIC' && (
               <>
                 <Button
                   key="save"
@@ -1034,14 +947,39 @@ export const CollectBalanceListPage: React.FC = () => {
                   Lưu
                 </Button>
                 <Button
-                  key="reject"
-                  danger
-                  icon={<CloseCircleOutlined />}
-                  onClick={handleReject}
+                  key="start"
+                  type="primary"
+                  icon={<AuditOutlined />}
+                  onClick={handleStartReview}
                   loading={isSubmitting}
                   style={{ minWidth: 100, borderRadius: radius.md }}
                 >
-                  Từ chối
+                  Bắt đầu kiểm tra
+                </Button>
+              </>
+            )}
+
+            {/* Đang kiểm tra: mở lại / yêu cầu sửa / tiếp nhận */}
+            {selectedReport && selectedReport.trangThai === 'DANG_KIEM_TRA' && (
+              <>
+                <Button
+                  key="reopen"
+                  icon={<UnlockOutlined />}
+                  onClick={handleReopenReview}
+                  loading={isSubmitting}
+                  style={{ minWidth: 100, borderRadius: radius.md }}
+                >
+                  Mở lại để sửa
+                </Button>
+                <Button
+                  key="revision"
+                  danger
+                  icon={<CloseCircleOutlined />}
+                  onClick={() => setRejectModalVisible(true)}
+                  loading={isSubmitting}
+                  style={{ minWidth: 100, borderRadius: radius.md }}
+                >
+                  Yêu cầu sửa
                 </Button>
                 <Button
                   key="accept"
@@ -1073,6 +1011,14 @@ export const CollectBalanceListPage: React.FC = () => {
               <Alert
                 message="Báo cáo đã được tiếp nhận. Chức năng chỉnh sửa đã bị khóa."
                 type="success"
+                showIcon
+                style={{ borderRadius: radius.md, marginBottom: 16 }}
+              />
+            )}
+            {selectedReport.trangThai === 'DANG_KIEM_TRA' && (
+              <Alert
+                message="Báo cáo đang trong quá trình kiểm tra nên đã khóa chỉnh sửa. Bấm “Mở lại để sửa” nếu cần điều chỉnh số liệu."
+                type="info"
                 showIcon
                 style={{ borderRadius: radius.md, marginBottom: 16 }}
               />
@@ -1112,12 +1058,29 @@ export const CollectBalanceListPage: React.FC = () => {
             </div>
 
             {/* Bảng chi tiết */}
-            <div style={{ fontWeight: 700, fontSize: 14, color: colors.text.primary, marginBottom: 12 }}>
-              BẢNG CHI TIẾT SỐ LIỆU CÂN ĐỐI
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: 12
+            }}>
+              <div style={{ fontWeight: 700, fontSize: 14, color: colors.text.primary }}>
+                BẢNG CHI TIẾT SỐ LIỆU CÂN ĐỐI
+              </div>
+              {editedCount > 0 && (
+                <span style={{ fontSize: 12, color: colors.warning.dark, fontWeight: 600 }}>
+                  Đã chỉnh sửa {editedCount} ô so với bản gốc
+                </span>
+              )}
             </div>
             <Table
               dataSource={editDetails}
-              columns={getEditTableColumns(selectedReport, selectedReport.trangThai === 'DA_TIEP_NHAN')}
+              columns={buildEditTableColumns({
+                report: selectedReport,
+                isReadOnly,
+                onCellChange: handleCellChange,
+                editedFields,
+              })}
               pagination={false}
               bordered
               size="middle"
@@ -1127,6 +1090,14 @@ export const CollectBalanceListPage: React.FC = () => {
           </div>
         )}
       </Modal>
+
+      <RejectReasonModal
+        open={rejectModalVisible}
+        tenTep={selectedReport?.tenTep}
+        loading={isSubmitting}
+        onCancel={() => setRejectModalVisible(false)}
+        onConfirm={handleRejectConfirm}
+      />
 
       <style jsx global>{`
         .ant-table-wrapper .ant-table-thead > tr > th {

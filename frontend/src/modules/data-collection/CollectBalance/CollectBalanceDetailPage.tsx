@@ -2,15 +2,28 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Typography, Space, Input, Select, DatePicker, Button, Table, Tooltip, message, Alert } from 'antd';
-import { ArrowLeftOutlined, SaveOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { Typography, Input, DatePicker, Button, Table, message, Alert, Timeline, Tag } from 'antd';
+import {
+  ArrowLeftOutlined,
+  SaveOutlined,
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  InboxOutlined,
+  EditOutlined,
+  HistoryOutlined,
+  AuditOutlined,
+  UnlockOutlined,
+} from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { colors, radius, shadows } from '@/design-system';
 import { PageLayout } from '@/components/ui';
 import useHeaderActions from '@/hooks/useHeaderActions';
 import { useCollectBalance } from './useCollectBalance';
-import { BalanceReport, ReconciliationDetailRow } from './types';
-import { RAW_FILE_RULES, generateTreeReconciliationData } from '@/modules/web-portal/SendBalance/mockData';
+import { useReportReview } from './useReportReview';
+import { RejectReasonModal } from './RejectReasonModal';
+import { buildEditTableColumns } from './collectBalanceColumns';
+import { BalanceReport, ReconciliationDetailRow, ProcessingAction } from './types';
+import { generateTreeReconciliationData } from '@/modules/web-portal/SendBalance/mockData';
 
 const { Text } = Typography;
 
@@ -18,37 +31,71 @@ interface Props {
   id: string;
 }
 
+// Nhãn + màu cho từng loại hành động trong lịch sử xử lý
+const ACTION_META: Record<ProcessingAction, { label: string; color: string; icon: React.ReactNode }> = {
+  RECEIVED: { label: 'Tiếp nhận vào hàng đợi', color: colors.info.base, icon: <InboxOutlined /> },
+  EDITED: { label: 'Chỉnh sửa số liệu', color: colors.warning.dark, icon: <EditOutlined /> },
+  REVIEW_STARTED: { label: 'Bắt đầu kiểm tra (khóa chỉnh sửa)', color: colors.info.dark, icon: <AuditOutlined /> },
+  REVIEW_REOPENED: { label: 'Mở lại để chỉnh sửa', color: colors.warning.dark, icon: <UnlockOutlined /> },
+  ACCEPTED: { label: 'Đã tiếp nhận báo cáo', color: colors.success.dark, icon: <CheckCircleOutlined /> },
+  REVISION_REQUESTED: { label: 'Yêu cầu TCTD sửa lại', color: colors.error.base, icon: <CloseCircleOutlined /> },
+  REJECTED: { label: 'Từ chối báo cáo', color: colors.error.base, icon: <CloseCircleOutlined /> },
+};
+
 export const CollectBalanceDetailPage: React.FC<Props> = ({ id }) => {
   const router = useRouter();
-  const { data, customDetailsMap, isLoaded, saveReportChanges, acceptReport, rejectReport } = useCollectBalance();
-  
+  const { data, customDetailsMap, isLoaded, getMeta, saveReportChanges, startReview, reopenReview, acceptReport, requestRevision } = useCollectBalance();
+
   const [report, setReport] = useState<BalanceReport | null>(null);
-  const [editDetails, setEditDetails] = useState<ReconciliationDetailRow[]>([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [notFound, setNotFound] = useState(false);
+  const [rejectModalVisible, setRejectModalVisible] = useState(false);
 
   useEffect(() => {
     if (isLoaded && id) {
       const found = data.find(item => item.key === id);
       if (found) {
         setReport(found);
-        
-        const custom = customDetailsMap[found.key];
-        if (custom) {
-          setEditDetails(custom);
-        } else {
-          const parentRow = generateTreeReconciliationData([found]).find(item => item.isParent);
-          if (parentRow && parentRow.children) {
-            setEditDetails(parentRow.children);
-          }
-        }
-      } else {
-        message.error('Không tìm thấy thông tin báo cáo!');
-        router.push('/data-collection/collect/balance');
+      } else if (!report) {
+        // Chỉ báo lỗi khi thực sự không có (tránh nháy khi vừa tiếp nhận)
+        setNotFound(true);
       }
     }
-  }, [id, data, customDetailsMap, isLoaded, router]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, data, isLoaded]);
 
-  const isReadOnly = report?.trangThai === 'DA_TIEP_NHAN';
+  useEffect(() => {
+    if (notFound) {
+      message.error('Không tìm thấy thông tin báo cáo!');
+      router.push('/data-collection/collect/balance');
+    }
+  }, [notFound, router]);
+
+  // Số liệu chi tiết khởi tạo cho báo cáo
+  const initialDetails = React.useMemo<ReconciliationDetailRow[]>(() => {
+    if (!report) return [];
+    const custom = customDetailsMap[report.key];
+    if (custom) return custom;
+    const parentRow = generateTreeReconciliationData([report]).find(item => item.isParent);
+    return parentRow?.children ?? [];
+  }, [report, customDetailsMap]);
+
+  const {
+    editDetails,
+    editedFields,
+    editedCount,
+    isReadOnly,
+    isSubmitting,
+    handleCellChange,
+    handleSave: reviewSave,
+    handleStartReview: reviewStart,
+    handleReopenReview: reviewReopen,
+    handleAccept: reviewAccept,
+    handleRequestRevision: reviewRequestRevision,
+  } = useReportReview({
+    report,
+    initialDetails,
+    actions: { saveReportChanges, startReview, reopenReview, acceptReport, requestRevision },
+  });
 
   useHeaderActions({
     title: report ? `Chi tiết báo cáo: ${report.tenTep}` : 'Chi tiết báo cáo cân đối',
@@ -62,168 +109,38 @@ export const CollectBalanceDetailPage: React.FC<Props> = ({ id }) => {
     ]
   }, [report, router]);
 
-  const handleEditCellChange = (rowKey: string, field: keyof ReconciliationDetailRow, value: any) => {
-    setEditDetails(prev => prev.map(row => {
-      if (row.key === rowKey) {
-        return { ...row, [field]: value };
-      }
-      return row;
-    }));
+  const handleSave = () => {
+    reviewSave(() => message.success('Đã lưu thay đổi số liệu!'));
   };
 
-  const handleSave = () => {
-    if (!report) return;
-    setIsSubmitting(true);
-    setTimeout(() => {
-      saveReportChanges(report.key, editDetails);
-      setIsSubmitting(false);
-      message.success('Đã lưu thay đổi số liệu!');
-    }, 500);
+  const handleStartReview = () => {
+    reviewStart(() => message.success('Đã bắt đầu kiểm tra. Báo cáo được khóa chỉnh sửa.'));
+  };
+
+  const handleReopenReview = () => {
+    reviewReopen(() => message.info('Đã mở lại báo cáo để chỉnh sửa.'));
   };
 
   const handleAccept = () => {
-    if (!report) return;
-    setIsSubmitting(true);
-    setTimeout(() => {
-      acceptReport(report.key, editDetails);
-      setIsSubmitting(false);
+    reviewAccept(() => {
       message.success('Đã tiếp nhận báo cáo thành công!');
       router.push('/data-collection/collect/balance');
-    }, 800);
+    });
   };
 
-  const handleReject = () => {
-    if (!report) return;
-    setIsSubmitting(true);
-    setTimeout(() => {
-      rejectReport(report.key);
-      setIsSubmitting(false);
-      message.success('Đã từ chối và trả lại báo cáo cho TCTD!');
+  const handleRejectConfirm = (reason: string) => {
+    reviewRequestRevision(reason, () => {
+      setRejectModalVisible(false);
+      message.success('Đã trả lại báo cáo cho TCTD kèm yêu cầu sửa!');
       router.push('/data-collection/collect/balance');
-    }, 800);
-  };
-
-  const getEditTableColumns = () => {
-    if (!report) return [];
-    const rule = RAW_FILE_RULES.find(r => r.loaiFile === report.phanLoaiTep);
-    if (!rule) return [];
-
-    const isNoDetails = ['D10', 'D11', 'D12', 'D20', 'D40', 'D60', 'D70'].includes(rule.loaiFile);
-    const operations = isNoDetails ? [rule.loaiFile] : rule.nghiepVuRaw.split('/');
-
-    const baseCols = [
-      {
-        title: 'STT',
-        key: 'stt',
-        width: 60,
-        align: 'center' as const,
-        render: (_: any, __: any, index: number) => index + 1
-      },
-      {
-        title: 'Nguồn',
-        dataIndex: 'nguonDuLieu',
-        key: 'nguonDuLieu',
-        width: 90,
-        align: 'center' as const,
-        render: (text: string) => <span style={{ fontWeight: 600 }}>{text}</span>,
-      },
-      {
-        title: 'Nghiệp vụ',
-        dataIndex: 'nghiepVu',
-        key: 'nghiepVu',
-        width: 180,
-        render: (text: string, record: ReconciliationDetailRow) => {
-          if (operations.length > 1) {
-            return (
-              <Select
-                value={text}
-                onChange={(newVal) => handleEditCellChange(record.key, 'nghiepVu', newVal)}
-                style={{ width: '100%' }}
-                size="small"
-                disabled={isReadOnly}
-              >
-                {operations.map(op => (
-                  <Select.Option key={op} value={op}>{op}</Select.Option>
-                ))}
-              </Select>
-            );
-          }
-          return <span style={{ fontWeight: 650, color: colors.primary[600] }}>{text}</span>;
-        }
-      }
-    ];
-
-    const condCols = [];
-
-    const renderNumericInput = (field: keyof ReconciliationDetailRow, ruleCode: string | null, label: string) => {
-      return {
-        title: (
-          <Tooltip title={ruleCode} placement="top" arrow>
-            <span style={{ cursor: 'help', borderBottom: '1px dashed #fa8c16' }}>
-              {label}
-            </span>
-          </Tooltip>
-        ),
-        dataIndex: field,
-        key: field,
-        width: 150,
-        align: 'right' as const,
-        render: (val: string | null, record: ReconciliationDetailRow) => (
-          <Input
-            value={val || ''}
-            onChange={(e) => handleEditCellChange(record.key, field, e.target.value)}
-            placeholder={ruleCode || undefined}
-            size="small"
-            style={{ textAlign: 'right', width: '100%' }}
-            disabled={isReadOnly}
-          />
-        )
-      };
-    };
-
-    if (rule.soLuongKhachHangRule !== null) condCols.push(renderNumericInput('soLuongKhachHang', rule.soLuongKhachHangRule, 'Số lượng khách hàng'));
-    if (rule.soLuongHopDongRule !== null) condCols.push(renderNumericInput('soLuongHopDong', rule.soLuongHopDongRule, 'Số lượng hợp đồng'));
-
-    if (rule.maTienTeRule !== null) {
-      condCols.push({
-        title: 'Mã tiền tệ',
-        dataIndex: 'maTienTe',
-        key: 'maTienTe',
-        width: 110,
-        align: 'center' as const,
-        render: (val: string | null, record: ReconciliationDetailRow) => (
-          <Select
-            value={val || undefined}
-            onChange={(newVal) => handleEditCellChange(record.key, 'maTienTe', newVal)}
-            style={{ width: '100%' }}
-            placeholder="Tiền tệ"
-            size="small"
-            disabled={isReadOnly}
-          >
-            <Select.Option value="VND">VND</Select.Option>
-            <Select.Option value="USD">USD</Select.Option>
-            <Select.Option value="XAU">XAU</Select.Option>
-          </Select>
-        )
-      });
-    }
-
-    if (rule.duNoRule !== null) condCols.push(renderNumericInput('duNo', rule.duNoRule, 'Dư nợ'));
-    if (rule.tongDuNoRule !== null) condCols.push(renderNumericInput('tongDuNo', rule.tongDuNoRule, 'Tổng dư nợ'));
-    if (rule.phatSinhGiaiNganRule !== null) condCols.push(renderNumericInput('phatSinhGiaiNgan', rule.phatSinhGiaiNganRule, 'Số tiền giải ngân'));
-    if (rule.phatSinhTraNoRule !== null) condCols.push(renderNumericInput('phatSinhTraNo', rule.phatSinhTraNoRule, 'Số tiền trả nợ'));
-    if (rule.tongGiaTriBaoDamRule !== null) condCols.push(renderNumericInput('tongGiaTriBaoDam', rule.tongGiaTriBaoDamRule, 'Giá trị tài sản bảo đảm'));
-    if (rule.giaTriBaoDamKhoanVayRule !== null) condCols.push(renderNumericInput('giaTriBaoDamKhoanVay', rule.giaTriBaoDamKhoanVayRule, 'Giá trị bảo đảm khoản vay'));
-    if (rule.doanhSoGiamNoRule !== null) condCols.push(renderNumericInput('doanhSoGiamNo', rule.doanhSoGiamNoRule, 'Doanh số giảm'));
-    if (rule.duPhongPhaiTrichRule !== null) condCols.push(renderNumericInput('duPhongPhaiTrich', rule.duPhongPhaiTrichRule, 'Dự phòng phải trích nội bảng'));
-    if (rule.duPhongDaTrichRule !== null) condCols.push(renderNumericInput('duPhongDaTrich', rule.duPhongDaTrichRule, 'Dự phòng đã trích nội bảng'));
-
-    return [...baseCols, ...condCols];
+    });
   };
 
   if (!report) {
     return <PageLayout><div style={{ padding: 24 }}>Đang tải dữ liệu...</div></PageLayout>;
   }
+
+  const history = getMeta(report.key).history;
 
   return (
     <PageLayout noPadding>
@@ -234,10 +151,18 @@ export const CollectBalanceDetailPage: React.FC<Props> = ({ id }) => {
         padding: '24px 24px 24px'
       }}>
 
-        {isReadOnly && (
+        {report.trangThai === 'DA_TIEP_NHAN' && (
           <Alert
             message="Báo cáo đã được tiếp nhận. Chức năng chỉnh sửa đã bị khóa."
             type="success"
+            showIcon
+            style={{ borderRadius: radius.md }}
+          />
+        )}
+        {report.trangThai === 'DANG_KIEM_TRA' && (
+          <Alert
+            message="Báo cáo đang trong quá trình kiểm tra nên đã khóa chỉnh sửa. Bấm “Mở lại để sửa” nếu cần điều chỉnh số liệu."
+            type="info"
             showIcon
             style={{ borderRadius: radius.md }}
           />
@@ -306,11 +231,21 @@ export const CollectBalanceDetailPage: React.FC<Props> = ({ id }) => {
             <div style={{ fontWeight: 700, fontSize: 14, color: colors.primary[700] }}>
               KHỐI CHI TIẾT THÔNG TIN CÂN ĐỐI
             </div>
+            {editedCount > 0 && (
+              <Tag color="warning" style={{ margin: 0 }}>
+                Đã chỉnh sửa {editedCount} ô so với bản gốc
+              </Tag>
+            )}
           </div>
 
           <Table
             dataSource={editDetails}
-            columns={getEditTableColumns()}
+            columns={buildEditTableColumns({
+              report,
+              isReadOnly,
+              onCellChange: handleCellChange,
+              editedFields,
+            })}
             pagination={false}
             bordered
             size="middle"
@@ -318,6 +253,53 @@ export const CollectBalanceDetailPage: React.FC<Props> = ({ id }) => {
             rowKey="key"
           />
         </div>
+
+        {/* Lịch sử xử lý */}
+        {history.length > 0 && (
+          <div style={{
+            background: '#ffffff',
+            borderRadius: radius.lg,
+            border: `1px solid ${colors.border.split}`,
+            padding: '20px',
+            boxShadow: shadows.sm
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              fontWeight: 700,
+              fontSize: 14,
+              color: colors.primary[700],
+              marginBottom: 16
+            }}>
+              <HistoryOutlined /> LỊCH SỬ XỬ LÝ
+            </div>
+            <Timeline
+              items={[...history].reverse().map(entry => {
+                const meta = ACTION_META[entry.action];
+                return {
+                  color: meta.color,
+                  dot: meta.icon,
+                  children: (
+                    <div>
+                      <div style={{ fontWeight: 600, color: colors.text.primary }}>
+                        {meta.label}
+                      </div>
+                      <div style={{ fontSize: 12, color: colors.text.secondary }}>
+                        {entry.timestamp} · {entry.actor}
+                      </div>
+                      {entry.reason && (
+                        <div style={{ fontSize: 13, color: colors.error.base, marginTop: 4 }}>
+                          Lý do: {entry.reason}
+                        </div>
+                      )}
+                    </div>
+                  ),
+                };
+              })}
+            />
+          </div>
+        )}
 
         <div style={{
           display: 'flex',
@@ -331,8 +313,9 @@ export const CollectBalanceDetailPage: React.FC<Props> = ({ id }) => {
           >
             Trở về danh sách
           </Button>
-          
-          {!isReadOnly && (
+
+          {/* Chờ kiểm tra: sửa hộ + bắt đầu kiểm tra */}
+          {report.trangThai === 'DA_GUI_CIC' && (
             <>
               <Button
                 icon={<SaveOutlined />}
@@ -343,13 +326,36 @@ export const CollectBalanceDetailPage: React.FC<Props> = ({ id }) => {
                 Lưu nháp
               </Button>
               <Button
-                danger
-                icon={<CloseCircleOutlined />}
-                onClick={handleReject}
+                type="primary"
+                icon={<AuditOutlined />}
+                onClick={handleStartReview}
                 loading={isSubmitting}
                 style={{ minWidth: 120, height: 40, borderRadius: radius.md }}
               >
-                Từ chối
+                Bắt đầu kiểm tra
+              </Button>
+            </>
+          )}
+
+          {/* Đang kiểm tra: mở lại / yêu cầu sửa / tiếp nhận */}
+          {report.trangThai === 'DANG_KIEM_TRA' && (
+            <>
+              <Button
+                icon={<UnlockOutlined />}
+                onClick={handleReopenReview}
+                loading={isSubmitting}
+                style={{ minWidth: 120, height: 40, borderRadius: radius.md }}
+              >
+                Mở lại để sửa
+              </Button>
+              <Button
+                danger
+                icon={<CloseCircleOutlined />}
+                onClick={() => setRejectModalVisible(true)}
+                loading={isSubmitting}
+                style={{ minWidth: 120, height: 40, borderRadius: radius.md }}
+              >
+                Yêu cầu sửa
               </Button>
               <Button
                 type="primary"
@@ -364,6 +370,14 @@ export const CollectBalanceDetailPage: React.FC<Props> = ({ id }) => {
           )}
         </div>
       </div>
+
+      <RejectReasonModal
+        open={rejectModalVisible}
+        tenTep={report.tenTep}
+        loading={isSubmitting}
+        onCancel={() => setRejectModalVisible(false)}
+        onConfirm={handleRejectConfirm}
+      />
     </PageLayout>
   );
 };

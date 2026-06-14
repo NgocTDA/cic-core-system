@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Input, Select, Tooltip } from 'antd';
 import { colors } from '@/design-system';
-import { ReconciliationDetailRow } from './types';
+import { ReconciliationDetailRow, canTctdEdit } from './types';
 
 interface EditableCellProps {
   value: any;
@@ -36,7 +36,7 @@ export const EditableCell: React.FC<EditableCellProps> = ({
     onChange(tempValue);
   };
 
-  const isEditable = record.trangThai === 'TAO_MOI';
+  const isEditable = canTctdEdit(record.trangThai);
 
   if (!editing) {
     return (

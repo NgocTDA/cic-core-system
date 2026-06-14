@@ -1,169 +1,244 @@
 import { useState, useEffect, useCallback } from 'react';
-import { BalanceReport, ReconciliationDetailRow, TrangThaiTep } from './types';
+import {
+  BalanceReport,
+  ReconciliationDetailRow,
+  TrangThaiTep,
+  CicMetaMap,
+  ReportProcessingMeta,
+  ProcessingAction,
+  ProcessingHistoryEntry,
+} from './types';
 import { INITIAL_DATA, generateTreeReconciliationData } from '@/modules/web-portal/SendBalance/mockData';
+import {
+  PORTAL_KEYS,
+  CIC_KEYS,
+  readJSON,
+  writeJSON,
+  syncStatusToPortal,
+  useBalanceSyncListener,
+} from '@/modules/web-portal/SendBalance/balanceSync';
+
+// Cán bộ đang đăng nhập (prototype — chưa gắn auth thật)
+const CURRENT_ACTOR = 'Cán bộ CIC';
+
+// Các trạng thái mà CIC giữ trong hàng đợi xử lý
+const CIC_INBOX_STATUSES: TrangThaiTep[] = ['DA_GUI_CIC', 'DANG_KIEM_TRA', 'DA_TIEP_NHAN'];
+
+const nowStamp = (): string => {
+  const now = new Date();
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${pad(now.getDate())}/${pad(now.getMonth() + 1)}/${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+};
+
+const makeHistoryEntry = (
+  action: ProcessingAction,
+  reason?: string
+): ProcessingHistoryEntry => ({
+  action,
+  timestamp: nowStamp(),
+  actor: CURRENT_ACTOR,
+  reason,
+});
+
+const seedDetails = (report: BalanceReport): ReconciliationDetailRow[] => {
+  const parentRow = generateTreeReconciliationData([report]).find(item => item.isParent);
+  return parentRow?.children ? [...parentRow.children] : [];
+};
 
 export const useCollectBalance = () => {
   const [data, setData] = useState<BalanceReport[]>([]);
   const [customDetailsMap, setCustomDetailsMap] = useState<Record<string, ReconciliationDetailRow[]>>({});
+  const [metaMap, setMetaMap] = useState<CicMetaMap>({});
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Load from localStorage on mount (client-side only)
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const storedData = localStorage.getItem('send_balance_reports');
-      const storedDetails = localStorage.getItem('send_balance_details_map');
-      
-      let parsedData = INITIAL_DATA;
-      if (storedData) {
-        try {
-          const loadedData = JSON.parse(storedData);
-          if (Array.isArray(loadedData) && loadedData.length > 0) {
-            const loadedKeys = new Set(loadedData.map((x: any) => String(x.key)));
-            const missing = INITIAL_DATA.filter(item => !loadedKeys.has(String(item.key)));
-            if (missing.length > 0) {
-              parsedData = [...loadedData, ...missing].sort((a, b) => parseInt(a.key, 10) - parseInt(b.key, 10));
-              parsedData = parsedData.map((item, idx) => ({ ...item, stt: idx + 1 }));
-            } else {
-              parsedData = loadedData;
-            }
-          }
-        } catch (e) {
-          console.error('Lỗi khi đọc send_balance_reports:', e);
-        }
-      }
-      
-      // Lọc chỉ lấy các báo cáo đã gửi CIC (hoặc đã tiếp nhận)
-      const submittedData = parsedData.filter(item => 
-        item.trangThai === 'DA_GUI_CIC' || item.trangThai === 'DA_TIEP_NHAN'
-      );
-      setData(submittedData);
-
-      if (storedDetails) {
-        try {
-          setCustomDetailsMap(JSON.parse(storedDetails));
-        } catch (e) {
-          console.error('Lỗi khi đọc send_balance_details_map:', e);
-        }
-      }
-      setIsLoaded(true);
-    }
-  }, []);
-
-  // Save to localStorage when state changes (only after initial load has finished)
-  // In a real app, this would be an API call. Here we update localStorage so portal sees it too.
-  const persistChanges = useCallback((newData: BalanceReport[], newDetailsMap: Record<string, ReconciliationDetailRow[]>) => {
-    if (typeof window !== 'undefined') {
-      const storedDataStr = localStorage.getItem('send_balance_reports');
-      let allData: BalanceReport[] = [];
-      if (storedDataStr) {
-        try {
-          allData = JSON.parse(storedDataStr);
-        } catch (e) {
-          console.error(e);
-        }
-      }
-      
-      // Update the modified items in the global data array
-      const newDataMap = new Map(newData.map(item => [item.key, item]));
-      const updatedAllData = allData.map(item => newDataMap.has(item.key) ? newDataMap.get(item.key)! : item);
-      
-      localStorage.setItem('send_balance_reports', JSON.stringify(updatedAllData));
-      localStorage.setItem('send_balance_details_map', JSON.stringify(newDetailsMap));
-    }
-  }, []);
-
-  // Thay đổi giá trị của ô đối chiếu trong list
-  const handleCellEdit = useCallback((
-    rowKey: string,
-    dataIndex: keyof ReconciliationDetailRow,
-    value: any,
-    reportKey: string
+  // Ghi riêng 3 key CIC (không đụng store Portal)
+  const persistCic = useCallback((
+    inbox: BalanceReport[],
+    details: Record<string, ReconciliationDetailRow[]>,
+    meta: CicMetaMap
   ) => {
-    setCustomDetailsMap(prevMap => {
-      let currentChildren = prevMap[reportKey];
-      if (!currentChildren) {
-        const parentRow = generateTreeReconciliationData(data).find(item => item.parentKey === reportKey && item.isParent);
-        currentChildren = parentRow?.children ? [...parentRow.children] : [];
-      }
-      const updatedChildren = currentChildren.map(child => {
-        if (child.key === rowKey) {
-          return { ...child, [dataIndex]: value };
-        }
-        return child;
-      });
-      const newMap = { ...prevMap, [reportKey]: updatedChildren };
-      
-      // Immediately persist custom changes if needed, but normally done on Save
-      return newMap;
-    });
-  }, [data]);
+    writeJSON(CIC_KEYS.inbox, inbox);
+    writeJSON(CIC_KEYS.details, details);
+    writeJSON(CIC_KEYS.meta, meta);
+  }, []);
 
-  // Cán bộ nội bộ lưu thay đổi số liệu (nhưng chưa tiếp nhận)
+  // Đọc store Portal + hợp nhất vào inbox CIC
+  const loadFromStores = useCallback(() => {
+    // Nguồn báo cáo: store Portal (fallback INITIAL_DATA cho lần đầu)
+    const portalReports = readJSON<BalanceReport[]>(PORTAL_KEYS.reports, INITIAL_DATA);
+    const portalByKey = new Map(portalReports.map(r => [r.key, r]));
+
+    const prevInbox = readJSON<BalanceReport[]>(CIC_KEYS.inbox, []);
+    const prevDetails = readJSON<Record<string, ReconciliationDetailRow[]>>(CIC_KEYS.details, {});
+    const prevMeta = readJSON<CicMetaMap>(CIC_KEYS.meta, {});
+
+    const inboxByKey = new Map(prevInbox.map(r => [r.key, r]));
+    const nextDetails = { ...prevDetails };
+    const nextMeta: CicMetaMap = { ...prevMeta };
+
+    // 1. Tiếp nhận report mới gửi (DA_GUI_CIC) chưa có trong inbox
+    portalReports
+      .filter(r => r.trangThai === 'DA_GUI_CIC' && !inboxByKey.has(r.key))
+      .forEach(r => {
+        inboxByKey.set(r.key, r);
+        if (!nextDetails[r.key]) {
+          nextDetails[r.key] = seedDetails(r);
+        }
+        const existing = nextMeta[r.key]?.history ?? [];
+        nextMeta[r.key] = {
+          ...(nextMeta[r.key] ?? { history: [] }),
+          history: [...existing, makeHistoryEntry('RECEIVED')],
+        };
+      });
+
+    // 2. Đồng bộ trạng thái Portal cho các report đã có; loại bỏ
+    //    những report không còn ở trạng thái CIC quan tâm.
+    const merged: BalanceReport[] = [];
+    inboxByKey.forEach((report, key) => {
+      const portal = portalByKey.get(key);
+      // Report đã bị Portal xóa → bỏ khỏi inbox
+      if (!portal) return;
+      if (CIC_INBOX_STATUSES.includes(portal.trangThai)) {
+        merged.push({ ...report, ...portal });
+      }
+      // YEU_CAU_SUA / TAO_MOI (đã trả về TCTD) → loại khỏi inbox CIC
+    });
+
+    merged.sort((a, b) => parseInt(a.key, 10) - parseInt(b.key, 10));
+    const reindexed = merged.map((item, idx) => ({ ...item, stt: idx + 1 }));
+
+    setData(reindexed);
+    setCustomDetailsMap(nextDetails);
+    setMetaMap(nextMeta);
+    persistCic(reindexed, nextDetails, nextMeta);
+    setIsLoaded(true);
+  }, [persistCic]);
+
+  useEffect(() => {
+    loadFromStores();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useBalanceSyncListener(loadFromStores, [loadFromStores]);
+
+  const getMeta = useCallback(
+    (reportKey: string): ReportProcessingMeta =>
+      metaMap[reportKey] ?? { history: [] },
+    [metaMap]
+  );
+
+  // Helper: cập nhật trạng thái 1 report trong inbox + ghi sử + sync Portal
+  const transitionStatus = useCallback((
+    reportKey: string,
+    newStatus: TrangThaiTep,
+    action: ProcessingAction,
+    opts?: { reason?: string; removeFromInbox?: boolean; metaPatch?: Partial<ReportProcessingMeta> }
+  ) => {
+    setData(prevData => {
+      let nextData: BalanceReport[];
+      if (opts?.removeFromInbox) {
+        nextData = prevData
+          .filter(item => item.key !== reportKey)
+          .map((item, idx) => ({ ...item, stt: idx + 1 }));
+      } else {
+        nextData = prevData.map(item =>
+          item.key === reportKey ? { ...item, trangThai: newStatus } : item
+        );
+      }
+
+      setMetaMap(prevMeta => {
+        const current = prevMeta[reportKey] ?? { history: [] };
+        const newMeta: CicMetaMap = {
+          ...prevMeta,
+          [reportKey]: {
+            ...current,
+            ...(opts?.metaPatch ?? {}),
+            history: [...current.history, makeHistoryEntry(action, opts?.reason)],
+          },
+        };
+
+        setCustomDetailsMap(prevDetails => {
+          const newDetails = { ...prevDetails };
+          if (opts?.removeFromInbox) delete newDetails[reportKey];
+          persistCic(nextData, newDetails, newMeta);
+          return newDetails;
+        });
+        return newMeta;
+      });
+
+      syncStatusToPortal(reportKey, newStatus, opts?.reason ? { lyDoTuChoi: opts.reason } : undefined);
+      return nextData;
+    });
+  }, [persistCic]);
+
+  // Cán bộ lưu thay đổi số liệu (sửa hộ, chưa kiểm tra)
   const saveReportChanges = useCallback((
     reportKey: string,
-    details: ReconciliationDetailRow[]
+    details: ReconciliationDetailRow[],
+    editedFields?: Record<string, string[]>
   ) => {
-    setCustomDetailsMap(prevMap => {
-      const newMap = { ...prevMap, [reportKey]: details };
-      persistChanges(data, newMap);
-      return newMap;
+    setCustomDetailsMap(prevDetails => {
+      const newDetails = { ...prevDetails, [reportKey]: details };
+      setMetaMap(prevMeta => {
+        const current = prevMeta[reportKey] ?? { history: [] };
+        const newMeta: CicMetaMap = {
+          ...prevMeta,
+          [reportKey]: {
+            ...current,
+            editedBy: CURRENT_ACTOR,
+            editedFields: editedFields ?? current.editedFields,
+            history: [...current.history, makeHistoryEntry('EDITED')],
+          },
+        };
+        persistCic(data, newDetails, newMeta);
+        return newMeta;
+      });
+      return newDetails;
     });
-  }, [data, persistChanges]);
+  }, [data, persistCic]);
 
-  // Tiếp nhận báo cáo
+  // Bắt đầu kiểm tra → DANG_KIEM_TRA (khóa chỉnh sửa)
+  const startReview = useCallback((reportKey: string) => {
+    transitionStatus(reportKey, 'DANG_KIEM_TRA', 'REVIEW_STARTED');
+  }, [transitionStatus]);
+
+  // Mở lại để sửa → DA_GUI_CIC (gỡ khóa)
+  const reopenReview = useCallback((reportKey: string) => {
+    transitionStatus(reportKey, 'DA_GUI_CIC', 'REVIEW_REOPENED');
+  }, [transitionStatus]);
+
+  // Tiếp nhận (kiểm tra đạt) → DA_TIEP_NHAN + đồng bộ ngược Portal
   const acceptReport = useCallback((
     reportKey: string,
-    details: ReconciliationDetailRow[]
+    details: ReconciliationDetailRow[],
+    editedFields?: Record<string, string[]>
   ) => {
-    setData(prev => {
-      const updatedData = prev.map(item => {
-        if (item.key === reportKey) {
-          return { ...item, trangThai: 'DA_TIEP_NHAN' as TrangThaiTep };
-        }
-        return item;
-      });
-      
-      setCustomDetailsMap(prevMap => {
-        const updatedDetails = details.map(d => ({ ...d, trangThai: 'DA_TIEP_NHAN' as TrangThaiTep }));
-        const newMap = { ...prevMap, [reportKey]: updatedDetails };
-        persistChanges(updatedData, newMap);
-        return newMap;
-      });
-      
-      return updatedData;
+    const finalDetails = details.map(d => ({ ...d, trangThai: 'DA_TIEP_NHAN' as TrangThaiTep }));
+    setCustomDetailsMap(prev => ({ ...prev, [reportKey]: finalDetails }));
+    transitionStatus(reportKey, 'DA_TIEP_NHAN', 'ACCEPTED', {
+      metaPatch: { acceptedAt: nowStamp(), editedFields },
     });
-  }, [persistChanges]);
-  
-  // Từ chối báo cáo (Chuyển trạng thái về TAO_MOI hoặc TRẢ VỀ)
-  const rejectReport = useCallback((reportKey: string) => {
-    setData(prev => {
-      const updatedData = prev.map(item => {
-        if (item.key === reportKey) {
-          return { ...item, trangThai: 'TAO_MOI' as TrangThaiTep }; // Đẩy về TCTD làm lại
-        }
-        return item;
-      });
-      
-      setCustomDetailsMap(prevMap => {
-        const currentDetails = prevMap[reportKey] || [];
-        const updatedDetails = currentDetails.map(d => ({ ...d, trangThai: 'TAO_MOI' as TrangThaiTep }));
-        const newMap = { ...prevMap, [reportKey]: updatedDetails };
-        persistChanges(updatedData, newMap);
-        return newMap;
-      });
-      
-      // Xóa khỏi danh sách submittedData hiện tại trên giao diện
-      return updatedData.filter(item => item.key !== reportKey);
+  }, [transitionStatus]);
+
+  // Yêu cầu TCTD sửa → trả về YEU_CAU_SUA kèm lý do, loại khỏi inbox
+  const requestRevision = useCallback((reportKey: string, reason: string) => {
+    transitionStatus(reportKey, 'YEU_CAU_SUA', 'REVISION_REQUESTED', {
+      reason,
+      removeFromInbox: true,
+      metaPatch: { rejectReason: reason },
     });
-  }, [persistChanges]);
+  }, [transitionStatus]);
 
   return {
     data,
     customDetailsMap,
+    metaMap,
     isLoaded,
-    handleCellEdit,
+    getMeta,
     saveReportChanges,
+    startReview,
+    reopenReview,
     acceptReport,
-    rejectReport
+    requestRevision,
   };
 };

@@ -34,7 +34,7 @@ import {
 } from '@/components/ui';
 import useHeaderActions from '@/hooks/useHeaderActions';
 import { useSendBalance } from './useSendBalance';
-import { ReconciliationDetailRow, BalanceReport, TrangThaiTep } from './types';
+import { ReconciliationDetailRow, BalanceReport, TrangThaiTep, canTctdEdit, TRANG_THAI_TAG } from './types';
 import { RAW_FILE_RULES, getLoaiToChucByMaDauMoi, generateTreeReconciliationData } from './mockData';
 import { EditableCell } from './EditableCell';
 
@@ -71,7 +71,7 @@ const SendBalanceFormPage: React.FC = () => {
   const [importFile, setImportFile] = useState<any>(null);
   const [importLoading, setImportLoading] = useState(false);
 
-  const isReadOnly = loadedExistingReport ? loadedExistingReport.trangThai !== 'TAO_MOI' : false;
+  const isReadOnly = loadedExistingReport ? !canTctdEdit(loadedExistingReport.trangThai) : false;
 
   // Thứ tự cột bảng nhập liệu
   const [editColumnOrder, setEditColumnOrder] = useState<string[]>([
@@ -853,17 +853,32 @@ const SendBalanceFormPage: React.FC = () => {
         {loadedExistingReport && (
           <Alert
             message={
-              loadedExistingReport.trangThai === 'TAO_MOI' ? (
-                <span>
-                  <strong>Kỳ báo cáo này đã tồn tại bản ghi nháp!</strong> Trạng thái hiện tại: <strong style={{ color: colors.primary[600] }}>Tạo mới</strong>. Hệ thống đã tự động nạp dữ liệu để tiếp tục chỉnh sửa.
-                </span>
+              canTctdEdit(loadedExistingReport.trangThai) ? (
+                loadedExistingReport.trangThai === 'YEU_CAU_SUA' ? (
+                  <span>
+                    <strong>CIC yêu cầu sửa lại báo cáo này.</strong>
+                    {loadedExistingReport.lyDoTuChoi && (
+                      <> Lý do: <strong style={{ color: colors.error.base }}>{loadedExistingReport.lyDoTuChoi}</strong>.</>
+                    )} Vui lòng chỉnh sửa số liệu và gửi lại CIC.
+                  </span>
+                ) : (
+                  <span>
+                    <strong>Kỳ báo cáo này đã tồn tại bản ghi nháp!</strong> Trạng thái hiện tại: <strong style={{ color: colors.primary[600] }}>Tạo mới</strong>. Hệ thống đã tự động nạp dữ liệu để tiếp tục chỉnh sửa.
+                  </span>
+                )
               ) : (
                 <span>
-                  <strong>Kỳ báo cáo này đã tồn tại bản ghi dữ liệu!</strong> Trạng thái hiện tại: <strong style={{ color: colors.primary[600] }}>{loadedExistingReport.trangThai === 'DA_GUI_CIC' ? 'Đã gửi CIC' : 'Đã tiếp nhận'}</strong>. Hệ thống đã tự động nạp dữ liệu và khóa tính năng chỉnh sửa để đảm bảo an toàn số liệu.
+                  <strong>Kỳ báo cáo này đã tồn tại bản ghi dữ liệu!</strong> Trạng thái hiện tại: <strong style={{ color: colors.primary[600] }}>{TRANG_THAI_TAG[loadedExistingReport.trangThai].label}</strong>. Hệ thống đã tự động nạp dữ liệu và khóa tính năng chỉnh sửa để đảm bảo an toàn số liệu.
                 </span>
               )
             }
-            type={loadedExistingReport.trangThai === 'TAO_MOI' ? "info" : "warning"}
+            type={
+              loadedExistingReport.trangThai === 'YEU_CAU_SUA'
+                ? 'error'
+                : canTctdEdit(loadedExistingReport.trangThai)
+                  ? 'info'
+                  : 'warning'
+            }
             showIcon
             style={{ borderRadius: radius.md }}
           />

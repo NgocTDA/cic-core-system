@@ -1,55 +1,63 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { BalanceReport, ReconciliationDetailRow, TrangThaiTep } from './types';
 import { INITIAL_DATA, generateTreeReconciliationData, RAW_FILE_RULES, getLoaiToChucByMaDauMoi } from './mockData';
+import {
+  PORTAL_KEYS,
+  readJSON,
+  writeJSON,
+  emitBalanceSync,
+  useBalanceSyncListener,
+} from './balanceSync';
 
 export const useSendBalance = () => {
   const [data, setData] = useState<BalanceReport[]>(INITIAL_DATA);
   const [customDetailsMap, setCustomDetailsMap] = useState<Record<string, ReconciliationDetailRow[]>>({});
   const [isLoaded, setIsLoaded] = useState(false);
+  // Chặn vòng lặp: bỏ qua đúng một lần emit do chính effect save phát ra
+  const skipNextSyncRef = useRef(false);
 
-  // Load from localStorage on mount (client-side only)
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const storedData = localStorage.getItem('send_balance_reports');
-      const storedDetails = localStorage.getItem('send_balance_details_map');
-      
-      let parsedData = INITIAL_DATA;
-      if (storedData) {
-        try {
-          const loadedData = JSON.parse(storedData);
-          if (Array.isArray(loadedData) && loadedData.length > 0) {
-            const loadedKeys = new Set(loadedData.map((x: any) => String(x.key)));
-            const missing = INITIAL_DATA.filter(item => !loadedKeys.has(String(item.key)));
-            if (missing.length > 0) {
-              parsedData = [...loadedData, ...missing].sort((a, b) => parseInt(a.key, 10) - parseInt(b.key, 10));
-              parsedData = parsedData.map((item, idx) => ({ ...item, stt: idx + 1 }));
-            } else {
-              parsedData = loadedData;
-            }
-          }
-        } catch (e) {
-          console.error('Lỗi khi đọc send_balance_reports từ localStorage:', e);
-        }
+  // Đọc store Portal (dùng chung cho mount + mỗi sync event)
+  const loadFromStorage = useCallback(() => {
+    const loadedData = readJSON<BalanceReport[]>(PORTAL_KEYS.reports, []);
+    let parsedData = INITIAL_DATA;
+    if (Array.isArray(loadedData) && loadedData.length > 0) {
+      const loadedKeys = new Set(loadedData.map(x => String(x.key)));
+      const missing = INITIAL_DATA.filter(item => !loadedKeys.has(String(item.key)));
+      if (missing.length > 0) {
+        parsedData = [...loadedData, ...missing].sort((a, b) => parseInt(a.key, 10) - parseInt(b.key, 10));
+        parsedData = parsedData.map((item, idx) => ({ ...item, stt: idx + 1 }));
+      } else {
+        parsedData = loadedData;
       }
-      
-      setData(parsedData);
-
-      if (storedDetails) {
-        try {
-          setCustomDetailsMap(JSON.parse(storedDetails));
-        } catch (e) {
-          console.error('Lỗi khi đọc send_balance_details_map từ localStorage:', e);
-        }
-      }
-      setIsLoaded(true);
     }
+    setData(parsedData);
+    setCustomDetailsMap(readJSON<Record<string, ReconciliationDetailRow[]>>(PORTAL_KEYS.details, {}));
+    setIsLoaded(true);
   }, []);
+
+  // Load on mount (client-side only)
+  useEffect(() => {
+    loadFromStorage();
+  }, [loadFromStorage]);
+
+  // Reload khi CIC (hoặc tab khác) cập nhật trạng thái
+  useBalanceSyncListener(() => {
+    if (skipNextSyncRef.current) {
+      skipNextSyncRef.current = false;
+      return;
+    }
+    loadFromStorage();
+  }, [loadFromStorage]);
 
   // Save to localStorage when state changes (only after initial load has finished)
   useEffect(() => {
     if (isLoaded && typeof window !== 'undefined') {
-      localStorage.setItem('send_balance_reports', JSON.stringify(data));
-      localStorage.setItem('send_balance_details_map', JSON.stringify(customDetailsMap));
+      writeJSON(PORTAL_KEYS.reports, data);
+      writeJSON(PORTAL_KEYS.details, customDetailsMap);
+      // Báo cho phía CIC (cùng tab) cập nhật inbox live; tự bỏ qua
+      // lần emit này ở listener của chính Portal.
+      skipNextSyncRef.current = true;
+      emitBalanceSync();
     }
   }, [data, customDetailsMap, isLoaded]);
 
@@ -208,6 +216,8 @@ export const useSendBalance = () => {
               maDauMoi: report.maDauMoi,
               phanLoaiTep: report.phanLoaiTep,
               ngayBaoCao: report.ngayBaoCao,
+              // Gửi lại / lưu nháp → xóa lý do yêu cầu sửa cũ
+              lyDoTuChoi: undefined,
             };
           }
           return item;

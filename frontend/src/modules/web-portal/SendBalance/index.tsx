@@ -43,7 +43,7 @@ import {
 } from '@/components/ui';
 import useHeaderActions from '@/hooks/useHeaderActions';
 import { useSendBalance } from './useSendBalance';
-import { ReconciliationDetailRow, BalanceReport, TrangThaiTep } from './types';
+import { ReconciliationDetailRow, BalanceReport, TrangThaiTep, TRANG_THAI_TAG, canTctdEdit } from './types';
 import {
   RAW_FILE_RULES,
   getLoaiToChucByMaDauMoi,
@@ -316,13 +316,8 @@ const SendBalanceModule: React.FC = () => {
   // ─── RENDER HELPERS FOR STATUS ────────────────────────────────────
 
   const renderTrangThaiTag = (status: TrangThaiTep) => {
-    if (status === 'TAO_MOI') {
-      return <StatusTag status="RUNNING" label="Tạo mới" />;
-    }
-    if (status === 'DA_GUI_CIC') {
-      return <StatusTag status="PENDING" label="Đã gửi CIC" />;
-    }
-    return <StatusTag status="APPROVED" label="Đã tiếp nhận" />;
+    const meta = TRANG_THAI_TAG[status] ?? { statusKey: 'default', label: status };
+    return <StatusTag status={meta.statusKey} label={meta.label} />;
   };
 
   // ─── TABLE COLUMN DEFINITION WITH CONDITION ACTIONS ──────────────
@@ -858,7 +853,9 @@ const SendBalanceModule: React.FC = () => {
             type="select"
             selectOptions={[
               { value: 'TAO_MOI', label: 'Tạo mới' },
-              { value: 'DA_GUI_CIC', label: 'Đã gửi CIC' },
+              { value: 'DA_GUI_CIC', label: 'Chờ kiểm tra' },
+              { value: 'DANG_KIEM_TRA', label: 'Đang kiểm tra' },
+              { value: 'YEU_CAU_SUA', label: 'Yêu cầu sửa' },
               { value: 'DA_TIEP_NHAN', label: 'Đã tiếp nhận' }
             ]}
             record={record}
@@ -893,8 +890,8 @@ const SendBalanceModule: React.FC = () => {
             }
           ];
 
-        // Hành động chỉnh sửa (Chỉ hiển thị nếu trạng thái là Tạo mới)
-        if (record.trangThai === 'TAO_MOI') {
+        // Hành động chỉnh sửa (khi TCTD còn quyền sửa: Tạo mới / Yêu cầu sửa)
+        if (canTctdEdit(record.trangThai)) {
           menuItems.push({
             key: 'edit',
             label: 'Chỉnh sửa',
@@ -905,7 +902,7 @@ const SendBalanceModule: React.FC = () => {
           });
         }
 
-        // Thu hồi (Chỉ hiển thị nếu trạng thái là Đã gửi CIC)
+        // Thu hồi (Chỉ hiển thị nếu đã gửi, chờ kiểm tra)
         if (record.trangThai === 'DA_GUI_CIC') {
           menuItems.push({
             key: 'revoke',
@@ -1152,7 +1149,9 @@ const SendBalanceModule: React.FC = () => {
               <Select value={trangThaiFilter} onChange={setTrangThaiFilter} style={{ width: '100%' }}>
                 <Select.Option value="">Tất cả</Select.Option>
                 <Select.Option value="TAO_MOI">Tạo mới</Select.Option>
-                <Select.Option value="DA_GUI_CIC">Đã gửi CIC</Select.Option>
+                <Select.Option value="DA_GUI_CIC">Chờ kiểm tra</Select.Option>
+                <Select.Option value="DANG_KIEM_TRA">Đang kiểm tra</Select.Option>
+                <Select.Option value="YEU_CAU_SUA">Yêu cầu sửa</Select.Option>
                 <Select.Option value="DA_TIEP_NHAN">Đã tiếp nhận</Select.Option>
               </Select>
             </Tooltip>
@@ -1194,7 +1193,7 @@ const SendBalanceModule: React.FC = () => {
             </Space>
           }
         >
-          <div style={{ flex: 1, overflowY: 'auto' }}>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '0 20px 16px' }}>
             {(() => {
               const preparedMainColumns = columns
                 .map(col => {
