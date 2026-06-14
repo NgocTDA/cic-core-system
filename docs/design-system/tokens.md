@@ -30,8 +30,20 @@
 | `colors.subsystem.governance` | `#13c2c2` | Quản trị dữ liệu |
 | `colors.subsystem.design` | `#7c3aed` | Design System |
 | `colors.subsystem.portal` | `#0050b3` | Web Portal |
+| `colors.subsystem.tools` | `#1f4e79` | Công cụ nội bộ (CIC Navy) |
 
 > Dùng khi cần màu badge, icon, hoặc accent theo subsystem context. **Không dùng cho text thông thường.**
+
+#### Tools palette (`colors.toolsColors`)
+
+Bảng màu navy/blue riêng cho subsystem `tools` (CIC UI Doc Generator…).
+
+| Token | Hex | Dùng cho |
+|---|---|---|
+| `colors.toolsColors.primary` | `#1f4e79` | navy — header, heading |
+| `colors.toolsColors.secondary` | `#2e75b6` | blue — accent, link |
+| `colors.toolsColors.light` | `#d6e4f0` | blue light — table header / meta cell |
+| `colors.toolsColors.xlight` | `#eef5fb` | blue xtra-light — row alternating |
 
 ### Semantic
 

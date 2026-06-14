@@ -31,6 +31,16 @@ export const colors = {
         governance: '#13c2c2', // Quản trị dữ liệu   — Teal
         design:     '#7c3aed', // Design System      — Indigo
         portal:     '#0050b3', // Web Portal         — Navy Blue
+        tools:      '#1f4e79', // Công cụ nội bộ      — CIC Navy
+    },
+
+    // ─── Tools subsystem palette (internal tools) ─────────────
+    // Tông navy/blue nhận diện CIC, dùng trong subsystem `tools`.
+    toolsColors: {
+        primary:   '#1f4e79', // navy — header, heading
+        secondary: '#2e75b6', // blue — accent, link
+        light:     '#d6e4f0', // blue light — table header / meta cell
+        xlight:    '#eef5fb', // blue xtra-light — row alternating
     },
 
     // ─── Semantic ─────────────────────────────────────────────

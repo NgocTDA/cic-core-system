@@ -6,4 +6,10 @@ services:
     container_name: cic-frontend
     ports:
       - "8700:3000"
+    # Config provider (chứa key) + prompt — mount lúc runtime, KHÔNG bake vào image.
+    # process.cwd() trong standalone = /app, nên code đọc /app/config/*.
+    # :ro = read-only. Sửa file trên host có hiệu lực ngay (đọc lại mỗi request),
+    # trừ khi đổi biến env thì cần restart.
+    volumes:
+      - ./frontend/config:/app/config:ro
     restart: unless-stopped

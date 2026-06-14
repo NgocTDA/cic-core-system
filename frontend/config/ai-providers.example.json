@@ -1,0 +1,27 @@
+{
+  "_doc": "Mỗi khối là 1 provider. type: A=Anthropic, O=OpenAI, G=Gemini. UI chỉ hiện id/label/type; apiKey/baseUrl giữ ở server. Copy file này thành ai-providers.json và điền apiKey thật. model bắt buộc khai (không có default).",
+
+  "anthropic": {
+    "label": "Anthropic — Claude (API gốc)",
+    "type": "A",
+    "baseUrl": "https://api.anthropic.com/v1/messages",
+    "apiKey": "sk-ant-xxxxxxxx",
+    "model": "claude-sonnet-4-6"
+  },
+
+  "gemini": {
+    "label": "Google — Gemini (API gốc)",
+    "type": "G",
+    "baseUrl": "https://generativelanguage.googleapis.com",
+    "apiKey": "AIzaxxxxxxxx",
+    "model": "gemini-3.5-flash"
+  },
+
+  "openai": {
+    "label": "OpenAI — ChatGPT (API gốc)",
+    "type": "O",
+    "baseUrl": "https://api.openai.com/v1/chat/completions",
+    "apiKey": "sk-xxxxxxxx",
+    "model": "gpt-4o"
+  }
+}

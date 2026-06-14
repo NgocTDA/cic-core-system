@@ -26,6 +26,16 @@ build/
 .env.local
 .env.production
 
+# AI providers config (chứa key — không commit; xem config/ai-providers.example.json)
+config/ai-providers.json
+
+# System prompt "sống" — chỉnh trên server, không commit để git pull không ghi đè.
+# Bản mẫu: config/srs-prompt.example.md
+config/srs-prompt.md
+
+# Template Word "sống" — chỉnh trên server, không commit. Bản mẫu: srs-template.example.docx
+config/srs-template.docx
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

@@ -96,12 +96,16 @@ const SubSystemSwitcher: React.FC<SubSystemSwitcherProps> = ({ mode = 'light', c
                     }}
                     variant="borderless"
                     className={SELECT_CLASS}
-                    popupClassName={POPUP_CLASS}
-                    dropdownStyle={{
-                        background: colors.sidebar.bgDeep,
-                        borderRadius: radius.md,
-                        border: `1px solid ${colors.sidebar.divider}`,
-                        zIndex: zIndex.overlay,
+                    classNames={{ popup: { root: POPUP_CLASS } }}
+                    styles={{
+                        popup: {
+                            root: {
+                                background: colors.sidebar.bgDeep,
+                                borderRadius: radius.md,
+                                border: `1px solid ${colors.sidebar.divider}`,
+                                zIndex: zIndex.overlay,
+                            },
+                        },
                     }}
                 >
                     {SUB_SYSTEMS.map(sys => (
@@ -183,7 +187,7 @@ const SubSystemSwitcher: React.FC<SubSystemSwitcherProps> = ({ mode = 'light', c
                         fontWeight: typography.fontWeight.semibold,
                     }}
                     variant="borderless"
-                    dropdownStyle={{ borderRadius: radius.md }}
+                    styles={{ popup: { root: { borderRadius: radius.md } } }}
                 >
                     {SUB_SYSTEMS.map(sys => (
                         <Option key={sys.id} value={sys.id}>

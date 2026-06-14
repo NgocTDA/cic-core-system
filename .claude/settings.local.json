@@ -51,7 +51,10 @@
       "Bash(docker run *)",
       "Bash(docker rm *)",
       "Bash(docker container *)",
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "PowerShell(\"---layout---\")",
+      "PowerShell(Set-Location \"C:\\\\Users\\\\ngoct\\\\Downloads\\\\Code\\\\cic-core-system\\\\frontend\"; npm run dev 2>&1 | Tee-Object -FilePath \"$env:TEMP\\\\cic-dev8.log\")",
+      "mcp__Claude_Preview__preview_start"
     ],
     "additionalDirectories": [
       "c:\\Users\\ngoct\\Downloads\\Code\\cic-core-system\\frontend\\app\\product-mgmt\\catalog\\products"

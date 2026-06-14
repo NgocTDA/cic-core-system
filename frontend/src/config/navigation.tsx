@@ -925,6 +925,20 @@ export const SUB_SYSTEMS: SubSystem[] = [
                 ]
             }
         ]
+    },
+    {
+        id: 'tools',
+        name: 'Công cụ nội bộ',
+        icon: <AppstoreOutlined />,
+        color: colors.subsystem.tools,
+        menuItems: [
+            {
+                key: 'tools-ui-doc-generator',
+                label: 'Sinh tài liệu giao diện',
+                icon: <RobotOutlined />,
+                path: '/tools/ui-doc-generator',
+            },
+        ],
     }
 ];
 

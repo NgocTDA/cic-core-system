@@ -13,3 +13,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .env*.local
+
+# KHÔNG đưa file chứa key vào build context/image — sẽ mount runtime qua volume.
+config/ai-providers.json
