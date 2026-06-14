@@ -52,20 +52,28 @@ function toTemplateData(doc: DocData) {
     };
 }
 
+// PNG 1x1 trong suốt — placeholder khi không có mockup (giữ ô bảng hợp lệ).
+const TRANSPARENT_PNG =
+    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+
 // Render template → Buffer .docx. image (dataUrl) tùy chọn để nhúng mockup.
 export async function renderDocx(doc: DocData, image?: string): Promise<Uint8Array> {
     const template = fs.readFileSync(templatePath());
-    const hasImage = !!image;
 
     const buffer = await createReport({
         template,
         cmdDelimiter: ['[[', ']]'],
-        data: { ...toTemplateData(doc), hasImage },
+        data: { ...toTemplateData(doc), hasImage: !!image },
         additionalJsContext: {
+            // LUÔN trả 1 ảnh hợp lệ. Không dùng IF trong template vì IF làm
+            // docx-templates xoá cả ô/hàng → docx hỏng. Không có mockup thì
+            // chèn PNG 1x1 trong suốt rất nhỏ (gần như vô hình).
             mockup: () => {
-                if (!image) return null;
-                const { ext, base64 } = parseDataUrl(image);
-                return { width: 16, height: 9, data: base64, extension: ext };
+                if (image) {
+                    const { ext, base64 } = parseDataUrl(image);
+                    return { width: 16, height: 9, data: base64, extension: ext };
+                }
+                return { width: 0.1, height: 0.1, data: TRANSPARENT_PNG, extension: '.png' };
             },
         },
     });
