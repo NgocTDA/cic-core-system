@@ -28,7 +28,7 @@ Return JSON with EXACTLY these keys:
 - module (string)
 - purpose (string, 1-2 sentences)
 - scope (array of strings)
-- screenType (one of: Form nhap lieu | Danh sach | Xem chi tiet | Bao cao | Khac)
+- screenType (one of: Form nhập liệu | Danh sách | Xem chi tiết | Báo cáo | Khác)
 - accessRoles (string)
 - parentScreen (string or null)
 - childScreens (string or null)
@@ -36,7 +36,7 @@ Return JSON with EXACTLY these keys:
 - flow (array, min 5 steps including a success path and an error path; each: { step, actor, action, result })
 - errors (array, min 3; each: { situation, message, action })
 - businessRules (array of strings, min 2; prefix each with [BR-0N])
-- openQuestions (array of strings)
+- openQuestions (array of objects, each: { topic, content }) — topic = chủ đề ngắn, content = nội dung câu hỏi/ghi chú
 
 RETURN ONLY VALID JSON. NO OTHER TEXT.`;
 

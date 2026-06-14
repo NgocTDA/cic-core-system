@@ -10,6 +10,7 @@ import { useIsMobile } from '@/hooks/useIsMobile';
 import { generateDoc, fetchPromptLabel, downloadDocx } from '@/services/aiService';
 import DocForm from './DocForm';
 import DocPreview from './DocPreview';
+import WordPreview from './WordPreview';
 import { buildConfluence } from './buildConfluence';
 import { useAIProvider } from './useAIProvider';
 import type { DocData, DocInput } from './types';
@@ -152,8 +153,17 @@ const UIDocGenerator: React.FC = () => {
                             },
                             {
                                 key: 'preview',
-                                label: 'Xem trước Word',
+                                label: 'Xem trước nội dung',
                                 children: <DocPreview d={data} />,
+                            },
+                            {
+                                key: 'word',
+                                label: 'Bản Word thật',
+                                // Lazy: chỉ mount (fetch+render docx) khi mở tab này
+                                children:
+                                    activeTab === 'word' ? (
+                                        <WordPreview doc={data} image={input.images[0]?.dataUrl} />
+                                    ) : null,
                             },
                         ]}
                     />

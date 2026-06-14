@@ -6,9 +6,9 @@ Hướng dẫn này giúp Claude Code hiểu codebase và làm việc nhất qu�
 
 ## Tổng quan dự án
 
-**CIC Core System** là hệ thống quản lý thông tin tín dụng nội bộ, bao gồm 6 subsystem:
+**CIC Core System** là hệ thống quản lý thông tin tín dụng nội bộ. 6 subsystem nghiệp vụ cốt lõi:
 
-| ID | Tên | Màu |
+| ID | Tên | Màu (`colors.subsystem.*`) |
 |---|---|---|
 | `kkn` | Kênh kết nối | `#fa8c16` (cam) |
 | `data-collection` | Thu thập & xử lý dữ liệu | `#1890ff` (xanh dương) |
@@ -16,6 +16,17 @@ Hướng dẫn này giúp Claude Code hiểu codebase và làm việc nhất qu�
 | `ops-support` | Hỗ trợ vận hành | `#722ed1` (tím) |
 | `analytics-reporting` | Báo cáo thống kê | `#eb2f96` (hồng) |
 | `data-governance` | Quản trị dữ liệu | `#13c2c2` (teal) |
+
+Ngoài 6 subsystem trên, `SUB_SYSTEMS` còn có các subsystem mở rộng:
+
+| ID | Tên | Màu |
+|---|---|---|
+| `web-portal` | Web Portal (TCTD) | `#0050b3` (navy blue) |
+| `tools` | Công cụ nội bộ (vd UI Doc Generator) | `#1f4e79` (CIC navy) |
+| `design-system` | Design System Explorer | `#7c3aed` (indigo) |
+
+> Cấu trúc menu đầy đủ (đồng bộ với `config/navigation.tsx`) xem tại [docs/menu.md](docs/menu.md).
+> File này (CLAUDE.md) và [AGENTS.md](AGENTS.md) (guide cho Codex) là **bản song sinh** — khi cập nhật quy tắc làm việc, giữ cả hai đồng bộ.
 
 ---
 
@@ -31,14 +42,16 @@ Hướng dẫn này giúp Claude Code hiểu codebase và làm việc nhất qu�
 
 ## Cấu trúc thư mục
 
+> Lưu ý: **App Router nằm ở `frontend/app/`** (pages + API route handlers), KHÔNG phải `frontend/src/app/`. Còn lại (components, modules, design-system…) ở `frontend/src/`.
+
 ```
+frontend/app/               # Next.js App Router: pages + API routes (vd app/api/ai/*)
 frontend/src/
-├── app/                    # Next.js App Router pages
 ├── components/
 │   ├── ui/                 # Shared design-system components ← DÙNG CHO MỌI PAGE
 │   └── *.tsx               # Standalone global components
 ├── config/
-│   └── navigation.tsx      # Menu items & subsystem definitions
+│   └── navigation.tsx      # Menu items & subsystem definitions (nguồn của docs/menu.md)
 ├── context/                # React Contexts
 ├── design-system/
 │   ├── tokens.ts           # Single source of truth cho mọi visual value
@@ -52,16 +65,14 @@ frontend/src/
 │   ├── kkn/
 │   ├── data-collection/
 │   ├── ops-support/
+│   ├── tools/              # Công cụ nội bộ (vd UIDocGenerator)
 │   └── ...
 └── types/                  # Shared TypeScript types
 docs/
-├── design-system/          # Design system documentation
-│   ├── README.md           # Overview + quick start
-│   ├── tokens.md           # Token reference
-│   ├── components.md       # UI component API
-│   └── patterns.md         # Page patterns & full examples
-└── architecture/
-    └── README.md           # Architecture overview
+├── menu.md                 # Cấu trúc menu đầy đủ (đồng bộ navigation.tsx)
+├── design-system/          # Design system documentation (README/tokens/components/patterns)
+└── architecture/README.md  # Architecture overview
+AGENTS.md                   # Guide cho Codex — bản song sinh của CLAUDE.md
 ```
 
 ---
@@ -187,6 +198,7 @@ modules/ops-support/JobManagement/
 3. Đăng ký `useHeaderActions` với title và actions cần thiết
 4. Không cần sửa `AppHeader.tsx` hay `AppSidebar.tsx`
 5. Thêm route vào `navigation.tsx` nếu cần menu item
+6. Nếu có thêm/đổi menu item → cập nhật [docs/menu.md](docs/menu.md) cho khớp với `navigation.tsx`
 
 ---
 

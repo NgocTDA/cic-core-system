@@ -135,12 +135,13 @@ const DocPreview: React.FC<{ d: DocData | null }> = ({ d }) => {
 
             {H3('2.7. Câu hỏi mở / Ghi chú')}
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead><tr>{['#', 'Nội dung', 'Người hỏi', 'Trạng thái'].map((h) => <th key={h} style={TH}>{h}</th>)}</tr></thead>
+                <thead><tr>{['#', 'Chủ đề', 'Nội dung', 'Người hỏi', 'Trạng thái'].map((h) => <th key={h} style={TH}>{h}</th>)}</tr></thead>
                 <tbody>
-                    {(d.openQuestions || ['(chưa có)']).map((q, i) => (
+                    {(d.openQuestions || []).map((q, i) => (
                         <tr key={i}>
                             <td style={TD}>{i + 1}</td>
-                            <td style={TD}>{q}</td>
+                            <td style={TD}>{q.topic}</td>
+                            <td style={TD}>{q.content}</td>
                             <td style={TD}>BA</td>
                             <td style={TD}>Đang mở</td>
                         </tr>

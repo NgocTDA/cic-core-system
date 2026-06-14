@@ -52,8 +52,10 @@ export function buildConfluence(d: DocData): string {
         `h3. 2.6. Dieu kien nghiep vu dac biet`,
         ...(d.businessRules || []).map((r) => `* ${r}`),
         `h3. 2.7. Cau hoi mo / Ghi chu`,
-        `|| # || Noi dung || Nguoi hoi || Trang thai ||`,
-        ...(d.openQuestions || ['(chua co)']).map((q, i) => `| ${i + 1} | ${q} | BA | Dang mo |`),
+        `|| # || Chu de || Noi dung || Nguoi hoi || Trang thai ||`,
+        ...(d.openQuestions || []).map(
+            (q, i) => `| ${i + 1} | ${esc(q.topic)} | ${esc(q.content)} | BA | Dang mo |`,
+        ),
         `----`,
         `_Sinh tu dong boi CIC UI Doc Generator - ${today}_`,
     ].join('\n');

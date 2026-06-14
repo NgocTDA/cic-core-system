@@ -33,15 +33,16 @@ function toTemplateData(doc: DocData) {
         parentScreen: doc.parentScreen ?? '—',
         childScreens: doc.childScreens ?? '—',
         screenType: doc.screenType ?? '',
+        scope: doc.scope ?? [],
         components: doc.components ?? [],
         flow: doc.flow ?? [],
         errors: doc.errors ?? [],
         businessRules: doc.businessRules ?? [],
-        // openQuestions là string[] → map sang cấu trúc 5 cột của bảng template
+        // openQuestions: {topic, content} → bổ sung stt/asker/status cho 5 cột bảng template
         openQuestions: (doc.openQuestions ?? []).map((q, i) => ({
             stt: i + 1,
-            topic: '—',
-            content: q,
+            topic: q?.topic ?? '—',
+            content: q?.content ?? '',
             asker: 'BA',
             status: 'Đang mở',
         })),

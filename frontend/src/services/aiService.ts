@@ -46,8 +46,11 @@ export async function generateDoc(input: DocInput, providerId: string): Promise<
     return data.doc as DocData;
 }
 
-// Gọi backend render .docx từ template Word → tải file về.
-export async function downloadDocx(doc: DocData, image?: string): Promise<void> {
+// Gọi backend render .docx từ template Word → trả về { blob, filename }.
+export async function fetchDocxBlob(
+    doc: DocData,
+    image?: string,
+): Promise<{ blob: Blob; filename: string }> {
     const res = await fetch('/api/ai/docx', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
@@ -60,11 +63,16 @@ export async function downloadDocx(doc: DocData, image?: string): Promise<void> 
     const blob = await res.blob();
     const cd = res.headers.get('Content-Disposition') ?? '';
     const m = /filename="([^"]+)"/.exec(cd);
-    const name = m ? m[1] : 'tai-lieu.docx';
+    return { blob, filename: m ? m[1] : 'tai-lieu.docx' };
+}
+
+// Tải file .docx về máy.
+export async function downloadDocx(doc: DocData, image?: string): Promise<void> {
+    const { blob, filename } = await fetchDocxBlob(doc, image);
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = name;
+    a.download = filename;
     a.click();
     URL.revokeObjectURL(url);
 }

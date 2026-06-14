@@ -45,6 +45,12 @@ export interface ErrorRow {
     action: string;
 }
 
+// Một câu hỏi mở / ghi chú (mục 2.7).
+export interface OpenQuestion {
+    topic: string;
+    content: string;
+}
+
 // JSON mà AI trả về sau khi phân tích màn hình.
 export interface DocData {
     funcName: string;
@@ -60,7 +66,7 @@ export interface DocData {
     flow: FlowRow[];
     errors: ErrorRow[];
     businessRules: string[];
-    openQuestions: string[];
+    openQuestions: OpenQuestion[];
 }
 
 // Đầu vào form (người dùng nhập).
