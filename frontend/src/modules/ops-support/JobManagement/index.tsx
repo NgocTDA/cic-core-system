@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { message } from 'antd';
 import { PlusOutlined, ReloadOutlined } from '@ant-design/icons';
@@ -21,9 +21,9 @@ const JobManagement: React.FC = () => {
     runJob,
   } = useJobManagement();
 
-  const handleAddJob = () => {
+  const handleAddJob = useCallback(() => {
     router.push('/ops-support/job-management/create');
-  };
+  }, [router]);
 
   const handleEditJob = (id: string) => {
     router.push(`/ops-support/job-management/${id}/edit`);
@@ -49,9 +49,9 @@ const JobManagement: React.FC = () => {
     message.success(`Đã xóa ${ids.length} job`);
   };
 
-  const handleRefresh = () => {
+  const handleRefresh = useCallback(() => {
     message.info('Đang làm mới dữ liệu...');
-  };
+  }, []);
 
   const headerActions = useMemo(() => {
     return [
@@ -69,7 +69,7 @@ const JobManagement: React.FC = () => {
         onClick: handleAddJob,
       },
     ];
-  }, []);
+  }, [handleAddJob, handleRefresh]);
 
   // Register Header Actions
   useHeaderActions(

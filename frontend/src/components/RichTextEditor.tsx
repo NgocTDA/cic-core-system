@@ -59,10 +59,12 @@ const RichTextEditor: React.FC<Props> = ({ value, onChange, placeholder, style }
           border-bottom-left-radius: 6px;
           border-bottom-right-radius: 6px;
           border-color: #d9d9d9;
+          background: #ffffff;
           font-family: 'Inter', sans-serif;
         }
         .rich-text-editor-wrapper .ql-editor {
           min-height: 100px;
+          background: #ffffff;
           font-size: 14px;
         }
         .rich-text-editor-wrapper .ql-editor.ql-blank::before {

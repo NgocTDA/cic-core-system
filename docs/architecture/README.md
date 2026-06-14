@@ -9,7 +9,8 @@
 ```
 URL change
   → Next.js App Router
-    → ClientLayout (ConfigProvider + Header + Sidebar)
+    → RootLayout
+      → ClientLayout (ConfigProvider + optional Header + Sidebar)
       → Page Component (route segment)
         → useHeaderActions()        ← đăng ký title + header buttons
           → HeaderContext           ← global state cho AppHeader
@@ -26,23 +27,30 @@ URL change
 
 ```
 frontend/app/
-├── layout.tsx          ← Root layout: fonts, metadata
+├── layout.tsx          ← Root layout: metadata, AntdRegistry, ClientLayout
+├── ClientLayout.tsx    ← ConfigProvider + providers + shell switching
 ├── globals.css         ← CSS variables từ design tokens
-├── (main)/
-│   ├── layout.tsx      ← ClientLayout: ConfigProvider + AppHeader + AppSidebar
-│   ├── page.tsx        ← Dashboard tổng quan (/)
-│   ├── kkn-dashboard/
-│   ├── data-collection/
-│   ├── ops-support/
-│   │   ├── job-management/
-│   │   │   ├── page.tsx           ← JobControlCenter
-│   │   │   ├── [id]/page.tsx      ← JobDetailPage
-│   │   │   └── [id]/edit/page.tsx ← JobFormPage
-│   │   ├── notifications/
-│   │   └── notification-template/
-│   └── data-governance/
+├── page.tsx            ← Landing page (/), không dùng core shell
+├── auth/               ← Auth pages, không dùng core shell
+├── web-portal/         ← Portal pages, không dùng core shell
+├── kkn-dashboard/
+├── data-collection/
+├── ops-support/
+│   ├── job-management/
+│   │   ├── page.tsx           ← JobControlCenter
+│   │   ├── [id]/page.tsx      ← JobDetailPage
+│   │   └── [id]/edit/page.tsx ← JobFormPage
+│   ├── notifications/
+│   └── notification-template/
+├── data-governance/
+├── product-mgmt/
+├── analytics-reporting/
+├── design-system/
+├── tools/
 └── ...
 ```
+
+`ClientLayout` luôn bọc route bằng `ConfigProvider`, `SubSystemProvider`, `RoleProvider` và `HeaderProvider`. Core shell (`AppHeader` + `AppSidebar`) chỉ render cho các route nghiệp vụ; `/`, `/auth/*` và `/web-portal/*` render trong layout riêng không có sidebar/header.
 
 ---
 
@@ -111,6 +119,7 @@ Dự án dùng React Context thuần — không có Redux hay Zustand.
 |---|---|---|
 | `HeaderContext` | `context/HeaderContext.tsx` | `pageTitle`, `pageActions`, setter/clearer |
 | `SubSystemContext` | `context/SubSystemContext.tsx` | `activeSubSystem`, `setActiveSubSystem` |
+| `RoleContext` | `context/RoleContext.tsx` | vai trò hiện tại và phân quyền UI theo vai trò |
 
 Dữ liệu nghiệp vụ (list, detail) được quản lý local trong từng page/hook.
 
@@ -141,10 +150,11 @@ Dữ liệu nghiệp vụ (list, detail) được quản lý local trong từng 
 
 ```
 app/layout.tsx
-  └── app/(main)/layout.tsx  (ClientLayout)
+  └── app/ClientLayout.tsx
         ├── ConfigProvider  ← antdTheme từ design-system/theme.ts
-        ├── HeaderProvider  ← HeaderContext
         ├── SubSystemProvider ← SubSystemContext
+        ├── RoleProvider     ← RoleContext
+        ├── HeaderProvider  ← HeaderContext
         ├── AppHeader
         │     └── useHeaderContext()
         └── AppSidebar

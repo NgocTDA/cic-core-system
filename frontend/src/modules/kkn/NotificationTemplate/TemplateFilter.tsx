@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Card, Input, Select, Row, Col, Space, Button, Tooltip } from 'antd';
-import { SearchOutlined, FilterOutlined, ReloadOutlined } from '@ant-design/icons';
+import { Input, Select } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
+import { FilterBar, FilterCol } from '@/components/ui';
 import type { ChannelType } from './TemplateTypes';
 
 const { Option } = Select;
@@ -44,12 +45,11 @@ const TemplateFilter: React.FC<TemplateFilterProps> = ({
   };
 
   return (
-    <Card bordered={false} style={{ marginBottom: 16 }}>
-      <Row gutter={[16, 12]} wrap align="middle">
-        <Col xs={24} sm={12} md={6} lg={5}>
+    <FilterBar inCard onSearch={() => {}} onReset={handleReset}>
+        <FilterCol minWidth={220}>
           <Input
             placeholder="Từ khóa (Mã mẫu, Tên mẫu)"
-            prefix={<SearchOutlined style={{ color: '#bfbfbf' }} />}
+            prefix={<SearchOutlined />}
             allowClear
             value={searchValue}
             onChange={e => {
@@ -57,8 +57,8 @@ const TemplateFilter: React.FC<TemplateFilterProps> = ({
               onSearchChange(e.target.value);
             }}
           />
-        </Col>
-        <Col xs={24} sm={12} md={4} lg={4}>
+        </FilterCol>
+        <FilterCol>
           <Select
             placeholder="Nhóm nghiệp vụ"
             style={{ width: '100%' }}
@@ -71,8 +71,8 @@ const TemplateFilter: React.FC<TemplateFilterProps> = ({
           >
             {groups.map(g => <Option key={g} value={g}>{g}</Option>)}
           </Select>
-        </Col>
-        <Col xs={24} sm={12} md={4} lg={3}>
+        </FilterCol>
+        <FilterCol>
           <Select
             placeholder="Kênh gửi"
             style={{ width: '100%' }}
@@ -87,8 +87,8 @@ const TemplateFilter: React.FC<TemplateFilterProps> = ({
               <Option key={key} value={key}>{label}</Option>
             ))}
           </Select>
-        </Col>
-        <Col xs={24} sm={12} md={4} lg={3}>
+        </FilterCol>
+        <FilterCol>
           <Select
             placeholder="Trạng thái"
             style={{ width: '100%' }}
@@ -103,20 +103,8 @@ const TemplateFilter: React.FC<TemplateFilterProps> = ({
               { value: 'INACTIVE', label: 'Vô hiệu hóa' },
             ]}
           />
-        </Col>
-        <Col xs={24} sm={24} md={6} lg={9} style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <Space>
-            <Tooltip title="Thêm bộ lọc">
-              <Button icon={<FilterOutlined />}>Thêm bộ lọc</Button>
-            </Tooltip>
-            <Tooltip title="Xóa bộ lọc">
-              <Button icon={<ReloadOutlined />} onClick={handleReset} />
-            </Tooltip>
-            <Button type="primary" icon={<SearchOutlined />}>Tìm kiếm</Button>
-          </Space>
-        </Col>
-      </Row>
-    </Card>
+        </FilterCol>
+    </FilterBar>
   );
 };
 

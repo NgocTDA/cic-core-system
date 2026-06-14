@@ -10,7 +10,7 @@ export function buildConfluence(d: DocData): string {
     const code = d.screenCode || 'SCR-???';
     const mod = d.module || '';
     const esc = (v: unknown) => String(v ?? '').replace(/\|/g, '\\|');
-    const row = <T extends Record<string, unknown>>(obj: T, cols: (keyof T)[]) =>
+    const row = <T extends object>(obj: T, cols: (keyof T)[]) =>
         '| ' + cols.map((c) => esc(obj[c])).join(' | ') + ' |';
 
     return [

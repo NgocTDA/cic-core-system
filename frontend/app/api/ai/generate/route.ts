@@ -23,7 +23,7 @@ interface GenerateRequest {
 }
 
 function parseDataUrl(dataUrl: string): { mediaType: string; base64: string } {
-    const match = /^data:([^;]+);base64,(.*)$/s.exec(dataUrl);
+    const match = /^data:([^;]+);base64,([\s\S]*)$/.exec(dataUrl);
     if (match) return { mediaType: match[1], base64: match[2] };
     return { mediaType: 'image/png', base64: dataUrl.replace(/^data:.*,/, '') };
 }

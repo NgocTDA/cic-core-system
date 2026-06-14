@@ -238,11 +238,12 @@ const HistoryTab: React.FC<HistoryTabProps> = ({ jobId }) => {
             <Col span={12}>
               <Statistic
                 title="Trạng thái"
-                value={
+                value={selectedRun.status}
+                formatter={() => (
                   <Tag color={statusColors[selectedRun.status] || 'default'}>
                     {selectedRun.status}
                   </Tag>
-                }
+                )}
               />
             </Col>
             <Col span={12}>

@@ -122,7 +122,7 @@ const TableDemo: React.FC = () => {
                         { key: 'view',   label: 'Xem chi tiết', onClick: () => {} },
                         { key: 'edit',   label: 'Chỉnh sửa',   onClick: () => {} },
                         { type: 'divider' },
-                        { key: 'delete', label: 'Xóa', danger: true, confirm: { title: 'Xóa bản ghi?', okText: 'Xóa', okType: 'danger', cancelText: 'Huỷ', onConfirm: () => {} } },
+                        { key: 'delete', label: 'Xóa', danger: true, onClick: () => {} },
                     ]}
                 />
             ),

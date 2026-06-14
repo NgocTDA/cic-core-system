@@ -139,7 +139,7 @@ const DocForm: React.FC<DocFormProps> = ({ input, onChange, providers, providerI
                 </Dragger>
             </Form.Item>
 
-            <Space direction="vertical" size={spacing[1]} style={{ width: '100%' }}>
+            <Space direction="vertical" size={4} style={{ width: '100%' }}>
                 <Button
                     type="primary"
                     icon={<ThunderboltOutlined />}

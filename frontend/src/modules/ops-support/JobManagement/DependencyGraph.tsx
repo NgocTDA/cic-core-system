@@ -126,7 +126,7 @@ const DependencyGraph: React.FC<DependencyGraphProps> = ({ jobId, height = 400 }
                   <span
                     style={{
                       padding: '6px 12px',
-                      background: colors.bg.secondary,
+                      background: colors.bg.subtle,
                       borderRadius: '4px',
                       fontSize: '12px',
                     }}

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { message, Modal } from 'antd';
-import { PlusOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
+import { PageLayout } from '@/components/ui';
 import VariableFilter from './VariableFilter';
 import VariableTable from './VariableTable';
 import VariableForm from './VariableForm';
@@ -71,7 +72,6 @@ const VariableRegistry: React.FC = () => {
   const handleDelete = (id: string) => {
     confirm({
       title: 'Xác nhận xóa biến?',
-      icon: <ExclamationCircleOutlined />,
       content: 'Hành động này không thể hoàn tác. Biến đang được sử dụng sẽ không thể xóa.',
       okText: 'Xóa',
       okType: 'danger',
@@ -132,14 +132,12 @@ const VariableRegistry: React.FC = () => {
 
 
   return (
-    <div style={{ padding: '16px 24px 24px', display: 'flex', flexDirection: 'column', flex: 1 }}>
-      {/* Card 1: Filter Area */}
+    <PageLayout>
       <VariableFilter
         onSearchChange={handleSearchChange}
         onStatusChange={handleStatusChange}
       />
 
-      {/* Card 2: Data Table */}
       <VariableTable
         data={filteredData}
         onEdit={handleEdit}
@@ -155,7 +153,7 @@ const VariableRegistry: React.FC = () => {
         onSubmit={handleSubmit}
         editingVariable={editingVariable}
       />
-    </div>
+    </PageLayout>
   );
 };
 

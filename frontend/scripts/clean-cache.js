@@ -1,4 +1,3 @@
-/*
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -17,5 +16,3 @@ try {
 } catch (error) {
   console.error('[clean-cache] Failed to clean .next cache:', error.message);
 }
-
-*/

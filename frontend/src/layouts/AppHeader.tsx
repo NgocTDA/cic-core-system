@@ -1,18 +1,16 @@
 import React from 'react';
-import { Layout, Button, Space, Typography, Avatar, Badge, Tooltip, message } from 'antd';
+import { Layout, Button, Space, Typography, Avatar, Badge, Tooltip } from 'antd';
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   BellOutlined,
   UserOutlined,
   PlusOutlined,
-  SettingOutlined,
-  FileExcelOutlined
 } from '@ant-design/icons';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useHeaderContext } from '../context/HeaderContext';
-import { colors, layout, shadows, zIndex } from '../design-system';
+import { colors, layout, radius, shadows, size, spacing, typography, zIndex } from '../design-system';
 
 const { Header } = Layout;
 const { Title } = Typography;
@@ -44,11 +42,11 @@ const AppHeader: React.FC<AppHeaderProps> = ({ collapsed, onCollapse, isMobile }
   // Page-set title takes priority over route-based title
   const displayTitle = pageTitle || getPageTitle();
 
-  // Find the "Thêm mới" action registered by the current page
-  const addAction = pageActions.find(a => a.key === 'add');
-
-  // Common actions for all data-table pages
-  const hasTableActions = pageActions.length > 0;
+  const visibleActions = pageActions.filter((action) => !action.hidden);
+  const primaryAction = visibleActions.find((action) => action.key === 'add' || action.type === 'primary');
+  const secondaryActions = visibleActions.filter((action) => action !== primaryAction);
+  const headerActionGap = Number.parseInt(isMobile ? spacing[1] : spacing[3], 10);
+  const userInfoGap = Number.parseInt(spacing[2], 10);
 
   return (
     <Header style={{
@@ -58,7 +56,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({ collapsed, onCollapse, isMobile }
       justifyContent: 'space-between',
       alignItems: 'center',
       height: layout.headerHeight,
-      lineHeight: `${layout.headerHeight}px`,
+      lineHeight: 'normal',
       boxShadow: shadows.sm,
       position: 'relative',
       zIndex: zIndex.raised,
@@ -79,64 +77,93 @@ const AppHeader: React.FC<AppHeaderProps> = ({ collapsed, onCollapse, isMobile }
         )}
       </Space>
 
-      <Space size="small">
-        {/* Page-specific "Thêm mới" button — only rendered if a page registers one */}
-        {addAction && !isMobile && (
+      <div
+        style={{
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          gap: headerActionGap,
+        }}
+      >
+        {/* Page-specific primary button */}
+        {primaryAction && !isMobile && (
           <Button
             type="primary"
-            icon={<PlusOutlined />}
-            onClick={addAction.onClick}
+            icon={primaryAction.icon || <PlusOutlined />}
+            onClick={primaryAction.onClick}
+            danger={primaryAction.danger}
+            ghost={primaryAction.ghost}
           >
-            {addAction.label}
+            {primaryAction.label}
           </Button>
         )}
 
-        {/* Common table actions — rendered whenever a page has registered actions */}
-        {hasTableActions && !isMobile && (
-          <>
-            <Tooltip title="Cấu hình hiển thị cột">
+        {secondaryActions.map((action) => (
+          !isMobile ? (
+            <Tooltip key={action.key} title={action.label}>
               <Button
-                icon={<SettingOutlined />}
-                onClick={() => message.info('Tính năng đang phát triển')}
+                type={action.type === 'primary' ? 'default' : action.type}
+                icon={action.icon}
+                onClick={action.onClick}
+                danger={action.danger}
+                ghost={action.ghost}
               >
-                Cấu hình hiển thị
+                {action.label}
               </Button>
             </Tooltip>
-            <Tooltip title="Xuất dữ liệu ra file Excel">
-              <Button
-                icon={<FileExcelOutlined />}
-                onClick={() => message.info('Tính năng đang phát triển')}
-                style={{ color: colors.success.dark, borderColor: colors.success.dark }}
-              >
-                Xuất Excel
-              </Button>
-            </Tooltip>
-          </>
-        )}
+          ) : null
+        ))}
 
-        {/* Mobile: collapse extra actions into the Add button */}
-        {addAction && isMobile && (
+        {/* Mobile: show primary action as icon button */}
+        {primaryAction && isMobile && (
           <Button
             type="primary"
             shape="circle"
-            icon={<PlusOutlined />}
-            onClick={addAction.onClick}
+            icon={primaryAction.icon || <PlusOutlined />}
+            onClick={primaryAction.onClick}
+            danger={primaryAction.danger}
+            ghost={primaryAction.ghost}
           />
         )}
 
         {/* Always visible: notification bell */}
-        <Link href="/ops-support/notifications" style={{ color: 'inherit' }}>
-          <Badge dot offset={[-2, 5]}>
-            <BellOutlined style={{ fontSize: 20, cursor: 'pointer' }} />
+        <Link
+          href="/ops-support/notifications"
+          aria-label="Thông báo"
+          style={{
+            color: 'inherit',
+            width: size.lg,
+            height: size.lg,
+            borderRadius: radius.md,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: spacing[2],
+            lineHeight: 1,
+          }}
+        >
+          <Badge dot offset={[-2, 5]} style={{ display: 'flex', alignItems: 'center' }}>
+            <span
+              style={{
+                width: size.md,
+                height: size.md,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                lineHeight: 1,
+              }}
+            >
+              <BellOutlined style={{ fontSize: typography.fontSize.lg, cursor: 'pointer', display: 'block' }} />
+            </span>
           </Badge>
         </Link>
 
         {/* Always visible: user avatar */}
-        <Space size="small" style={{ cursor: 'pointer' }}>
+        <Space size={userInfoGap} align="center" style={{ cursor: 'pointer', paddingLeft: spacing[1], height: size.lg }}>
           <Avatar icon={<UserOutlined />} style={{ backgroundColor: colors.primary[500] }} />
           {!isMobile && <span style={{ fontWeight: 500 }}>Admin</span>}
         </Space>
-      </Space>
+      </div>
     </Header>
   );
 };

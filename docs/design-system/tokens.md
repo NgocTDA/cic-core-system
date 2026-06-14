@@ -204,6 +204,7 @@ Bảng màu navy/blue riêng cho subsystem `tools` (CIC UI Doc Generator…).
 | `radius.full` | `9999px` | Avatar, pill |
 
 > **Lưu ý**: AntD Modal/Drawer built-in dùng `borderRadiusLG = radius.lg = 8px` (xem `theme.ts`). Dùng `radius.xl` cho custom container, không phải AntD component.
+> Khi cấu hình AntD theme cần giá trị số, dùng `radiusNumber.*` tương ứng với `radius.*` thay vì parse chuỗi CSS trong component/theme.
 
 ---
 

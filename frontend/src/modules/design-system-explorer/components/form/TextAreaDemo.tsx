@@ -75,7 +75,7 @@ const BLOCKED_CHARS = ['<', '>', "'", '"', ';'];
                     />
                     {value1 && (
                         <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.tertiary, display: 'block', marginTop: spacing[1] }}>
-                            Đã trim: "{value1}"
+                            Đã trim: {value1}
                         </Text>
                     )}
                 </div>
@@ -94,7 +94,7 @@ const BLOCKED_CHARS = ['<', '>', "'", '"', ';'];
                     />
                     {blockedKey && (
                         <Tag color="error" style={{ marginTop: spacing[1] }}>
-                            Ký tự "{blockedKey}" bị chặn
+                            Ký tự {blockedKey} bị chặn
                         </Tag>
                     )}
                 </div>

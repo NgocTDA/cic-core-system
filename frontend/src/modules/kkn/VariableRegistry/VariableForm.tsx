@@ -16,10 +16,10 @@ import {
 import {
   LockOutlined,
   QuestionCircleOutlined,
-  SettingOutlined,
   DatabaseOutlined,
   InfoCircleOutlined
 } from '@ant-design/icons';
+import { colors, radius, spacing, typography } from '@/design-system';
 import type { IVariable } from './VariableTypes';
 
 const { TextArea } = Input;
@@ -60,39 +60,54 @@ const VariableForm: React.FC<VariableFormProps> = ({
 
   return (
     <Modal
-      title={
-        <Space>
-          <SettingOutlined />
-          <span>{editingVariable ? `Chỉnh sửa biến (v1.0.0)` : 'Thiết lập - CIC Core System'}</span>
-        </Space>
-      }
+      title={editingVariable ? 'Chỉnh sửa biến' : 'Thêm biến mới'}
       width="80%"
       centered
       onCancel={onClose}
       open={visible}
       maskClosable={false}
-      destroyOnClose
+      destroyOnHidden
       footer={(
-        <div style={{ textAlign: 'center', width: '100%', paddingBottom: 8 }}>
-          <Space>
-            <Button key="cancel" onClick={onClose} style={{ minWidth: 100 }}>Hủy</Button>
-            <Button key="save" type="default" onClick={() => message.info('Đã lưu bản nháp')} style={{ minWidth: 120 }}>Lưu bản nháp</Button>
-            <Button key="submit" type="primary" onClick={handleSubmit} style={{ minWidth: 150 }}>
-              {editingVariable ? 'Cập nhật' : 'Tạo mới biến'}
-            </Button>
-          </Space>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            gap: spacing[3],
+            width: '100%',
+            paddingBottom: spacing[2],
+          }}
+        >
+          <Button key="cancel" onClick={onClose} style={{ minWidth: 100, borderRadius: radius.md }}>
+            Hủy
+          </Button>
+          <Button
+            key="save"
+            type="default"
+            onClick={() => message.info('Đã lưu bản nháp')}
+            style={{ minWidth: 120, borderRadius: radius.md }}
+          >
+            Lưu bản nháp
+          </Button>
+          <Button
+            key="submit"
+            type="primary"
+            onClick={handleSubmit}
+            style={{ minWidth: 150, borderRadius: radius.md }}
+          >
+            {editingVariable ? 'Cập nhật' : 'Tạo mới biến'}
+          </Button>
         </div>
       )}
     >
-      <div style={{ maxHeight: 'calc(80vh - 120px)', overflowY: 'auto', padding: '0 12px' }}>
-        <div style={{ paddingTop: 8 }}>
+      <div style={{ maxHeight: 'calc(80vh - 120px)', overflowY: 'auto', padding: `0 ${spacing[3]}` }}>
+        <div style={{ paddingTop: spacing[2] }}>
           {isLocked && (
             <Alert
               message="Biến đang trong trạng thái sử dụng"
               description="Mã định danh và kiểu dữ liệu hiện tại không thể thay đổi do biến này đã được gán vào mẫu tin đang hoạt động."
               type="warning"
               showIcon
-              style={{ marginBottom: 24, borderRadius: 6 }}
+              style={{ marginBottom: spacing[6], borderRadius: radius.md }}
             />
           )}
 
@@ -120,8 +135,8 @@ const VariableForm: React.FC<VariableFormProps> = ({
                   <Input
                     placeholder="VD: user_name, order_id"
                     disabled={isLocked}
-                    style={{ fontFamily: 'monospace' }}
-                    prefix={isLocked ? <LockOutlined style={{ color: 'rgba(0,0,0,0.25)' }} /> : null}
+                    style={{ fontFamily: typography.fontFamily.mono }}
+                    prefix={isLocked ? <LockOutlined style={{ color: colors.text.tertiary }} /> : null}
                   />
                 </Form.Item>
               </Col>

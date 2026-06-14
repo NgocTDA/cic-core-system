@@ -1,7 +1,7 @@
 import type { IJob, IJobRun } from './types';
 
-const generateRunLogs = (jobId: string, status: 'SUCCESS' | 'FAILED'): any[] => {
-  const logs = [
+export const generateRunLogs = (jobId: string, status: 'SUCCESS' | 'FAILED'): NonNullable<IJobRun['logs']> => {
+  const logs: NonNullable<IJobRun['logs']> = [
     { timestamp: new Date(Date.now() - 60000).toISOString(), level: 'INFO' as const, step: 'Initialization', message: `[${jobId}] Job started, initializing...` },
     { timestamp: new Date(Date.now() - 50000).toISOString(), level: 'INFO' as const, step: 'Connection', message: 'Connecting to data source...' },
     { timestamp: new Date(Date.now() - 40000).toISOString(), level: 'INFO' as const, step: 'Validation', message: 'Validating data schema...' },

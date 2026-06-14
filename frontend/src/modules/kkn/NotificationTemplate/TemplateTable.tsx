@@ -2,11 +2,8 @@ import {
   Table,
   Tag,
   Space,
-  Button,
   Switch,
   Typography,
-  Card,
-  Dropdown,
   message
 } from 'antd';
 import {
@@ -15,10 +12,10 @@ import {
   CopyOutlined,
   SendOutlined,
   HistoryOutlined,
-  MoreOutlined,
   EyeOutlined,
 } from '@ant-design/icons';
 import type { TableProps } from 'antd';
+import { ActionMenu, CodeText, SectionCard, StatusTag, tablePagination } from '@/components/ui';
 import type { INotificationTemplate, TemplateStatus, ChannelType } from './TemplateTypes';
 
 const { Text } = Typography;
@@ -66,9 +63,7 @@ const TemplateTable: React.FC<TemplateTableProps> = ({
       dataIndex: 'code',
       key: 'code',
       width: 180,
-      render: (text) => (
-        <Text strong style={{ color: '#1677ff', fontFamily: 'monospace' }}>{`{{${text}}}`}</Text>
-      )
+      render: (text) => <CodeText template>{text}</CodeText>
     },
     {
       title: 'Tên mẫu',
@@ -141,13 +136,7 @@ const TemplateTable: React.FC<TemplateTableProps> = ({
       align: 'left',
       render: (status: TemplateStatus, record) => (
         <Space size="middle">
-          <Tag
-            color={status === 'ACTIVE' ? 'success' : 'default'}
-            style={{ minWidth: 100, textAlign: 'center', margin: 0 }}
-            bordered={false}
-          >
-            {status === 'ACTIVE' ? 'Hoạt động' : 'Vô hiệu hóa'}
-          </Tag>
+          <StatusTag status={status} minWidth={100} />
           <Switch
             checked={status === 'ACTIVE'}
             onChange={() => onToggleStatus(record.id, status)}
@@ -163,74 +152,63 @@ const TemplateTable: React.FC<TemplateTableProps> = ({
       align: 'center',
       fixed: 'right',
       render: (_, record) => (
-        <Dropdown
-          menu={{
-            items: [
-              {
-                key: 'view',
-                label: 'Xem chi tiết',
-                icon: <EyeOutlined />,
-                onClick: () => onView?.(record)
-              },
-              {
-                key: 'edit',
-                label: 'Chỉnh sửa',
-                icon: <EditOutlined />,
-                onClick: () => onEdit(record)
-              },
-              {
-                key: 'duplicate',
-                label: 'Sao chép mẫu',
-                icon: <CopyOutlined />,
-                onClick: () => onDuplicate(record)
-              },
-              {
-                key: 'test-send',
-                label: 'Gửi thử',
-                icon: <SendOutlined />,
-                onClick: () => message.info('Tính năng gửi thử đang được phát triển')
-              },
-              {
-                key: 'history',
-                label: 'Lịch sử phiên bản',
-                icon: <HistoryOutlined />,
-                onClick: () => message.info(`Xem lịch sử phiên bản: ${record.code}`)
-              },
-              { type: 'divider' as const },
-              {
-                key: 'delete',
-                label: 'Xóa mẫu',
-                icon: <DeleteOutlined />,
-                danger: true,
-                onClick: () => onDelete(record.id)
-              },
-            ]
-          }}
-          trigger={['click']}
-        >
-          <Button type="text" icon={<MoreOutlined />} />
-        </Dropdown>
+        <ActionMenu
+          items={[
+            {
+              key: 'view',
+              label: 'Xem chi tiết',
+              icon: <EyeOutlined />,
+              onClick: () => onView?.(record)
+            },
+            {
+              key: 'edit',
+              label: 'Chỉnh sửa',
+              icon: <EditOutlined />,
+              onClick: () => onEdit(record)
+            },
+            {
+              key: 'duplicate',
+              label: 'Sao chép mẫu',
+              icon: <CopyOutlined />,
+              onClick: () => onDuplicate(record)
+            },
+            {
+              key: 'test-send',
+              label: 'Gửi thử',
+              icon: <SendOutlined />,
+              onClick: () => message.info('Tính năng gửi thử đang được phát triển')
+            },
+            {
+              key: 'history',
+              label: 'Lịch sử phiên bản',
+              icon: <HistoryOutlined />,
+              onClick: () => message.info(`Xem lịch sử phiên bản: ${record.code}`)
+            },
+            { type: 'divider' },
+            {
+              key: 'delete',
+              label: 'Xóa mẫu',
+              icon: <DeleteOutlined />,
+              danger: true,
+              onClick: () => onDelete(record.id)
+            },
+          ]}
+        />
       )
     }
   ];
 
   return (
-    <Card bordered={false}>
+    <SectionCard title="Danh sách mẫu thông báo" count={data.length}>
       <Table
         columns={columns}
         dataSource={data}
         rowKey="id"
-        pagination={{
-          pageSize: 10,
-          showSizeChanger: true,
-          showQuickJumper: true,
-          showTotal: (total, range) => `Hiển thị ${range[0]}-${range[1]} trong tổng ${total} bản ghi`,
-          pageSizeOptions: ['10', '20', '50', '100']
-        }}
+        pagination={tablePagination({ pageSize: 10 })}
         scroll={{ x: 1200 }}
         size="middle"
       />
-    </Card>
+    </SectionCard>
   );
 };
 

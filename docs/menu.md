@@ -1,6 +1,8 @@
 # Cấu trúc Menu Dự án CIC Core System
 
-Cấu trúc menu của hệ thống được quản lý thông qua cấu hình tập trung tại `frontend/src/config/navigation.tsx`. Hệ thống được chia thành nhiều phân hệ (Subsystems) độc lập, mỗi phân hệ có một menu riêng biệt.
+Cấu trúc menu thực tế của hệ thống được quản lý thông qua cấu hình tập trung tại `frontend/src/config/navigation.tsx`.
+
+Tài liệu này đồng bộ theo `SUB_SYSTEMS` và `DESIGN_SYSTEM_SUB` đang được push vào danh sách subsystem trong file cấu hình. Một số route trong menu có thể chưa có `page.tsx` tương ứng, nhưng vẫn được ghi nhận vì đây là menu đang cấu hình để render trong ứng dụng.
 
 ## 1. Kênh kết nối (KKN)
 - **Dashboard**: Màn hình tổng quan (`/kkn-dashboard`)
@@ -24,8 +26,8 @@ Cấu trúc menu của hệ thống được quản lý thông qua cấu hình t
   - Tệp có cấu trúc chưa xác định (`/data-collection/collect/structured-unknown`)
   - Tệp phi cấu trúc (`/data-collection/collect/unstructured`)
   - Thu thập thủ công (`/data-collection/collect/manual`)
-  - Thông tin cân đối (`/data-collection/collect/balance`)
   - Đối chiếu file gửi đủ định kỳ (`/data-collection/collect/compare`)
+  - Thông tin cân đối (`/data-collection/collect/balance`)
 - **Xử lý dữ liệu**
   - XLDL định kỳ có cấu trúc xác định (`/data-collection/process/structured-known`)
   - XLDL định kỳ có cấu trúc chưa xác định (`/data-collection/process/structured-unknown`)
@@ -155,8 +157,7 @@ Cấu trúc menu của hệ thống được quản lý thông qua cấu hình t
   - Quản lý job (`/ops-support/job-management`)
   - Quản lý mã lỗi (`/ops-support/system/error-codes`)
 - **Quản lý thông báo**
-  - Tra cứu thông báo (Web Portal) (`/ops-support/notifications`)
-  - Tra cứu thông báo (Core) (`/ops-support/notifications`)
+  - Tra cứu thông báo (`/ops-support/notifications`)
   - Quản lý mẫu thông báo (`/ops-support/notification-template`)
   - Quản lý biến thông báo (`/ops-support/variable-registry`)
 - **Đánh giá chất lượng báo cáo TTTD**
@@ -197,7 +198,7 @@ Cấu trúc menu của hệ thống được quản lý thông qua cấu hình t
   - Cấu hình lịch chạy (`/analytics-reporting/schedules`)
   - Kết quả chạy báo cáo (`/analytics-reporting/schedules/results`)
 
-## 6. Quản trị dữ liệu (Data Governance)
+## 6. Quản trị dữ liệu
 - **Quản trị siêu dữ liệu**
   - Tra cứu thông tin đặc tính dữ liệu (metadata) (`/data-governance/metadata/search`)
   - Cập nhật thông tin về đặc tính dữ liệu (`/data-governance/metadata/update`)
@@ -233,7 +234,7 @@ Cấu trúc menu của hệ thống được quản lý thông qua cấu hình t
   - Tra cứu báo cáo đã gửi (`/web-portal/report-delivery/search`)
   - Gửi thông tin cân đối (`/web-portal/send-balance/new`)
   - Tra cứu thông tin cân đối (`/web-portal/send-balance`)
-- **Tra cứu và đăng ký sản phẩm**
+- **Đăng ký khai thác**
   - Tra cứu catalogue sản phẩm (`/web-portal/catalog-mgmt/search`)
   - Tra cứu mã CIC (`/web-portal/catalog-mgmt/cic-search`)
   - Đăng ký nhu cầu khai thác báo cáo (`/web-portal/catalog-mgmt/register`)
@@ -276,3 +277,53 @@ Cấu trúc menu của hệ thống được quản lý thông qua cấu hình t
   - **Quản lý tin tức (CMS)**
     - Quản lý tin tức (`/web-portal/cms/news`)
     - Quản lý thông tin liên hệ (`/web-portal/cms/contacts`)
+
+## 8. Công cụ nội bộ
+- **Sinh tài liệu giao diện** (`/tools/ui-doc-generator`)
+
+## 9. Design System
+- **Tổng quan** (`/design-system`)
+- **Layout hệ thống** (`/design-system/layout-explorer`)
+- **Layout & Structure**
+  - PageLayout (`/design-system/layout/page-layout`)
+  - SectionCard (`/design-system/layout/section-card`)
+  - FilterBar (`/design-system/layout/filter-bar`)
+- **Hiển thị dữ liệu**
+  - StatusTag (`/design-system/data-display/status-tag`)
+  - StatusSummaryBar (`/design-system/data-display/status-summary-bar`)
+  - ActionMenu (`/design-system/data-display/action-menu`)
+  - CodeText (`/design-system/data-display/code-text`)
+  - Table & Pagination (`/design-system/data-display/table`)
+  - Cài đặt hiển thị (`/design-system/data-display/column-settings`)
+  - Lịch sử thay đổi (`/design-system/data-display/audit-log`)
+- **Form & Nhập liệu**
+  - Textbox / Input (`/design-system/form/textbox`)
+  - Input Number (`/design-system/form/input-number`)
+  - TextArea (`/design-system/form/textarea`)
+  - Select / Dropdown (`/design-system/form/select`)
+  - DatePicker (`/design-system/form/date-picker`)
+  - Checkbox (`/design-system/form/checkbox`)
+  - Radio Button (`/design-system/form/radio`)
+  - Switch (`/design-system/form/switch`)
+  - Slider (`/design-system/form/slider`)
+  - Upload (`/design-system/form/upload`)
+  - Form mẫu đầy đủ (`/design-system/form/full-form`)
+- **Button**
+  - Kiểu & trạng thái (`/design-system/button/variants`)
+  - Pattern thao tác (`/design-system/button/patterns`)
+- **Feedback & Overlay**
+  - Modal & Drawer (`/design-system/feedback/modal`)
+  - Notification / Message (`/design-system/feedback/notification`)
+  - Alert (`/design-system/feedback/alert`)
+- **Dashboard Components**
+  - StatCard (`/design-system/dashboard/stat-card`)
+  - Biểu đồ cột (`/design-system/dashboard/chart-bar`)
+  - Biểu đồ đường (`/design-system/dashboard/chart-line`)
+  - Biểu đồ tròn / Donut (`/design-system/dashboard/chart-pie`)
+  - Gauge (`/design-system/dashboard/chart-gauge`)
+  - Dual Axis (`/design-system/dashboard/chart-dual-axis`)
+- **Design Tokens**
+  - Màu sắc (`/design-system/tokens/colors`)
+  - Typography (`/design-system/tokens/typography`)
+  - Spacing & Radius (`/design-system/tokens/spacing`)
+  - Shadows & Transitions (`/design-system/tokens/shadows`)

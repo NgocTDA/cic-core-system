@@ -121,7 +121,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ job }) => {
           </Descriptions.Item>
           <Descriptions.Item label="Múi giờ">{job.schedule.timezone}</Descriptions.Item>
 
-          {job.schedule.type === 'SCHEDULED' && job.schedule.expression && (
+          {job.schedule.type === 'CRON' && job.schedule.expression && (
             <Descriptions.Item label="Biểu thức CRON" span={2}>
               <code style={{ background: '#f5f5f5', padding: '4px 8px', borderRadius: '2px' }}>
                 {job.schedule.expression}

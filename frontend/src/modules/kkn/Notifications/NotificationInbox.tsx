@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Row, List, Typography, Input, Avatar } from 'antd';
+import { List, Typography, Input, Avatar } from 'antd';
 import { MailOutlined, UserOutlined } from '@ant-design/icons';
+import { colors, spacing, typography, zIndex } from '@/design-system';
 import type { INotification } from './../../../types/notification';
 import { useIsMobile } from './../../../hooks/useIsMobile';
 import NotificationDetail from './../../../components/NotificationDetail';
@@ -20,11 +21,11 @@ const NotificationInbox: React.FC<Props> = ({ data, selectedItem, onSelect, onSu
   const isMobile = useIsMobile();
 
   return (
-    <div style={{ flex: 1, minHeight: 0, height: isMobile ? 'auto' : '100%', overflow: isMobile ? 'auto' : 'hidden', background: '#fff', display: 'flex', flexDirection: isMobile ? 'column' : 'row' }}>
+    <div style={{ flex: 1, minHeight: 0, height: isMobile ? 'auto' : '100%', overflow: isMobile ? 'auto' : 'hidden', background: colors.bg.container, display: 'flex', flexDirection: isMobile ? 'column' : 'row' }}>
       {/* LEFT PANE - LIST */}
-      <div style={{ width: isMobile ? '100%' : listWidth, borderRight: isMobile ? 'none' : '1px solid #f0f0f0', borderBottom: isMobile ? '1px solid #f0f0f0' : 'none', display: isMobile && selectedItem ? 'none' : 'flex', flexDirection: 'column', height: isMobile ? '40vh' : '100%', flexShrink: 0 }}>
-        <div style={{ padding: 16, borderBottom: '1px solid #f0f0f0', background: '#fafafa' }}>
-          <Input placeholder="Tìm kiếm nhanh..." prefix={<MailOutlined style={{ color: '#bfbfbf' }} />} />
+      <div style={{ width: isMobile ? '100%' : listWidth, borderRight: isMobile ? 'none' : `1px solid ${colors.border.split}`, borderBottom: isMobile ? `1px solid ${colors.border.split}` : 'none', display: 'flex', flexDirection: 'column', height: isMobile ? '40vh' : '100%', flexShrink: 0 }}>
+        <div style={{ padding: spacing[4], borderBottom: `1px solid ${colors.border.split}`, background: colors.bg.subtle }}>
+          <Input placeholder="Tìm kiếm nhanh..." prefix={<MailOutlined style={{ color: colors.neutral[400] }} />} />
         </div>
         <div style={{ flex: 1, overflowY: 'auto' }}>
           <List
@@ -37,20 +38,20 @@ const NotificationInbox: React.FC<Props> = ({ data, selectedItem, onSelect, onSu
                 <List.Item
                   onClick={() => onSelect(item)}
                   style={{
-                    padding: '12px 16px',
+                    padding: `${spacing[3]} ${spacing[4]}`,
                     cursor: 'pointer',
-                    background: isActive ? '#e6f4ff' : (isUnread ? '#fff' : '#fafafa'),
-                    borderLeft: isActive ? '3px solid #1677ff' : '3px solid transparent',
-                    borderBottom: '1px solid #f0f0f0'
+                    background: isActive ? colors.primary[50] : (isUnread ? colors.bg.container : colors.bg.subtle),
+                    borderLeft: isActive ? `3px solid ${colors.primary[500]}` : '3px solid transparent',
+                    borderBottom: `1px solid ${colors.border.split}`
                   }}
                 >
                   <List.Item.Meta
                     avatar={
-                      <Avatar style={{ backgroundColor: isUnread ? '#1677ff' : '#bfbfbf' }} icon={<UserOutlined />} />
+                      <Avatar style={{ backgroundColor: isUnread ? colors.primary[500] : colors.neutral[400] }} icon={<UserOutlined />} />
                     }
                     title={
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Text strong={isUnread} style={{ fontSize: 13, color: isUnread ? '#1a1c1c' : '#595959' }} ellipsis>
+                        <Text strong={isUnread} style={{ fontSize: 13, color: isUnread ? colors.text.primary : colors.neutral[600] }} ellipsis>
                           {item.lastProcessor || 'Hệ thống'}
                         </Text>
                         <Text type="secondary" style={{ fontSize: 11 }}>{item.receivedAt.split(' ')[0]}</Text>
@@ -58,10 +59,10 @@ const NotificationInbox: React.FC<Props> = ({ data, selectedItem, onSelect, onSu
                     }
                     description={
                       <div>
-                        <Text strong={isUnread} style={{ display: 'block', fontSize: 14, marginBottom: 4, color: isUnread ? '#1a1c1c' : '#414755' }} ellipsis>
+                        <Text strong={isUnread} style={{ display: 'block', fontSize: typography.fontSize.base, marginBottom: spacing[1], color: isUnread ? colors.text.primary : colors.neutral[700] }} ellipsis>
                           {item.title}
                         </Text>
-                        <Paragraph ellipsis={{ rows: 1 }} style={{ margin: 0, fontSize: 13, color: '#8c8c8c' }}>
+                        <Paragraph ellipsis={{ rows: 1 }} style={{ margin: 0, fontSize: 13, color: colors.neutral[500] }}>
                           {item.content}
                         </Paragraph>
                       </div>
@@ -76,9 +77,9 @@ const NotificationInbox: React.FC<Props> = ({ data, selectedItem, onSelect, onSu
 
       {!isMobile && (
         <div
-          style={{ width: 5, cursor: 'col-resize', background: '#f0f0f0', transition: 'background 0.2s', zIndex: 10, flexShrink: 0 }}
-          onMouseEnter={e => e.currentTarget.style.background = '#1677ff'}
-          onMouseLeave={e => e.currentTarget.style.background = '#f0f0f0'}
+          style={{ width: 5, cursor: 'col-resize', background: colors.border.split, transition: 'background 0.2s', zIndex: zIndex.raised, flexShrink: 0 }}
+          onMouseEnter={e => e.currentTarget.style.background = colors.primary[500]}
+          onMouseLeave={e => e.currentTarget.style.background = colors.border.split}
           onMouseDown={(e) => {
             e.preventDefault();
             const startX = e.clientX;
@@ -97,7 +98,7 @@ const NotificationInbox: React.FC<Props> = ({ data, selectedItem, onSelect, onSu
       )}
 
       {/* RIGHT PANE - DETAIL */}
-      <div style={{ flex: 1, display: isMobile && !selectedItem ? 'none' : 'flex', flexDirection: 'column', height: isMobile ? 'auto' : '100%', minHeight: isMobile ? '60vh' : 'auto', overflow: 'hidden' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: isMobile ? 'auto' : '100%', minHeight: isMobile ? '60vh' : 'auto', overflow: 'hidden' }}>
         <NotificationDetail
           selectedItem={selectedItem}
           onToggleRead={onToggleRead}

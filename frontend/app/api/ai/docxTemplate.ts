@@ -17,7 +17,7 @@ function templatePath(): string {
 }
 
 function parseDataUrl(dataUrl: string): { ext: string; base64: string } {
-    const m = /^data:image\/([a-zA-Z0-9.+-]+);base64,(.*)$/s.exec(dataUrl);
+    const m = /^data:image\/([a-zA-Z0-9.+-]+);base64,([\s\S]*)$/.exec(dataUrl);
     if (m) return { ext: '.' + m[1].replace('jpeg', 'jpg'), base64: m[2] };
     return { ext: '.png', base64: dataUrl.replace(/^data:.*,/, '') };
 }

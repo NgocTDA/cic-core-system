@@ -4,7 +4,7 @@ import { RightOutlined, LeftOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSubSystem } from '../context/SubSystemContext';
-import { SHARED_MENU, MenuItem } from '../config/navigation';
+import { findMenuPathMatch, SHARED_MENU, MenuItem } from '../config/navigation';
 import SubSystemSwitcher from '../components/SubSystemSwitcher';
 import { useMenuBadges } from '../hooks/useMenuBadges';
 import { colors, typography, zIndex } from '../design-system';
@@ -30,8 +30,10 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, onCollapse, isMobile
   const { activeSubSystem } = useSubSystem();
   const badgeCounts = useMenuBadges();
   const [openKeys, setOpenKeys] = React.useState<string[]>([]);
+  const routeMatch = findMenuPathMatch(pathname);
+  const selectedMenuPath = routeMatch?.matchedPath || pathname || '/';
 
-  const getParentKeys = (items: MenuItem[], targetPath: string): string[] => {
+  const getParentKeys = React.useCallback((items: MenuItem[], targetPath: string): string[] => {
     for (const item of items) {
       if (item.path === targetPath) {
         return [];
@@ -44,12 +46,12 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, onCollapse, isMobile
       }
     }
     return [];
-  };
+  }, []);
 
   React.useEffect(() => {
-    if (pathname && !collapsed) {
+    if (selectedMenuPath && !collapsed) {
       const allMenuItems = [...activeSubSystem.menuItems, ...SHARED_MENU];
-      const parents = getParentKeys(allMenuItems, pathname);
+      const parents = getParentKeys(allMenuItems, selectedMenuPath);
       if (parents.length > 0) {
         setOpenKeys(prev => {
           const isAlreadyOpen = parents.every(p => prev.includes(p));
@@ -58,7 +60,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, onCollapse, isMobile
         });
       }
     }
-  }, [pathname, activeSubSystem, collapsed]);
+  }, [selectedMenuPath, activeSubSystem, collapsed, getParentKeys]);
 
   const onOpenChange = (keys: string[]) => {
     if (collapsed) return;
@@ -181,7 +183,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, onCollapse, isMobile
             <Menu
               theme="dark"
               mode="inline"
-              selectedKeys={[pathname || '/']}
+              selectedKeys={[selectedMenuPath]}
               openKeys={openKeys}
               onOpenChange={onOpenChange}
               items={activeMenu}

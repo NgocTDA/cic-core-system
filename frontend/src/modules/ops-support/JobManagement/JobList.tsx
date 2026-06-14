@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Table, Tag, Typography, Button, Space, Popconfirm, message } from 'antd';
-import type { TableProps } from 'antd';
+import type { MenuProps, TableProps } from 'antd';
 import {
   EyeOutlined,
   PlayCircleOutlined,
@@ -134,7 +134,7 @@ const JobList: React.FC<Props> = ({ data, onRowClick, onRun, onEdit, onClone, on
       width: 80,
       fixed: 'right' as const,
       render: (_, record) => {
-        const items = [
+        const items: MenuProps['items'] = [
           {
             key: 'view',
             icon: <EyeOutlined />,
@@ -210,7 +210,7 @@ const JobList: React.FC<Props> = ({ data, onRowClick, onRun, onEdit, onClone, on
           style={{
             marginBottom: '16px',
             padding: '12px 16px',
-            background: colors.bg.secondary,
+            background: colors.bg.subtle,
             borderRadius: '4px',
             display: 'flex',
             justifyContent: 'space-between',

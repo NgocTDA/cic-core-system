@@ -65,10 +65,10 @@ const InputNumberDemo: React.FC = () => {
                                 { type: 'number', min: 0, message: 'Số tiền phải ≥ 0' },
                             ]}
                         >
-                            <InputNumber
+                            <InputNumber<number>
                                 style={{ width: '100%', textAlign: 'right' }}
                                 formatter={(v) => `${v}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
-                                parser={(v) => Number(v!.replace(/\./g, ''))}
+                                parser={(v) => Number(v?.replace(/\./g, '') ?? 0)}
                                 min={0}
                                 placeholder="0"
                                 suffix="VNĐ"

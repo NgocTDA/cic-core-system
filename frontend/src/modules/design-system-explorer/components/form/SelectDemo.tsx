@@ -147,7 +147,7 @@ const SelectDemo: React.FC = () => {
                     }}
                 >
                     <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.secondary, display: 'block', marginBottom: spacing[2] }}>
-                        Multi-select: chọn nhiều items → hiển thị maxTagCount="responsive"
+                        Multi-select: chọn nhiều items → hiển thị maxTagCount=&quot;responsive&quot;
                     </Text>
                     <Select
                         mode="multiple"

@@ -19,7 +19,9 @@ const DependencyConfigTab: React.FC<DependencyConfigTabProps> = ({ form }) => {
     }));
   }, []);
 
-  const selectedDependencies = Form.useWatch(['dependsOn'], form) || [];
+  const watchedDependencies = Form.useWatch<string[]>(['dependsOn'], form);
+  const currentJobId = Form.useWatch<string>(['id'], form);
+  const selectedDependencies = useMemo(() => watchedDependencies ?? [], [watchedDependencies]);
 
   const dependencyColumns = [
     {
@@ -157,7 +159,7 @@ const DependencyConfigTab: React.FC<DependencyConfigTabProps> = ({ form }) => {
               >
                 {selectedDependencies.some((id: string) =>
                   mockJobs.find(j => j.id === id)?.dependsOn.includes(
-                    Form.useWatch(['id'], form)
+                    currentJobId
                   )
                 ) ? (
                   <Alert

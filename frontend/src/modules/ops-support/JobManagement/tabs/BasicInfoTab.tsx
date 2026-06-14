@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Input, Select, Row, Col, Textarea } from 'antd';
+import { Form, Input, Select, Row, Col } from 'antd';
 import type { FormInstance } from 'antd';
 import type { JobCategory, JobPriority, JobStatus } from '../types';
 

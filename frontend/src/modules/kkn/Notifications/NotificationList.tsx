@@ -1,7 +1,8 @@
 import React from 'react';
-import { Table, Tag, Button, Dropdown } from 'antd';
+import { Table, Tag } from 'antd';
 import type { TableProps } from 'antd';
-import { MoreOutlined, EyeOutlined, CheckCircleOutlined, DeleteOutlined, UndoOutlined } from '@ant-design/icons';
+import { EyeOutlined, CheckCircleOutlined, DeleteOutlined, UndoOutlined } from '@ant-design/icons';
+import { ActionMenu, CodeText, StatusTag, tablePagination } from '@/components/ui';
 import type { INotification } from './../../../types/notification';
 
 interface Props {
@@ -28,7 +29,7 @@ const NotificationList: React.FC<Props> = ({ data, onRowClick, onToggleRead }) =
       filterMode: 'tree',
       filterSearch: true,
       onFilter: (value, record) => record.code.toLowerCase().includes((value as string).toLowerCase()),
-      render: (text) => <span style={{ color: '#1677ff', cursor: 'pointer' }}>{text}</span>
+      render: (text) => <CodeText>{text}</CodeText>
     },
     {
       title: 'Tiêu đề',
@@ -76,8 +77,8 @@ const NotificationList: React.FC<Props> = ({ data, onRowClick, onToggleRead }) =
       ],
       onFilter: (value, record) => record.status === value,
       render: (status) => {
-        if (status === 'UNREAD') return <Tag color="error">Chưa đọc</Tag>;
-        return <Tag color="success">Đã đọc</Tag>;
+        if (status === 'UNREAD') return <StatusTag status="UNREAD" />;
+        return <StatusTag status="READ" />;
       }
     },
     {
@@ -93,11 +94,11 @@ const NotificationList: React.FC<Props> = ({ data, onRowClick, onToggleRead }) =
       ],
       onFilter: (value, record) => record.statusApproval === value,
       render: (status) => {
-        if (status === 'PENDING') return <Tag color="warning">Chờ duyệt</Tag>;
+        if (status === 'PENDING') return <StatusTag status="PENDING" />;
         if (status === 'NOT_APPLICABLE') return '-';
-        if (status === 'APPROVED') return <Tag color="green">Đã duyệt</Tag>;
-        if (status === 'REJECTED') return <Tag color="red">Từ chối</Tag>;
-        return <Tag color="default">{status}</Tag>;
+        if (status === 'APPROVED') return <StatusTag status="APPROVED" />;
+        if (status === 'REJECTED') return <StatusTag status="REJECTED" />;
+        return <StatusTag status={status} />;
       }
     },
     {
@@ -120,23 +121,19 @@ const NotificationList: React.FC<Props> = ({ data, onRowClick, onToggleRead }) =
       align: 'center',
       width: 90,
       render: (_, record) => (
-        <Dropdown
-          menu={{
-            items: [
-              { key: '1', icon: <EyeOutlined />, label: 'Xem chi tiết', onClick: () => onRowClick(record) },
-              {
-                key: '2',
-                icon: record.status === 'UNREAD' ? <CheckCircleOutlined /> : <UndoOutlined />,
-                label: record.status === 'UNREAD' ? 'Đánh dấu đã đọc' : 'Đánh dấu chưa đọc',
-                onClick: () => onToggleRead(record.id, record.status === 'UNREAD')
-              },
-              { key: '3', danger: true, icon: <DeleteOutlined />, label: 'Xóa' },
-            ]
-          }}
-          trigger={['click']}
-        >
-          <Button shape="circle" icon={<MoreOutlined />} size="small" onClick={(e) => e.stopPropagation()} />
-        </Dropdown>
+        <ActionMenu
+          size="small"
+          items={[
+            { key: '1', icon: <EyeOutlined />, label: 'Xem chi tiết', onClick: () => onRowClick(record) },
+            {
+              key: '2',
+              icon: record.status === 'UNREAD' ? <CheckCircleOutlined /> : <UndoOutlined />,
+              label: record.status === 'UNREAD' ? 'Đánh dấu đã đọc' : 'Đánh dấu chưa đọc',
+              onClick: () => onToggleRead(record.id, record.status === 'UNREAD')
+            },
+            { key: '3', danger: true, icon: <DeleteOutlined />, label: 'Xóa' },
+          ]}
+        />
       )
     },
   ];
@@ -147,11 +144,7 @@ const NotificationList: React.FC<Props> = ({ data, onRowClick, onToggleRead }) =
       dataSource={data}
       rowKey="id"
       scroll={{ x: 'max-content', y: 'calc(100vh - 350px)' }}
-      pagination={{
-        showSizeChanger: true,
-        showQuickJumper: true,
-        showTotal: (total, range) => `Hiển thị ${range[0]}-${range[1]} trong tổng ${total} bản ghi`
-      }}
+      pagination={tablePagination()}
       size="middle"
       onRow={(record) => ({
         onClick: () => onRowClick(record),

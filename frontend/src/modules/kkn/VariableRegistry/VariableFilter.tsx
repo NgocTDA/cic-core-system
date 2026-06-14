@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Card, Input, Select, Row, Col, Space, Button, Tooltip } from 'antd';
-import { SearchOutlined, FilterOutlined, ReloadOutlined } from '@ant-design/icons';
+import { Input, Select } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
+import { FilterBar, FilterCol } from '@/components/ui';
 
 const { Option } = Select;
 
@@ -24,12 +25,11 @@ const VariableFilter: React.FC<VariableFilterProps> = ({
   };
 
   return (
-    <Card bordered={false} style={{ marginBottom: 16 }}>
-      <Row gutter={[16, 12]} wrap align="middle">
-        <Col xs={16} sm={8} md={5} lg={4}>
+    <FilterBar inCard onSearch={() => {}} onReset={handleReset}>
+        <FilterCol>
           <Input
             placeholder="Mã biến"
-            prefix={<SearchOutlined style={{ color: '#bfbfbf' }} />}
+            prefix={<SearchOutlined />}
             allowClear
             value={searchValue}
             onChange={e => {
@@ -37,11 +37,11 @@ const VariableFilter: React.FC<VariableFilterProps> = ({
               onSearchChange(e.target.value);
             }}
           />
-        </Col>
-        <Col xs={16} sm={8} md={5} lg={4}>
+        </FilterCol>
+        <FilterCol>
           <Input
             placeholder="Tên hiển thị"
-            prefix={<SearchOutlined style={{ color: '#bfbfbf' }} />}
+            prefix={<SearchOutlined />}
             allowClear
             value={searchValue}
             onChange={e => {
@@ -49,8 +49,8 @@ const VariableFilter: React.FC<VariableFilterProps> = ({
               onSearchChange(e.target.value);
             }}
           />
-        </Col>
-        <Col xs={16} sm={8} md={5} lg={4}>
+        </FilterCol>
+        <FilterCol>
           <Select
             placeholder="Trạng thái"
             style={{ width: '100%' }}
@@ -65,20 +65,8 @@ const VariableFilter: React.FC<VariableFilterProps> = ({
               { value: 'INACTIVE', label: 'Vô hiệu hóa' },
             ]}
           />
-        </Col>
-        <Col xs={24} sm={24} md={10} lg={12} style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <Space>
-            <Tooltip title="Thêm bộ lọc">
-              <Button icon={<FilterOutlined />}>Thêm bộ lọc</Button>
-            </Tooltip>
-            <Tooltip title="Xóa bộ lọc">
-              <Button icon={<ReloadOutlined />} onClick={handleReset} />
-            </Tooltip>
-            <Button type="primary" icon={<SearchOutlined />}>Tìm kiếm</Button>
-          </Space>
-        </Col>
-      </Row>
-    </Card>
+        </FilterCol>
+    </FilterBar>
   );
 };
 

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { message, Modal } from 'antd';
-import { PlusOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
+import { PageLayout } from '@/components/ui';
 import TemplateFilter from './TemplateFilter';
 import TemplateTable from './TemplateTable';
 import { mockTemplates } from './mockData';
@@ -95,7 +96,6 @@ const NotificationTemplate: React.FC = () => {
   const handleDelete = (id: string) => {
     confirm({
       title: 'Xác nhận xóa mẫu thông báo?',
-      icon: <ExclamationCircleOutlined />,
       content: 'Hành động này không thể hoàn tác. Mẫu đang được sử dụng sẽ không thể xóa.',
       okText: 'Xóa',
       okType: 'danger',
@@ -125,7 +125,7 @@ const NotificationTemplate: React.FC = () => {
   const groups = Array.from(new Set(allData.map(item => item.group)));
 
   return (
-    <div style={{ padding: '16px 24px 24px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+    <PageLayout>
       <TemplateFilter
         groups={groups}
         onSearchChange={handleSearchChange}
@@ -142,7 +142,7 @@ const NotificationTemplate: React.FC = () => {
         onDuplicate={handleDuplicate}
         onView={handleView}
       />
-    </div>
+    </PageLayout>
   );
 };
 

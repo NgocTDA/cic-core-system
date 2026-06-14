@@ -4,8 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "predev": "node scripts/cleanup-port.js",
+    "predev": "node scripts/cleanup-port.js && node scripts/clean-cache.js",
     "dev": "next dev --port 8700",
+    "prebuild": "node scripts/clean-cache.js",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"

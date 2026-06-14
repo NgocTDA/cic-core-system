@@ -113,21 +113,23 @@ const JobDetailPage: React.FC = () => {
                 <Col span={6}>
                   <Statistic
                     title="Trạng thái"
-                    value={
+                    value={job.status}
+                    formatter={() => (
                       <Tag color={job.status === 'ACTIVE' ? 'green' : 'default'}>
                         {job.status}
                       </Tag>
-                    }
+                    )}
                   />
                 </Col>
                 <Col span={6}>
                   <Statistic
                     title="Run Status"
-                    value={
+                    value={job.runStatus}
+                    formatter={() => (
                       <Tag color={job.runStatus === 'IDLE' ? 'blue' : 'orange'}>
                         {job.runStatus}
                       </Tag>
-                    }
+                    )}
                   />
                 </Col>
                 <Col span={6}>

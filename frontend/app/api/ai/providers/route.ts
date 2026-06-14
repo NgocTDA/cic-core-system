@@ -7,6 +7,7 @@ import { NextResponse } from 'next/server';
 import { listProviders } from '../providersConfig';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
     return NextResponse.json({ providers: listProviders() });

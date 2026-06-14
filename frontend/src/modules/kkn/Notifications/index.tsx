@@ -1,12 +1,9 @@
 import React, { useState } from 'react';
-import { Button, Space, Card, Radio } from 'antd';
-import { CheckSquareOutlined, TableOutlined, MailOutlined, BorderOutlined } from '@ant-design/icons';
-import NotificationFilter from './NotificationFilter';
-import NotificationList from './NotificationList';
-import NotificationDetailDrawer from './NotificationDetailDrawer';
+import { Button, Space } from 'antd';
+import { CheckSquareOutlined, MailOutlined } from '@ant-design/icons';
+import { PageLayout, SectionCard } from '@/components/ui';
 import NotificationInbox from './NotificationInbox';
 import type { INotification } from './../../../types/notification';
-import { useIsMobile } from './../../../hooks/useIsMobile';
 import useHeaderActions from './../../../hooks/useHeaderActions';
 
 // Removed unused typography destruct
@@ -241,19 +238,13 @@ const MOCK_NOTIFICATIONS: INotification[] = [
 ];
 
 const NotificationsPage: React.FC = () => {
-  const isMobile = useIsMobile();
-
   const [data, setData] = useState<INotification[]>(MOCK_NOTIFICATIONS);
-  const [selectedItem, setSelectedItem] = useState<INotification | null>(null);
-  const [drawerVisible, setDrawerVisible] = useState(false);
-  const [viewMode, setViewMode] = useState<'table' | 'inbox'>('table');
+  const [selectedItem, setSelectedItem] = useState<INotification | null>(MOCK_NOTIFICATIONS[0] ?? null);
 
   // Register this page's header title and actions
   useHeaderActions({
     title: 'Thông báo hệ thống',
-    actions: [
-      { key: 'common', label: '', icon: null, onClick: () => { } },
-    ]
+    actions: []
   }, []);
 
   const handleFeedback = (notificationId: string, content: string) => {
@@ -270,11 +261,9 @@ const NotificationsPage: React.FC = () => {
   };
 
   const handleRowClick = (record: INotification) => {
-    setSelectedItem(record);
-    if (viewMode === 'table') {
-      setDrawerVisible(true);
-    }
-    // Mark as read optionally when clicked
+    const nextRecord = record.status === 'UNREAD' ? { ...record, status: 'READ' as const } : record;
+    setSelectedItem(nextRecord);
+
     if (record.status === 'UNREAD') {
       setData(prev => prev.map(item => item.id === record.id ? { ...item, status: 'READ' } : item));
     }
@@ -282,10 +271,12 @@ const NotificationsPage: React.FC = () => {
 
   const markAllAsRead = () => {
     setData(prev => prev.map(item => ({ ...item, status: 'READ' })));
+    setSelectedItem(prev => prev ? { ...prev, status: 'READ' } : prev);
   };
 
   const markAllAsUnread = () => {
     setData(prev => prev.map(item => ({ ...item, status: 'UNREAD' })));
+    setSelectedItem(prev => prev ? { ...prev, status: 'UNREAD' } : prev);
   };
 
   const toggleReadStatus = (id: string, isRead: boolean) => {
@@ -297,61 +288,37 @@ const NotificationsPage: React.FC = () => {
   };
 
   return (
-    <div style={{ padding: isMobile ? '8px' : '16px 24px 24px', background: '#f5f5f5', flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', boxSizing: 'border-box', overflow: 'hidden' }}>
-
-      {/* Card 1: Filter (only in table mode) */}
-      {viewMode === 'table' && (
-        <Card
-          bordered={false}
-          style={{ marginBottom: 16, flexShrink: 0 }}
-        >
-          <NotificationFilter />
-        </Card>
-      )}
-
-      {/* Card 2: Data Content */}
-      <Card
-        bordered={false}
-        style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 0 }}
-        styles={{ body: { flex: 1, display: 'flex', flexDirection: 'column', padding: viewMode === 'inbox' ? 0 : '8px 20px 20px', overflow: 'hidden', minHeight: 0 } }}
-        title={
-          viewMode === 'table' && (
-            <Space size="small">
-              <Button size="small" icon={<CheckSquareOutlined />} onClick={markAllAsRead}>Đánh dấu tất cả đã đọc</Button>
-              <Button size="small" icon={<BorderOutlined />} onClick={markAllAsUnread}>Đánh dấu tất cả chưa đọc</Button>
-            </Space>
-          )
-        }
+    <PageLayout>
+      <SectionCard
+        title="Thông báo"
+        count={data.length}
+        flex
+        noPadding
         extra={
-          <Radio.Group
-            value={viewMode}
-            onChange={e => setViewMode(e.target.value)}
-            optionType="button"
-            buttonStyle="solid"
-            size="small"
-          >
-            <Radio.Button value="table"><TableOutlined /> Danh sách</Radio.Button>
-            <Radio.Button value="inbox"><MailOutlined /> Hộp thư</Radio.Button>
-          </Radio.Group>
+          <Space size="small" wrap>
+            <Button size="small" type="primary" icon={<CheckSquareOutlined />} onClick={markAllAsRead}>
+              Đánh dấu tất cả đã đọc
+            </Button>
+            <Button size="small" icon={<MailOutlined />} onClick={markAllAsUnread}>
+              Đánh dấu tất cả chưa đọc
+            </Button>
+          </Space>
         }
       >
-        {viewMode === 'table' ? (
-          <div style={{ flex: 1, overflow: 'hidden' }}>
-            <NotificationList data={data} onRowClick={handleRowClick} onToggleRead={toggleReadStatus} />
-          </div>
-        ) : (
+        <div
+          style={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
+            minHeight: 0,
+            padding: 0,
+          }}
+        >
           <NotificationInbox data={data} selectedItem={selectedItem} onSelect={handleRowClick} onSubmitFeedback={handleFeedback} onToggleRead={toggleReadStatus} />
-        )}
-      </Card>
-
-      <NotificationDetailDrawer
-        visible={drawerVisible && viewMode === 'table'}
-        notification={selectedItem}
-        onClose={() => setDrawerVisible(false)}
-        onSubmitFeedback={handleFeedback}
-        onToggleRead={toggleReadStatus}
-      />
-    </div>
+        </div>
+      </SectionCard>
+    </PageLayout>
   );
 };
 

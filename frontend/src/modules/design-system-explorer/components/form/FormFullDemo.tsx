@@ -143,10 +143,10 @@ const FormFullDemo: React.FC = () => {
                                 name="creditLimit"
                                 label="Hạn mức tín dụng (VNĐ)"
                             >
-                                <InputNumber
+                                <InputNumber<number>
                                     style={{ width: '100%', textAlign: 'right' }}
                                     formatter={(v) => `${v}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
-                                    parser={(v) => Number(v!.replace(/\./g, ''))}
+                                    parser={(v) => Number(v?.replace(/\./g, '') ?? 0)}
                                     min={0}
                                     placeholder="0"
                                     suffix="VNĐ"

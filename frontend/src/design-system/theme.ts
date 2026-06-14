@@ -5,7 +5,7 @@
 // ============================================================
 
 import type { ThemeConfig } from 'antd';
-import { colors, typography, radius, size } from './tokens';
+import { colors, typography, radiusNumber, size, zIndex } from './tokens';
 
 export const antdTheme: ThemeConfig = {
     token: {
@@ -29,14 +29,15 @@ export const antdTheme: ThemeConfig = {
         fontSizeHeading5:     16,
 
         // ─── Layout & sizing ─────────────────────────────────
-        borderRadius:         radius.md as unknown as number,      // 6
-        borderRadiusSM:       radius.sm as unknown as number,      // 4
-        borderRadiusLG:       radius.lg as unknown as number,      // 8
-        borderRadiusXS:       radius.xs as unknown as number,      // 2
+        borderRadius:         radiusNumber.md,
+        borderRadiusSM:       radiusNumber.sm,
+        borderRadiusLG:       radiusNumber.lg,
+        borderRadiusXS:       radiusNumber.xs,
         controlHeight:        size.md,      // 32
         controlHeightSM:      size.sm,      // 24 (align AntD default)
         controlHeightLG:      size.lg,      // 40
         controlHeightXS:      size.xs,      // 24
+        zIndexPopupBase:      zIndex.modal,
 
         // ─── Colors ───────────────────────────────────────────
         colorBgContainer:     colors.bg.container,

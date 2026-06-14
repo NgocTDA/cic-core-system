@@ -7,7 +7,7 @@ import './global.scss';
 
 export const metadata: Metadata = {
     title: 'CIC Core System',
-    description: 'Project restructured with Next.js v14.2.5',
+    description: 'Project restructured with Next.js v14.2.35',
 };
 
 export default function RootLayout({

@@ -473,8 +473,7 @@ export const SUB_SYSTEMS: SubSystem[] = [
                 label: 'Quản lý thông báo',
                 icon: <BellOutlined />,
                 children: [
-                    { key: 'ops-notify-portal', label: 'Tra cứu thông báo (Web Portal)', path: '/ops-support/notifications' },
-                    { key: 'ops-notify-core', label: 'Tra cứu thông báo (Core)', path: '/ops-support/notifications' },
+                    { key: 'ops-notify-search', label: 'Tra cứu thông báo', path: '/ops-support/notifications' },
                     { key: 'ops-notify-templates', label: 'Quản lý mẫu thông báo', path: '/ops-support/notification-template' },
                     { key: 'ops-notify-variables', label: 'Quản lý biến thông báo', path: '/ops-support/variable-registry' },
                 ]
@@ -1041,3 +1040,50 @@ export const SHARED_MENU: MenuItem[] = [];
 };
 
 SUB_SYSTEMS.push(DESIGN_SYSTEM_SUB);
+
+export interface MenuPathMatch {
+    subSystem: SubSystem;
+    item: MenuItem;
+    matchedPath: string;
+}
+
+const isPathMatch = (pathname: string, menuPath: string) => {
+    if (menuPath === '/') {
+        return pathname === '/';
+    }
+
+    return pathname === menuPath || pathname.startsWith(`${menuPath}/`);
+};
+
+const collectPathMatches = (
+    items: MenuItem[],
+    pathname: string,
+    subSystem: SubSystem,
+    matches: MenuPathMatch[]
+) => {
+    items.forEach(item => {
+        if (item.path && item.path !== '#' && isPathMatch(pathname, item.path)) {
+            matches.push({
+                subSystem,
+                item,
+                matchedPath: item.path,
+            });
+        }
+
+        if (item.children) {
+            collectPathMatches(item.children, pathname, subSystem, matches);
+        }
+    });
+};
+
+export const findMenuPathMatch = (pathname: string | null | undefined): MenuPathMatch | undefined => {
+    if (!pathname) return undefined;
+
+    const matches: MenuPathMatch[] = [];
+
+    SUB_SYSTEMS.forEach(subSystem => {
+        collectPathMatches(subSystem.menuItems, pathname, subSystem, matches);
+    });
+
+    return matches.sort((a, b) => b.matchedPath.length - a.matchedPath.length)[0];
+};
