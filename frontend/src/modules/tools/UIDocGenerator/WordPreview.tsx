@@ -80,8 +80,6 @@ const WordPreview: React.FC<WordPreviewProps> = ({ doc, image }) => {
                     background: colors.bg.page,
                     padding: spacing[3],
                     borderRadius: 8,
-                    maxHeight: '65vh',
-                    overflow: 'auto',
                 }}
             />
         </div>

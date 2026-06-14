@@ -17,6 +17,9 @@ import type { DocData, DocInput } from './types';
 
 const EMPTY_INPUT: DocInput = { funcName: '', screenCode: '', module: '', funcDesc: '', images: [] };
 
+// Chiều cao vùng kết quả — dùng chung cho cả 3 tab để đồng nhất, không nhảy khi chuyển tab.
+const RESULT_AREA_HEIGHT = '65vh';
+
 const UIDocGenerator: React.FC = () => {
     const isMobile = useIsMobile();
     const { providers, providerId, setProviderId, loading: providersLoading } = useAIProvider();
@@ -129,41 +132,50 @@ const UIDocGenerator: React.FC = () => {
                             {
                                 key: 'confluence',
                                 label: 'Confluence Markup',
-                                children: confluence ? (
-                                    <pre
-                                        style={{
-                                            background: colors.neutral[900],
-                                            color: colors.neutral[100],
-                                            padding: spacing[4],
-                                            borderRadius: radius.md,
-                                            fontSize: 12,
-                                            whiteSpace: 'pre-wrap',
-                                            wordBreak: 'break-word',
-                                            lineHeight: 1.65,
-                                            margin: 0,
-                                            maxHeight: '60vh',
-                                            overflow: 'auto',
-                                        }}
-                                    >
-                                        {confluence}
-                                    </pre>
-                                ) : (
-                                    <Empty description="Confluence Markup sẽ hiển thị ở đây" />
+                                children: (
+                                    <div style={{ height: RESULT_AREA_HEIGHT, overflow: 'auto' }}>
+                                        {confluence ? (
+                                            <pre
+                                                style={{
+                                                    background: colors.neutral[900],
+                                                    color: colors.neutral[100],
+                                                    padding: spacing[4],
+                                                    borderRadius: radius.md,
+                                                    fontSize: 12,
+                                                    whiteSpace: 'pre-wrap',
+                                                    wordBreak: 'break-word',
+                                                    lineHeight: 1.65,
+                                                    margin: 0,
+                                                }}
+                                            >
+                                                {confluence}
+                                            </pre>
+                                        ) : (
+                                            <Empty description="Confluence Markup sẽ hiển thị ở đây" />
+                                        )}
+                                    </div>
                                 ),
                             },
                             {
                                 key: 'preview',
                                 label: 'Xem trước nội dung',
-                                children: <DocPreview d={data} />,
+                                children: (
+                                    <div style={{ height: RESULT_AREA_HEIGHT, overflow: 'auto' }}>
+                                        <DocPreview d={data} />
+                                    </div>
+                                ),
                             },
                             {
                                 key: 'word',
                                 label: 'Bản Word thật',
                                 // Lazy: chỉ mount (fetch+render docx) khi mở tab này
-                                children:
-                                    activeTab === 'word' ? (
-                                        <WordPreview doc={data} image={input.images[0]?.dataUrl} />
-                                    ) : null,
+                                children: (
+                                    <div style={{ height: RESULT_AREA_HEIGHT, overflow: 'auto' }}>
+                                        {activeTab === 'word' ? (
+                                            <WordPreview doc={data} image={input.images[0]?.dataUrl} />
+                                        ) : null}
+                                    </div>
+                                ),
                             },
                         ]}
                     />
