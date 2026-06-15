@@ -9,11 +9,12 @@ import type { DocData } from './types';
 interface WordPreviewProps {
     doc: DocData | null;
     image?: string;
+    onRendered?: () => void; // gọi khi render docx thành công (để đánh dấu tab đã xem)
 }
 
 // Render file .docx THẬT (từ template Word) ra HTML bằng docx-preview.
 // Lazy: chỉ fetch + render khi component được mount (mở tab) và có doc.
-const WordPreview: React.FC<WordPreviewProps> = ({ doc, image }) => {
+const WordPreview: React.FC<WordPreviewProps> = ({ doc, image, onRendered }) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -39,6 +40,7 @@ const WordPreview: React.FC<WordPreviewProps> = ({ doc, image }) => {
                     ignoreHeight: false,
                     breakPages: true,
                 });
+                if (!cancelled) onRendered?.();
             } catch (e) {
                 if (!cancelled) setError(e instanceof Error ? e.message : 'Không render được file Word.');
             } finally {
@@ -49,6 +51,7 @@ const WordPreview: React.FC<WordPreviewProps> = ({ doc, image }) => {
         return () => {
             cancelled = true;
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [doc, image]);
 
     if (!doc) {

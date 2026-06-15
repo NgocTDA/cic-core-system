@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Tabs, Button, Space, message, Empty } from 'antd';
-import { CopyOutlined, DownloadOutlined } from '@ant-design/icons';
+import { CopyOutlined, DownloadOutlined, LoadingOutlined, CheckCircleFilled } from '@ant-design/icons';
 import useHeaderActions from '@/hooks/useHeaderActions';
 import { PageLayout, SectionCard } from '@/components/ui';
 import { colors, spacing, radius } from '@/design-system';
@@ -30,12 +30,31 @@ const UIDocGenerator: React.FC = () => {
     const [downloading, setDownloading] = useState(false);
     const [activeTab, setActiveTab] = useState('confluence');
     const [promptLabel, setPromptLabel] = useState<string | null>(null);
+    // Các tab đã xem thành công (→ hiện ✓ xanh). Reset mỗi lần sinh tài liệu mới.
+    const [viewedTabs, setViewedTabs] = useState<Set<string>>(new Set());
 
     useHeaderActions({ title: 'CIC UI Doc Generator' }, []);
 
     useEffect(() => {
         fetchPromptLabel().then(setPromptLabel);
     }, []);
+
+    const markViewed = (key: string) =>
+        setViewedTabs((prev) => (prev.has(key) ? prev : new Set(prev).add(key)));
+
+    // Confluence / Xem trước nội dung: coi là xem thành công ngay khi mở tab (có data).
+    useEffect(() => {
+        if (!loading && data && (activeTab === 'confluence' || activeTab === 'preview')) {
+            markViewed(activeTab);
+        }
+    }, [activeTab, data, loading]);
+
+    // Icon trước mỗi tiêu đề tab: đang sinh → spin; đã xem thành công → ✓ xanh.
+    const tabIcon = (key: string): React.ReactNode => {
+        if (loading) return <LoadingOutlined />;
+        if (viewedTabs.has(key)) return <CheckCircleFilled style={{ color: colors.success.base }} />;
+        return null;
+    };
 
     const onChange = (patch: Partial<DocInput>) => setInput((prev) => ({ ...prev, ...patch }));
 
@@ -60,6 +79,7 @@ const UIDocGenerator: React.FC = () => {
         setLoading(true);
         setData(null);
         setConfluence('');
+        setViewedTabs(new Set());
         try {
             const result = await generateDoc(input, providerId);
             setData(result);
@@ -132,6 +152,7 @@ const UIDocGenerator: React.FC = () => {
                             {
                                 key: 'confluence',
                                 label: 'Confluence Markup',
+                                icon: tabIcon('confluence'),
                                 children: (
                                     <div style={{ height: RESULT_AREA_HEIGHT, overflow: 'auto' }}>
                                         {confluence ? (
@@ -159,6 +180,7 @@ const UIDocGenerator: React.FC = () => {
                             {
                                 key: 'preview',
                                 label: 'Xem trước nội dung',
+                                icon: tabIcon('preview'),
                                 children: (
                                     <div style={{ height: RESULT_AREA_HEIGHT, overflow: 'auto' }}>
                                         <DocPreview d={data} />
@@ -168,11 +190,16 @@ const UIDocGenerator: React.FC = () => {
                             {
                                 key: 'word',
                                 label: 'Bản Word thật',
+                                icon: tabIcon('word'),
                                 // Lazy: chỉ mount (fetch+render docx) khi mở tab này
                                 children: (
                                     <div style={{ height: RESULT_AREA_HEIGHT, overflow: 'auto' }}>
                                         {activeTab === 'word' ? (
-                                            <WordPreview doc={data} image={input.images[0]?.dataUrl} />
+                                            <WordPreview
+                                                doc={data}
+                                                image={input.images[0]?.dataUrl}
+                                                onRendered={() => markViewed('word')}
+                                            />
                                         ) : null}
                                     </div>
                                 ),
