@@ -36,6 +36,12 @@ config/srs-prompt.md
 # Template Word "sống" — chỉnh trên server, không commit. Bản mẫu: srs-template.example.docx
 config/srs-template.docx
 
+# Confluence config (chứa PAT — không commit). Bản mẫu: config/confluence.example.json
+config/confluence.json
+
+# Prompt "sống" của luồng Confluence. Bản mẫu: config/confluence-prompt.example.md
+config/confluence-prompt.md
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

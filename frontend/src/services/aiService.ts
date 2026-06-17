@@ -13,10 +13,10 @@ export async function fetchProviders(): Promise<ProviderInfo[]> {
     return (await res.json()).providers as ProviderInfo[];
 }
 
-// Lấy nhãn nhận diện system prompt đang dùng (dòng @label trong srs-prompt.md).
-export async function fetchPromptLabel(): Promise<string | null> {
+// Lấy nhãn nhận diện system prompt đang dùng (dòng @label). kind: 'srs' | 'confluence'.
+export async function fetchPromptLabel(kind: 'srs' | 'confluence' = 'srs'): Promise<string | null> {
     try {
-        const res = await fetch('/api/ai/prompt');
+        const res = await fetch(`/api/ai/prompt?kind=${kind}`);
         if (!res.ok) return null;
         return ((await res.json()).label as string | null) ?? null;
     } catch {
@@ -41,6 +41,42 @@ export async function generateDoc(input: DocInput, providerId: string): Promise<
         }),
     });
 
+    const data = await res.json();
+    if (!res.ok) throw new Error(data?.error ?? 'Yêu cầu AI thất bại.');
+    return data.doc as DocData;
+}
+
+// ─── Confluence ──────────────────────────────────────────────
+export interface ConfluencePage {
+    pageId: string;
+    title: string;
+    markdown: string;
+    images: { name: string; dataUrl: string }[];
+}
+
+// Kéo nội dung 1 trang Confluence (server giữ PAT) → markdown + ảnh.
+export async function fetchConfluencePage(input: { url?: string; pageId?: string }): Promise<ConfluencePage> {
+    const res = await fetch('/api/confluence/page', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(input),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data?.error ?? 'Không kéo được trang Confluence.');
+    return data as ConfluencePage;
+}
+
+// Sinh DocData từ nội dung nguồn (markdown) + ảnh — dùng cho Confluence Importer.
+export async function generateDocFromSource(
+    source: string,
+    images: { dataUrl: string }[],
+    providerId: string,
+): Promise<DocData> {
+    const res = await fetch('/api/ai/generate', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ providerId, source, images: images.map((i) => ({ dataUrl: i.dataUrl })) }),
+    });
     const data = await res.json();
     if (!res.ok) throw new Error(data?.error ?? 'Yêu cầu AI thất bại.');
     return data.doc as DocData;

@@ -938,6 +938,12 @@ export const SUB_SYSTEMS: SubSystem[] = [
                 icon: <RobotOutlined />,
                 path: '/tools/ui-doc-generator',
             },
+            {
+                key: 'tools-confluence-importer',
+                label: 'Sinh tài liệu từ Confluence',
+                icon: <CloudServerOutlined />,
+                path: '/tools/confluence-importer',
+            },
         ],
     }
 ];

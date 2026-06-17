@@ -1,0 +1,5 @@
+{
+  "_doc": "Cấu hình Confluence Server/Data Center. baseUrl = gốc site (không kèm /rest/api). token = Personal Access Token (Bearer). Copy thành confluence.json và điền giá trị thật. File thật KHÔNG commit (gitignore).",
+  "baseUrl": "https://wiki.noibo.example",
+  "token": "<personal-access-token>"
+}

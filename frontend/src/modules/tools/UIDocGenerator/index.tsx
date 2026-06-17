@@ -1,24 +1,19 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Tabs, Button, Space, message, Empty } from 'antd';
-import { CopyOutlined, DownloadOutlined, LoadingOutlined, CheckCircleFilled } from '@ant-design/icons';
+import { message } from 'antd';
 import useHeaderActions from '@/hooks/useHeaderActions';
 import { PageLayout, SectionCard } from '@/components/ui';
-import { colors, spacing, radius } from '@/design-system';
+import { spacing } from '@/design-system';
 import { useIsMobile } from '@/hooks/useIsMobile';
-import { generateDoc, fetchPromptLabel, downloadDocx } from '@/services/aiService';
+import { generateDoc, fetchPromptLabel } from '@/services/aiService';
 import DocForm from './DocForm';
-import DocPreview from './DocPreview';
-import WordPreview from './WordPreview';
+import DocResultPanel from './DocResultPanel';
 import { buildConfluence } from './buildConfluence';
 import { useAIProvider } from './useAIProvider';
 import type { DocData, DocInput } from './types';
 
 const EMPTY_INPUT: DocInput = { funcName: '', screenCode: '', module: '', funcDesc: '', images: [] };
-
-// Chiều cao vùng kết quả — dùng chung cho cả 3 tab để đồng nhất, không nhảy khi chuyển tab.
-const RESULT_AREA_HEIGHT = '65vh';
 
 const UIDocGenerator: React.FC = () => {
     const isMobile = useIsMobile();
@@ -27,34 +22,13 @@ const UIDocGenerator: React.FC = () => {
     const [data, setData] = useState<DocData | null>(null);
     const [confluence, setConfluence] = useState('');
     const [loading, setLoading] = useState(false);
-    const [downloading, setDownloading] = useState(false);
-    const [activeTab, setActiveTab] = useState('confluence');
     const [promptLabel, setPromptLabel] = useState<string | null>(null);
-    // Các tab đã xem thành công (→ hiện ✓ xanh). Reset mỗi lần sinh tài liệu mới.
-    const [viewedTabs, setViewedTabs] = useState<Set<string>>(new Set());
 
     useHeaderActions({ title: 'CIC UI Doc Generator' }, []);
 
     useEffect(() => {
         fetchPromptLabel().then(setPromptLabel);
     }, []);
-
-    const markViewed = (key: string) =>
-        setViewedTabs((prev) => (prev.has(key) ? prev : new Set(prev).add(key)));
-
-    // Confluence / Xem trước nội dung: coi là xem thành công ngay khi mở tab (có data).
-    useEffect(() => {
-        if (!loading && data && (activeTab === 'confluence' || activeTab === 'preview')) {
-            markViewed(activeTab);
-        }
-    }, [activeTab, data, loading]);
-
-    // Icon trước mỗi tiêu đề tab: đang sinh → spin; đã xem thành công → ✓ xanh.
-    const tabIcon = (key: string): React.ReactNode => {
-        if (loading) return <LoadingOutlined />;
-        if (viewedTabs.has(key)) return <CheckCircleFilled style={{ color: colors.success.base }} />;
-        return null;
-    };
 
     const onChange = (patch: Partial<DocInput>) => setInput((prev) => ({ ...prev, ...patch }));
 
@@ -79,7 +53,6 @@ const UIDocGenerator: React.FC = () => {
         setLoading(true);
         setData(null);
         setConfluence('');
-        setViewedTabs(new Set());
         try {
             const result = await generateDoc(input, providerId);
             setData(result);
@@ -91,32 +64,6 @@ const UIDocGenerator: React.FC = () => {
             setLoading(false);
         }
     };
-
-    const copyConfluence = () => {
-        navigator.clipboard.writeText(confluence).then(() => message.success('Đã copy Confluence Markup!'));
-    };
-
-    const handleDownload = async () => {
-        if (!data) return;
-        setDownloading(true);
-        try {
-            await downloadDocx(data, input.images[0]?.dataUrl);
-            message.success('Đã tải file .docx!');
-        } catch (err) {
-            message.error('Lỗi tạo file: ' + (err instanceof Error ? err.message : 'không xác định'));
-        } finally {
-            setDownloading(false);
-        }
-    };
-
-    const resultActions = data ? (
-        <Space>
-            <Button icon={<CopyOutlined />} onClick={copyConfluence}>Copy Confluence</Button>
-            <Button type="primary" icon={<DownloadOutlined />} loading={downloading} onClick={handleDownload}>
-                Tải .docx
-            </Button>
-        </Space>
-    ) : undefined;
 
     return (
         <PageLayout>
@@ -143,70 +90,13 @@ const UIDocGenerator: React.FC = () => {
                     />
                 </SectionCard>
 
-                {/* RIGHT — result */}
-                <SectionCard title="Kết quả" extra={resultActions}>
-                    <Tabs
-                        activeKey={activeTab}
-                        onChange={setActiveTab}
-                        items={[
-                            {
-                                key: 'confluence',
-                                label: 'Confluence Markup',
-                                icon: tabIcon('confluence'),
-                                children: (
-                                    <div style={{ height: RESULT_AREA_HEIGHT, overflow: 'auto' }}>
-                                        {confluence ? (
-                                            <pre
-                                                style={{
-                                                    background: colors.neutral[900],
-                                                    color: colors.neutral[100],
-                                                    padding: spacing[4],
-                                                    borderRadius: radius.md,
-                                                    fontSize: 12,
-                                                    whiteSpace: 'pre-wrap',
-                                                    wordBreak: 'break-word',
-                                                    lineHeight: 1.65,
-                                                    margin: 0,
-                                                }}
-                                            >
-                                                {confluence}
-                                            </pre>
-                                        ) : (
-                                            <Empty description="Confluence Markup sẽ hiển thị ở đây" />
-                                        )}
-                                    </div>
-                                ),
-                            },
-                            {
-                                key: 'preview',
-                                label: 'Xem trước nội dung',
-                                icon: tabIcon('preview'),
-                                children: (
-                                    <div style={{ height: RESULT_AREA_HEIGHT, overflow: 'auto' }}>
-                                        <DocPreview d={data} />
-                                    </div>
-                                ),
-                            },
-                            {
-                                key: 'word',
-                                label: 'Bản Word thật',
-                                icon: tabIcon('word'),
-                                // Lazy: chỉ mount (fetch+render docx) khi mở tab này
-                                children: (
-                                    <div style={{ height: RESULT_AREA_HEIGHT, overflow: 'auto' }}>
-                                        {activeTab === 'word' ? (
-                                            <WordPreview
-                                                doc={data}
-                                                image={input.images[0]?.dataUrl}
-                                                onRendered={() => markViewed('word')}
-                                            />
-                                        ) : null}
-                                    </div>
-                                ),
-                            },
-                        ]}
-                    />
-                </SectionCard>
+                {/* RIGHT — result (dùng chung) */}
+                <DocResultPanel
+                    data={data}
+                    confluence={confluence}
+                    loading={loading}
+                    image={input.images[0]?.dataUrl}
+                />
             </div>
         </PageLayout>
     );

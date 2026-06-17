@@ -8,7 +8,7 @@
 
 import { NextResponse } from 'next/server';
 import { loadProviders, isValidType, type ProviderConfig } from '../providersConfig';
-import { loadSystemPrompt, buildUserPrompt, extractDocJson, type ScreenInput } from '../srsPrompt';
+import { loadSystemPrompt, buildUserPrompt, buildSourcePrompt, extractDocJson, type ScreenInput } from '../srsPrompt';
 
 export const runtime = 'nodejs';
 
@@ -18,7 +18,8 @@ interface ImagePayload {
 
 interface GenerateRequest {
     providerId: string;
-    screen: ScreenInput;
+    screen?: ScreenInput; // nhập tay (UI Doc Generator)
+    source?: string; // nội dung nguồn (markdown Confluence) — thay cho screen
     images?: ImagePayload[];
 }
 
@@ -175,9 +176,11 @@ export async function POST(req: Request) {
         return err('Body không phải JSON hợp lệ.');
     }
 
-    const { providerId, screen, images = [] } = body;
+    const { providerId, screen, source, images = [] } = body;
     if (!providerId) return err('Thiếu providerId.');
-    if (!screen?.funcName?.trim()) return err('Thiếu tên chức năng (screen.funcName).');
+    if (!source?.trim() && !screen?.funcName?.trim()) {
+        return err('Thiếu nội dung nguồn (source) hoặc tên chức năng (screen.funcName).');
+    }
 
     const cfg = loadProviders()[providerId];
     if (!cfg) return err(`Provider không tồn tại: ${providerId}`);
@@ -191,8 +194,12 @@ export async function POST(req: Request) {
         return err(`Provider "${providerId}" thiếu baseUrl hoặc model.`);
     }
 
-    const system = loadSystemPrompt();
-    const userPrompt = buildUserPrompt(screen, images.length);
+    const useSource = !!source?.trim();
+    // Confluence (source) dùng prompt 'confluence' (chuyển trung thực); form dùng 'srs'.
+    const system = loadSystemPrompt(useSource ? 'confluence' : 'srs');
+    const userPrompt = useSource
+        ? buildSourcePrompt(source!, images.length)
+        : buildUserPrompt(screen!, images.length);
 
     try {
         let text: string;
