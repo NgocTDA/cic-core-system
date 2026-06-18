@@ -1,6 +1,6 @@
 // ============================================================
 //  POST /api/ai/docx — sinh file .docx từ DocData + template Word.
-//  Body: { doc: DocData, image?: dataUrl }
+//  Body: { doc: DocData, image?: dataUrl, author?: string ([Tên BA]) }
 //  Trả về file .docx (attachment).
 // ============================================================
 
@@ -15,19 +15,19 @@ function safeName(s: string): string {
 }
 
 export async function POST(req: Request) {
-    let body: { doc?: DocData; image?: string };
+    let body: { doc?: DocData; image?: string; author?: string };
     try {
         body = await req.json();
     } catch {
         return NextResponse.json({ error: 'Body không phải JSON hợp lệ.' }, { status: 400 });
     }
-    const { doc, image } = body;
+    const { doc, image, author } = body;
     if (!doc?.funcName) {
         return NextResponse.json({ error: 'Thiếu dữ liệu tài liệu (doc.funcName).' }, { status: 400 });
     }
 
     try {
-        const buffer = await renderDocx(doc, image);
+        const buffer = await renderDocx(doc, image, author);
         const filename = `${safeName(doc.screenCode)}_${safeName(doc.funcName)}.docx`;
         return new NextResponse(buffer as BodyInit, {
             status: 200,

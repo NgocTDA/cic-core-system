@@ -8,8 +8,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 export interface ConfluenceConfig {
-    baseUrl: string; // vd https://wiki.noibo.example (KHÔNG kèm /rest/api)
-    token: string; // Personal Access Token (Bearer)
+    baseUrl: string; // vd https://wiki.noibo.example (KHÔNG kèm /rest/api) — BẮT BUỘC
+    token?: string; // PAT mặc định (tùy chọn) — bị PAT của người dùng (localStorage) ghi đè
 }
 
 function configPath(): string {
@@ -18,13 +18,14 @@ function configPath(): string {
         : path.join(process.cwd(), 'config', 'confluence.json');
 }
 
-// Đọc lại mỗi request để chỉnh config không cần restart. Trả null nếu chưa cấu hình.
+// Đọc lại mỗi request để chỉnh config không cần restart.
+// Chỉ cần baseUrl (địa chỉ Confluence dùng chung); token là PAT mặc định tùy chọn.
 export function loadConfluenceConfig(): ConfluenceConfig | null {
     try {
         const raw = fs.readFileSync(configPath(), 'utf-8');
         const cfg = JSON.parse(raw) as Partial<ConfluenceConfig>;
-        if (!cfg.baseUrl || !cfg.token) return null;
-        return { baseUrl: cfg.baseUrl.replace(/\/$/, ''), token: cfg.token };
+        if (!cfg.baseUrl) return null;
+        return { baseUrl: cfg.baseUrl.replace(/\/$/, ''), token: cfg.token?.trim() || undefined };
     } catch {
         return null;
     }

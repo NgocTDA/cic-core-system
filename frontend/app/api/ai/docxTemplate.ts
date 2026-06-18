@@ -22,8 +22,8 @@ function parseDataUrl(dataUrl: string): { ext: string; base64: string } {
     return { ext: '.png', base64: dataUrl.replace(/^data:.*,/, '') };
 }
 
-// Chuẩn hoá DocData → dữ liệu khớp placeholder của template.
-function toTemplateData(doc: DocData) {
+// Chuẩn hoá DocData → dữ liệu khớp placeholder của template. author: tên BA (fill [Tên BA]).
+function toTemplateData(doc: DocData, author?: string) {
     return {
         funcName: doc.funcName ?? '',
         screenCode: doc.screenCode ?? '',
@@ -47,7 +47,7 @@ function toTemplateData(doc: DocData) {
             status: 'Đang mở',
         })),
         today: new Date().toLocaleDateString('vi-VN'),
-        author: '[Tên BA]',
+        author: author?.trim() || '[Tên BA]',
         approver: '[Tên Lead / PM]',
     };
 }
@@ -100,13 +100,13 @@ function displayCm(base64: string): { width: number; height: number } {
 }
 
 // Render template → Buffer .docx. image (dataUrl) tùy chọn để nhúng mockup.
-export async function renderDocx(doc: DocData, image?: string): Promise<Uint8Array> {
+export async function renderDocx(doc: DocData, image?: string, author?: string): Promise<Uint8Array> {
     const template = fs.readFileSync(templatePath());
 
     const buffer = await createReport({
         template,
         cmdDelimiter: ['[[', ']]'],
-        data: { ...toTemplateData(doc), hasImage: !!image },
+        data: { ...toTemplateData(doc, author), hasImage: !!image },
         additionalJsContext: {
             // LUÔN trả 1 ảnh hợp lệ (IF trong ô bảng làm docx-templates xoá ô/hàng → docx hỏng).
             // Có mockup: giữ đúng tỉ lệ + vừa khổ giấy. Không có: PNG 1x1 trong suốt rất nhỏ.

@@ -18,11 +18,12 @@ interface DocResultPanelProps {
     confluence: string;
     loading: boolean; // đang sinh tài liệu → tab hiện spin
     image?: string; // ảnh mockup đầu tiên (cho WordPreview + nhúng docx)
+    author?: string; // tên người dùng → fill [Tên BA]
 }
 
 // Khu "Kết quả" dùng chung cho mọi tool sinh tài liệu (form nhập tay / Confluence).
 // Tự quản lý: tab đang chọn, icon spin/✓, copy Confluence, tải .docx.
-const DocResultPanel: React.FC<DocResultPanelProps> = ({ data, confluence, loading, image }) => {
+const DocResultPanel: React.FC<DocResultPanelProps> = ({ data, confluence, loading, image, author }) => {
     const [activeTab, setActiveTab] = useState('confluence');
     const [viewedTabs, setViewedTabs] = useState<Set<string>>(new Set());
     const [downloading, setDownloading] = useState(false);
@@ -54,7 +55,7 @@ const DocResultPanel: React.FC<DocResultPanelProps> = ({ data, confluence, loadi
         if (!data) return;
         setDownloading(true);
         try {
-            await downloadDocx(data, image);
+            await downloadDocx(data, image, author);
             message.success('Đã tải file .docx!');
         } catch (err) {
             message.error('Lỗi tạo file: ' + (err instanceof Error ? err.message : 'không xác định'));

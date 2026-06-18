@@ -22,6 +22,7 @@ import {
     SwapOutlined,
     ExclamationCircleOutlined,
     CloudServerOutlined,
+    FileWordOutlined,
     AimOutlined,
     BranchesOutlined,
     ThunderboltOutlined,
@@ -943,6 +944,12 @@ export const SUB_SYSTEMS: SubSystem[] = [
                 label: 'Sinh tài liệu từ Confluence',
                 icon: <CloudServerOutlined />,
                 path: '/tools/confluence-importer',
+            },
+            {
+                key: 'tools-confluence-to-word',
+                label: 'Confluence → Word (nguyên bản)',
+                icon: <FileWordOutlined />,
+                path: '/tools/confluence-to-word',
             },
         ],
     }

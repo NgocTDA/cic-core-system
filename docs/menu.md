@@ -282,6 +282,7 @@ Tài liệu này đồng bộ theo `SUB_SYSTEMS` và `DESIGN_SYSTEM_SUB` đang �
 ## 8. Công cụ nội bộ
 - **Sinh tài liệu giao diện** (`/tools/ui-doc-generator`)
 - **Sinh tài liệu từ Confluence** (`/tools/confluence-importer`)
+- **Confluence → Word (nguyên bản)** (`/tools/confluence-to-word`)
 
 ## 9. Design System
 - **Tổng quan** (`/design-system`)

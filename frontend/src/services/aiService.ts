@@ -54,16 +54,53 @@ export interface ConfluencePage {
     images: { name: string; dataUrl: string }[];
 }
 
-// Kéo nội dung 1 trang Confluence (server giữ PAT) → markdown + ảnh.
-export async function fetchConfluencePage(input: { url?: string; pageId?: string }): Promise<ConfluencePage> {
+// Kéo nội dung 1 trang Confluence. token = PAT của người dùng (localStorage), ghi đè PAT mặc định server.
+export async function fetchConfluencePage(
+    input: { url?: string; pageId?: string },
+    token?: string,
+): Promise<ConfluencePage> {
     const res = await fetch('/api/confluence/page', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(input),
+        body: JSON.stringify({ ...input, token }),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data?.error ?? 'Không kéo được trang Confluence.');
     return data as ConfluencePage;
+}
+
+// Kiểm tra PAT + lấy fullname (displayName) của người dùng.
+export async function validateConfluencePat(
+    token: string,
+): Promise<{ valid: boolean; fullname?: string; username?: string; error?: string }> {
+    const res = await fetch('/api/confluence/validate', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ token }),
+    });
+    return res.json();
+}
+
+// Chuyển 1 trang Confluence → Word TRUNG THỰC (không qua AI). Trả blob .docx + tên file + tiêu đề.
+export async function fetchConfluenceDocx(
+    input: { url?: string; pageId?: string },
+    token?: string,
+): Promise<{ blob: Blob; filename: string; title?: string }> {
+    const res = await fetch('/api/confluence/docx', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ ...input, token }),
+    });
+    if (!res.ok) {
+        const e = await res.json().catch(() => ({}));
+        throw new Error(e.error ?? 'Không chuyển được trang Confluence sang Word.');
+    }
+    const blob = await res.blob();
+    const cd = res.headers.get('Content-Disposition') ?? '';
+    const m = /filename="([^"]+)"/.exec(cd);
+    const titleHeader = res.headers.get('X-Doc-Title');
+    const title = titleHeader ? decodeURIComponent(titleHeader) : undefined;
+    return { blob, filename: m ? m[1] : 'confluence.docx', title };
 }
 
 // Sinh DocData từ nội dung nguồn (markdown) + ảnh — dùng cho Confluence Importer.
@@ -86,11 +123,12 @@ export async function generateDocFromSource(
 export async function fetchDocxBlob(
     doc: DocData,
     image?: string,
+    author?: string,
 ): Promise<{ blob: Blob; filename: string }> {
     const res = await fetch('/api/ai/docx', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ doc, image }),
+        body: JSON.stringify({ doc, image, author }),
     });
     if (!res.ok) {
         const e = await res.json().catch(() => ({}));
@@ -102,9 +140,9 @@ export async function fetchDocxBlob(
     return { blob, filename: m ? m[1] : 'tai-lieu.docx' };
 }
 
-// Tải file .docx về máy.
-export async function downloadDocx(doc: DocData, image?: string): Promise<void> {
-    const { blob, filename } = await fetchDocxBlob(doc, image);
+// Tải file .docx về máy. author → fill [Tên BA].
+export async function downloadDocx(doc: DocData, image?: string, author?: string): Promise<void> {
+    const { blob, filename } = await fetchDocxBlob(doc, image, author);
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
