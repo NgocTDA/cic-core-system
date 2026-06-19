@@ -63,20 +63,26 @@ export async function fetchImageAsDataUrl(
     cfg: ConfluenceConfig,
     token: string,
     src: string,
-): Promise<string | null> {
+): Promise<{ dataUrl: string | null; reason: string }> {
     try {
-        const absolute = src.startsWith('http') ? src : `${cfg.baseUrl}${src.startsWith('/') ? '' : '/'}${src}`;
-        const sameHost = absolute.startsWith(cfg.baseUrl);
+        // Chuẩn hóa URL: loại bỏ trailing slash ở base, xử lý URL tương đối + protocol-relative.
+        const base = cfg.baseUrl.replace(/\/$/, '');
+        const proto = cfg.baseUrl.match(/^https?:/)?.[0] ?? 'http:';
+        const absolute = src.startsWith('http') ? src
+            : src.startsWith('//') ? `${proto}${src}`
+            : `${base}${src.startsWith('/') ? '' : '/'}${src}`;
+        const sameHost = absolute.startsWith(base);
         const res = await fetch(absolute, {
             headers: sameHost ? { authorization: `Bearer ${token}` } : {},
         });
-        if (!res.ok) return null;
+        if (!res.ok) return { dataUrl: null, reason: `HTTP ${res.status} ${res.statusText}` };
         const media = (res.headers.get('content-type') || '').split(';')[0].trim();
-        if (!media.startsWith('image/')) return null;
+        if (!media.startsWith('image/')) return { dataUrl: null, reason: `content-type="${media}" (not image)` };
         const buf = Buffer.from(await res.arrayBuffer());
-        if (!buf.byteLength || buf.byteLength > MAX_IMAGE_BYTES) return null;
-        return `data:${media};base64,${buf.toString('base64')}`;
-    } catch {
-        return null;
+        if (!buf.byteLength) return { dataUrl: null, reason: 'empty body' };
+        if (buf.byteLength > MAX_IMAGE_BYTES) return { dataUrl: null, reason: `size ${(buf.byteLength / 1024 / 1024).toFixed(1)}MB > ${MAX_IMAGE_BYTES / 1024 / 1024}MB limit` };
+        return { dataUrl: `data:${media};base64,${buf.toString('base64')}`, reason: 'ok' };
+    } catch (e) {
+        return { dataUrl: null, reason: e instanceof Error ? e.message : String(e) };
     }
 }

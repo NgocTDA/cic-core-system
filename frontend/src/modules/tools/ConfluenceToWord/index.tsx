@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from 'react';
 import { Form, Input, Button, message, Space, Typography, Alert, Tag, Modal, Spin } from 'antd';
 import {
-    CloudDownloadOutlined,
     FileWordOutlined,
     DownloadOutlined,
     KeyOutlined,
@@ -13,7 +12,7 @@ import useHeaderActions from '@/hooks/useHeaderActions';
 import { PageLayout, SectionCard } from '@/components/ui';
 import { spacing, colors } from '@/design-system';
 import { useIsMobile } from '@/hooks/useIsMobile';
-import { fetchConfluenceDocx, validateConfluencePat } from '@/services/aiService';
+import { fetchConfluenceDocx, fetchCachedDocxBlob, validateConfluencePat } from '@/services/aiService';
 import DocxBlobPreview from './DocxBlobPreview';
 
 const { Text } = Typography;
@@ -28,6 +27,7 @@ const ConfluenceToWord: React.FC = () => {
     const [link, setLink] = useState('');
     const [generating, setGenerating] = useState(false);
     const [blob, setBlob] = useState<Blob | null>(null);
+    const [fileId, setFileId] = useState('');
     const [filename, setFilename] = useState('confluence.docx');
     const [title, setTitle] = useState('');
 
@@ -87,13 +87,17 @@ const ConfluenceToWord: React.FC = () => {
         }
         setGenerating(true);
         setBlob(null);
+        setFileId('');
         setTitle('');
         try {
             const input = /^\d+$/.test(link.trim()) ? { pageId: link.trim() } : { url: link.trim() };
             const result = await fetchConfluenceDocx(input, pat || undefined);
-            setBlob(result.blob);
+            setFileId(result.fileId);
             setFilename(result.filename);
             setTitle(result.title ?? '');
+            // Fetch blob từ server cache (cùng file sẽ dùng cho download) → docx-preview render
+            const docxBlob = await fetchCachedDocxBlob(result.fileId);
+            setBlob(docxBlob);
             message.success('Đã tạo bản Word từ Confluence!');
         } catch (err) {
             message.error('Lỗi: ' + (err instanceof Error ? err.message : 'không xác định'));
@@ -102,20 +106,13 @@ const ConfluenceToWord: React.FC = () => {
         }
     };
 
-    const handleDownload = () => {
-        if (!blob) return;
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        a.click();
-        URL.revokeObjectURL(url);
-    };
-
-    const resultActions = blob ? (
-        <Button type="primary" icon={<DownloadOutlined />} onClick={handleDownload}>
-            Tải .docx
-        </Button>
+    const resultActions = fileId ? (
+        <a
+            href={`/api/confluence/docx?fileId=${encodeURIComponent(fileId)}&download=1`}
+            download={filename}
+        >
+            <Button type="primary" icon={<DownloadOutlined />}>Tải .docx</Button>
+        </a>
     ) : undefined;
 
     return (
@@ -124,12 +121,15 @@ const ConfluenceToWord: React.FC = () => {
                 style={{
                     display: 'grid',
                     gridTemplateColumns: isMobile ? '1fr' : '380px 1fr',
+                    gridTemplateRows: '1fr',
                     gap: spacing[4],
-                    alignItems: 'start',
+                    flex: 1,
+                    minHeight: 0,
+                    alignItems: 'stretch',
                 }}
             >
                 {/* LEFT — nguồn Confluence */}
-                <SectionCard title="Nguồn Confluence">
+                <SectionCard title="Nguồn Confluence" style={{ alignSelf: 'start' }}>
                     <Form layout="vertical" style={{ display: 'flex', flexDirection: 'column', gap: spacing[2] }}>
                         {/* Trạng thái PAT cá nhân */}
                         <Form.Item label="PAT Confluence (tài khoản của bạn)" style={{ marginBottom: spacing[2] }}>
@@ -177,7 +177,7 @@ const ConfluenceToWord: React.FC = () => {
                             showIcon
                             style={{ marginTop: spacing[2] }}
                             message="Chuyển nguyên bản"
-                            description="Giữ cấu trúc & ảnh đúng vị trí từ Confluence, không qua AI và không ép template."
+                            description="Giữ cấu trúc & ảnh đúng vị trí từ Confluence, không qua AI."
                         />
 
                         <Text type="secondary" style={{ fontSize: 11, marginTop: spacing[1] }}>
@@ -187,19 +187,17 @@ const ConfluenceToWord: React.FC = () => {
                 </SectionCard>
 
                 {/* RIGHT — kết quả */}
-                <SectionCard title={title ? `Kết quả · ${title}` : 'Kết quả'} extra={resultActions}>
-                    <div style={{ height: '65vh', overflow: 'auto' }}>
-                        {generating && !blob ? (
-                            <div style={{ textAlign: 'center', padding: spacing[6] }}>
-                                <Spin />
-                                <div style={{ marginTop: spacing[2], color: colors.text.secondary, fontSize: 13 }}>
-                                    Đang kéo trang & dựng bản Word...
-                                </div>
+                <SectionCard title={title ? `Kết quả · ${title}` : 'Kết quả'} extra={resultActions} flex>
+                    {generating && !blob ? (
+                        <div style={{ textAlign: 'center', padding: spacing[6] }}>
+                            <Spin />
+                            <div style={{ marginTop: spacing[2], color: colors.text.secondary, fontSize: 13 }}>
+                                Đang kéo trang & dựng bản Word...
                             </div>
-                        ) : (
-                            <DocxBlobPreview blob={blob} />
-                        )}
-                    </div>
+                        </div>
+                    ) : (
+                        <DocxBlobPreview blob={blob} />
+                    )}
                 </SectionCard>
             </div>
 

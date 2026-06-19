@@ -36,6 +36,9 @@ config/srs-prompt.md
 # Template Word "sống" — chỉnh trên server, không commit. Bản mẫu: srs-template.example.docx
 config/srs-template.docx
 
+# Template CIC reference cho Pandoc — chỉnh trong Word, không commit. Bản mẫu: cic-reference.example.docx
+config/cic-reference.docx
+
 # Confluence config (chứa PAT — không commit). Bản mẫu: config/confluence.example.json
 config/confluence.json
 

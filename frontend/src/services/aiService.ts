@@ -81,11 +81,11 @@ export async function validateConfluencePat(
     return res.json();
 }
 
-// Chuyển 1 trang Confluence → Word TRUNG THỰC (không qua AI). Trả blob .docx + tên file + tiêu đề.
+// Chuyển 1 trang Confluence → Word TRUNG THỰC (không qua AI). Trả fileId để fetch blob + tên file + tiêu đề.
 export async function fetchConfluenceDocx(
     input: { url?: string; pageId?: string },
     token?: string,
-): Promise<{ blob: Blob; filename: string; title?: string }> {
+): Promise<{ fileId: string; filename: string; title?: string }> {
     const res = await fetch('/api/confluence/docx', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
@@ -95,12 +95,18 @@ export async function fetchConfluenceDocx(
         const e = await res.json().catch(() => ({}));
         throw new Error(e.error ?? 'Không chuyển được trang Confluence sang Word.');
     }
-    const blob = await res.blob();
-    const cd = res.headers.get('Content-Disposition') ?? '';
-    const m = /filename="([^"]+)"/.exec(cd);
-    const titleHeader = res.headers.get('X-Doc-Title');
-    const title = titleHeader ? decodeURIComponent(titleHeader) : undefined;
-    return { blob, filename: m ? m[1] : 'confluence.docx', title };
+    const data = await res.json();
+    return { fileId: data.fileId as string, filename: data.filename ?? 'confluence.docx', title: data.title };
+}
+
+// Fetch DOCX blob từ server cache (dùng cho docx-preview trong ConfluenceToWord).
+export async function fetchCachedDocxBlob(fileId: string): Promise<Blob> {
+    const res = await fetch(`/api/confluence/docx?fileId=${encodeURIComponent(fileId)}`);
+    if (!res.ok) {
+        const e = await res.json().catch(() => ({}));
+        throw new Error(e.error ?? 'Không tải được file để xem trước.');
+    }
+    return res.blob();
 }
 
 // Sinh DocData từ nội dung nguồn (markdown) + ảnh — dùng cho Confluence Importer.

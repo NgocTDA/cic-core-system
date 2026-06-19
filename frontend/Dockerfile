@@ -28,6 +28,12 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
+# Pandoc static binary — dùng cho Confluence → Word (CIC template)
+RUN wget -qO /tmp/pandoc.tar.gz https://github.com/jgm/pandoc/releases/download/3.10/pandoc-3.10-linux-amd64.tar.gz \
+ && tar -xzf /tmp/pandoc.tar.gz -C /tmp \
+ && mv /tmp/pandoc-3.10/bin/pandoc /usr/local/bin/pandoc \
+ && rm -rf /tmp/pandoc.tar.gz /tmp/pandoc-3.10
+
 # Copy essential files for standalone mode
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
