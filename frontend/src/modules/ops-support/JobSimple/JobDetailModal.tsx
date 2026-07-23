@@ -1,23 +1,33 @@
 'use client';
 
 import React from 'react';
-import { Drawer, Descriptions, Progress, Table, Button, Space, Divider, Typography, Statistic, Row, Col } from 'antd';
+import { Modal, Descriptions, Progress, Table, Button, Space, Divider, Typography, Statistic, Row, Col, Collapse, Tag } from 'antd';
 import type { TableProps } from 'antd';
-import { PlayCircleOutlined, StopOutlined } from '@ant-design/icons';
-import { StatusTag, CodeText } from '@/components/ui';
+import { PlayCircleOutlined, StopOutlined, HistoryOutlined } from '@ant-design/icons';
+import { StatusTag, CodeText, STATUS_CONFIG } from '@/components/ui';
 import { colors, spacing, typography } from '@/design-system';
-import type { IJobSimple, IJobRunSimple } from './types';
+import { humanizeCron, TIMEZONE_OPTIONS } from './cronLocale';
+import type { IJobSimple, IJobRunSimple, IJobChangeLog } from './types';
 
 const { Text } = Typography;
 
-interface JobDetailDrawerProps {
+const BTN_MIN_WIDTH = 120;
+
+interface JobDetailModalProps {
   open: boolean;
   job: IJobSimple | null;
   runs: IJobRunSimple[];
+  changeLogs: IJobChangeLog[];
   onClose: () => void;
   onRunNow: (job: IJobSimple) => void;
   onStop: (job: IJobSimple) => void;
 }
+
+// Hiển thị giá trị cũ/mới: dùng StatusTag nếu là trạng thái đã biết
+const renderChangeValue = (v?: string) => {
+  if (!v) return '—';
+  return v in STATUS_CONFIG ? <StatusTag status={v} /> : <Text style={{ fontSize: typography.fontSize.sm }}>{v}</Text>;
+};
 
 const formatDuration = (ms?: number) => {
   if (!ms) return '—';
@@ -28,10 +38,13 @@ const formatDuration = (ms?: number) => {
   return rem ? `${m}m ${rem}s` : `${m}m`;
 };
 
-const JobDetailDrawer: React.FC<JobDetailDrawerProps> = ({
+const tzLabel = (tz?: string) => TIMEZONE_OPTIONS.find((t) => t.value === tz)?.label ?? tz ?? '—';
+
+const JobDetailModal: React.FC<JobDetailModalProps> = ({
   open,
   job,
   runs,
+  changeLogs,
   onClose,
   onRunNow,
   onStop,
@@ -39,6 +52,16 @@ const JobDetailDrawer: React.FC<JobDetailDrawerProps> = ({
   if (!job) return null;
 
   const running = job.runStatus === 'RUNNING';
+
+  const changeColumns: TableProps<IJobChangeLog>['columns'] = [
+    { title: 'Thời gian', dataIndex: 'time', key: 'time', width: 150 },
+    { title: 'Người thực hiện', dataIndex: 'user', key: 'user', width: 130 },
+    { title: 'Hành động', dataIndex: 'action', key: 'action', width: 120 },
+    { title: 'Trường', dataIndex: 'field', key: 'field', width: 110, render: (v?: string) => v ?? '—' },
+    { title: 'Giá trị cũ', dataIndex: 'oldValue', key: 'oldValue', width: 120, render: renderChangeValue },
+    { title: 'Giá trị mới', dataIndex: 'newValue', key: 'newValue', width: 120, render: renderChangeValue },
+    { title: 'Ghi chú', dataIndex: 'note', key: 'note', ellipsis: true, render: (v?: string) => v ?? '—' },
+  ];
 
   const runColumns: TableProps<IJobRunSimple>['columns'] = [
     { title: 'Bắt đầu', dataIndex: 'startTime', key: 'startTime', width: 150 },
@@ -68,33 +91,42 @@ const JobDetailDrawer: React.FC<JobDetailDrawerProps> = ({
   ];
 
   return (
-    <Drawer
+    <Modal
       title="Chi tiết job"
-      placement="right"
-      width={640}
       open={open}
-      onClose={onClose}
-      extra={
-        <Space>
+      onCancel={onClose}
+      width={720}
+      footer={
+        <div style={{ display: 'flex', justifyContent: 'center', gap: spacing[3] }}>
           {running ? (
-            <Button danger icon={<StopOutlined />} onClick={() => onStop(job)}>
+            <Button danger icon={<StopOutlined />} onClick={() => onStop(job)} style={{ minWidth: BTN_MIN_WIDTH }}>
               Dừng chạy
             </Button>
           ) : (
-            <Button type="primary" icon={<PlayCircleOutlined />} onClick={() => onRunNow(job)}>
+            <Button type="primary" icon={<PlayCircleOutlined />} onClick={() => onRunNow(job)} style={{ minWidth: BTN_MIN_WIDTH }}>
               Chạy ngay
             </Button>
           )}
-        </Space>
+          <Button onClick={onClose} style={{ minWidth: BTN_MIN_WIDTH }}>
+            Đóng
+          </Button>
+        </div>
       }
     >
-      <Descriptions column={1} size="small" bordered>
+      <Descriptions column={1} size="small" bordered style={{ marginTop: spacing[2] }}>
         <Descriptions.Item label="Mã job">
           <CodeText>{job.code}</CodeText>
         </Descriptions.Item>
         <Descriptions.Item label="Tên job">{job.name}</Descriptions.Item>
         <Descriptions.Item label="Mô tả">{job.description ?? '—'}</Descriptions.Item>
-        <Descriptions.Item label="Lịch chạy">{job.scheduleText}</Descriptions.Item>
+        <Descriptions.Item label="Lịch chạy">
+          <Space size="small" wrap>
+            <Text>{humanizeCron(job.cron)}</Text>
+            <CodeText muted>{job.cron}</CodeText>
+          </Space>
+        </Descriptions.Item>
+        <Descriptions.Item label="Múi giờ">{tzLabel(job.timezone)}</Descriptions.Item>
+        <Descriptions.Item label="Số lần thử lại khi thất bại">{job.maxRetries} lần</Descriptions.Item>
         <Descriptions.Item label="Trạng thái">
           <StatusTag status={job.status} />
         </Descriptions.Item>
@@ -151,8 +183,38 @@ const JobDetailDrawer: React.FC<JobDetailDrawerProps> = ({
         scroll={{ y: 240 }}
         locale={{ emptyText: 'Chưa có lịch sử chạy' }}
       />
-    </Drawer>
+
+      {/* Lịch sử thay đổi (audit) — mặc định thu gọn, theo chuẩn màn chi tiết */}
+      <Collapse
+        style={{ marginTop: spacing[5] }}
+        items={[
+          {
+            key: 'change-log',
+            label: (
+              <Space size="small">
+                <HistoryOutlined style={{ color: colors.text.secondary }} />
+                <Text style={{ fontSize: typography.fontSize.sm, color: colors.text.secondary }}>
+                  Lịch sử thay đổi
+                </Text>
+                <Tag style={{ fontSize: typography.fontSize.xs }}>{changeLogs.length}</Tag>
+              </Space>
+            ),
+            children: (
+              <Table
+                columns={changeColumns}
+                dataSource={changeLogs}
+                rowKey="id"
+                size="small"
+                pagination={false}
+                scroll={{ x: 760, y: 250 }}
+                locale={{ emptyText: 'Chưa có lịch sử thay đổi' }}
+              />
+            ),
+          },
+        ]}
+      />
+    </Modal>
   );
 };
 
-export default JobDetailDrawer;
+export default JobDetailModal;

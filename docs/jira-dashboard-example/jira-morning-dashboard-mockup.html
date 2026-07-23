@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jira Morning Dashboard — Khung mẫu</title>
+<style>
+  :root{
+    --bg:#f4f5f7; --card:#ffffff; --ink:#172b4d; --muted:#5e6c84;
+    --line:#dfe1e6; --blue:#0052cc; --blue-soft:#deebff;
+    --green:#36b37e; --green-soft:#e3fcef; --red:#de350b; --red-soft:#ffebe6;
+    --orange:#ff8b00; --orange-soft:#fff7e6; --purple:#6554c0; --purple-soft:#eae6ff;
+    --grey-soft:#ebecf0;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    font-size:14px;line-height:1.45;}
+  .wrap{max-width:1180px;margin:0 auto;padding:20px 22px 48px;}
+
+  .sample-banner{background:#fffae6;border:1px solid #ffe380;color:#7a5b00;
+    padding:8px 14px;border-radius:8px;font-size:12.5px;margin-bottom:16px;
+    display:flex;gap:8px;align-items:center;}
+  .sample-banner b{color:#5a4400;}
+
+  header.top{display:flex;justify-content:space-between;align-items:flex-end;
+    flex-wrap:wrap;gap:12px;margin-bottom:18px;}
+  .title h1{margin:0;font-size:22px;letter-spacing:-.2px;}
+  .title .sub{color:var(--muted);font-size:13px;margin-top:3px;}
+  .title .proj{display:inline-block;background:var(--blue-soft);color:var(--blue);
+    font-weight:600;font-size:11.5px;padding:2px 8px;border-radius:4px;margin-left:6px;}
+  .toolbar{display:flex;gap:8px;align-items:center;}
+  .btn{background:var(--card);border:1px solid var(--line);border-radius:6px;
+    padding:7px 12px;font-size:12.5px;color:var(--ink);cursor:pointer;font-weight:500;}
+  .btn.primary{background:var(--blue);color:#fff;border-color:var(--blue);}
+  .updated{color:var(--muted);font-size:11.5px;}
+
+  .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px;}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:14px 14px 12px;position:relative;overflow:hidden;}
+  .kpi .label{color:var(--muted);font-size:12px;font-weight:500;}
+  .kpi .val{font-size:28px;font-weight:700;margin-top:4px;line-height:1;}
+  .kpi .delta{font-size:11.5px;margin-top:6px;color:var(--muted);}
+  .kpi .bar{position:absolute;left:0;top:0;bottom:0;width:4px;}
+  .kpi.b-blue .bar{background:var(--blue)} .kpi.b-red .bar{background:var(--red)}
+  .kpi.b-orange .bar{background:var(--orange)} .kpi.b-green .bar{background:var(--green)}
+  .kpi.b-purple .bar{background:var(--purple)}
+  .kpi.b-red .val{color:var(--red)} .kpi.b-orange .val{color:var(--orange)}
+
+  .grid{display:grid;grid-template-columns:1.35fr 1fr;gap:16px;align-items:start;}
+  .col{display:flex;flex-direction:column;gap:16px;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;}
+  .card > h2{margin:0;font-size:13.5px;padding:13px 16px;border-bottom:1px solid var(--line);
+    display:flex;justify-content:space-between;align-items:center;}
+  .card > h2 .count{background:var(--grey-soft);color:var(--muted);font-size:11px;
+    font-weight:600;border-radius:10px;padding:1px 8px;}
+
+  /* sprint progress */
+  .sprint-body{padding:14px 16px 16px;}
+  .sprint-meta{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin-bottom:10px;}
+  .track{height:12px;border-radius:6px;background:var(--grey-soft);display:flex;overflow:hidden;}
+  .track span{display:block;height:100%;}
+  .s-done{background:var(--green)} .s-prog{background:var(--blue)}
+  .s-rev{background:var(--purple)} .s-todo{background:#c1c7d0}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:12px;font-size:12px;color:var(--muted);}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px;}
+
+  /* issue rows */
+  ul.issues{list-style:none;margin:0;padding:4px 0;}
+  ul.issues li{display:flex;align-items:center;gap:10px;padding:9px 16px;border-top:1px solid #f0f1f3;}
+  ul.issues li:first-child{border-top:none;}
+  .key{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;
+    color:var(--blue);font-weight:600;min-width:78px;}
+  .summary{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .type{width:16px;height:16px;border-radius:3px;flex:0 0 auto;font-size:10px;color:#fff;
+    display:flex;align-items:center;justify-content:center;font-weight:700;}
+  .t-story{background:#36b37e} .t-bug{background:#de350b} .t-task{background:#4bade8} .t-epic{background:#6554c0}
+  .pill{font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:4px;white-space:nowrap;}
+  .st-todo{background:var(--grey-soft);color:var(--muted)}
+  .st-prog{background:var(--blue-soft);color:var(--blue)}
+  .st-rev{background:var(--purple-soft);color:var(--purple)}
+  .st-block{background:var(--red-soft);color:var(--red)}
+  .prio{font-size:11px;color:var(--muted);min-width:54px;text-align:right;}
+  .prio.high{color:var(--red);font-weight:600}
+  .assignee{width:24px;height:24px;border-radius:50%;flex:0 0 auto;color:#fff;
+    font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+  .due{font-size:11px;color:var(--muted);min-width:64px;text-align:right;}
+  .due.over{color:var(--red);font-weight:600;}
+
+  .foot{margin-top:22px;color:var(--muted);font-size:11.5px;text-align:center;line-height:1.6;}
+  @media(max-width:900px){.kpis{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="sample-banner">
+    ⚠️ <b>Khung mẫu — dữ liệu giả lập.</b>&nbsp;Mọi số liệu/ticket bên dưới là minh hoạ để bạn duyệt bố cục. Khi kết nối Jira Data Center, mình sẽ thay bằng dữ liệu thật và bật nút Refresh.
+  </div>
+
+  <header class="top">
+    <div class="title">
+      <h1>Bảng theo dõi buổi sáng <span class="proj">TECA · Sprint 24</span></h1>
+      <div class="sub">Xin chào Ngọc — đây là những gì cần để mắt hôm nay, Thứ Sáu 26/06/2026.</div>
+    </div>
+    <div class="toolbar">
+      <span class="updated">Cập nhật: 07:30 (mẫu)</span>
+      <button class="btn">⤓ Xuất</button>
+      <button class="btn primary">↻ Refresh</button>
+    </div>
+  </header>
+
+  <!-- KPI ROW -->
+  <section class="kpis">
+    <div class="kpi b-blue"><span class="bar"></span>
+      <div class="label">Gán cho tôi (đang mở)</div><div class="val">8</div>
+      <div class="delta">3 đang làm · 2 chờ review</div></div>
+    <div class="kpi b-red"><span class="bar"></span>
+      <div class="label">Blocker</div><div class="val">2</div>
+      <div class="delta">cần xử lý sớm</div></div>
+    <div class="kpi b-orange"><span class="bar"></span>
+      <div class="label">Quá hạn</div><div class="val">3</div>
+      <div class="delta">trễ 1–4 ngày</div></div>
+    <div class="kpi b-purple"><span class="bar"></span>
+      <div class="label">Cần phân loại</div><div class="val">5</div>
+      <div class="delta">ticket mới chưa ước lượng</div></div>
+    <div class="kpi b-green"><span class="bar"></span>
+      <div class="label">Tiến độ Sprint</div><div class="val">62%</div>
+      <div class="delta">còn 4 ngày làm việc</div></div>
+  </section>
+
+  <div class="grid">
+    <!-- LEFT COLUMN -->
+    <div class="col">
+
+      <!-- SPRINT PROGRESS -->
+      <div class="card">
+        <h2>Sprint 24 · tiến độ <span class="count">42 / 68 điểm</span></h2>
+        <div class="sprint-body">
+          <div class="sprint-meta"><span>16/06 → 30/06</span><span>còn lại 4 ngày · 26 điểm chưa xong</span></div>
+          <div class="track">
+            <span class="s-done" style="width:62%"></span>
+            <span class="s-rev"  style="width:10%"></span>
+            <span class="s-prog" style="width:16%"></span>
+            <span class="s-todo" style="width:12%"></span>
+          </div>
+          <div class="legend">
+            <span><i class="s-done"></i>Done 62%</span>
+            <span><i class="s-rev" style="background:var(--purple)"></i>In Review 10%</span>
+            <span><i class="s-prog" style="background:var(--blue)"></i>In Progress 16%</span>
+            <span><i class="s-todo"></i>To Do 12%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ASSIGNED TO ME -->
+      <div class="card">
+        <h2>Việc gán cho tôi <span class="count">8</span></h2>
+        <ul class="issues">
+          <li><span class="type t-story">S</span><span class="key">TECA-1042</span>
+            <span class="summary">Hoàn thiện luồng đăng nhập SSO cho cổng đối tác</span>
+            <span class="pill st-prog">In Progress</span><span class="prio high">Cao</span></li>
+          <li><span class="type t-bug">B</span><span class="key">TECA-1077</span>
+            <span class="summary">Sai số dư hiển thị khi đổi múi giờ</span>
+            <span class="pill st-prog">In Progress</span><span class="prio high">Cao</span></li>
+          <li><span class="type t-task">T</span><span class="key">TECA-1090</span>
+            <span class="summary">Viết PRD cho tính năng xuất báo cáo quý</span>
+            <span class="pill st-todo">To Do</span><span class="prio">TB</span></li>
+          <li><span class="type t-story">S</span><span class="key">TECA-1051</span>
+            <span class="summary">Thêm bộ lọc theo phòng ban ở màn dashboard</span>
+            <span class="pill st-rev">In Review</span><span class="prio">TB</span></li>
+          <li><span class="type t-task">T</span><span class="key">TECA-1099</span>
+            <span class="summary">Rà soát tiêu chí nghiệm thu với QA</span>
+            <span class="pill st-todo">To Do</span><span class="prio">Thấp</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="col">
+
+      <!-- BLOCKERS -->
+      <div class="card">
+        <h2>🚧 Blocker <span class="count">2</span></h2>
+        <ul class="issues">
+          <li><span class="type t-bug">B</span><span class="key">TECA-1063</span>
+            <span class="summary">API thanh toán trả lỗi 500 ở môi trường staging</span>
+            <span class="pill st-block">Blocked</span></li>
+          <li><span class="type t-story">S</span><span class="key">TECA-1034</span>
+            <span class="summary">Chờ team Infra cấp quyền truy cập DB</span>
+            <span class="pill st-block">Blocked</span></li>
+        </ul>
+      </div>
+
+      <!-- OVERDUE -->
+      <div class="card">
+        <h2>⏰ Quá hạn <span class="count">3</span></h2>
+        <ul class="issues">
+          <li><span class="type t-task">T</span><span class="key">TECA-0998</span>
+            <span class="summary">Cập nhật user stories cho epic Onboarding</span>
+            <span class="due over">trễ 4 ngày</span></li>
+          <li><span class="type t-bug">B</span><span class="key">TECA-1012</span>
+            <span class="summary">Lỗi phân trang ở danh sách giao dịch</span>
+            <span class="due over">trễ 2 ngày</span></li>
+          <li><span class="type t-task">T</span><span class="key">TECA-1080</span>
+            <span class="summary">Chốt phạm vi với stakeholder phòng Vận hành</span>
+            <span class="due over">trễ 1 ngày</span></li>
+        </ul>
+      </div>
+
+      <!-- TRIAGE -->
+      <div class="card">
+        <h2>🆕 Cần phân loại <span class="count">5</span></h2>
+        <ul class="issues">
+          <li><span class="type t-bug">B</span><span class="key">TECA-1105</span>
+            <span class="summary">Người dùng báo treo app khi tải file lớn</span>
+            <span class="assignee" style="background:#c1c7d0">?</span></li>
+          <li><span class="type t-story">S</span><span class="key">TECA-1106</span>
+            <span class="summary">Đề xuất thêm thông báo qua email</span>
+            <span class="assignee" style="background:#c1c7d0">?</span></li>
+          <li><span class="type t-task">T</span><span class="key">TECA-1107</span>
+            <span class="summary">Yêu cầu từ Sales: thêm trường mã hợp đồng</span>
+            <span class="assignee" style="background:#c1c7d0">?</span></li>
+          <li><span class="type t-bug">B</span><span class="key">TECA-1108</span>
+            <span class="summary">Nút "Lưu" không phản hồi trên Safari</span>
+            <span class="assignee" style="background:#c1c7d0">?</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    Khung mẫu dashboard buổi sáng cho Jira Data Center (<code>jira.teca.com.vn</code>).<br>
+    Các khối: Việc gán cho tôi · Tiến độ Sprint · Blocker · Quá hạn · Cần phân loại — mỗi khối sẽ map tới một truy vấn JQL khi đấu nối dữ liệu thật.
+  </div>
+</div>
+</body>
+</html>

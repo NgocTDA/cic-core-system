@@ -1,8 +1,35 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { mockJobs, mockJobRuns } from './mockData';
+import { mockJobs, mockJobRuns, mockJobChangeLogs } from './mockData';
+import { DEFAULT_TIMEZONE } from './cronLocale';
 import type { IJobSimple, IJobRunSimple, IJobFormValues, JobStatus, JobRunStatus } from './types';
+
+// Shared mutable store (mô phỏng server state trong 1 session) — cho phép
+// trang List và trang Form (route khác) dùng chung dữ liệu. Theo pattern
+// useProductCatalog.ts.
+let _jobs: IJobSimple[] = [...mockJobs];
+let _runs: IJobRunSimple[] = [...mockJobRuns];
+
+// Đọc trực tiếp store (dùng ở Form Page khi edit, ngoài React lifecycle)
+export const getJobById = (id: string): IJobSimple | undefined => _jobs.find((j) => j.id === id);
+
+export const saveJobToStore = (values: IJobFormValues, editingId?: string): void => {
+  if (editingId) {
+    _jobs = _jobs.map((j) => (j.id === editingId ? { ...j, ...values } : j));
+  } else {
+    const newJob: IJobSimple = {
+      id: `job-${Date.now()}`,
+      ...values,
+      runStatus: 'IDLE',
+      successCount: 0,
+      failureCount: 0,
+      successRate: 0,
+      avgDuration: 0,
+    };
+    _jobs = [newJob, ..._jobs];
+  }
+};
 
 const STEPS = [
   'Khởi tạo tiến trình...',
@@ -27,8 +54,8 @@ export interface JobFilters {
 const EMPTY_FILTERS: JobFilters = { keyword: '', status: undefined, runStatus: undefined };
 
 export function useJobSimple() {
-  const [jobs, setJobs] = useState<IJobSimple[]>(mockJobs);
-  const [runs, setRuns] = useState<IJobRunSimple[]>(mockJobRuns);
+  const [jobs, setJobs] = useState<IJobSimple[]>(_jobs);
+  const [runs, setRuns] = useState<IJobRunSimple[]>(_runs);
 
   // Bộ lọc: draft = đang nhập, applied = đã bấm "Tìm kiếm"
   const [draft, setDraft] = useState<JobFilters>(EMPTY_FILTERS);
@@ -36,6 +63,8 @@ export function useJobSimple() {
 
   // Quản lý interval mô phỏng tiến trình theo từng jobId
   const timers = useRef<Record<string, ReturnType<typeof setInterval>>>({});
+
+  const syncJobs = useCallback(() => setJobs([..._jobs]), []);
 
   const clearTimer = useCallback((id: string) => {
     const t = timers.current[id];
@@ -45,11 +74,21 @@ export function useJobSimple() {
     }
   }, []);
 
-  // Dọn mọi interval khi unmount
+  // Dọn mọi interval khi unmount. Job đang RUNNING (interval bị hủy theo
+  // component) sẽ không có tiến trình nào hoàn tất → chuyển về PAUSED trong
+  // store để lần mount sau không bị kẹt ở trạng thái "Đang chạy".
   useEffect(() => {
     const all = timers.current;
     return () => {
-      Object.values(all).forEach(clearInterval);
+      const runningIds = Object.keys(all);
+      runningIds.forEach((id) => clearInterval(all[id]));
+      if (runningIds.length) {
+        _jobs = _jobs.map((j) =>
+          runningIds.includes(j.id) && j.runStatus === 'RUNNING'
+            ? { ...j, runStatus: 'PAUSED', progress: undefined, currentStep: undefined }
+            : j,
+        );
+      }
     };
   }, []);
 
@@ -85,15 +124,24 @@ export function useJobSimple() {
     [runs],
   );
 
+  // Lịch sử thay đổi (audit) — mock, chỉ đọc; mới nhất ở trên
+  const getChangeLogs = useCallback(
+    (jobId: string) =>
+      mockJobChangeLogs.filter((l) => l.jobId === jobId).sort((a, b) => b.time.localeCompare(a.time)),
+    [],
+  );
+
   const patchJob = useCallback((id: string, patch: Partial<IJobSimple>) => {
-    setJobs((prev) => prev.map((j) => (j.id === id ? { ...j, ...patch } : j)));
+    _jobs = _jobs.map((j) => (j.id === id ? { ...j, ...patch } : j));
+    setJobs([..._jobs]);
   }, []);
 
   // ─── Thao tác ─────────────────────────────────────────────
   const toggleStatus = useCallback((id: string) => {
-    setJobs((prev) =>
-      prev.map((j) => (j.id === id ? { ...j, status: j.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE' } : j)),
+    _jobs = _jobs.map((j) =>
+      j.id === id ? { ...j, status: j.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE' } : j,
     );
+    setJobs([..._jobs]);
   }, []);
 
   const runNow = useCallback((id: string) => {
@@ -112,25 +160,25 @@ export function useJobSimple() {
         clearTimer(id);
         const endTime = nowText();
         const duration = Date.now() - startMs;
-        setJobs((prev) =>
-          prev.map((j) =>
-            j.id === id
-              ? {
-                  ...j,
-                  runStatus: 'IDLE',
-                  progress: undefined,
-                  currentStep: undefined,
-                  lastRunTime: endTime,
-                  successCount: j.successCount + 1,
-                  successRate: Math.round(((j.successCount + 1) / (j.successCount + 1 + j.failureCount)) * 1000) / 10,
-                }
-              : j,
-          ),
+        _jobs = _jobs.map((j) =>
+          j.id === id
+            ? {
+                ...j,
+                runStatus: 'IDLE',
+                progress: undefined,
+                currentStep: undefined,
+                lastRunTime: endTime,
+                successCount: j.successCount + 1,
+                successRate: Math.round(((j.successCount + 1) / (j.successCount + 1 + j.failureCount)) * 1000) / 10,
+              }
+            : j,
         );
-        setRuns((prev) => [
+        setJobs([..._jobs]);
+        _runs = [
           { id: `run-${Date.now()}`, jobId: id, status: 'SUCCESS', startTime, endTime, duration, triggeredBy: 'Thủ công' },
-          ...prev,
-        ]);
+          ..._runs,
+        ];
+        setRuns([..._runs]);
       } else {
         patchJob(id, { progress, currentStep: STEPS[stepIdx] });
       }
@@ -141,32 +189,22 @@ export function useJobSimple() {
     clearTimer(id);
     const startTime = nowText();
     patchJob(id, { runStatus: 'PAUSED', progress: undefined, currentStep: undefined, lastRunTime: startTime });
-    setRuns((prev) => [
+    _runs = [
       { id: `run-${Date.now()}`, jobId: id, status: 'CANCELLED', startTime, endTime: startTime, triggeredBy: 'Thủ công', errorMessage: 'Người dùng dừng tiến trình.' },
-      ...prev,
-    ]);
+      ..._runs,
+    ];
+    setRuns([..._runs]);
   }, [clearTimer, patchJob]);
 
   const saveJob = useCallback((values: IJobFormValues, editingId?: string) => {
-    if (editingId) {
-      patchJob(editingId, { ...values });
-    } else {
-      const newJob: IJobSimple = {
-        id: `job-${Date.now()}`,
-        ...values,
-        runStatus: 'IDLE',
-        successCount: 0,
-        failureCount: 0,
-        successRate: 0,
-        avgDuration: 0,
-      };
-      setJobs((prev) => [newJob, ...prev]);
-    }
-  }, [patchJob]);
+    saveJobToStore(values, editingId);
+    syncJobs();
+  }, [syncJobs]);
 
   const deleteJob = useCallback((id: string) => {
     clearTimer(id);
-    setJobs((prev) => prev.filter((j) => j.id !== id));
+    _jobs = _jobs.filter((j) => j.id !== id);
+    setJobs([..._jobs]);
   }, [clearTimer]);
 
   return {
@@ -180,6 +218,9 @@ export function useJobSimple() {
     applyFilters,
     resetFilters,
     getJobRuns,
+    getChangeLogs,
+    getById: getJobById,
+    defaultTimezone: DEFAULT_TIMEZONE,
     toggleStatus,
     runNow,
     stopJob,

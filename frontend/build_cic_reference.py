@@ -41,17 +41,17 @@ RFONTS_TNR = '<w:rFonts w:ascii="Times New Roman" w:eastAsia="Times New Roman" w
 DOC_DEFAULTS = (
     '<w:docDefaults><w:rPrDefault><w:rPr>'
     + RFONTS_TNR +
-    '<w:color w:val="1A1A1A"/><w:sz w:val="22"/><w:szCs w:val="22"/>'
+    '<w:color w:val="1A1A1A"/><w:sz w:val="26"/><w:szCs w:val="26"/>'
     '<w:lang w:val="vi-VN" w:eastAsia="vi-VN" w:bidi="ar-SA"/>'
     '</w:rPr></w:rPrDefault>'
     # Giãn dòng Single (line 240, auto) + Before = After = 6pt (120 twips) cho mọi style text.
-    '<w:pPrDefault><w:pPr><w:spacing w:before="120" w:after="120" w:line="240" w:lineRule="auto"/></w:pPr></w:pPrDefault>'
+    '<w:pPrDefault><w:pPr><w:jc w:val="both"/><w:spacing w:before="120" w:after="120" w:line="240" w:lineRule="auto"/></w:pPr></w:pPrDefault>'
     '</w:docDefaults>'
 )
 # Spacing chuẩn dùng lại cho heading: Single + 6pt/6pt.
 PARA_SPACING = '<w:spacing w:before="120" w:after="120" w:line="240" w:lineRule="auto"/>'
 HEAD_RPR = {
-    "Heading1": '<w:rPr>' + RFONTS_TNR + '<w:b/><w:bCs/><w:color w:val="2E74B5"/><w:sz w:val="32"/><w:szCs w:val="32"/></w:rPr>',
+    "Heading1": '<w:rPr>' + RFONTS_TNR + '<w:b/><w:bCs/><w:color w:val="2E74B5"/><w:sz w:val="28"/><w:szCs w:val="28"/></w:rPr>',
     "Heading2": '<w:rPr>' + RFONTS_TNR + '<w:b/><w:bCs/><w:color w:val="2E74B5"/><w:sz w:val="26"/><w:szCs w:val="26"/></w:rPr>',
     "Heading3": '<w:rPr>' + RFONTS_TNR + '<w:b/><w:bCs/><w:color w:val="1F4D78"/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr>',
 }
@@ -174,6 +174,18 @@ HEADER = srs.read("word/header1.xml")
 FOOTER = srs.read("word/footer1.xml")
 EMPTY_RELS = b'<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"/>'
 srs.close()
+
+# Header CIC: trái = "TÀI LIỆU ĐẶC TẢ CHỨC NĂNG", phải = "Phiên bản:.....".
+# Thay text 2 run sẵn có; đẩy tab phải về sát lề phải (9355 = bề rộng vùng text A4).
+def patch_header(data: bytes) -> bytes:
+    xml = data.decode("utf-8")
+    xml = xml.replace("TRUNG TÂM THÔNG TIN TÍN DỤNG QUỐC GIA VIỆT NAM (CIC)",
+                      "TÀI LIỆU ĐẶC TẢ CHỨC NĂNG")
+    xml = xml.replace("Tài liệu Thiết kế Giao diện", "Phiên bản:.....")
+    xml = re.sub(r'<w:tab w:val="right" w:pos="\d+"/>', '<w:tab w:val="right" w:pos="9355"/>', xml)
+    return xml.encode("utf-8")
+
+HEADER = patch_header(HEADER)
 
 zin = zipfile.ZipFile(BASE, "r")
 names = zin.namelist()

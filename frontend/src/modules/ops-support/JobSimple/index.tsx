@@ -3,16 +3,17 @@
 import React, { useCallback, useState } from 'react';
 import { App } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+import { useRouter } from 'next/navigation';
 import useHeaderActions from '@/hooks/useHeaderActions';
 import { PageLayout, StatusSummaryBar, SectionCard } from '@/components/ui';
 import useJobSimple from './useJobSimple';
 import JobFilter from './JobFilter';
 import JobList from './JobList';
-import JobDetailDrawer from './JobDetailDrawer';
-import JobFormModal from './JobFormModal';
+import JobDetailModal from './JobDetailModal';
 import type { IJobSimple } from './types';
 
 const JobSimple: React.FC = () => {
+  const router = useRouter();
   const { modal, message } = App.useApp();
   const {
     filteredJobs,
@@ -24,25 +25,20 @@ const JobSimple: React.FC = () => {
     applyFilters,
     resetFilters,
     getJobRuns,
+    getChangeLogs,
     toggleStatus,
     runNow,
     stopJob,
-    saveJob,
     deleteJob,
   } = useJobSimple();
 
-  // Drawer chi tiết
+  // Modal chi tiết
   const [detailJob, setDetailJob] = useState<IJobSimple | null>(null);
-  const [drawerOpen, setDrawerOpen] = useState(false);
-
-  // Modal thêm/sửa
-  const [formOpen, setFormOpen] = useState(false);
-  const [editing, setEditing] = useState<IJobSimple | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
 
   const openCreate = useCallback(() => {
-    setEditing(null);
-    setFormOpen(true);
-  }, []);
+    router.push('/ops-support/jobs/new');
+  }, [router]);
 
   useHeaderActions(
     {
@@ -56,13 +52,15 @@ const JobSimple: React.FC = () => {
 
   const openDetail = useCallback((job: IJobSimple) => {
     setDetailJob(job);
-    setDrawerOpen(true);
+    setDetailOpen(true);
   }, []);
 
-  const openEdit = useCallback((job: IJobSimple) => {
-    setEditing(job);
-    setFormOpen(true);
-  }, []);
+  const openEdit = useCallback(
+    (job: IJobSimple) => {
+      router.push(`/ops-support/jobs/${job.id}/edit`);
+    },
+    [router],
+  );
 
   const handleDelete = useCallback(
     (job: IJobSimple) => {
@@ -83,10 +81,26 @@ const JobSimple: React.FC = () => {
 
   const handleToggle = useCallback(
     (job: IJobSimple) => {
-      toggleStatus(job.id);
-      message.success(job.status === 'ACTIVE' ? 'Đã tắt job' : 'Đã bật job');
+      const willDeactivate = job.status === 'ACTIVE';
+      const doToggle = () => {
+        toggleStatus(job.id);
+        message.success(willDeactivate ? 'Đã vô hiệu hóa job' : 'Đã kích hoạt job');
+      };
+      // Theo chuẩn: hành động "Vô hiệu hóa" bắt buộc có hộp xác nhận
+      if (willDeactivate) {
+        modal.confirm({
+          title: 'Xác nhận vô hiệu hóa job',
+          content: `Bạn có chắc muốn vô hiệu hóa job "${job.name}"? Job sẽ không chạy theo lịch cho đến khi được kích hoạt lại.`,
+          okText: 'Vô hiệu hóa',
+          okButtonProps: { danger: true },
+          cancelText: 'Hủy',
+          onOk: doToggle,
+        });
+      } else {
+        doToggle();
+      }
     },
-    [toggleStatus, message],
+    [toggleStatus, message, modal],
   );
 
   const handleRun = useCallback(
@@ -105,7 +119,7 @@ const JobSimple: React.FC = () => {
     [stopJob, message],
   );
 
-  // Đồng bộ job trong drawer với state mới nhất
+  // Đồng bộ job trong modal với state mới nhất
   const liveDetailJob = detailJob ? filteredJobs.find((j) => j.id === detailJob.id) ?? detailJob : null;
 
   return (
@@ -141,24 +155,14 @@ const JobSimple: React.FC = () => {
         />
       </SectionCard>
 
-      <JobDetailDrawer
-        open={drawerOpen}
+      <JobDetailModal
+        open={detailOpen}
         job={liveDetailJob}
         runs={liveDetailJob ? getJobRuns(liveDetailJob.id) : []}
-        onClose={() => setDrawerOpen(false)}
+        changeLogs={liveDetailJob ? getChangeLogs(liveDetailJob.id) : []}
+        onClose={() => setDetailOpen(false)}
         onRunNow={handleRun}
         onStop={handleStop}
-      />
-
-      <JobFormModal
-        open={formOpen}
-        editing={editing}
-        onCancel={() => setFormOpen(false)}
-        onSubmit={(values, editingId) => {
-          saveJob(values, editingId);
-          setFormOpen(false);
-          message.success(editingId ? 'Đã cập nhật job' : 'Đã thêm job mới');
-        }}
       />
     </PageLayout>
   );

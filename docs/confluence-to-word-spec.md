@@ -101,7 +101,7 @@ Sinh từ Pandoc default reference + ghép visual CIC. Chạy lại: `cd fronten
 ### 5.3 Cỡ & màu chữ
 | Style | Cỡ | Màu | Đậm |
 |-------|----|-----|-----|
-| Body (Normal) | 11pt (sz 22) | `#1A1A1A` | — |
+| Body (Normal) | 13pt (sz 26) | `#1A1A1A` | — |
 | Heading 1 | 16pt (32) | `#2E74B5` | ✓ |
 | Heading 2 | 13pt (26) | `#2E74B5` | ✓ |
 | Heading 3 | 12pt (24) | `#1F4D78` | ✓ |

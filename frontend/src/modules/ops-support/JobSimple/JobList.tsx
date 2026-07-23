@@ -14,6 +14,7 @@ import {
 } from '@ant-design/icons';
 import { StatusTag, ActionMenu, CodeText, tablePagination } from '@/components/ui';
 import { colors, typography } from '@/design-system';
+import { humanizeCron } from './cronLocale';
 import type { IJobSimple } from './types';
 
 const { Text } = Typography;
@@ -61,12 +62,16 @@ const JobList: React.FC<JobListProps> = ({
     },
     {
       title: 'Lịch chạy',
-      dataIndex: 'scheduleText',
-      key: 'scheduleText',
-      width: 200,
-      ellipsis: true,
-      render: (v: string) => (
-        <Text style={{ fontSize: typography.fontSize.sm, color: colors.text.secondary }}>{v}</Text>
+      dataIndex: 'cron',
+      key: 'cron',
+      width: 220,
+      render: (_, job) => (
+        <div>
+          <Text style={{ fontSize: typography.fontSize.sm, color: colors.text.primary, display: 'block' }} ellipsis>
+            {humanizeCron(job.cron)}
+          </Text>
+          <CodeText muted style={{ fontSize: typography.fontSize.xs }}>{job.cron}</CodeText>
+        </div>
       ),
     },
     {
