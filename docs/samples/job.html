@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cấu hình & Lập lịch Job Engine</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans antialiased">
+
+    <!-- Top Navbar -->
+    <header class="bg-slate-900 text-white px-6 py-3 flex justify-between items-center shadow-md">
+        <div class="flex items-center space-x-3">
+            <i class="fa-solid fa-clock-rotate-left text-blue-400 text-xl"></i>
+            <h1 class="text-lg font-semibold tracking-wide">Job Engine & Management Console</h1>
+        </div>
+        <div class="flex items-center space-x-4 text-sm">
+            <span class="bg-emerald-500/10 text-emerald-400 px-2.5 py-1 rounded-full border border-emerald-500/20 text-xs font-medium">
+                <i class="fa-solid fa-circle text-[8px] mr-1"></i> Engine Running
+            </span>
+            <div class="h-4 w-px bg-slate-700"></div>
+            <span class="text-slate-300"><i class="fa-solid fa-user-shield mr-1"></i> admin@system.local</span>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="max-w-[1600px] mx-auto p-6 space-y-4">
+        
+        <!-- Filter Bar -->
+        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-wrap gap-3 justify-between items-center">
+            <div class="flex items-center gap-3 flex-1 min-w-[300px]">
+                <div class="relative flex-1">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    <input type="text" placeholder="Tìm kiếm theo Mã Job, Tên Job..." class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <select class="bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="ACTIVE">Hoạt động (Active)</option>
+                    <option value="PAUSED">Tạm dừng (Paused)</option>
+                </select>
+            </div>
+            <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 shadow-sm">
+                <i class="fa-solid fa-plus"></i> Tạo Job mới
+            </button>
+        </div>
+
+        <!-- Layout Grid: Master - Detail -->
+        <div class="grid grid-cols-12 gap-6">
+            
+            <!-- Sidebar: Danh sách Job -->
+            <div class="col-span-12 lg:col-span-4 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col h-[820px]">
+                <div class="p-3.5 bg-slate-50 border-b border-slate-200 font-semibold text-xs text-slate-500 uppercase tracking-wider flex justify-between items-center">
+                    <span>Danh sách Job hệ thống</span>
+                    <span class="bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full text-[11px]">3 Jobs</span>
+                </div>
+                
+                <div class="divide-y divide-slate-100 overflow-y-auto flex-1" id="job-list">
+                    <!-- Item 1: Spring Bean -->
+                    <div onclick="selectJob('JOB_EXCHANGE_RATE_SYNC')" id="card-JOB_EXCHANGE_RATE_SYNC" class="job-card p-4 bg-blue-50/60 border-l-4 border-blue-600 cursor-pointer transition">
+                        <div class="flex justify-between items-start mb-1">
+                            <span class="font-mono text-xs font-bold text-blue-900 bg-blue-100 px-2 py-0.5 rounded">JOB_EXCHANGE_RATE_SYNC</span>
+                            <span class="inline-flex items-center text-xs text-emerald-600 font-medium">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span> Active
+                            </span>
+                        </div>
+                        <h3 class="text-sm font-semibold text-slate-800">Đồng bộ tỷ giá ngoại tệ tự động</h3>
+                        <div class="mt-2 text-xs text-slate-500 flex items-center gap-3">
+                            <span><i class="fa-regular fa-clock mr-1"></i> <code>0 0 17 * * MON-FRI</code></span>
+                            <span class="text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded border border-purple-200 font-medium"><i class="fa-solid fa-code-branch mr-1"></i> Spring Bean</span>
+                        </div>
+                    </div>
+
+                    <!-- Item 2: REST API -->
+                    <div onclick="selectJob('JOB_NOTIF_RETRY')" id="card-JOB_NOTIF_RETRY" class="job-card p-4 hover:bg-slate-50 border-l-4 border-transparent cursor-pointer transition">
+                        <div class="flex justify-between items-start mb-1">
+                            <span class="font-mono text-xs font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded">JOB_NOTIF_RETRY</span>
+                            <span class="inline-flex items-center text-xs text-emerald-600 font-medium">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span> Active
+                            </span>
+                        </div>
+                        <h3 class="text-sm font-semibold text-slate-800">Gửi lại thông báo Push/Email bị lỗi</h3>
+                        <div class="mt-2 text-xs text-slate-500 flex items-center gap-3">
+                            <span><i class="fa-regular fa-clock mr-1"></i> <code>0 */15 * * * *</code></span>
+                            <span class="text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200 font-medium"><i class="fa-solid fa-globe mr-1"></i> REST API</span>
+                        </div>
+                    </div>
+
+                    <!-- Item 3: SQL Script -->
+                    <div onclick="selectJob('JOB_CLEANUP_AUDIT_LOG')" id="card-JOB_CLEANUP_AUDIT_LOG" class="job-card p-4 hover:bg-slate-50 border-l-4 border-transparent cursor-pointer transition">
+                        <div class="flex justify-between items-start mb-1">
+                            <span class="font-mono text-xs font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded">JOB_CLEANUP_AUDIT_LOG</span>
+                            <span class="inline-flex items-center text-xs text-amber-600 font-medium">
+                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5"></span> Paused
+                            </span>
+                        </div>
+                        <h3 class="text-sm font-semibold text-slate-800">Dọn dẹp nhật ký hệ thống cũ (> 90 ngày)</h3>
+                        <div class="mt-2 text-xs text-slate-500 flex items-center gap-3">
+                            <span><i class="fa-regular fa-clock mr-1"></i> <code>0 0 1 * * *</code></span>
+                            <span class="text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 font-medium"><i class="fa-solid fa-database mr-1"></i> SQL Script</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content: Chi tiết cấu hình Job -->
+            <div class="col-span-12 lg:col-span-8 bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col h-[820px] overflow-hidden">
+                
+                <!-- Tab Header -->
+                <div class="border-b border-slate-200 bg-slate-50 px-6 pt-3 flex justify-between items-center">
+                    <div class="flex space-x-6">
+                        <button onclick="switchTab('config')" id="tab-btn-config" class="pb-3 text-sm font-semibold text-blue-600 border-b-2 border-blue-600 flex items-center gap-2">
+                            <i class="fa-solid fa-sliders"></i> Cấu hình & Lập lịch
+                        </button>
+                        <button onclick="switchTab('logs')" id="tab-btn-logs" class="pb-3 text-sm font-medium text-slate-500 hover:text-slate-700 flex items-center gap-2">
+                            <i class="fa-solid fa-list-check"></i> Lịch sử thực thi (Logs)
+                        </button>
+                    </div>
+                    <span class="text-xs text-slate-400">Cập nhật lúc: <span id="last-updated">2026-07-23 16:30</span></span>
+                </div>
+
+                <!-- TAB 1: FORM CẤU HÌNH -->
+                <div id="tab-content-config" class="p-6 overflow-y-auto space-y-6 flex-1">
+                    
+                    <!-- Section 1: Định nghĩa Kỹ thuật -->
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-900 uppercase tracking-wide mb-3 flex items-center gap-2 border-b pb-2">
+                            <i class="fa-solid fa-cube text-blue-500"></i> 1. Định nghĩa Kỹ thuật (Job Definition)
+                        </h4>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Mã Job (Job Code) <span class="text-red-500">*</span></label>
+                                <input type="text" id="jobCode" disabled class="w-full bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 text-sm font-mono text-slate-600 cursor-not-allowed">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Tên hiển thị <span class="text-red-500">*</span></label>
+                                <input type="text" id="jobName" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Loại xử lý (Job Type) <span class="text-red-500">*</span></label>
+                                <select id="jobType" onchange="handleJobTypeChange()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-medium">
+                                    <option value="SPRING_BEAN">Java Bean (Spring Component)</option>
+                                    <option value="REST_API">REST API Endpoint</option>
+                                    <option value="SQL_SCRIPT">SQL Stored Procedure / Script</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1" id="targetLabel">Spring Bean & Method Target <span class="text-red-500">*</span></label>
+                                <input type="text" id="targetComponent" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            </div>
+                        </div>
+
+                        <!-- Yaml Parameter Box (Đã lược bỏ Retry & Alert) -->
+                        <div class="mt-4">
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="text-xs font-semibold text-slate-600">Tham số nghiệp vụ bổ sung (YAML Payload)</label>
+                                <span class="text-[11px] text-slate-400">Chỉ chứa payload/dữ liệu động</span>
+                            </div>
+                            <textarea id="jobParams" rows="3" class="w-full font-mono text-xs bg-slate-900 text-emerald-400 p-3 rounded-lg border border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 leading-relaxed"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Section 2: Lập lịch Cron & Điều phối -->
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-900 uppercase tracking-wide mb-3 flex items-center gap-2 border-b pb-2">
+                            <i class="fa-regular fa-calendar-check text-blue-500"></i> 2. Cấu hình Lập lịch & Điều phối (Scheduling)
+                        </h4>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Biểu thức Cron (Cron Expression) <span class="text-red-500">*</span></label>
+                                <div class="flex gap-2">
+                                    <input type="text" id="cronExpression" class="flex-1 font-mono font-bold text-sm border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                    <button class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-lg text-xs font-medium border border-slate-300 flex items-center gap-1">
+                                        <i class="fa-solid fa-wand-magic-sparkles"></i> Build Cron
+                                    </button>
+                                </div>
+                                <p class="mt-1.5 text-xs text-blue-700 bg-blue-50 p-2 rounded border border-blue-100 flex items-center gap-2">
+                                    <i class="fa-solid fa-circle-info"></i> <span id="cronDesc">Giải thích chu kỳ thực thi...</span>
+                                </p>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1">Chính sách Misfire</label>
+                                    <select id="misfirePolicy" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                        <option value="FIRE_NOW">Fire Now (Chạy bù ngay khi khôi phục)</option>
+                                        <option value="DO_NOTHING">Do Nothing (Bỏ qua lượt lỗi, chờ chu kỳ tới)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1">Thời gian chờ tối đa (Timeout Seconds)</label>
+                                    <input type="number" id="timeoutSeconds" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-200">
+                                <div>
+                                    <div class="text-xs font-semibold text-slate-800">Không cho phép chạy song song (Disallow Concurrent Execution)</div>
+                                    <div class="text-[11px] text-slate-500">Ngăn lượt chạy mới nếu lượt cũ chưa kết thúc</div>
+                                </div>
+                                <input type="checkbox" id="disallowConcurrent" checked class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 3: MỚI BỔ SUNG - Cấu hình Thử lại (Retry Policy) -->
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-900 uppercase tracking-wide mb-3 flex items-center gap-2 border-b pb-2">
+                            <i class="fa-solid fa-rotate text-blue-500"></i> 3. Chính sách Thử lại khi Lỗi (Retry Policy)
+                        </h4>
+                        
+                        <div class="grid grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Số lần thử lại tối đa (Max Retries)</label>
+                                <input type="number" id="maxRetries" min="0" max="10" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                <span class="text-[11px] text-slate-400">Nhập 0 để tắt thử lại</span>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Khoảng chờ giữa các lần (Giây)</label>
+                                <input type="number" id="retryInterval" min="1" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Thuật toán giãn cách (Backoff)</label>
+                                <select id="backoffStrategy" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                    <option value="FIXED">Cố định (Fixed Delay)</option>
+                                    <option value="EXPONENTIAL">Tăng dần cấp số nhân (Exponential)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 4: MỚI BỔ SUNG - Cấu hình Thông báo & Cảnh báo -->
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-900 uppercase tracking-wide mb-3 flex items-center justify-between border-b pb-2">
+                            <span class="flex items-center gap-2"><i class="fa-solid fa-bell text-blue-500"></i> 4. Thiết lập Cảnh báo Sự cố (Alerting & Notifications)</span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="enableNotify" class="sr-only peer" onchange="toggleNotifySection()">
+                                <div class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+                                <span class="ml-2 text-xs font-semibold text-slate-700">Kích hoạt cảnh báo</span>
+                            </label>
+                        </h4>
+
+                        <div id="notify-settings-panel" class="space-y-4 pt-1 transition-all">
+                            <!-- Kênh gửi -->
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-2">Kênh nhận thông báo</label>
+                                <div class="flex gap-6">
+                                    <label class="inline-flex items-center text-xs font-medium text-slate-700 cursor-pointer">
+                                        <input type="checkbox" id="channelEmail" checked class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 mr-2">
+                                        <i class="fa-solid fa-envelope text-slate-400 mr-1.5"></i> Email
+                                    </label>
+                                    <label class="inline-flex items-center text-xs font-medium text-slate-700 cursor-pointer">
+                                        <input type="checkbox" id="channelTelegram" checked class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 mr-2">
+                                        <i class="fa-brands fa-telegram text-blue-500 mr-1.5"></i> Telegram / Slack Webhook
+                                    </label>
+                                    <label class="inline-flex items-center text-xs font-medium text-slate-700 cursor-pointer">
+                                        <input type="checkbox" id="channelSms" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 mr-2">
+                                        <i class="fa-solid fa-comment-sms text-slate-400 mr-1.5"></i> SMS
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Chi tiết Email & Webhook -->
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1">Email nhận cảnh báo (Phân cách bởi dấu phẩy)</label>
+                                    <input type="text" id="notifyEmails" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-sans" placeholder="devops@company.com, alert@company.com">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1">Webhook URL (Telegram / Slack)</label>
+                                    <input type="text" id="webhookUrl" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="https://api.telegram.org/bot.../sendMessage">
+                                </div>
+                            </div>
+
+                            <!-- Điều kiện gửi -->
+                            <div class="bg-amber-50/60 p-3 rounded-lg border border-amber-200/80 flex items-center justify-between">
+                                <span class="text-xs text-amber-900 font-medium"><i class="fa-solid fa-triangle-exclamation text-amber-500 mr-1.5"></i> Chỉ gửi cảnh báo khi:</span>
+                                <div class="flex gap-4">
+                                    <label class="inline-flex items-center text-xs text-slate-700 cursor-pointer">
+                                        <input type="radio" name="notifyCondition" value="FINAL_FAIL" checked class="text-blue-600 focus:ring-blue-500 mr-1.5">
+                                        Thất bại hoàn toàn (Hết lượt Retry)
+                                    </label>
+                                    <label class="inline-flex items-center text-xs text-slate-700 cursor-pointer">
+                                        <input type="radio" name="notifyCondition" value="EVERY_FAIL" class="text-blue-600 focus:ring-blue-500 mr-1.5">
+                                        Mỗi lượt chạy bị lỗi
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- TAB 2: LỊCH SỬ LOGS -->
+                <div id="tab-content-logs" class="p-6 overflow-y-auto space-y-4 flex-1 hidden">
+                    <div class="flex justify-between items-center">
+                        <h4 class="text-sm font-bold text-slate-800">Lịch sử 5 lượt chạy gần nhất</h4>
+                        <button class="text-xs text-blue-600 hover:underline"><i class="fa-solid fa-rotate mr-1"></i> Làm mới Log</button>
+                    </div>
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-600 uppercase border-b border-slate-200">
+                                <th class="p-2.5">Thời gian chạy</th>
+                                <th class="p-2.5">Thời lượng</th>
+                                <th class="p-2.5">Trạng thái</th>
+                                <th class="p-2.5">Node IP</th>
+                                <th class="p-2.5">Chi tiết</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logs-table-body" class="divide-y divide-slate-200 font-mono">
+                            <!-- Populated via JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Footer Actions -->
+                <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-between items-center">
+                    <button class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 shadow-sm">
+                        <i class="fa-solid fa-bolt"></i> Chạy ngay (Run Now)
+                    </button>
+
+                    <div class="flex gap-3">
+                        <button id="toggleStatusBtn" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2 rounded-lg text-sm font-medium transition">
+                            Tạm dừng Job
+                        </button>
+                        <button class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 shadow-sm">
+                            <i class="fa-solid fa-floppy-disk"></i> Lưu cấu hình
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Data Store & Interactivity -->
+    <script>
+        const jobDataStore = {
+            'JOB_EXCHANGE_RATE_SYNC': {
+                code: 'JOB_EXCHANGE_RATE_SYNC',
+                name: 'Đồng bộ tỷ giá ngoại tệ tự động',
+                type: 'SPRING_BEAN',
+                target: 'exchangeRateSyncService.syncDailyRates',
+                targetLabel: 'Spring Bean & Method Target',
+                cron: '0 0 17 * * MON-FRI',
+                cronDesc: 'Chạy lúc 17:00:00 từ Thứ 2 đến Thứ 6 hàng tuần',
+                misfire: 'FIRE_NOW',
+                timeout: 300,
+                concurrent: true,
+                status: 'ACTIVE',
+                // Clean YAML payload
+                params: `sourceApi: "https://api.bank.com/v1/rates"
+currencyList: ["USD", "EUR", "JPY", "GBP"]
+autoApproveDiffPercentage: 1.5`,
+                // Explicit UI Retry & Alert Configs
+                maxRetries: 3,
+                retryInterval: 60,
+                backoff: 'EXPONENTIAL',
+                enableNotify: true,
+                channelEmail: true,
+                channelTelegram: true,
+                channelSms: false,
+                notifyEmails: 'devops-team@bank.com, sysadmin@bank.com',
+                webhookUrl: 'https://api.telegram.org/bot123456789/sendMessage?chat_id=-987654321',
+                logs: [
+                    { time: '2026-07-23 17:00:00', duration: '2.4s', status: 'SUCCESS', node: '10.0.4.12', detail: 'Đồng bộ thành công 4 ngoại tệ.' },
+                    { time: '2026-07-22 17:00:00', duration: '2.1s', status: 'SUCCESS', node: '10.0.4.12', detail: 'Đồng bộ thành công 4 ngoại tệ.' },
+                    { time: '2026-07-21 17:00:00', duration: '15.0s', status: 'FAILED', node: '10.0.4.11', detail: 'HTTP 504 Gateway Timeout từ Bank API.' }
+                ]
+            },
+            'JOB_NOTIF_RETRY': {
+                code: 'JOB_NOTIF_RETRY',
+                name: 'Gửi lại thông báo Push/Email bị lỗi',
+                type: 'REST_API',
+                target: 'https://notif-service.internal/api/v1/retry-failed',
+                targetLabel: 'REST API Endpoint URL',
+                cron: '0 */15 * * * *',
+                cronDesc: 'Lặp lại mỗi 15 phút một lần (vào các phút 0, 15, 30, 45)',
+                misfire: 'DO_NOTHING',
+                timeout: 120,
+                concurrent: true,
+                status: 'ACTIVE',
+                params: `httpMethod: "POST"
+headers:
+  Authorization: "Bearer eyJhbGciOiJIUzI1Ni..."
+  Content-Type: "application/json"
+payload:
+  batchSize: 100
+  channels: ["PUSH", "EMAIL"]`,
+                maxRetries: 5,
+                retryInterval: 30,
+                backoff: 'FIXED',
+                enableNotify: true,
+                channelEmail: true,
+                channelTelegram: false,
+                channelSms: true,
+                notifyEmails: 'notif-admin@company.com',
+                webhookUrl: '',
+                logs: [
+                    { time: '2026-07-23 14:15:00', duration: '0.8s', status: 'SUCCESS', node: '10.0.4.15', detail: 'Đã xử lý 12 tin nhắn tồn đọng.' },
+                    { time: '2026-07-23 14:00:00', duration: '0.5s', status: 'SUCCESS', node: '10.0.4.15', detail: 'Không có tin nhắn lỗi.' }
+                ]
+            },
+            'JOB_CLEANUP_AUDIT_LOG': {
+                code: 'JOB_CLEANUP_AUDIT_LOG',
+                name: 'Dọn dẹp nhật ký hệ thống cũ (> 90 ngày)',
+                type: 'SQL_SCRIPT',
+                target: 'CALL proc_purge_audit_logs(?);',
+                targetLabel: 'Stored Procedure / SQL Command',
+                cron: '0 0 1 * * *',
+                cronDesc: 'Chạy vào 01:00:00 AM mỗi ngày',
+                misfire: 'DO_NOTHING',
+                timeout: 3600,
+                concurrent: true,
+                status: 'PAUSED',
+                params: `retentionDays: 90
+batchDeleteSize: 5000
+targetTables:
+  - "sys_audit_log"
+  - "sys_login_history"`,
+                maxRetries: 0,
+                retryInterval: 0,
+                backoff: 'FIXED',
+                enableNotify: false,
+                channelEmail: false,
+                channelTelegram: false,
+                channelSms: false,
+                notifyEmails: '',
+                webhookUrl: '',
+                logs: [
+                    { time: '2026-07-20 01:00:00', duration: '142.5s', status: 'SUCCESS', node: '10.0.4.20', detail: 'Đã xóa 45,210 bản ghi cũ.' }
+                ]
+            }
+        };
+
+        let currentJobCode = 'JOB_EXCHANGE_RATE_SYNC';
+
+        function selectJob(jobCode) {
+            currentJobCode = jobCode;
+            const data = jobDataStore[jobCode];
+
+            // Highlight active card
+            document.querySelectorAll('.job-card').forEach(el => {
+                el.classList.remove('bg-blue-50/60', 'border-blue-600');
+                el.classList.add('border-transparent');
+            });
+            const activeCard = document.getElementById(`card-${jobCode}`);
+            activeCard.classList.add('bg-blue-50/60', 'border-blue-600');
+            activeCard.classList.remove('border-transparent');
+
+            // Populate Form Fields
+            document.getElementById('jobCode').value = data.code;
+            document.getElementById('jobName').value = data.name;
+            document.getElementById('jobType').value = data.type;
+            document.getElementById('targetComponent').value = data.target;
+            document.getElementById('targetLabel').innerText = data.targetLabel;
+            document.getElementById('jobParams').value = data.params;
+            document.getElementById('cronExpression').value = data.cron;
+            document.getElementById('cronDesc').innerText = data.cronDesc;
+            document.getElementById('misfirePolicy').value = data.misfire;
+            document.getElementById('timeoutSeconds').value = data.timeout;
+            document.getElementById('disallowConcurrent').checked = data.concurrent;
+
+            // Populate Retries & Alerts
+            document.getElementById('maxRetries').value = data.maxRetries;
+            document.getElementById('retryInterval').value = data.retryInterval;
+            document.getElementById('backoffStrategy').value = data.backoff;
+
+            document.getElementById('enableNotify').checked = data.enableNotify;
+            document.getElementById('channelEmail').checked = data.channelEmail;
+            document.getElementById('channelTelegram').checked = data.channelTelegram;
+            document.getElementById('channelSms').checked = data.channelSms;
+            document.getElementById('notifyEmails').value = data.notifyEmails;
+            document.getElementById('webhookUrl').value = data.webhookUrl;
+
+            toggleNotifySection();
+            renderLogs(data.logs);
+        }
+
+        function toggleNotifySection() {
+            const enabled = document.getElementById('enableNotify').checked;
+            const panel = document.getElementById('notify-settings-panel');
+            if (enabled) {
+                panel.classList.remove('opacity-40', 'pointer-events-none');
+            } else {
+                panel.classList.add('opacity-40', 'pointer-events-none');
+            }
+        }
+
+        function handleJobTypeChange() {
+            const type = document.getElementById('jobType').value;
+            const label = document.getElementById('targetLabel');
+            if (type === 'SPRING_BEAN') label.innerText = 'Spring Bean & Method Target';
+            else if (type === 'REST_API') label.innerText = 'REST API Endpoint URL';
+            else if (type === 'SQL_SCRIPT') label.innerText = 'Stored Procedure / SQL Command';
+        }
+
+        function renderLogs(logs) {
+            const tbody = document.getElementById('logs-table-body');
+            tbody.innerHTML = '';
+            logs.forEach(log => {
+                const statusBadge = log.status === 'SUCCESS' 
+                    ? '<span class="text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">SUCCESS</span>'
+                    : '<span class="text-red-600 bg-red-50 px-2 py-0.5 rounded border border-red-200">FAILED</span>';
+                
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50">
+                        <td class="p-2.5 font-bold">${log.time}</td>
+                        <td class="p-2.5 text-slate-500">${log.duration}</td>
+                        <td class="p-2.5">${statusBadge}</td>
+                        <td class="p-2.5 text-slate-500">${log.node}</td>
+                        <td class="p-2.5 text-slate-700 font-sans">${log.detail}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function switchTab(tab) {
+            const configTab = document.getElementById('tab-content-config');
+            const logsTab = document.getElementById('tab-content-logs');
+            const btnConfig = document.getElementById('tab-btn-config');
+            const btnLogs = document.getElementById('tab-btn-logs');
+
+            if (tab === 'config') {
+                configTab.classList.remove('hidden');
+                logsTab.classList.add('hidden');
+                btnConfig.className = 'pb-3 text-sm font-semibold text-blue-600 border-b-2 border-blue-600 flex items-center gap-2';
+                btnLogs.className = 'pb-3 text-sm font-medium text-slate-500 hover:text-slate-700 flex items-center gap-2';
+            } else {
+                configTab.classList.add('hidden');
+                logsTab.classList.remove('hidden');
+                btnLogs.className = 'pb-3 text-sm font-semibold text-blue-600 border-b-2 border-blue-600 flex items-center gap-2';
+                btnConfig.className = 'pb-3 text-sm font-medium text-slate-500 hover:text-slate-700 flex items-center gap-2';
+            }
+        }
+
+        window.onload = () => selectJob('JOB_EXCHANGE_RATE_SYNC');
+    </script>
+</body>
+</html>

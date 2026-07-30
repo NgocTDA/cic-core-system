@@ -156,6 +156,7 @@ Tài liệu này đồng bộ theo `SUB_SYSTEMS` và `DESIGN_SYSTEM_SUB` đang �
   - Quản lý chức năng (`/ops-support/system/functions`)
   - Quản lý job (`/ops-support/job-management`)
   - Quản lý Job (đơn giản) (`/ops-support/jobs`)
+  - Quản lý Job 2 (`/ops-support/job-console`)
   - Quản lý mã lỗi (`/ops-support/system/error-codes`)
 - **Quản lý thông báo**
   - Tra cứu thông báo (`/ops-support/notifications`)

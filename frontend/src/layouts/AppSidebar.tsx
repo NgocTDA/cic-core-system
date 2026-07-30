@@ -49,7 +49,9 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, onCollapse, isMobile
   }, []);
 
   React.useEffect(() => {
-    if (selectedMenuPath && !collapsed) {
+    if (collapsed) {
+      setOpenKeys([]);
+    } else if (selectedMenuPath) {
       const allMenuItems = [...activeSubSystem.menuItems, ...SHARED_MENU];
       const parents = getParentKeys(allMenuItems, selectedMenuPath);
       if (parents.length > 0) {
@@ -63,7 +65,10 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, onCollapse, isMobile
   }, [selectedMenuPath, activeSubSystem, collapsed, getParentKeys]);
 
   const onOpenChange = (keys: string[]) => {
-    if (collapsed) return;
+    if (collapsed) {
+      setOpenKeys(keys);
+      return;
+    }
 
     const rootSubmenuKeys = [
       ...activeSubSystem.menuItems.filter(i => i.children).map(i => i.key),
@@ -183,6 +188,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, onCollapse, isMobile
             <Menu
               theme="dark"
               mode="inline"
+              inlineCollapsed={collapsed}
               selectedKeys={[selectedMenuPath]}
               openKeys={openKeys}
               onOpenChange={onOpenChange}

@@ -20,6 +20,27 @@ export const mockJobs: IJobSimple[] = [
     failureCount: 2,
     successRate: 95.7,
     avgDuration: 1200000,
+
+    jobType: 'SPRING_BEAN',
+    targetComponent: 'customerSyncService.syncDailyBatch',
+    jobParamsYaml: `sourceApi: "https://crm.internal/api/v2/customers"\nbatchSize: 500\nautoValidate: true`,
+    misfirePolicy: 'FIRE_NOW',
+    timeoutSeconds: 1800,
+    disallowConcurrent: true,
+    retryInterval: 60,
+    backoffStrategy: 'EXPONENTIAL',
+    backoffMultiplier: 2,
+    notificationSettings: {
+      enableNotify: true,
+      notifyEmails: 'devops-crm@cic.org.vn, sysadmin@cic.org.vn',
+      notifyPhoneNumbers: '0901234567, 0988776655',
+      events: {
+        onStart: { enabled: true, channels: ['PUSH'] },
+        onSuccess: { enabled: true, channels: ['EMAIL'] },
+        onFailure: { enabled: true, channels: ['EMAIL', 'PUSH'] },
+        onFinalFailure: { enabled: true, channels: ['EMAIL', 'SMS', 'PUSH'] },
+      },
+    },
   },
   {
     id: 'job-002',
@@ -39,6 +60,23 @@ export const mockJobs: IJobSimple[] = [
     failureCount: 0,
     successRate: 100,
     avgDuration: 300000,
+
+    jobType: 'REST_API',
+    targetComponent: 'https://analytics-service.internal/api/v1/generate-daily',
+    jobParamsYaml: `reportType: "DAILY_OPERATIONAL"\nexportFormat: "PDF"\nautoDistribute: true`,
+    misfirePolicy: 'DO_NOTHING',
+    timeoutSeconds: 600,
+    disallowConcurrent: true,
+    retryInterval: 30,
+    backoffStrategy: 'FIXED',
+    notificationSettings: {
+      enableNotify: true,
+      notifyEmails: 'report-team@cic.org.vn',
+      events: {
+        onSuccess: { enabled: true, channels: ['EMAIL', 'PUSH'] },
+        onFinalFailure: { enabled: true, channels: ['EMAIL', 'SMS'] },
+      },
+    },
   },
   {
     id: 'job-003',
@@ -56,6 +94,20 @@ export const mockJobs: IJobSimple[] = [
     failureCount: 1,
     successRate: 96.8,
     avgDuration: 420000,
+
+    jobType: 'SQL_SCRIPT',
+    targetComponent: 'CALL proc_purge_temp_audit_logs(?);',
+    jobParamsYaml: `retentionDays: 90\nbatchDeleteSize: 5000`,
+    misfirePolicy: 'DO_NOTHING',
+    timeoutSeconds: 3600,
+    disallowConcurrent: true,
+    retryInterval: 120,
+    backoffStrategy: 'EXPONENTIAL',
+    backoffMultiplier: 3,
+    notificationSettings: {
+      enableNotify: false,
+      events: {},
+    },
   },
   {
     id: 'job-004',
@@ -73,6 +125,24 @@ export const mockJobs: IJobSimple[] = [
     failureCount: 5,
     successRate: 98.97,
     avgDuration: 90000,
+
+    jobType: 'SPRING_BEAN',
+    targetComponent: 'txnValidationEngine.validateCurrentHour',
+    jobParamsYaml: `thresholdErrorCount: 10\nstrictMode: true`,
+    misfirePolicy: 'FIRE_NOW',
+    timeoutSeconds: 300,
+    disallowConcurrent: true,
+    retryInterval: 15,
+    backoffStrategy: 'FIXED',
+    notificationSettings: {
+      enableNotify: true,
+      notifyEmails: 'ops-alerts@cic.org.vn',
+      notifyPhoneNumbers: '0912345678',
+      events: {
+        onFailure: { enabled: true, channels: ['PUSH', 'EMAIL'] },
+        onFinalFailure: { enabled: true, channels: ['SMS', 'EMAIL', 'PUSH'] },
+      },
+    },
   },
   {
     id: 'job-005',
@@ -90,6 +160,25 @@ export const mockJobs: IJobSimple[] = [
     failureCount: 3,
     successRate: 97.6,
     avgDuration: 1800000,
+
+    jobType: 'SPRING_BEAN',
+    targetComponent: 'settlementBatchProcessor.executeEndOfDay',
+    jobParamsYaml: `currency: "VND"\ncutoffHour: 23`,
+    misfirePolicy: 'FIRE_NOW',
+    timeoutSeconds: 7200,
+    disallowConcurrent: true,
+    retryInterval: 180,
+    backoffStrategy: 'EXPONENTIAL',
+    backoffMultiplier: 2,
+    notificationSettings: {
+      enableNotify: true,
+      notifyEmails: 'settlement-team@cic.org.vn',
+      events: {
+        onStart: { enabled: true, channels: ['PUSH'] },
+        onSuccess: { enabled: true, channels: ['EMAIL', 'PUSH'] },
+        onFinalFailure: { enabled: true, channels: ['EMAIL', 'SMS', 'PUSH'] },
+      },
+    },
   },
   {
     id: 'job-006',
@@ -107,6 +196,16 @@ export const mockJobs: IJobSimple[] = [
     failureCount: 0,
     successRate: 100,
     avgDuration: 2400000,
+
+    jobType: 'REST_API',
+    targetComponent: 'https://backup-mgr.internal/api/v1/trigger-full-backup',
+    jobParamsYaml: `backupType: "FULL"\nstorageDestination: "s3://cic-db-backups/"`,
+    misfirePolicy: 'DO_NOTHING',
+    timeoutSeconds: 7200,
+    disallowConcurrent: true,
+    retryInterval: 300,
+    backoffStrategy: 'EXPONENTIAL',
+    backoffMultiplier: 2,
   },
   {
     id: 'job-007',
@@ -124,6 +223,15 @@ export const mockJobs: IJobSimple[] = [
     failureCount: 0,
     successRate: 100,
     avgDuration: 180000,
+
+    jobType: 'SQL_SCRIPT',
+    targetComponent: 'CALL proc_purge_audit_logs(?);',
+    jobParamsYaml: `retentionMonths: 12`,
+    misfirePolicy: 'DO_NOTHING',
+    timeoutSeconds: 1800,
+    disallowConcurrent: true,
+    retryInterval: 60,
+    backoffStrategy: 'FIXED',
   },
   {
     id: 'job-008',
@@ -141,18 +249,36 @@ export const mockJobs: IJobSimple[] = [
     failureCount: 4,
     successRate: 98.9,
     avgDuration: 45000,
+
+    jobType: 'SPRING_BEAN',
+    targetComponent: 'exchangeRateSyncService.syncDailyRates',
+    jobParamsYaml: `sourceApi: "https://api.bank.com/v1/rates"\ncurrencyList: ["USD", "EUR", "JPY", "GBP"]`,
+    misfirePolicy: 'FIRE_NOW',
+    timeoutSeconds: 300,
+    disallowConcurrent: true,
+    retryInterval: 30,
+    backoffStrategy: 'EXPONENTIAL',
+    backoffMultiplier: 2,
+    notificationSettings: {
+      enableNotify: true,
+      notifyEmails: 'forex-dev@cic.org.vn',
+      events: {
+        onFailure: { enabled: true, channels: ['EMAIL', 'PUSH'] },
+        onFinalFailure: { enabled: true, channels: ['EMAIL', 'SMS', 'PUSH'] },
+      },
+    },
   },
 ];
 
 export const mockJobRuns: IJobRunSimple[] = [
-  { id: 'run-001', jobId: 'job-001', status: 'SUCCESS', startTime: '2026-06-27 02:00:12', endTime: '2026-06-27 02:20:18', duration: 1206000, triggeredBy: 'Hệ thống' },
-  { id: 'run-002', jobId: 'job-001', status: 'SUCCESS', startTime: '2026-06-26 02:00:10', endTime: '2026-06-26 02:19:55', duration: 1185000, triggeredBy: 'Hệ thống' },
-  { id: 'run-003', jobId: 'job-001', status: 'FAILED', startTime: '2026-06-25 02:00:11', endTime: '2026-06-25 02:03:40', duration: 209000, triggeredBy: 'Hệ thống', errorMessage: 'Mất kết nối tới CRM khi đồng bộ batch #4.' },
-  { id: 'run-004', jobId: 'job-002', status: 'SUCCESS', startTime: '2026-06-26 08:00:03', endTime: '2026-06-26 08:05:01', duration: 298000, triggeredBy: 'Hệ thống' },
-  { id: 'run-005', jobId: 'job-004', status: 'FAILED', startTime: '2026-06-27 10:00:45', endTime: '2026-06-27 10:01:50', duration: 65000, triggeredBy: 'Hệ thống', errorMessage: 'Phát hiện 5 bản ghi giao dịch không hợp lệ.' },
-  { id: 'run-006', jobId: 'job-004', status: 'SUCCESS', startTime: '2026-06-27 09:00:40', endTime: '2026-06-27 09:02:05', duration: 85000, triggeredBy: 'Hệ thống' },
-  { id: 'run-007', jobId: 'job-005', status: 'SUCCESS', startTime: '2026-06-26 23:00:30', endTime: '2026-06-26 23:31:00', duration: 1830000, triggeredBy: 'nguyenvana' },
-  { id: 'run-008', jobId: 'job-008', status: 'SUCCESS', startTime: '2026-06-27 08:00:02', endTime: '2026-06-27 08:00:48', duration: 46000, triggeredBy: 'Hệ thống' },
+  { id: 'run-001', jobId: 'job-001', status: 'SUCCESS', startTime: '2026-06-27 02:00:12', endTime: '2026-06-27 02:20:18', duration: 1206000, triggeredBy: 'Hệ thống', nodeIp: '10.0.4.12' },
+  { id: 'run-002', jobId: 'job-001', status: 'SUCCESS', startTime: '2026-06-26 02:00:10', endTime: '2026-06-26 02:19:55', duration: 1185000, triggeredBy: 'Hệ thống', nodeIp: '10.0.4.12' },
+  { id: 'run-003', jobId: 'job-001', status: 'FAILED', startTime: '2026-06-25 02:00:11', endTime: '2026-06-25 02:03:40', duration: 209000, triggeredBy: 'Hệ thống', errorMessage: 'Mất kết nối tới CRM khi đồng bộ batch #4.', nodeIp: '10.0.4.11' },
+  { id: 'run-004', jobId: 'job-002', status: 'SUCCESS', startTime: '2026-06-26 08:00:03', endTime: '2026-06-26 08:05:01', duration: 298000, triggeredBy: 'Hệ thống', nodeIp: '10.0.4.15' },
+  { id: 'run-005', jobId: 'job-004', status: 'FAILED', startTime: '2026-06-27 10:00:45', endTime: '2026-06-27 10:01:50', duration: 65000, triggeredBy: 'Hệ thống', errorMessage: 'Phát hiện 5 bản ghi giao dịch không hợp lệ.', nodeIp: '10.0.4.15' },
+  { id: 'run-006', jobId: 'job-004', status: 'SUCCESS', startTime: '2026-06-27 09:00:40', endTime: '2026-06-27 09:02:05', duration: 85000, triggeredBy: 'Hệ thống', nodeIp: '10.0.4.14' },
+  { id: 'run-007', jobId: 'job-005', status: 'SUCCESS', startTime: '2026-06-26 23:00:30', endTime: '2026-06-26 23:31:00', duration: 1830000, triggeredBy: 'nguyenvana', nodeIp: '10.0.4.20' },
+  { id: 'run-008', jobId: 'job-008', status: 'SUCCESS', startTime: '2026-06-27 08:00:02', endTime: '2026-06-27 08:00:48', duration: 46000, triggeredBy: 'Hệ thống', nodeIp: '10.0.4.12' },
 ];
 
 export const mockJobChangeLogs: IJobChangeLog[] = [
@@ -162,3 +288,4 @@ export const mockJobChangeLogs: IJobChangeLog[] = [
   { id: 'log-004', jobId: 'job-002', time: '2026-06-11 08:00:00', user: 'nguyenvana', action: 'Tạo mới' },
   { id: 'log-005', jobId: 'job-007', time: '2026-06-01 02:05:00', user: 'lethic', action: 'Vô hiệu hóa', field: 'Trạng thái', oldValue: 'ACTIVE', newValue: 'INACTIVE', note: 'Tạm dừng theo yêu cầu vận hành' },
 ];
+

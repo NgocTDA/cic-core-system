@@ -2,12 +2,14 @@
 
 import React, { useState } from 'react';
 import { Cron } from 'react-js-cron';
-import { Input, Select, Switch, Space, Typography } from 'antd';
+import { Input, Select, Segmented, Space, Typography } from 'antd';
 import { CheckCircleOutlined, ClockCircleOutlined, WarningOutlined } from '@ant-design/icons';
 import { colors, spacing, radius, typography } from '@/design-system';
-import { viCronLocale, TIMEZONE_OPTIONS, humanizeCron, isValidCron } from './cronLocale';
+import { viCronLocale, TIMEZONE_OPTIONS, describeCron, isValidCron } from './cronLocale';
 
 const { Text } = Typography;
+
+type ScheduleMode = 'picker' | 'cron';
 
 interface CronSchedulerProps {
   cron: string;
@@ -18,6 +20,11 @@ interface CronSchedulerProps {
   errorText?: string;
 }
 
+const MODE_OPTIONS = [
+  { value: 'picker' as ScheduleMode, label: 'Chọn lịch' },
+  { value: 'cron' as ScheduleMode, label: 'Cron' },
+];
+
 const CronScheduler: React.FC<CronSchedulerProps> = ({
   cron,
   timezone,
@@ -25,7 +32,7 @@ const CronScheduler: React.FC<CronSchedulerProps> = ({
   onTimezoneChange,
   errorText,
 }) => {
-  const [advanced, setAdvanced] = useState(false);
+  const [mode, setMode] = useState<ScheduleMode>('picker');
   const invalid = !isValidCron(cron);
 
   return (
@@ -37,35 +44,16 @@ const CronScheduler: React.FC<CronSchedulerProps> = ({
         background: colors.bg.container,
       }}
     >
-      {/* Bộ chọn ngôn ngữ tự nhiên */}
-      <div className="cic-cron-wrap" style={{ display: 'flex', flexWrap: 'wrap', gap: spacing[2], alignItems: 'center' }}>
-        <Cron
-          value={cron}
-          setValue={(val: string) => onCronChange(val)}
-          locale={viCronLocale}
-          clearButton={false}
-          humanizeLabels
-          displayError
-        />
-      </div>
-
-      {/* Toggle nâng cao + Timezone */}
+      {/* Hàng điều khiển: Múi giờ + Kiểu cấu hình */}
       <div
         style={{
           display: 'flex',
           flexWrap: 'wrap',
           alignItems: 'center',
-          gap: spacing[4],
-          marginTop: spacing[3],
+          gap: spacing[5],
+          marginBottom: spacing[4],
         }}
       >
-        <Space size="small">
-          <Text style={{ fontSize: typography.fontSize.sm, color: colors.text.secondary }}>
-            Hiện nâng cao
-          </Text>
-          <Switch size="small" checked={advanced} onChange={setAdvanced} />
-        </Space>
-
         <Space size="small">
           <Text style={{ fontSize: typography.fontSize.sm, color: colors.text.secondary }}>Múi giờ</Text>
           <Select
@@ -76,13 +64,41 @@ const CronScheduler: React.FC<CronSchedulerProps> = ({
             style={{ minWidth: 200 }}
           />
         </Space>
+
+        <Space size="small">
+          <Text style={{ fontSize: typography.fontSize.sm, color: colors.text.secondary }}>Kiểu cấu hình</Text>
+          <Segmented<ScheduleMode>
+            size="small"
+            value={mode}
+            onChange={(val) => setMode(val)}
+            options={MODE_OPTIONS}
+          />
+        </Space>
       </div>
 
-      {/* Ô nhập cron thô (chế độ nâng cao) */}
-      {advanced && (
-        <div style={{ marginTop: spacing[3] }}>
-          <Text style={{ fontSize: typography.fontSize.sm, color: colors.text.secondary, display: 'block', marginBottom: spacing[1] }}>
-            Biểu thức cron (5 trường)
+      {/* Vùng cấu hình — chỉ hiển thị theo một kiểu tại một thời điểm */}
+      {mode === 'picker' ? (
+        <div className="cic-cron-wrap" style={{ display: 'flex', flexWrap: 'wrap', gap: spacing[2], alignItems: 'center' }}>
+          <Cron
+            value={cron}
+            setValue={(val: string) => onCronChange(val)}
+            locale={viCronLocale}
+            clearButton={false}
+            humanizeLabels
+            displayError
+          />
+        </div>
+      ) : (
+        <div>
+          <Text
+            style={{
+              fontSize: typography.fontSize.sm,
+              color: colors.text.secondary,
+              display: 'block',
+              marginBottom: spacing[1],
+            }}
+          >
+            Biểu thức cron (5 trường: phút giờ ngày tháng thứ)
           </Text>
           <Input
             value={cron}
@@ -93,10 +109,10 @@ const CronScheduler: React.FC<CronSchedulerProps> = ({
         </div>
       )}
 
-      {/* Dòng mô tả người-đọc-được / báo lỗi */}
+      {/* Dòng diễn giải người-đọc-được / báo lỗi */}
       <div
         style={{
-          marginTop: spacing[3],
+          marginTop: spacing[4],
           display: 'flex',
           alignItems: 'center',
           gap: spacing[2],
@@ -114,7 +130,7 @@ const CronScheduler: React.FC<CronSchedulerProps> = ({
         ) : (
           <>
             {cron ? <CheckCircleOutlined /> : <ClockCircleOutlined />}
-            <Text style={{ color: colors.primary[600] }}>{humanizeCron(cron)}.</Text>
+            <Text style={{ color: colors.primary[600] }}>{describeCron(cron)}.</Text>
           </>
         )}
       </div>

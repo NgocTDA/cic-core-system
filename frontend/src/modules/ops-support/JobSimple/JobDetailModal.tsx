@@ -1,13 +1,13 @@
 'use client';
 
 import React from 'react';
-import { Modal, Descriptions, Progress, Table, Button, Space, Divider, Typography, Statistic, Row, Col, Collapse, Tag } from 'antd';
+import { Modal, Descriptions, Progress, Table, Button, Space, Divider, Typography, Statistic, Row, Col, Collapse, Tag, Badge } from 'antd';
 import type { TableProps } from 'antd';
-import { PlayCircleOutlined, StopOutlined, HistoryOutlined } from '@ant-design/icons';
+import { PlayCircleOutlined, StopOutlined, HistoryOutlined, BellOutlined, CodeOutlined, SlidersOutlined } from '@ant-design/icons';
 import { StatusTag, CodeText, STATUS_CONFIG } from '@/components/ui';
 import { colors, spacing, typography } from '@/design-system';
 import { humanizeCron, TIMEZONE_OPTIONS } from './cronLocale';
-import type { IJobSimple, IJobRunSimple, IJobChangeLog } from './types';
+import type { IJobSimple, IJobRunSimple, IJobChangeLog, NotificationChannel } from './types';
 
 const { Text } = Typography;
 
@@ -39,6 +39,32 @@ const formatDuration = (ms?: number) => {
 };
 
 const tzLabel = (tz?: string) => TIMEZONE_OPTIONS.find((t) => t.value === tz)?.label ?? tz ?? '—';
+
+const formatJobTypeLabel = (type?: string) => {
+  switch (type) {
+    case 'SPRING_BEAN':
+      return 'Java Bean (Spring Component)';
+    case 'REST_API':
+      return 'REST API Endpoint';
+    case 'SQL_SCRIPT':
+      return 'SQL Stored Procedure / Script';
+    default:
+      return type ?? '—';
+  }
+};
+
+const formatChannelTag = (channel: NotificationChannel) => {
+  switch (channel) {
+    case 'SMS':
+      return <Tag color="orange" key="SMS">SMS</Tag>;
+    case 'PUSH':
+      return <Tag color="blue" key="PUSH">Push (Web)</Tag>;
+    case 'EMAIL':
+      return <Tag color="green" key="EMAIL">Email</Tag>;
+    default:
+      return <Tag key={channel}>{channel}</Tag>;
+  }
+};
 
 const JobDetailModal: React.FC<JobDetailModalProps> = ({
   open,
@@ -79,6 +105,13 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
       width: 100,
       render: (v?: number) => formatDuration(v),
     },
+    {
+      title: 'Node IP',
+      dataIndex: 'nodeIp',
+      key: 'nodeIp',
+      width: 110,
+      render: (ip?: string) => (ip ? <CodeText>{ip}</CodeText> : '—'),
+    },
     { title: 'Kích hoạt bởi', dataIndex: 'triggeredBy', key: 'triggeredBy', width: 120 },
     {
       title: 'Ghi chú',
@@ -90,12 +123,19 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
     },
   ];
 
+  const notifyEventsSummary = [
+    { key: 'onStart', label: 'Bắt đầu Job', config: job.notificationSettings?.events?.onStart },
+    { key: 'onSuccess', label: 'Kết thúc (Thành công)', config: job.notificationSettings?.events?.onSuccess },
+    { key: 'onFailure', label: 'Job gặp Lỗi', config: job.notificationSettings?.events?.onFailure },
+    { key: 'onFinalFailure', label: 'Thất bại hoàn toàn', config: job.notificationSettings?.events?.onFinalFailure },
+  ];
+
   return (
     <Modal
       title="Chi tiết job"
       open={open}
       onCancel={onClose}
-      width={720}
+      width={780}
       footer={
         <div style={{ display: 'flex', justifyContent: 'center', gap: spacing[3] }}>
           {running ? (
@@ -113,29 +153,111 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
         </div>
       }
     >
-      <Descriptions column={1} size="small" bordered style={{ marginTop: spacing[2] }}>
-        <Descriptions.Item label="Mã job">
+      <Descriptions column={2} size="small" bordered style={{ marginTop: spacing[2] }}>
+        <Descriptions.Item label="Mã job" span={1}>
           <CodeText>{job.code}</CodeText>
         </Descriptions.Item>
-        <Descriptions.Item label="Tên job">{job.name}</Descriptions.Item>
-        <Descriptions.Item label="Mô tả">{job.description ?? '—'}</Descriptions.Item>
-        <Descriptions.Item label="Lịch chạy">
-          <Space size="small" wrap>
+        <Descriptions.Item label="Loại xử lý" span={1}>
+          <Tag color="purple">{formatJobTypeLabel(job.jobType)}</Tag>
+        </Descriptions.Item>
+
+        <Descriptions.Item label="Tên job" span={2}>
+          <Text strong>{job.name}</Text>
+        </Descriptions.Item>
+
+        <Descriptions.Item label="Mô tả" span={2}>
+          {job.description ?? '—'}
+        </Descriptions.Item>
+
+        <Descriptions.Item label="Đích thực thi" span={2}>
+          <CodeText>{job.targetComponent ?? '—'}</CodeText>
+        </Descriptions.Item>
+
+        {job.jobParamsYaml && (
+          <Descriptions.Item label="Tham số YAML Payload" span={2}>
+            <pre style={{ margin: 0, padding: spacing[2], backgroundColor: '#1e293b', color: '#38bdf8', borderRadius: 6, fontSize: typography.fontSize.xs, fontFamily: 'monospace' }}>
+              {job.jobParamsYaml}
+            </pre>
+          </Descriptions.Item>
+        )}
+
+        <Descriptions.Item label="Lịch chạy" span={1}>
+          <Space size="small" direction="vertical">
             <Text>{humanizeCron(job.cron)}</Text>
             <CodeText muted>{job.cron}</CodeText>
           </Space>
         </Descriptions.Item>
-        <Descriptions.Item label="Múi giờ">{tzLabel(job.timezone)}</Descriptions.Item>
-        <Descriptions.Item label="Số lần thử lại khi thất bại">{job.maxRetries} lần</Descriptions.Item>
-        <Descriptions.Item label="Trạng thái">
+        <Descriptions.Item label="Múi giờ" span={1}>
+          {tzLabel(job.timezone)}
+        </Descriptions.Item>
+
+        <Descriptions.Item label="Chính sách Misfire" span={1}>
+          {job.misfirePolicy === 'FIRE_NOW' ? 'Fire Now (Chạy bù ngay)' : 'Do Nothing (Bỏ qua)'}
+        </Descriptions.Item>
+        <Descriptions.Item label="Timeout tối đa" span={1}>
+          {job.timeoutSeconds ? `${job.timeoutSeconds} giây` : '—'}
+        </Descriptions.Item>
+
+        <Descriptions.Item label="Chống chạy song song" span={1}>
+          {job.disallowConcurrent ? <Badge status="success" text="Đã kích hoạt" /> : <Badge status="default" text="Tắt" />}
+        </Descriptions.Item>
+        <Descriptions.Item label="Thử lại khi thất bại" span={1}>
+          {job.maxRetries} lần (Khoảng chờ: {job.retryInterval ?? 30}s, {job.backoffStrategy === 'EXPONENTIAL' ? `Exponential ${job.backoffMultiplier ?? 2}x` : 'Cố định'})
+        </Descriptions.Item>
+
+        <Descriptions.Item label="Trạng thái" span={1}>
           <StatusTag status={job.status} />
         </Descriptions.Item>
-        <Descriptions.Item label="Trạng thái chạy">
+        <Descriptions.Item label="Trạng thái chạy" span={1}>
           <StatusTag status={job.runStatus} />
         </Descriptions.Item>
-        <Descriptions.Item label="Lần chạy cuối">{job.lastRunTime ?? '—'}</Descriptions.Item>
-        <Descriptions.Item label="Lần chạy kế tiếp">{job.nextRunTime ?? '—'}</Descriptions.Item>
+
+        <Descriptions.Item label="Lần chạy cuối" span={1}>
+          {job.lastRunTime ?? '—'}
+        </Descriptions.Item>
+        <Descriptions.Item label="Lần chạy kế tiếp" span={1}>
+          {job.nextRunTime ?? '—'}
+        </Descriptions.Item>
       </Descriptions>
+
+      {/* Cấu hình Thông báo Tóm tắt */}
+      <Divider orientation="left" style={{ marginTop: spacing[4] }}>
+        <Space>
+          <BellOutlined style={{ color: colors.text.secondary }} />
+          <Text style={{ fontSize: typography.fontSize.sm, color: colors.text.secondary }}>Cấu hình Cảnh báo & Thông báo</Text>
+        </Space>
+      </Divider>
+      
+      {job.notificationSettings?.enableNotify ? (
+        <Descriptions column={1} size="small" bordered>
+          <Descriptions.Item label="Email nhận tin">
+            {job.notificationSettings.notifyEmails || '—'}
+          </Descriptions.Item>
+          <Descriptions.Item label="SĐT nhận SMS">
+            {job.notificationSettings.notifyPhoneNumbers || '—'}
+          </Descriptions.Item>
+          <Descriptions.Item label="Kênh thông báo theo Sự kiện">
+            <Space direction="vertical" style={{ width: '100%' }}>
+              {notifyEventsSummary.map((item) => (
+                <div key={item.key} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Text style={{ fontSize: typography.fontSize.xs }}>{item.label}:</Text>
+                  <div>
+                    {item.config?.enabled && item.config.channels.length > 0 ? (
+                      item.config.channels.map((ch) => formatChannelTag(ch))
+                    ) : (
+                      <Text type="secondary" style={{ fontSize: typography.fontSize.xs }}>Tắt</Text>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </Space>
+          </Descriptions.Item>
+        </Descriptions>
+      ) : (
+        <Text type="secondary" style={{ fontSize: typography.fontSize.xs }}>
+          Cảnh báo sự cố chưa được bật cho Job này.
+        </Text>
+      )}
 
       {running && (
         <div style={{ marginTop: spacing[4] }}>
@@ -184,7 +306,7 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
         locale={{ emptyText: 'Chưa có lịch sử chạy' }}
       />
 
-      {/* Lịch sử thay đổi (audit) — mặc định thu gọn, theo chuẩn màn chi tiết */}
+      {/* Lịch sử thay đổi (audit) */}
       <Collapse
         style={{ marginTop: spacing[5] }}
         items={[
@@ -218,3 +340,4 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
 };
 
 export default JobDetailModal;
+
