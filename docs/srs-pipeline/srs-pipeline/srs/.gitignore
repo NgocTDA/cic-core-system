@@ -1,0 +1,4 @@
+build/
+~$*.docx
+*.docx.bak
+*.tmp

@@ -1,0 +1,9 @@
+# File Word la binary — Git khong merge duoc noi dung.
+# Quy tac to chuc "1 file = 1 chu so huu" moi la thu ngan xung dot, khong phai cong cu.
+*.docx binary
+*.dotx binary
+*.xlsx binary
+*.pdf  binary
+
+# Bat LFS neu repo bat dau phinh (nhieu anh mockup nhung trong file):
+# *.docx filter=lfs diff=lfs merge=lfs -text

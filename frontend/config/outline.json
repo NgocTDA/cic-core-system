@@ -1,0 +1,1631 @@
+{
+  "schema": "cic-srs-outline/1",
+  "outlineVersion": "3.0",
+  "sourceSha256": "4053f1e5bd0f79417471243bbe0c22db7350eee5d311a3d973e8de5f2336d70c",
+  "usable": 9355,
+  "baseProfiles": [
+    "UI",
+    "TICHHOP",
+    "JOB",
+    "PHANTICH"
+  ],
+  "title": "Chức năng [MÃ_CHỨC_NĂNG] «Tên chức năng»",
+  "featureTitle": "Tính năng [MÃ_TÍNH_NĂNG] «Tên tính năng»",
+  "featureNote": "Nhân bản toàn bộ khối này (gồm các mục con bên dưới) cho mỗi tính năng.",
+  "diagramMark": "[[DIAGRAM: {ma}_seq-01]]",
+  "codeRules": {
+    "func": {
+      "label": "Chức năng",
+      "form": "FUNC-«NHÓM»-«3 số»",
+      "example": "FUNC-NSD-001",
+      "pattern": "^FUNC-[A-Z0-9]+-\\d{3}$"
+    },
+    "feat": {
+      "label": "Tính năng",
+      "form": "FEAT-«mã chức năng bỏ tiền tố»-«2 số»",
+      "example": "FEAT-NSD-001-02",
+      "pattern": "^FEAT-[A-Z0-9]+-\\d{3}-\\d{2}$"
+    },
+    "br": {
+      "label": "Quy tắc nghiệp vụ",
+      "form": "BR-«mã chức năng»-«3 số»",
+      "example": "BR-FUNC-NSD-001-001",
+      "pattern": "^BR-[A-Z0-9\\-]+-\\d{3}$"
+    },
+    "msg": {
+      "label": "Thông báo",
+      "form": "[LOẠI]_[NHÓM]_[3 số]",
+      "example": "ERR_NGUOIDUNG_001",
+      "pattern": "^(ERR|WAR|INF|SUC|CONF)_[A-Z0-9]+_\\d{3}$"
+    },
+    "seq": {
+      "label": "Sơ đồ",
+      "form": "«mã chức năng»_seq-«2 số»",
+      "example": "FUNC-TCH-002_seq-01",
+      "pattern": "^FUNC-[A-Z0-9]+-\\d{3}_seq-\\d{2}$"
+    }
+  },
+  "guidance": [
+    "Chỉ dùng style có sẵn: Heading 3/4/5, T-NoiDung, T-Gach -, T-Gach +, TableStyle3. Không tạo style mới, không định dạng trực tiếp.",
+    "Cấp cao nhất của file này LUÔN là Heading 3. Không dùng Heading 1/Heading 2.",
+    "Không gõ tay số thứ tự mục. Số do Word tự sinh; gõ tay sẽ sai sau khi ghép.",
+    "Không xoá mục Heading 4/Heading 5 nào. Mục không áp dụng thì ghi “Không áp dụng”.",
+    "Nhân bản khối “Tính năng” cho mỗi tính năng. Chức năng chỉ có 1 tính năng vẫn giữ tầng này.",
+    "Sơ đồ trình tự viết bằng PlantUML, lưu ở diagrams/. Trong file này chỉ để placeholder [[DIAGRAM: mã_seq-01]] — script build tự render và chèn ảnh có caption.",
+    "Ảnh khác đánh số bằng References > Insert Caption. Không gõ tay “Hình 3”, “Bảng 5”.",
+    "Tham chiếu sang chức năng khác: gõ theo mã. Không dùng Cross-reference sang file khác.",
+    "Vai trò, đơn vị/hệ thống, mã thông báo, mã trạng thái, component: chỉ tham chiếu theo mã đã đăng ký ở tài liệu tổng. Không định nghĩa lại trong file con.",
+    "Mục “Lịch sử thay đổi” do script build tự đổ từ Git log — không gõ tay.",
+    "Chức năng có tính toán phức tạp: KHÔNG đặc tả thuật toán ở đây. SRS khai báo quy tắc nào áp dụng ở đâu (mã BR); thuật toán định nghĩa trong thư viện đặc tả REL."
+  ],
+  "profiles": {
+    "UI": {
+      "ten": "Chức năng / Tính năng có giao diện",
+      "requireDiagram": false,
+      "variantOf": null,
+      "before": [
+        {
+          "name": "Mô tả chung",
+          "note": "Loại chức năng: điền đúng một trong UI / TICHHOP / JOB / PHANTICH / DANHMUC. Vị trí chức năng: đường dẫn menu, hoặc endpoint, hoặc tên job. Hậu điều kiện: trạng thái hệ thống sau khi thực hiện thành công.",
+          "tables": [
+            {
+              "headers": [
+                "Hạng mục",
+                "Nội dung"
+              ],
+              "widths": [
+                2400,
+                6955
+              ],
+              "rows": 14,
+              "labels": [
+                "Loại chức năng",
+                "Mã chức năng",
+                "Tên chức năng",
+                "Mô tả chức năng",
+                "Tác nhân chính",
+                "Tác nhân phụ",
+                "Vị trí chức năng",
+                "Điều kiện tiên quyết",
+                "Hậu điều kiện",
+                "Chức năng tiền đề",
+                "Chức năng kế tiếp",
+                "Chức năng dùng chung",
+                "Mã yêu cầu BRD",
+                "Yêu cầu đặc thù"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Ma trận phân quyền",
+          "note": "Mã vai trò lấy từ Danh mục vai trò ở tài liệu tổng, không đặt tên tự do. Ô đánh “X” = được phép. Phạm vi dữ liệu: Toàn hệ thống / Theo đơn vị / Theo vùng / Bản ghi của mình. Mỗi tính năng khai báo phía dưới phải có ít nhất một dòng ở bảng này.",
+          "tables": [
+            {
+              "headers": [
+                "STT",
+                "Mã tính năng",
+                "Tính năng / Thao tác",
+                "«MÃ_VAI_TRÒ_1»",
+                "«MÃ_VAI_TRÒ_2»",
+                "«MÃ_VAI_TRÒ_3»",
+                "Phạm vi dữ liệu"
+              ],
+              "widths": [
+                500,
+                1900,
+                2400,
+                800,
+                800,
+                800,
+                2155
+              ],
+              "rows": 5
+            }
+          ]
+        },
+        {
+          "name": "Luồng màn hình",
+          "note": "Sơ đồ điều hướng giữa các màn hình. Chức năng chỉ có một màn hình thì ghi “Không áp dụng”."
+        },
+        {
+          "name": "Sơ đồ trạng thái",
+          "note": "Chỉ lập khi đối tượng nghiệp vụ có vòng đời trạng thái. Mã trạng thái phải khớp mục “Danh sách trạng thái trên hệ thống”. Không có thì ghi “Không áp dụng”."
+        },
+        {
+          "name": "Luồng nghiệp vụ",
+          "note": "Luồng nghiệp vụ tổng thể của chức năng, xuyên qua nhiều tính năng. Chi tiết từng bước mô tả ở mục Tính năng tương ứng."
+        },
+        {
+          "name": "Quy tắc nghiệp vụ",
+          "note": "Mã theo dạng BR-«MÃ_CHỨC_NĂNG»-001. Bảng thành phần và bộ test case tham chiếu theo mã này, không chép lại nội dung quy tắc.",
+          "tables": [
+            {
+              "headers": [
+                "Mã quy tắc",
+                "Nội dung quy tắc",
+                "Áp dụng cho",
+                "Mã thông báo khi vi phạm"
+              ],
+              "widths": [
+                2200,
+                3355,
+                1900,
+                1900
+              ],
+              "rows": 5
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "name": "Mô tả yêu cầu",
+          "note": "Người dùng làm gì, hệ thống trả về gì, ràng buộc và trường hợp ngoại lệ."
+        },
+        {
+          "name": "Luồng xử lý",
+          "tables": [
+            {
+              "label": "Luồng chính",
+              "headers": [
+                "Bước",
+                "Tác nhân",
+                "Hành động",
+                "Phản hồi của hệ thống"
+              ],
+              "widths": [
+                700,
+                1800,
+                3400,
+                3455
+              ],
+              "rows": 4
+            },
+            {
+              "label": "Luồng thay thế",
+              "headers": [
+                "Mã luồng",
+                "Điều kiện rẽ nhánh",
+                "Xử lý",
+                "Quay về bước"
+              ],
+              "widths": [
+                1300,
+                2800,
+                3400,
+                1855
+              ],
+              "rows": 3
+            },
+            {
+              "label": "Luồng ngoại lệ",
+              "headers": [
+                "Mã luồng",
+                "Tình huống ngoại lệ",
+                "Xử lý của hệ thống",
+                "Mã thông báo"
+              ],
+              "widths": [
+                1300,
+                2800,
+                3400,
+                1855
+              ],
+              "rows": 3
+            }
+          ]
+        },
+        {
+          "name": "Thiết kế giao diện",
+          "note": "Chèn ảnh mockup, đặt In line with text. Đánh số hình bằng Insert Caption.",
+          "noteMd": "Đính kèm ảnh mockup vào trang, đặt tên file theo mã tính năng (vd FEAT-NSD-001-02_tra-cuu.png)."
+        },
+        {
+          "name": "Mô tả các thành phần trên giao diện",
+          "note": "Đây là nơi duy nhất khai báo danh sách trường. Không lặp lại ở mục khác.",
+          "tables": [
+            {
+              "headers": [
+                "STT",
+                "Tên thành phần",
+                "Loại control",
+                "Bắt buộc",
+                "Giá trị mặc định / Nguồn dữ liệu",
+                "Ràng buộc (mã BR)",
+                "Mã thông báo"
+              ],
+              "widths": [
+                500,
+                1600,
+                1100,
+                800,
+                1800,
+                2000,
+                1555
+              ],
+              "rows": 5
+            }
+          ]
+        },
+        {
+          "name": "Xử lý sự kiện và thao tác",
+          "tables": [
+            {
+              "headers": [
+                "STT",
+                "Sự kiện / Thao tác",
+                "Điều kiện",
+                "Xử lý của hệ thống",
+                "Kết quả / Mã thông báo"
+              ],
+              "widths": [
+                500,
+                2000,
+                1800,
+                3000,
+                2055
+              ],
+              "rows": 5
+            }
+          ]
+        },
+        {
+          "name": "Thông báo",
+          "note": "Mã theo quy ước [LOẠI]_[NHÓM]_[SỐ] đã đăng ký ở mục “Danh sách thông báo trên hệ thống”. Mã mới phải đăng ký với Lead BA trước khi dùng.",
+          "tables": [
+            {
+              "headers": [
+                "STT",
+                "Mã thông báo",
+                "Loại",
+                "Nội dung",
+                "Điều kiện phát sinh"
+              ],
+              "widths": [
+                500,
+                2000,
+                1200,
+                3300,
+                2355
+              ],
+              "rows": 4
+            }
+          ]
+        }
+      ],
+      "after": [
+        {
+          "name": "Dữ liệu và tích hợp",
+          "note": "Loại: Bảng CSDL / API / File / Hàng đợi. Chiều: Đọc / Ghi / Vào / Ra. Dùng để dựng ma trận CRUD và xác định phạm vi tác động khi đổi dữ liệu.",
+          "tables": [
+            {
+              "headers": [
+                "STT",
+                "Loại",
+                "Tên đối tượng",
+                "Chiều",
+                "Mô tả / Ghi chú"
+              ],
+              "widths": [
+                500,
+                1400,
+                2400,
+                1200,
+                3855
+              ],
+              "rows": 4
+            }
+          ]
+        },
+        {
+          "name": "Vấn đề còn mở",
+          "note": "Mục này PHẢI rỗng thì chức năng mới được chuyển sang status = approved.",
+          "tables": [
+            {
+              "headers": [
+                "STT",
+                "Nội dung vấn đề",
+                "Người quyết định",
+                "Hạn chốt",
+                "Trạng thái"
+              ],
+              "widths": [
+                500,
+                3800,
+                1800,
+                1400,
+                1855
+              ],
+              "rows": 3
+            }
+          ]
+        },
+        {
+          "name": "Lịch sử thay đổi",
+          "note": "Script build tự đổ nội dung từ Git log của chính file này. Không gõ tay.",
+          "tables": [
+            {
+              "headers": [
+                "Phiên bản",
+                "Ngày",
+                "Người thực hiện",
+                "Mô tả thay đổi"
+              ],
+              "widths": [
+                1100,
+                1400,
+                2200,
+                4655
+              ],
+              "rows": 1
+            }
+          ]
+        }
+      ]
+    },
+    "TICHHOP": {
+      "ten": "Tích hợp hệ thống",
+      "requireDiagram": true,
+      "variantOf": null,
+      "before": [
+        {
+          "name": "Mô tả chung",
+          "note": "Loại chức năng: điền đúng một trong UI / TICHHOP / JOB / PHANTICH / DANHMUC. Vị trí chức năng: đường dẫn menu, hoặc endpoint, hoặc tên job. Hậu điều kiện: trạng thái hệ thống sau khi thực hiện thành công.",
+          "tables": [
+            {
+              "headers": [
+                "Hạng mục",
+                "Nội dung"
+              ],
+              "widths": [
+                2400,
+                6955
+              ],
+              "rows": 14,
+              "labels": [
+                "Loại chức năng",
+                "Mã chức năng",
+                "Tên chức năng",
+                "Mô tả chức năng",
+                "Tác nhân chính",
+                "Tác nhân phụ",
+                "Vị trí chức năng",
+                "Điều kiện tiên quyết",
+                "Hậu điều kiện",
+                "Chức năng tiền đề",
+                "Chức năng kế tiếp",
+                "Chức năng dùng chung",
+                "Mã yêu cầu BRD",
+                "Yêu cầu đặc thù"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Ma trận phân quyền",
+          "note": "Dòng là mã đơn vị / hệ thống được phép gọi, lấy từ Danh mục đơn vị và hệ thống ở tài liệu tổng (theo mã định danh nội bộ 19 ký tự). Quota ghi theo số lời gọi trên đơn vị trên ngày. Mỗi tính năng khai báo phía dưới phải có ít nhất một dòng ở bảng này.",
+          "tables": [
+            {
+              "headers": [
+                "STT",
+                "Mã tính năng",
+                "Endpoint / Thao tác",
+                "Mã đơn vị / hệ thống được phép",
+                "Phạm vi dữ liệu",
+                "Quota / Giới hạn"
+              ],
+              "widths": [
+                500,
+                1750,
+                2000,
+                2200,
+                1500,
+                1405
+              ],
+              "rows": 5
+            }
+          ]
+        },
+        {
+          "name": "Sơ đồ kiến trúc tích hợp",
+          "note": "Sơ đồ khối thể hiện hệ thống nào gọi hệ thống nào, qua giao thức gì, đồng bộ hay bất đồng bộ. Không mô tả trình tự ở đây — trình tự nằm ở mục Sơ đồ trình tự trong từng tính năng."
+        },
+        {
+          "name": "Sơ đồ trạng thái",
+          "note": "Chỉ lập khi đối tượng nghiệp vụ có vòng đời trạng thái. Mã trạng thái phải khớp mục “Danh sách trạng thái trên hệ thống”. Không có thì ghi “Không áp dụng”."
+        },
+        {
+          "name": "Luồng nghiệp vụ",
+          "note": "Luồng nghiệp vụ tổng thể của chức năng, xuyên qua nhiều tính năng. Chi tiết từng bước mô tả ở mục Tính năng tương ứng."
+        },
+        {
+          "name": "Quy tắc nghiệp vụ",
+          "note": "Mã theo dạng BR-«MÃ_CHỨC_NĂNG»-001. Bảng thành phần và bộ test case tham chiếu theo mã này, không chép lại nội dung quy tắc.",
+          "tables": [
+            {
+              "headers": [
+                "Mã quy tắc",
+                "Nội dung quy tắc",
+                "Áp dụng cho",
+                "Mã thông báo khi vi phạm"
+              ],
+              "widths": [
+                2200,
+                3355,
+                1900,
+                1900
+              ],
+              "rows": 5
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "name": "Mô tả yêu cầu",
+          "note": "Tích hợp để làm gì, bên nào chủ động gọi, nghiệp vụ nào phụ thuộc vào nó."
+        },
+        {
+          "name": "Hợp đồng giao tiếp",
+          "note": "Chiều tích hợp: CIC cung cấp (inbound) / CIC gọi ra (outbound). Phiên bản theo URL-path versioning, là bắt buộc chứ không tuỳ chọn.",
+          "tables": [
+            {
+              "headers": [
+                "Hạng mục",
+                "Nội dung"
+              ],
+              "widths": [
+                2400,
+                6955
+              ],
+              "rows": 9,
+              "labels": [
+                "Chiều tích hợp",
+                "Giao thức",
+                "Endpoint / Địa chỉ",
+                "Method",
+                "Phiên bản",
+                "Cơ chế xác thực",
+                "Content-Type",
+                "Đơn vị / hệ thống được phép gọi",
+                "Môi trường áp dụng"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Dữ liệu vào",
+          "note": "Khai báo cả trường trong header (xác thực, truy vết) nếu là bắt buộc.",
+          "tables": [
+            {
+              "headers": [
+                "STT",
+                "Trường",
+                "Kiểu dữ liệu",
+                "Bắt buộc",
+                "Ràng buộc (mã BR)",
+                "Ví dụ"
+              ],
+              "widths": [
+                500,
+                2000,
+                1300,
+                800,
+                2600,
+                2155
+              ],
+              "rows": 6
+            }
+          ]
+        },
+        {
+          "name": "Dữ liệu ra",
+          "note": "Ghi rõ cấu trúc bọc ngoài (mã kết quả, thông điệp, dữ liệu) nếu có.",
+          "tables": [
+            {
+              "headers": [
+                "STT",
+                "Trường",
+                "Kiểu dữ liệu",
+                "Luôn có",
+                "Ý nghĩa",
+                "Ví dụ"
+              ],
+              "widths": [
+                500,
+                2000,
+                1300,
+                800,
+                2600,
+                2155
+              ],
+              "rows": 6
+            }
+          ]
+        },
+        {
+          "name": "Sơ đồ trình tự",
+          "note": "Viết bằng PlantUML, lưu ở diagrams/«mã chức năng»_seq-«nn».puml. Ở đây chỉ để placeholder — script build tự render và chèn ảnh có caption. Tên participant phải là mã hệ thống đã đăng ký, không viết tên mô tả tự do.",
+          "diagram": true
+        },
+        {
+          "name": "Chính sách lỗi và bù trừ",
+          "note": "Đây là mục chức năng có giao diện không có tương đương, và là chỗ đặc tả hay thiếu nhất. Không khai báo thì mỗi API sẽ do dev tự quyết một kiểu.",
+          "tables": [
+            {
+              "headers": [
+                "Hạng mục",
+                "Nội dung"
+              ],
+              "widths": [
+                2400,
+                6955
+              ],
+              "rows": 6,
+              "labels": [
+                "Timeout",
+                "Số lần thử lại",
+                "Khoảng chờ giữa các lần thử",
+                "Idempotency key",
+                "Hành vi khi gọi lại cùng key",
+                "Hành động bù trừ khi thất bại một phần"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Yêu cầu phi chức năng",
+          "tables": [
+            {
+              "headers": [
+                "Hạng mục",
+                "Nội dung"
+              ],
+              "widths": [
+                2400,
+                6955
+              ],
+              "rows": 5,
+              "labels": [
+                "SLA thời gian đáp ứng",
+                "Quota theo đơn vị theo ngày",
+                "Kích thước payload tối đa",
+                "Số lời gọi đồng thời",
+                "Lưu vết và nhật ký"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Mã lỗi và thông báo",
+          "note": "Mã theo quy ước [LOẠI]_[NHÓM]_[SỐ] đã đăng ký ở mục “Danh sách thông báo trên hệ thống”. Mã mới phải đăng ký với Lead BA trước khi dùng.",
+          "tables": [
+            {
+              "headers": [
+                "STT",
+                "Mã lỗi",
+                "HTTP status",
+                "Nội dung",
+                "Điều kiện phát sinh"
+              ],
+              "widths": [
+                500,
+                2000,
+                1200,
+                3300,
+                2355
+              ],
+              "rows": 5
+            }
+          ]
+        }
+      ],
+      "after": [
+        {
+          "name": "Dữ liệu và tích hợp",
+          "note": "Loại: Bảng CSDL / API / File / Hàng đợi. Chiều: Đọc / Ghi / Vào / Ra. Dùng để dựng ma trận CRUD và xác định phạm vi tác động khi đổi dữ liệu.",
+          "tables": [
+            {
+              "headers": [
+                "STT",
+                "Loại",
+                "Tên đối tượng",
+                "Chiều",
+                "Mô tả / Ghi chú"
+              ],
+              "widths": [
+                500,
+                1400,
+                2400,
+                1200,
+                3855
+              ],
+              "rows": 4
+            }
+          ]
+        },
+        {
+          "name": "Vấn đề còn mở",
+          "note": "Mục này PHẢI rỗng thì chức năng mới được chuyển sang status = approved.",
+          "tables": [
+            {
+              "headers": [
+                "STT",
+                "Nội dung vấn đề",
+                "Người quyết định",
+                "Hạn chốt",
+                "Trạng thái"
+              ],
+              "widths": [
+                500,
+                3800,
+                1800,
+                1400,
+                1855
+              ],
+              "rows": 3
+            }
+          ]
+        },
+        {
+          "name": "Lịch sử thay đổi",
+          "note": "Script build tự đổ nội dung từ Git log của chính file này. Không gõ tay.",
+          "tables": [
+            {
+              "headers": [
+                "Phiên bản",
+                "Ngày",
+                "Người thực hiện",
+                "Mô tả thay đổi"
+              ],
+              "widths": [
+                1100,
+                1400,
+                2200,
+                4655
+              ],
+              "rows": 1
+            }
+          ]
+        }
+      ]
+    },
+    "JOB": {
+      "ten": "Job (xử lý theo lô / định kỳ)",
+      "requireDiagram": true,
+      "variantOf": null,
+      "before": [
+        {
+          "name": "Mô tả chung",
+          "note": "Loại chức năng: điền đúng một trong UI / TICHHOP / JOB / PHANTICH / DANHMUC. Vị trí chức năng: đường dẫn menu, hoặc endpoint, hoặc tên job. Hậu điều kiện: trạng thái hệ thống sau khi thực hiện thành công.",
+          "tables": [
+            {
+              "headers": [
+                "Hạng mục",
+                "Nội dung"
+              ],
+              "widths": [
+                2400,
+                6955
+              ],
+              "rows": 14,
+              "labels": [
+                "Loại chức năng",
+                "Mã chức năng",
+                "Tên chức năng",
+                "Mô tả chức năng",
+                "Tác nhân chính",
+                "Tác nhân phụ",
+                "Vị trí chức năng",
+                "Điều kiện tiên quyết",
+                "Hậu điều kiện",
+                "Chức năng tiền đề",
+                "Chức năng kế tiếp",
+                "Chức năng dùng chung",
+                "Mã yêu cầu BRD",
+                "Yêu cầu đặc thù"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Ma trận phân quyền",
+          "note": "Job chạy tự động không cần phân quyền người dùng; bảng này khai báo ai được thực hiện thao tác THỦ CÔNG: chạy lại, dừng, xem nhật ký, tải báo cáo lỗi. Mỗi tính năng khai báo phía dưới phải có ít nhất một dòng ở bảng này.",
+          "tables": [
+            {
+              "headers": [
+                "STT",
+                "Mã tính năng",
+                "Thao tác thủ công",
+                "Mã vai trò được phép",
+                "Phạm vi dữ liệu"
+              ],
+              "widths": [
+                500,
+                1900,
+                2600,
+                2400,
+                1955
+              ],
+              "rows": 4
+            }
+          ]
+        },
+        {
+          "name": "Sơ đồ luồng dữ liệu",
+          "note": "Dữ liệu đi từ nguồn nào, qua các bước xử lý nào, ghi vào đâu. Kèm các nhánh loại bỏ bản ghi không hợp lệ."
+        },
+        {
+          "name": "Sơ đồ trạng thái",
+          "note": "Chỉ lập khi đối tượng nghiệp vụ có vòng đời trạng thái. Mã trạng thái phải khớp mục “Danh sách trạng thái trên hệ thống”. Không có thì ghi “Không áp dụng”."
+        },
+        {
+          "name": "Luồng nghiệp vụ",
+          "note": "Luồng nghiệp vụ tổng thể của chức năng, xuyên qua nhiều tính năng. Chi tiết từng bước mô tả ở mục Tính năng tương ứng."
+        },
+        {
+          "name": "Quy tắc nghiệp vụ",
+          "note": "Mã theo dạng BR-«MÃ_CHỨC_NĂNG»-001. Bảng thành phần và bộ test case tham chiếu theo mã này, không chép lại nội dung quy tắc.",
+          "tables": [
+            {
+              "headers": [
+                "Mã quy tắc",
+                "Nội dung quy tắc",
+                "Áp dụng cho",
+                "Mã thông báo khi vi phạm"
+              ],
+              "widths": [
+                2200,
+                3355,
+                1900,
+                1900
+              ],
+              "rows": 5
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "name": "Mô tả yêu cầu",
+          "note": "Job làm gì, chạy trên dữ liệu nào, kết quả dùng cho nghiệp vụ nào."
+        },
+        {
+          "name": "Kích hoạt và lịch chạy",
+          "note": "Cơ chế kích hoạt: theo lịch / theo sự kiện / thủ công. Cửa sổ thời gian quan trọng khi job nặng, tránh giờ cao điểm.",
+          "tables": [
+            {
+              "headers": [
+                "Hạng mục",
+                "Nội dung"
+              ],
+              "widths": [
+                2400,
+                6955
+              ],
+              "rows": 6,
+              "labels": [
+                "Cơ chế kích hoạt",
+                "Biểu thức lịch (cron)",
+                "Cửa sổ thời gian được phép chạy",
+                "Job phụ thuộc chạy trước",
+                "Thời gian chạy dự kiến",
+                "Cho phép chạy song song"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Nguồn dữ liệu vào",
+          "tables": [
+            {
+              "headers": [
+                "STT",
+                "Loại nguồn",
+                "Tên đối tượng",
+                "Định dạng",
+                "Điều kiện lấy dữ liệu"
+              ],
+              "widths": [
+                500,
+                1500,
+                2400,
+                1400,
+                3555
+              ],
+              "rows": 5
+            }
+          ]
+        },
+        {
+          "name": "Quy tắc kiểm tra và loại bỏ",
+          "note": "Ba tầng theo thứ tự: đúng định dạng tệp → đúng cấu trúc dữ liệu → đúng quy tắc nghiệp vụ. Hành động khi sai: loại bỏ bản ghi / dừng cả lô / ghi nhận cảnh báo. Kèm cơ chế trả báo cáo lỗi về đơn vị gửi và quy trình gửi lại.",
+          "tables": [
+            {
+              "headers": [
+                "Tầng kiểm tra",
+                "Mã quy tắc",
+                "Nội dung kiểm tra",
+                "Hành động khi sai",
+                "Mã thông báo"
+              ],
+              "widths": [
+                1200,
+                2000,
+                3000,
+                1800,
+                1355
+              ],
+              "rows": 6
+            }
+          ]
+        },
+        {
+          "name": "Xử lý và ghi nhận",
+          "tables": [
+            {
+              "headers": [
+                "Bước",
+                "Xử lý",
+                "Đối tượng ghi",
+                "Ghi nhận kết quả"
+              ],
+              "widths": [
+                700,
+                3400,
+                2400,
+                2855
+              ],
+              "rows": 5
+            }
+          ]
+        },
+        {
+          "name": "Sơ đồ trình tự",
+          "note": "Viết bằng PlantUML, lưu ở diagrams/«mã chức năng»_seq-«nn».puml. Ở đây chỉ để placeholder — script build tự render và chèn ảnh có caption. Tên participant phải là mã hệ thống đã đăng ký, không viết tên mô tả tự do.",
+          "diagram": true
+        },
+        {
+          "name": "Chạy lại và bù trừ",
+          "note": "Nếu job không idempotent, phải nêu rõ hậu quả khi chạy lại và cách phòng tránh. Đây là câu hỏi vận hành sẽ hỏi đầu tiên khi job lỗi.",
+          "tables": [
+            {
+              "headers": [
+                "Hạng mục",
+                "Nội dung"
+              ],
+              "widths": [
+                2400,
+                6955
+              ],
+              "rows": 5,
+              "labels": [
+                "Job có idempotent không",
+                "Chạy lại từ đầu hay từ điểm dừng",
+                "Xử lý bản ghi đã ghi một phần",
+                "Thao tác bù trừ thủ công",
+                "Người được phép chạy lại"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Giám sát và cảnh báo",
+          "tables": [
+            {
+              "headers": [
+                "STT",
+                "Chỉ số giám sát",
+                "Ngưỡng cảnh báo",
+                "Kênh cảnh báo",
+                "Người nhận"
+              ],
+              "widths": [
+                500,
+                2600,
+                1800,
+                1800,
+                2655
+              ],
+              "rows": 4
+            }
+          ]
+        },
+        {
+          "name": "Mã lỗi và thông báo",
+          "note": "Mã theo quy ước [LOẠI]_[NHÓM]_[SỐ] đã đăng ký ở mục “Danh sách thông báo trên hệ thống”. Mã mới phải đăng ký với Lead BA trước khi dùng.",
+          "tables": [
+            {
+              "headers": [
+                "STT",
+                "Mã thông báo",
+                "Loại",
+                "Nội dung",
+                "Điều kiện phát sinh"
+              ],
+              "widths": [
+                500,
+                2000,
+                1200,
+                3300,
+                2355
+              ],
+              "rows": 4
+            }
+          ]
+        }
+      ],
+      "after": [
+        {
+          "name": "Dữ liệu và tích hợp",
+          "note": "Loại: Bảng CSDL / API / File / Hàng đợi. Chiều: Đọc / Ghi / Vào / Ra. Dùng để dựng ma trận CRUD và xác định phạm vi tác động khi đổi dữ liệu.",
+          "tables": [
+            {
+              "headers": [
+                "STT",
+                "Loại",
+                "Tên đối tượng",
+                "Chiều",
+                "Mô tả / Ghi chú"
+              ],
+              "widths": [
+                500,
+                1400,
+                2400,
+                1200,
+                3855
+              ],
+              "rows": 4
+            }
+          ]
+        },
+        {
+          "name": "Vấn đề còn mở",
+          "note": "Mục này PHẢI rỗng thì chức năng mới được chuyển sang status = approved.",
+          "tables": [
+            {
+              "headers": [
+                "STT",
+                "Nội dung vấn đề",
+                "Người quyết định",
+                "Hạn chốt",
+                "Trạng thái"
+              ],
+              "widths": [
+                500,
+                3800,
+                1800,
+                1400,
+                1855
+              ],
+              "rows": 3
+            }
+          ]
+        },
+        {
+          "name": "Lịch sử thay đổi",
+          "note": "Script build tự đổ nội dung từ Git log của chính file này. Không gõ tay.",
+          "tables": [
+            {
+              "headers": [
+                "Phiên bản",
+                "Ngày",
+                "Người thực hiện",
+                "Mô tả thay đổi"
+              ],
+              "widths": [
+                1100,
+                1400,
+                2200,
+                4655
+              ],
+              "rows": 1
+            }
+          ]
+        }
+      ]
+    },
+    "PHANTICH": {
+      "ten": "Phân tích chỉ tiêu báo cáo thống kê",
+      "requireDiagram": false,
+      "variantOf": null,
+      "before": [
+        {
+          "name": "Mô tả chung",
+          "note": "Loại chức năng: điền đúng một trong UI / TICHHOP / JOB / PHANTICH / DANHMUC. Vị trí chức năng: đường dẫn menu, hoặc endpoint, hoặc tên job. Hậu điều kiện: trạng thái hệ thống sau khi thực hiện thành công.",
+          "tables": [
+            {
+              "headers": [
+                "Hạng mục",
+                "Nội dung"
+              ],
+              "widths": [
+                2400,
+                6955
+              ],
+              "rows": 14,
+              "labels": [
+                "Loại chức năng",
+                "Mã chức năng",
+                "Tên chức năng",
+                "Mô tả chức năng",
+                "Tác nhân chính",
+                "Tác nhân phụ",
+                "Vị trí chức năng",
+                "Điều kiện tiên quyết",
+                "Hậu điều kiện",
+                "Chức năng tiền đề",
+                "Chức năng kế tiếp",
+                "Chức năng dùng chung",
+                "Mã yêu cầu BRD",
+                "Yêu cầu đặc thù"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Ma trận phân quyền",
+          "note": "Mã vai trò lấy từ Danh mục vai trò ở tài liệu tổng, không đặt tên tự do. Ô đánh “X” = được phép. Phạm vi dữ liệu: Toàn hệ thống / Theo đơn vị / Theo vùng / Bản ghi của mình. Mỗi tính năng khai báo phía dưới phải có ít nhất một dòng ở bảng này.",
+          "tables": [
+            {
+              "headers": [
+                "STT",
+                "Mã tính năng",
+                "Tính năng / Thao tác",
+                "«MÃ_VAI_TRÒ_1»",
+                "«MÃ_VAI_TRÒ_2»",
+                "«MÃ_VAI_TRÒ_3»",
+                "Phạm vi dữ liệu"
+              ],
+              "widths": [
+                500,
+                1900,
+                2400,
+                800,
+                800,
+                800,
+                2155
+              ],
+              "rows": 5
+            }
+          ]
+        },
+        {
+          "name": "Luồng màn hình",
+          "note": "Sơ đồ điều hướng giữa các màn hình tham số, xem trước và kết xuất. Không có màn hình thì ghi “Không áp dụng”."
+        },
+        {
+          "name": "Sơ đồ trạng thái",
+          "note": "Chỉ lập khi đối tượng nghiệp vụ có vòng đời trạng thái. Mã trạng thái phải khớp mục “Danh sách trạng thái trên hệ thống”. Không có thì ghi “Không áp dụng”."
+        },
+        {
+          "name": "Luồng nghiệp vụ",
+          "note": "Luồng nghiệp vụ tổng thể của chức năng, xuyên qua nhiều tính năng. Chi tiết từng bước mô tả ở mục Tính năng tương ứng."
+        },
+        {
+          "name": "Quy tắc nghiệp vụ",
+          "note": "Mã theo dạng BR-«MÃ_CHỨC_NĂNG»-001. Bảng thành phần và bộ test case tham chiếu theo mã này, không chép lại nội dung quy tắc.",
+          "tables": [
+            {
+              "headers": [
+                "Mã quy tắc",
+                "Nội dung quy tắc",
+                "Áp dụng cho",
+                "Mã thông báo khi vi phạm"
+              ],
+              "widths": [
+                2200,
+                3355,
+                1900,
+                1900
+              ],
+              "rows": 5
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "name": "Mô tả yêu cầu",
+          "note": "Báo cáo phục vụ mục đích gì, ai đọc, gửi cho cơ quan nào, tần suất nào."
+        },
+        {
+          "name": "Định nghĩa chỉ tiêu",
+          "note": "Công thức viết bằng ký hiệu chỉ tiêu, không viết bằng tên bảng/trường. Văn bản quy định: số hiệu và điều khoản làm căn cứ.",
+          "tables": [
+            {
+              "headers": [
+                "Mã chỉ tiêu",
+                "Tên chỉ tiêu",
+                "Đơn vị đo",
+                "Kỳ báo cáo",
+                "Công thức",
+                "Văn bản quy định"
+              ],
+              "widths": [
+                1400,
+                2200,
+                1000,
+                1200,
+                2400,
+                1155
+              ],
+              "rows": 6
+            }
+          ]
+        },
+        {
+          "name": "Nguồn dữ liệu và phạm vi",
+          "note": "Thời điểm chốt số liệu quyết định con số — hai người chốt khác thời điểm sẽ ra hai kết quả và không ai sai.",
+          "tables": [
+            {
+              "headers": [
+                "STT",
+                "Bảng / Nguồn",
+                "Trường sử dụng",
+                "Điều kiện lọc",
+                "Thời điểm chốt số liệu"
+              ],
+              "widths": [
+                500,
+                1800,
+                2000,
+                2400,
+                2655
+              ],
+              "rows": 5
+            }
+          ]
+        },
+        {
+          "name": "Quy tắc tính toán và tổng hợp",
+          "note": "Quy tắc làm tròn và xử lý giá trị thiếu phải khai báo tường minh; đây là nguyên nhân lệch số phổ biến nhất giữa báo cáo và đối chiếu.",
+          "tables": [
+            {
+              "headers": [
+                "Mã quy tắc",
+                "Nội dung",
+                "Chiều tổng hợp",
+                "Quy tắc làm tròn",
+                "Xử lý giá trị thiếu"
+              ],
+              "widths": [
+                2000,
+                2800,
+                1600,
+                1500,
+                1455
+              ],
+              "rows": 5
+            }
+          ]
+        },
+        {
+          "name": "Bố cục kết xuất",
+          "note": "Vùng: tiêu đề / thân / dòng tổng / chân trang. Định dạng kết xuất: Excel / PDF / tệp phẳng theo mẫu của cơ quan nhận.",
+          "tables": [
+            {
+              "headers": [
+                "Vùng",
+                "Nội dung",
+                "Nguồn",
+                "Định dạng",
+                "Ghi chú"
+              ],
+              "widths": [
+                1200,
+                2600,
+                2000,
+                1600,
+                1955
+              ],
+              "rows": 5
+            }
+          ]
+        },
+        {
+          "name": "Đối chiếu và kiểm chứng",
+          "note": "Bắt buộc với báo cáo gửi cơ quan quản lý: nêu rõ cách chứng minh con số đúng — tổng kiểm soát, đối chiếu chéo với báo cáo khác, so với kỳ trước.",
+          "tables": [
+            {
+              "headers": [
+                "STT",
+                "Phép đối chiếu",
+                "Nguồn đối chiếu",
+                "Sai số cho phép"
+              ],
+              "widths": [
+                500,
+                3400,
+                3400,
+                2055
+              ],
+              "rows": 4
+            }
+          ]
+        },
+        {
+          "name": "Xử lý khối lượng lớn",
+          "tables": [
+            {
+              "headers": [
+                "Hạng mục",
+                "Nội dung"
+              ],
+              "widths": [
+                2400,
+                6955
+              ],
+              "rows": 5,
+              "labels": [
+                "Cơ chế kết xuất (đồng bộ / bất đồng bộ)",
+                "Cách thông báo hoàn thành",
+                "Thời gian giữ tệp kết quả",
+                "Khối lượng dữ liệu dự kiến",
+                "Giải pháp tăng tốc"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Mã lỗi và thông báo",
+          "note": "Mã theo quy ước [LOẠI]_[NHÓM]_[SỐ] đã đăng ký ở mục “Danh sách thông báo trên hệ thống”. Mã mới phải đăng ký với Lead BA trước khi dùng.",
+          "tables": [
+            {
+              "headers": [
+                "STT",
+                "Mã thông báo",
+                "Loại",
+                "Nội dung",
+                "Điều kiện phát sinh"
+              ],
+              "widths": [
+                500,
+                2000,
+                1200,
+                3300,
+                2355
+              ],
+              "rows": 4
+            }
+          ]
+        }
+      ],
+      "after": [
+        {
+          "name": "Dữ liệu và tích hợp",
+          "note": "Loại: Bảng CSDL / API / File / Hàng đợi. Chiều: Đọc / Ghi / Vào / Ra. Dùng để dựng ma trận CRUD và xác định phạm vi tác động khi đổi dữ liệu.",
+          "tables": [
+            {
+              "headers": [
+                "STT",
+                "Loại",
+                "Tên đối tượng",
+                "Chiều",
+                "Mô tả / Ghi chú"
+              ],
+              "widths": [
+                500,
+                1400,
+                2400,
+                1200,
+                3855
+              ],
+              "rows": 4
+            }
+          ]
+        },
+        {
+          "name": "Vấn đề còn mở",
+          "note": "Mục này PHẢI rỗng thì chức năng mới được chuyển sang status = approved.",
+          "tables": [
+            {
+              "headers": [
+                "STT",
+                "Nội dung vấn đề",
+                "Người quyết định",
+                "Hạn chốt",
+                "Trạng thái"
+              ],
+              "widths": [
+                500,
+                3800,
+                1800,
+                1400,
+                1855
+              ],
+              "rows": 3
+            }
+          ]
+        },
+        {
+          "name": "Lịch sử thay đổi",
+          "note": "Script build tự đổ nội dung từ Git log của chính file này. Không gõ tay.",
+          "tables": [
+            {
+              "headers": [
+                "Phiên bản",
+                "Ngày",
+                "Người thực hiện",
+                "Mô tả thay đổi"
+              ],
+              "widths": [
+                1100,
+                1400,
+                2200,
+                4655
+              ],
+              "rows": 1
+            }
+          ]
+        }
+      ]
+    },
+    "DANHMUC": {
+      "ten": "Danh mục (biến thể rút gọn của UI)",
+      "requireDiagram": false,
+      "variantOf": "UI",
+      "before": [
+        {
+          "name": "Mô tả chung",
+          "note": "Loại chức năng: điền đúng một trong UI / TICHHOP / JOB / PHANTICH / DANHMUC. Vị trí chức năng: đường dẫn menu, hoặc endpoint, hoặc tên job. Hậu điều kiện: trạng thái hệ thống sau khi thực hiện thành công.",
+          "tables": [
+            {
+              "headers": [
+                "Hạng mục",
+                "Nội dung"
+              ],
+              "widths": [
+                2400,
+                6955
+              ],
+              "rows": 14,
+              "labels": [
+                "Loại chức năng",
+                "Mã chức năng",
+                "Tên chức năng",
+                "Mô tả chức năng",
+                "Tác nhân chính",
+                "Tác nhân phụ",
+                "Vị trí chức năng",
+                "Điều kiện tiên quyết",
+                "Hậu điều kiện",
+                "Chức năng tiền đề",
+                "Chức năng kế tiếp",
+                "Chức năng dùng chung",
+                "Mã yêu cầu BRD",
+                "Yêu cầu đặc thù"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Ma trận phân quyền",
+          "note": "Mã vai trò lấy từ Danh mục vai trò ở tài liệu tổng, không đặt tên tự do. Ô đánh “X” = được phép. Phạm vi dữ liệu: Toàn hệ thống / Theo đơn vị / Theo vùng / Bản ghi của mình. Mỗi tính năng khai báo phía dưới phải có ít nhất một dòng ở bảng này.",
+          "tables": [
+            {
+              "headers": [
+                "STT",
+                "Mã tính năng",
+                "Tính năng / Thao tác",
+                "«MÃ_VAI_TRÒ_1»",
+                "«MÃ_VAI_TRÒ_2»",
+                "«MÃ_VAI_TRÒ_3»",
+                "Phạm vi dữ liệu"
+              ],
+              "widths": [
+                500,
+                1900,
+                2400,
+                800,
+                800,
+                800,
+                2155
+              ],
+              "rows": 5
+            }
+          ]
+        },
+        {
+          "name": "Luồng màn hình",
+          "note": "Sơ đồ điều hướng giữa các màn hình. Chức năng chỉ có một màn hình thì ghi “Không áp dụng”."
+        },
+        {
+          "name": "Sơ đồ trạng thái",
+          "note": "Chỉ lập khi đối tượng nghiệp vụ có vòng đời trạng thái. Mã trạng thái phải khớp mục “Danh sách trạng thái trên hệ thống”. Không có thì ghi “Không áp dụng”."
+        },
+        {
+          "name": "Luồng nghiệp vụ",
+          "note": "Luồng nghiệp vụ tổng thể của chức năng, xuyên qua nhiều tính năng. Chi tiết từng bước mô tả ở mục Tính năng tương ứng."
+        },
+        {
+          "name": "Quy tắc nghiệp vụ",
+          "note": "Mã theo dạng BR-«MÃ_CHỨC_NĂNG»-001. Bảng thành phần và bộ test case tham chiếu theo mã này, không chép lại nội dung quy tắc.",
+          "tables": [
+            {
+              "headers": [
+                "Mã quy tắc",
+                "Nội dung quy tắc",
+                "Áp dụng cho",
+                "Mã thông báo khi vi phạm"
+              ],
+              "widths": [
+                2200,
+                3355,
+                1900,
+                1900
+              ],
+              "rows": 5
+            }
+          ]
+        }
+      ],
+      "features": [
+        {
+          "name": "Mô tả yêu cầu",
+          "note": "Danh mục này dùng ở đâu, ai quản lý, có ảnh hưởng dữ liệu lịch sử không."
+        },
+        {
+          "name": "Danh sách trường",
+          "tables": [
+            {
+              "headers": [
+                "STT",
+                "Tên trường",
+                "Kiểu dữ liệu",
+                "Bắt buộc",
+                "Độ dài",
+                "Ràng buộc (mã BR)",
+                "Ghi chú"
+              ],
+              "widths": [
+                500,
+                1900,
+                1400,
+                800,
+                900,
+                2200,
+                1655
+              ],
+              "rows": 6
+            }
+          ]
+        },
+        {
+          "name": "Khoá duy nhất và quy tắc trùng lặp",
+          "tables": [
+            {
+              "headers": [
+                "STT",
+                "Tổ hợp khoá",
+                "Phạm vi duy nhất",
+                "Mã thông báo khi trùng"
+              ],
+              "widths": [
+                500,
+                3000,
+                3000,
+                2855
+              ],
+              "rows": 3
+            }
+          ]
+        },
+        {
+          "name": "Điểm khác biệt so với mẫu chuẩn",
+          "note": "Mục này RỖNG là bình thường và tốt — nghĩa là danh mục thừa hưởng đúng hành vi CRUD chuẩn. Chỉ khai báo chỗ thật sự khác.",
+          "tables": [
+            {
+              "headers": [
+                "STT",
+                "Hạng mục",
+                "Mẫu chuẩn CMP-DANHMUC-001 quy định",
+                "Chức năng này khác thế nào"
+              ],
+              "widths": [
+                500,
+                2200,
+                3200,
+                3455
+              ],
+              "rows": 3
+            }
+          ]
+        },
+        {
+          "name": "Mã lỗi và thông báo",
+          "note": "Mã theo quy ước [LOẠI]_[NHÓM]_[SỐ] đã đăng ký ở mục “Danh sách thông báo trên hệ thống”. Mã mới phải đăng ký với Lead BA trước khi dùng.",
+          "tables": [
+            {
+              "headers": [
+                "STT",
+                "Mã thông báo",
+                "Loại",
+                "Nội dung",
+                "Điều kiện phát sinh"
+              ],
+              "widths": [
+                500,
+                2000,
+                1200,
+                3300,
+                2355
+              ],
+              "rows": 4
+            }
+          ]
+        }
+      ],
+      "after": [
+        {
+          "name": "Dữ liệu và tích hợp",
+          "note": "Loại: Bảng CSDL / API / File / Hàng đợi. Chiều: Đọc / Ghi / Vào / Ra. Dùng để dựng ma trận CRUD và xác định phạm vi tác động khi đổi dữ liệu.",
+          "tables": [
+            {
+              "headers": [
+                "STT",
+                "Loại",
+                "Tên đối tượng",
+                "Chiều",
+                "Mô tả / Ghi chú"
+              ],
+              "widths": [
+                500,
+                1400,
+                2400,
+                1200,
+                3855
+              ],
+              "rows": 4
+            }
+          ]
+        },
+        {
+          "name": "Vấn đề còn mở",
+          "note": "Mục này PHẢI rỗng thì chức năng mới được chuyển sang status = approved.",
+          "tables": [
+            {
+              "headers": [
+                "STT",
+                "Nội dung vấn đề",
+                "Người quyết định",
+                "Hạn chốt",
+                "Trạng thái"
+              ],
+              "widths": [
+                500,
+                3800,
+                1800,
+                1400,
+                1855
+              ],
+              "rows": 3
+            }
+          ]
+        },
+        {
+          "name": "Lịch sử thay đổi",
+          "note": "Script build tự đổ nội dung từ Git log của chính file này. Không gõ tay.",
+          "tables": [
+            {
+              "headers": [
+                "Phiên bản",
+                "Ngày",
+                "Người thực hiện",
+                "Mô tả thay đổi"
+              ],
+              "widths": [
+                1100,
+                1400,
+                2200,
+                4655
+              ],
+              "rows": 1
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

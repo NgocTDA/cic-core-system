@@ -8,6 +8,7 @@ import {
     FileTextOutlined,
     BellOutlined,
     BarChartOutlined,
+    ProfileOutlined,
     ProjectOutlined,
     SettingOutlined,
     DollarOutlined,
@@ -951,6 +952,12 @@ export const SUB_SYSTEMS: SubSystem[] = [
                 label: 'Confluence → Word (nguyên bản)',
                 icon: <FileWordOutlined />,
                 path: '/tools/confluence-to-word',
+            },
+            {
+                key: 'tools-srs-outline',
+                label: 'Đề cương đặc tả chức năng',
+                icon: <ProfileOutlined />,
+                path: '/tools/srs-outline',
             },
         ],
     }

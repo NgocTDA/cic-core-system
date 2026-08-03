@@ -1,0 +1,7 @@
+ma,ten,loai,ghi_chu
+CIC_CORE,Hệ thống lõi CIC,Nội bộ,
+CIC_DG,Nền tảng quản trị dữ liệu,Nội bộ,
+CIC_SSO,Hệ thống xác thực tập trung,Nội bộ,
+TCTD,Tổ chức tín dụng gửi dữ liệu,Bên ngoài,Đại diện chung cho 1.200+ TCTD
+NHNN,Ngân hàng Nhà nước,Bên ngoài,Nhận báo cáo thống kê
+QTV,Quản trị viên,Người dùng,

@@ -1,0 +1,30 @@
+@startuml
+title FUNC-TCH-002 — Đồng bộ tài khoản sang hệ thống xác thực tập trung
+skinparam defaultFontName Times New Roman
+skinparam defaultFontSize 13
+skinparam sequenceMessageAlign center
+
+actor QTV
+participant CIC_CORE
+participant CIC_SSO
+
+QTV -> CIC_CORE : Phê duyệt tài khoản
+activate CIC_CORE
+CIC_CORE -> CIC_CORE : Sinh Idempotency-Key
+CIC_CORE -> CIC_SSO : POST /v1/accounts (Idempotency-Key)
+activate CIC_SSO
+alt Tạo thành công
+    CIC_SSO --> CIC_CORE : 201 Created
+    CIC_CORE -> CIC_CORE : Ghi trạng thái Kích hoạt
+    CIC_CORE --> QTV : SUC_NGUOIDUNG_001
+else Trùng key
+    CIC_SSO --> CIC_CORE : 200 OK (trả bản ghi cũ)
+    CIC_CORE --> QTV : SUC_NGUOIDUNG_001
+else Hết thời gian chờ
+    CIC_SSO --> CIC_CORE : timeout
+    CIC_CORE -> CIC_CORE : Thử lại tối đa 3 lần
+    CIC_CORE --> QTV : ERR_TICHHOP_003
+end
+deactivate CIC_SSO
+deactivate CIC_CORE
+@enduml

@@ -1,0 +1,6 @@
+thu_tu_nhom,ma_nhom,ten_nhom,thu_tu_chuc_nang,ma_chuc_nang,ten_chuc_nang,loai,file,owner,reviewer,status,ghi_chu
+1,GRP-XTH,"Đăng nhập, đăng xuất",1,FUNC-XTH-001,Đăng nhập,UI,functions/FUNC-XTH-001_Dang-nhap.docx,ngoc.tda,lead.ba,draft,
+3,GRP-DMC,Danh mục dùng chung,1,FUNC-DMC-001,Danh mục loại hình tổ chức tín dụng,DANHMUC,functions/FUNC-DMC-001_Danh-muc-loai-hinh-to-chuc-tin-dung.docx,ba.danhmuc,lead.ba,draft,
+4,GRP-TCH,Tích hợp hệ thống,1,FUNC-TCH-002,Đồng bộ tài khoản sang hệ thống xác thực tập trung,TICHHOP,functions/FUNC-TCH-002_Dong-bo-tai-khoan-sang-he-thong-xac-thuc-tap-tru.docx,ba03,lead.ba,draft,
+5,GRP-JOB,Job định kỳ,1,FUNC-JOB-001,Tiếp nhận và kiểm tra tệp dữ liệu định kỳ,JOB,functions/FUNC-JOB-001_Tiep-nhan-va-kiem-tra-tep-du-lieu-dinh-ky.docx,ba04,lead.ba,draft,
+6,GRP-BCT,Báo cáo thống kê,1,FUNC-BCT-001,Báo cáo chỉ tiêu dư nợ theo vùng,PHANTICH,functions/FUNC-BCT-001_Bao-cao-chi-tieu-du-no-theo-vung.docx,ba05,lead.ba,draft,

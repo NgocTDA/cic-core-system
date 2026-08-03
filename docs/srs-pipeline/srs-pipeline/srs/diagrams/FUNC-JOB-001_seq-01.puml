@@ -1,0 +1,25 @@
+@startuml
+title FUNC-JOB-001 — Tiếp nhận và kiểm tra tệp dữ liệu định kỳ
+skinparam defaultFontName Times New Roman
+skinparam defaultFontSize 13
+
+participant TCTD
+participant CIC_CORE
+database CIC_DG
+
+TCTD -> CIC_CORE : Nộp tệp dữ liệu kỳ báo cáo
+activate CIC_CORE
+CIC_CORE -> CIC_CORE : Tầng 1 — kiểm tra định dạng tệp
+CIC_CORE -> CIC_CORE : Tầng 2 — kiểm tra cấu trúc dữ liệu
+CIC_CORE -> CIC_DG : Đọc danh mục chỉ tiêu
+CIC_DG --> CIC_CORE : Danh mục 246 chỉ tiêu
+CIC_CORE -> CIC_CORE : Tầng 3 — kiểm tra quy tắc nghiệp vụ
+alt Toàn bộ hợp lệ
+    CIC_CORE -> CIC_DG : Ghi dữ liệu kỳ báo cáo
+    CIC_CORE --> TCTD : Biên nhận thành công
+else Có bản ghi sai
+    CIC_CORE -> CIC_DG : Ghi phần hợp lệ
+    CIC_CORE --> TCTD : Báo cáo lỗi kèm dòng sai
+end
+deactivate CIC_CORE
+@enduml

@@ -1,0 +1,75 @@
+# Build tai lieu tong the moi khi main thay doi.
+# Artifact tai ve tu GitLab > CI/CD > Jobs > Download artifacts.
+stages: [prepare, validate, build]
+
+variables:
+  PLANTUML_VERSION: "1.2025.2"
+
+# So do PlantUML render mot lan, cac stage sau dung lai artifact.
+# Tren may ca nhan thi dung Docker: tools/render_diagrams.py tu goi
+#   docker run --rm -v "$PWD:/work" -w /work plantuml/plantuml -tpng -o ... 
+render_diagrams:
+  stage: prepare
+  image: eclipse-temurin:21-jre
+  before_script:
+    - apt-get update -qq && apt-get install -y -qq --no-install-recommends curl graphviz python3
+    - curl -sL -o /tmp/plantuml.jar
+      "https://github.com/plantuml/plantuml/releases/download/v${PLANTUML_VERSION}/plantuml-${PLANTUML_VERSION}.jar"
+  script:
+    - PLANTUML_JAR=/tmp/plantuml.jar python3 tools/render_diagrams.py --force
+  artifacts:
+    paths: [build/diagrams/]
+    expire_in: 1 week
+
+.python:
+  image: python:3.12-slim
+  before_script:
+    - pip install --quiet python-docx docxcompose lxml pillow
+
+# outline.json la hop dong voi cong cu web "Chuan hoa tai lieu". No duoc SINH ra
+# tu tools/outline.py, khong viet tay. Job nay chan viec sua de cuong ma quen
+# xuat lai — de lech thi web tool se dung de cuong cu ma khong ai biet.
+# Khong can PlantUML nen khong phu thuoc render_diagrams.
+outline_json:
+  image: python:3.12-slim
+  stage: validate
+  needs: []
+  script:
+    - python tools/export_outline_json.py --check
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "main"
+
+validate:
+  extends: .python
+  stage: validate
+  needs: [render_diagrams]
+  script:
+    - python tools/render_diagrams.py --check
+    - python tools/validate_child.py
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "main"
+
+build_draft:
+  extends: .python
+  stage: build
+  needs: [render_diagrams]
+  script:
+    - python tools/merge.py --all --skip-validate --tag draft
+  artifacts:
+    paths: [build/]
+    expire_in: 30 days
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+
+build_release:
+  extends: .python
+  stage: build
+  needs: [render_diagrams]
+  script:
+    - python tools/merge.py --tag $CI_COMMIT_TAG
+  artifacts:
+    paths: [build/]
+  rules:
+    - if: $CI_COMMIT_TAG
