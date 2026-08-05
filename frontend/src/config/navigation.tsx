@@ -23,6 +23,7 @@ import {
     SwapOutlined,
     ExclamationCircleOutlined,
     CloudServerOutlined,
+    CloudDownloadOutlined,
     FileWordOutlined,
     AimOutlined,
     BranchesOutlined,
@@ -952,6 +953,18 @@ export const SUB_SYSTEMS: SubSystem[] = [
                 label: 'Confluence → Word (nguyên bản)',
                 icon: <FileWordOutlined />,
                 path: '/tools/confluence-to-word',
+            },
+            {
+                key: 'tools-srs-confluence-importer',
+                label: 'SRS Confluence Importer (v4 SRS)',
+                icon: <CloudDownloadOutlined />,
+                path: '/tools/srs-confluence-importer',
+            },
+            {
+                key: 'tools-srs-registries',
+                label: 'Sổ đăng ký SRS (Registries)',
+                icon: <DatabaseOutlined />,
+                path: '/tools/srs-registries',
             },
             {
                 key: 'tools-srs-outline',

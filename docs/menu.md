@@ -284,6 +284,8 @@ Tài liệu này đồng bộ theo `SUB_SYSTEMS` và `DESIGN_SYSTEM_SUB` đang �
 - **Sinh tài liệu giao diện** (`/tools/ui-doc-generator`)
 - **Sinh tài liệu từ Confluence** (`/tools/confluence-importer`)
 - **Confluence → Word (nguyên bản)** (`/tools/confluence-to-word`)
+- **SRS Confluence Importer (v4 SRS)** (`/tools/srs-confluence-importer`)
+- **Sổ đăng ký SRS (Registries)** (`/tools/srs-registries`)
 - **Đề cương đặc tả chức năng** (`/tools/srs-outline`)
 
 ## 9. Design System
