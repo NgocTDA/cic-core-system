@@ -23,3 +23,8 @@ export { default as CodeText }         from './CodeText';
 
 // ─── Table utilities ──────────────────────────────────────────
 export { tablePagination }             from './tableConfig';
+export { ChangeHistoryCollapse }       from './ChangeHistoryCollapse';
+export type { IChangeHistoryItem }     from './ChangeHistoryCollapse';
+export { DisplaySettingPopover }       from './DisplaySettingPopover';
+export type { IDisplayColumnOption }   from './DisplaySettingPopover';
+export { ExportExcelDropdown }         from './ExportExcelDropdown';

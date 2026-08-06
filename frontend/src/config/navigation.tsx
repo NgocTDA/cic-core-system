@@ -468,8 +468,6 @@ export const SUB_SYSTEMS: SubSystem[] = [
                     { key: 'ops-admin-catalog', label: 'Quản lý danh mục', path: '/ops-support/system/categories' },
                     { key: 'ops-admin-functions', label: 'Quản lý chức năng', path: '/ops-support/system/functions' },
                     { key: 'ops-admin-jobs', label: 'Quản lý job', path: '/ops-support/job-management' },
-                    { key: 'ops-admin-jobs-simple', label: 'Quản lý Job (đơn giản)', path: '/ops-support/jobs' },
-                    { key: 'ops-admin-jobs-console', label: 'Quản lý Job 2', path: '/ops-support/job-console' },
                     { key: 'ops-admin-errors', label: 'Quản lý mã lỗi', path: '/ops-support/system/error-codes' },
                 ]
             },

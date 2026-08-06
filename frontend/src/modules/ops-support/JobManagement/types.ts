@@ -51,6 +51,26 @@ export interface IJobSchedule {
   conditionType?: 'SUCCESS' | 'ALWAYS';
 }
 
+export type JobConsoleType = 'SPRING_BEAN' | 'REST_API' | 'SQL_SCRIPT';
+export type MisfirePolicyConsole = 'FIRE_NOW' | 'DO_NOTHING';
+export type BackoffStrategyConsole = 'FIXED' | 'EXPONENTIAL_2X' | 'EXPONENTIAL_3X' | 'EXPONENTIAL_5X';
+export type TriggerTypeOption = 'SCHEDULER' | 'EVENT' | 'MANUAL';
+export type SchedulerOption = 'CRON_EXPRESSION' | 'TIME_PICKER';
+
+export interface IConsoleNotificationEventChannels {
+  sms: boolean;
+  push: boolean;
+  email: boolean;
+  customRecipients?: string[];
+}
+
+export interface IConsoleNotificationMatrix {
+  onStart: IConsoleNotificationEventChannels;
+  onSuccess: IConsoleNotificationEventChannels;
+  onFailure: IConsoleNotificationEventChannels;
+  onRetry: IConsoleNotificationEventChannels;
+}
+
 export interface IJob {
   id: string;
   code: string;
@@ -66,6 +86,27 @@ export interface IJob {
   schedule: IJobSchedule;
   timeout: number;
   retryPolicy: IRetryPolicy;
+
+  // Job Engine Console fields
+  type?: JobConsoleType;
+  target?: string;
+  targetLabel?: string;
+  serviceCode?: string;
+  triggerType?: TriggerTypeOption;
+  schedulerType?: SchedulerOption;
+  cron?: string;
+  misfire?: MisfirePolicyConsole;
+  concurrent?: boolean;
+  params?: string; // YAML Payload
+
+  maxRetries?: number;
+  retryInterval?: number;
+  backoff?: BackoffStrategyConsole;
+  backoffMultiplier?: string;
+
+  enableNotify?: boolean;
+  notifyEmails?: string;
+  notificationMatrix?: IConsoleNotificationMatrix;
 
   inputSchema?: object;
   outputSchema?: object;
@@ -103,6 +144,7 @@ export interface IJobRun {
   startTime: string;
   endTime?: string;
   duration?: number;
+  retryCount?: number;
   triggeredBy: string;
   triggerType: 'MANUAL' | 'SCHEDULED' | 'TRIGGERED';
   parameters?: Record<string, unknown>;

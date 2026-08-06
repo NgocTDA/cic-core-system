@@ -6,6 +6,7 @@ import {
   BellOutlined,
   UserOutlined,
   PlusOutlined,
+  ArrowLeftOutlined,
 } from '@ant-design/icons';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -13,7 +14,7 @@ import { useHeaderContext } from '../context/HeaderContext';
 import { colors, layout, radius, shadows, size, spacing, typography, zIndex } from '../design-system';
 
 const { Header } = Layout;
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 interface AppHeaderProps {
   collapsed: boolean;
@@ -27,11 +28,19 @@ const ROUTE_TITLES: Record<string, string> = {
   '/ops-support/notification-template': 'Quản lý mẫu thông báo',
   '/ops-support/notifications': 'Tra cứu thông báo',
   '/ops-support/variable-registry': 'Danh mục biến thông báo',
+  '/ops-support/job-management': 'Quản lý Job',
+};
+
+const ActionRenderer: React.FC<{ action: any }> = ({ action }) => {
+  if (action.render) {
+    return <>{action.render()}</>;
+  }
+  return null;
 };
 
 const AppHeader: React.FC<AppHeaderProps> = ({ collapsed, onCollapse, isMobile }) => {
   const pathname = usePathname();
-  const { pageActions, pageTitle } = useHeaderContext();
+  const { pageActions, pageTitle, onBack, breadcrumb } = useHeaderContext();
 
   const getPageTitle = () => {
     const path = pathname || '/';
@@ -42,7 +51,15 @@ const AppHeader: React.FC<AppHeaderProps> = ({ collapsed, onCollapse, isMobile }
   // Page-set title takes priority over route-based title
   const displayTitle = pageTitle || getPageTitle();
 
-  const visibleActions = pageActions.filter((action) => !action.hidden);
+  // Check for back action either from onBack or pageActions
+  const backActionItem = pageActions.find((a) => a.key === 'back');
+  const effectiveOnBack = onBack || backActionItem?.onClick;
+
+  // Filter out back action from right side buttons if it's rendered as back arrow next to title
+  const visibleActions = pageActions.filter(
+    (action) => !action.hidden && (effectiveOnBack ? action.key !== 'back' : true)
+  );
+
   const primaryAction = visibleActions.find((action) => action.key === 'add' || action.type === 'primary');
   const secondaryActions = visibleActions.filter((action) => action !== primaryAction);
   const headerActionGap = Number.parseInt(isMobile ? spacing[1] : spacing[3], 10);
@@ -61,7 +78,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({ collapsed, onCollapse, isMobile }
       position: 'relative',
       zIndex: zIndex.raised,
     }}>
-      <Space size="middle">
+      <Space size="middle" align="center">
         {isMobile && (
           <Button
             type="text"
@@ -71,9 +88,35 @@ const AppHeader: React.FC<AppHeaderProps> = ({ collapsed, onCollapse, isMobile }
           />
         )}
         {!isMobile && (
-          <Title level={4} style={{ margin: 0, fontWeight: 700 }}>
-            {displayTitle}
-          </Title>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            {effectiveOnBack && (
+              <Tooltip title="Quay lại">
+                <Button
+                  type="text"
+                  icon={<ArrowLeftOutlined style={{ fontSize: 18, color: colors.text.primary }} />}
+                  onClick={effectiveOnBack}
+                  style={{
+                    padding: '4px 8px',
+                    height: 'auto',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: radius.md,
+                  }}
+                />
+              </Tooltip>
+            )}
+            <div>
+              <Title level={4} style={{ margin: 0, fontWeight: 700, lineHeight: 1.2, fontSize: 18 }}>
+                {displayTitle}
+              </Title>
+              {breadcrumb && (
+                <Text type="secondary" style={{ fontSize: 12, display: 'block', marginTop: 2, color: colors.text.secondary }}>
+                  {breadcrumb}
+                </Text>
+              )}
+            </div>
+          </div>
         )}
       </Space>
 
@@ -98,8 +141,11 @@ const AppHeader: React.FC<AppHeaderProps> = ({ collapsed, onCollapse, isMobile }
           </Button>
         )}
 
-        {secondaryActions.map((action) => (
-          !isMobile ? (
+        {secondaryActions.map((action) => {
+          if (action.render) {
+            return <ActionRenderer key={action.key} action={action} />;
+          }
+          return !isMobile ? (
             <Tooltip key={action.key} title={action.label}>
               <Button
                 type={action.type === 'primary' ? 'default' : action.type}
@@ -111,8 +157,8 @@ const AppHeader: React.FC<AppHeaderProps> = ({ collapsed, onCollapse, isMobile }
                 {action.label}
               </Button>
             </Tooltip>
-          ) : null
-        ))}
+          ) : null;
+        })}
 
         {/* Mobile: show primary action as icon button */}
         {primaryAction && isMobile && (
@@ -171,4 +217,3 @@ const AppHeader: React.FC<AppHeaderProps> = ({ collapsed, onCollapse, isMobile }
 };
 
 export default AppHeader;
-

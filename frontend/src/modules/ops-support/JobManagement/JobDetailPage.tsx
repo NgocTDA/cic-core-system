@@ -2,31 +2,82 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { Tabs, Button, Space, message, Row, Col, Statistic, Card, Tag, Empty } from 'antd';
-import { ArrowLeftOutlined, EditOutlined, PlayCircleOutlined, PauseCircleOutlined, CopyOutlined } from '@ant-design/icons';
-import { PageLayout } from '@/components/ui';
+import {
+  Card,
+  Row,
+  Col,
+  Button,
+  Space,
+  Tag,
+  Typography,
+  Table,
+  Checkbox,
+  Modal,
+  message,
+} from 'antd';
+import {
+  ArrowLeftOutlined,
+  PlayCircleOutlined,
+  CodeOutlined,
+  CalendarOutlined,
+  BellOutlined,
+  HistoryOutlined,
+  MessageOutlined,
+  DesktopOutlined,
+  MailOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
+import { PageLayout, ChangeHistoryCollapse } from '@/components/ui';
 import useHeaderActions from '@/hooks/useHeaderActions';
-import { mockJobs } from './mockData';
+import { colors, spacing, radius, typography } from '@/design-system';
+import { mockJobs, mockChangeHistoryData } from './mockData';
 import type { IJob } from './types';
-import OverviewTab from './tabs/OverviewTab';
-import HistoryTab from './tabs/HistoryTab';
-import ConfigTab from './tabs/ConfigTab';
-import DependenciesTab from './tabs/DependenciesTab';
-import JobRunModal from './modals/JobRunModal';
 import RunProgressDrawer from './modals/RunProgressDrawer';
+import { getCronDescription } from './cronUtils';
+
+const { Text } = Typography;
+
+const categoryMap: Record<string, string> = {
+  DATA_SYNC: 'Đồng bộ dữ liệu (DATA_SYNC)',
+  REPORT: 'Sinh báo cáo thống kê (REPORT)',
+  CLEANUP: 'Dọn dẹp & Lưu trữ dữ liệu (CLEANUP)',
+  VALIDATION: 'Kiểm tra & Đối soát dữ liệu (VALIDATION)',
+  BATCH: 'Xử lý lô / Batch (BATCH)',
+  SPRING_BEAN: 'Java Spring Component (SPRING_BEAN)',
+  REST_API: 'REST API Endpoint (REST_API)',
+  SQL_SCRIPT: 'SQL Stored Procedure (SQL_SCRIPT)',
+};
+
+const misfireMap: Record<string, string> = {
+  FIRE_NOW: 'Chạy bù ngay khi đủ điều kiện',
+  DO_NOTHING: 'Bỏ qua lượt lỗi, chờ lịch tiếp theo',
+};
+
+const backoffMap: Record<string, string> = {
+  FIXED: 'Cố định',
+  EXPONENTIAL_2X: 'Cấp số nhân - 2x',
+  EXPONENTIAL_3X: 'Cấp số nhân - 3x',
+  EXPONENTIAL_5X: 'Cấp số nhân - 5x',
+};
+
+const triggerTypeMap: Record<string, string> = {
+  SCHEDULER: 'Bộ lập lịch (Scheduler)',
+  EVENT: 'Theo sự kiện (Event-driven)',
+  MANUAL: 'Thủ công (Manual)',
+};
 
 const JobDetailPage: React.FC = () => {
   const router = useRouter();
   const params = useParams();
   const jobId = params?.id as string;
+
   const [job, setJob] = useState<IJob | null>(null);
   const [loading, setLoading] = useState(false);
-  const [runModalVisible, setRunModalVisible] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
 
   useEffect(() => {
     if (jobId) {
-      const found = mockJobs.find(j => j.id === jobId);
+      const found = mockJobs.find((j) => j.id === jobId);
       if (found) {
         setJob(found);
       } else {
@@ -41,8 +92,8 @@ const JobDetailPage: React.FC = () => {
       title: job ? `Chi tiết Job: ${job.name}` : 'Chi tiết Job',
       actions: [
         {
-          key: 'back',
-          label: 'Quay lại',
+          key: 'close',
+          label: 'Đóng',
           icon: <ArrowLeftOutlined />,
           onClick: () => router.push('/ops-support/job-management'),
         },
@@ -52,7 +103,36 @@ const JobDetailPage: React.FC = () => {
   );
 
   const handleRunJob = () => {
-    setRunModalVisible(true);
+    if (!job) return;
+
+    Modal.confirm({
+      title: 'Xác nhận thực hiện Job',
+      icon: null,
+      centered: true,
+      content: (
+        <div>
+          <p style={{ marginBottom: 12 }}>Bạn có chắc chắn muốn kích hoạt chạy Job này ngay bây giờ không?</p>
+          <div style={{ background: '#f8fafc', padding: '10px 14px', borderRadius: radius.md, border: `1px solid ${colors.border.base}` }}>
+            <div><Text type="secondary">Mã Job: </Text><Text code strong style={{ color: '#000000' }}>{job.code}</Text></div>
+            <div><Text type="secondary">Tên Job: </Text><Text strong>{job.name}</Text></div>
+          </div>
+        </div>
+      ),
+      okText: 'Chạy ngay',
+      cancelText: 'Hủy',
+      okButtonProps: { type: 'primary', style: { minWidth: 90 } },
+      cancelButtonProps: { style: { minWidth: 90 } },
+      footer: (_, { OkBtn, CancelBtn }) => (
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 12, marginTop: 20 }}>
+          <CancelBtn />
+          <OkBtn />
+        </div>
+      ),
+      onOk: () => {
+        setIsRunning(true);
+        message.success(`Job ${job.code} đã bắt đầu chạy thành công`);
+      },
+    });
   };
 
   const handleStopJob = () => {
@@ -64,137 +144,424 @@ const JobDetailPage: React.FC = () => {
     }, 1000);
   };
 
-  const handleEditJob = () => {
-    router.push(`/ops-support/job-management/${jobId}/edit`);
+  if (!job) {
+    return (
+      <PageLayout>
+        <Card loading />
+      </PageLayout>
+    );
+  }
+
+  // Email tags list parsing
+  const emailTags = job.notifyEmails
+    ? job.notifyEmails.split(/[,;]\s*/).filter(Boolean)
+    : ['admin@cic.org.vn', 'alert@cic.org.vn'];
+
+  // Matrix table data formatting
+  const matrix = job.notificationMatrix || {
+    onStart: { sms: false, push: false, email: true, customRecipients: [] },
+    onSuccess: { sms: false, push: false, email: true, customRecipients: [] },
+    onFailure: { sms: true, push: true, email: true, customRecipients: ['alert_group@cic.org.vn'] },
+    onRetry: { sms: false, push: true, email: false, customRecipients: [] },
   };
 
-  const handleCloneJob = () => {
-    if (job) {
-      message.success(`Đã sao chép job: ${job.name}`);
-      router.push(`/ops-support/job-management/create?cloneId=${jobId}`);
-    }
-  };
-
-  const tabs = [
+  const notificationColumns = [
     {
-      key: 'overview',
-      label: 'Tổng quan',
-      children: job ? <OverviewTab job={job} /> : <Empty />,
+      title: 'Sự kiện kích hoạt',
+      dataIndex: 'eventLabel',
+      key: 'eventLabel',
+      width: 180,
+      render: (text: string) => (
+        <Text strong style={{ fontSize: typography.fontSize.sm }}>
+          {text}
+        </Text>
+      ),
     },
     {
-      key: 'history',
-      label: 'Lịch sử chạy',
-      children: job ? <HistoryTab jobId={jobId} /> : <Empty />,
+      title: (
+        <Space size={4}>
+          <MessageOutlined style={{ color: colors.subsystem.kkn }} />
+          <span>SMS</span>
+        </Space>
+      ),
+      dataIndex: 'sms',
+      key: 'sms',
+      width: 90,
+      align: 'center' as const,
+      render: (val: boolean) => <Checkbox checked={val} disabled />,
     },
     {
-      key: 'config',
-      label: 'Cấu hình',
-      children: job ? <ConfigTab job={job} /> : <Empty />,
+      title: (
+        <Space size={4}>
+          <DesktopOutlined style={{ color: colors.primary[500] }} />
+          <span>Push (Web)</span>
+        </Space>
+      ),
+      dataIndex: 'push',
+      key: 'push',
+      width: 110,
+      align: 'center' as const,
+      render: (val: boolean) => <Checkbox checked={val} disabled />,
     },
     {
-      key: 'dependencies',
-      label: 'Phụ thuộc',
-      children: job ? <DependenciesTab job={job} /> : <Empty />,
+      title: (
+        <Space size={4}>
+          <MailOutlined style={{ color: colors.success.base }} />
+          <span>Email</span>
+        </Space>
+      ),
+      dataIndex: 'email',
+      key: 'email',
+      width: 90,
+      align: 'center' as const,
+      render: (val: boolean) => <Checkbox checked={val} disabled />,
+    },
+    {
+      title: (
+        <Space size={4}>
+          <UserOutlined style={{ color: colors.primary[600] }} />
+          <span>Người dùng / Email nhận riêng</span>
+        </Space>
+      ),
+      dataIndex: 'customRecipients',
+      key: 'customRecipients',
+      render: (recipients: string[]) =>
+        recipients && recipients.length > 0 ? (
+          <Space wrap size={[4, 4]}>
+            {recipients.map((item) => (
+              <Tag key={item} color="blue">
+                {item}
+              </Tag>
+            ))}
+          </Space>
+        ) : (
+          <Text type="secondary" style={{ fontSize: typography.fontSize.xs }}>
+            Chưa cấu hình
+          </Text>
+        ),
     },
   ];
 
-  if (!job) {
-    return <PageLayout><Empty description="Đang tải..." /></PageLayout>;
-  }
+  const notificationData = [
+    { key: 'onStart', eventLabel: 'Khi bắt đầu chạy Job', ...matrix.onStart },
+    { key: 'onSuccess', eventLabel: 'Khi hoàn tất thành công', ...matrix.onSuccess },
+    { key: 'onFailure', eventLabel: 'Khi gặp sự cố / Thất bại', ...matrix.onFailure },
+    { key: 'onRetry', eventLabel: 'Khi thử lại (Retry)', ...matrix.onRetry },
+  ];
 
   return (
     <PageLayout>
-      <Card>
-        {/* Status & Quick Actions */}
-        <Row gutter={[24, 24]} style={{ marginBottom: '24px' }}>
-          <Col span={24}>
-            <Space direction="vertical" style={{ width: '100%' }}>
-              <Row gutter={[16, 16]}>
-                <Col span={6}>
-                  <Statistic
-                    title="Trạng thái"
-                    value={job.status}
-                    formatter={() => (
-                      <Tag color={job.status === 'ACTIVE' ? 'green' : 'default'}>
-                        {job.status}
-                      </Tag>
-                    )}
-                  />
-                </Col>
-                <Col span={6}>
-                  <Statistic
-                    title="Run Status"
-                    value={job.runStatus}
-                    formatter={() => (
-                      <Tag color={job.runStatus === 'IDLE' ? 'blue' : 'orange'}>
-                        {job.runStatus}
-                      </Tag>
-                    )}
-                  />
-                </Col>
-                <Col span={6}>
-                  <Statistic title="Tỷ lệ thành công" value={`${job.successRate}%`} />
-                </Col>
-                <Col span={6}>
-                  <Statistic title="Thời gian trung bình" value={`${job.avgDuration}s`} />
-                </Col>
-              </Row>
-
-              <Row gutter={[16, 16]} style={{ marginTop: '16px' }}>
-                <Col>
-                  <Button
-                    type="primary"
-                    icon={<PlayCircleOutlined />}
-                    onClick={handleRunJob}
-                    loading={loading}
-                  >
-                    Chạy ngay
-                  </Button>
-                </Col>
-                {isRunning && (
-                  <Col>
-                    <Button
-                      danger
-                      icon={<PauseCircleOutlined />}
-                      onClick={handleStopJob}
-                      loading={loading}
-                    >
-                      Dừng
-                    </Button>
-                  </Col>
-                )}
-                <Col>
-                  <Button icon={<EditOutlined />} onClick={handleEditJob}>
-                    Chỉnh sửa
-                  </Button>
-                </Col>
-                <Col>
-                  <Button icon={<CopyOutlined />} onClick={handleCloneJob}>
-                    Nhân bản
-                  </Button>
-                </Col>
-              </Row>
-            </Space>
-          </Col>
-        </Row>
-
-        {/* Tabs */}
-        <Tabs items={tabs} />
-      </Card>
-
-      {/* Run Job Modal */}
-      {job && (
-        <JobRunModal
-          visible={runModalVisible}
-          job={job}
-          onClose={() => setRunModalVisible(false)}
-          onRun={(params) => {
-            setRunModalVisible(false);
-            setIsRunning(true);
-            message.success('Job đã bắt đầu chạy');
+      <Card
+        style={{
+          borderRadius: radius.lg,
+          border: `1px solid ${colors.border.split}`,
+          boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+        }}
+      >
+        {/* Quick Action Header Bar: Status Tag first, Chạy ngay button to its right */}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+            gap: spacing[3],
+            marginBottom: spacing[5],
+            paddingBottom: spacing[4],
+            borderBottom: `1px solid ${colors.border.split}`,
           }}
-        />
-      )}
+        >
+          <Tag
+            color={job.status === 'ACTIVE' ? 'green' : 'default'}
+            style={{ fontSize: 13, padding: '4px 12px', margin: 0 }}
+          >
+            {job.status === 'ACTIVE' ? 'ĐANG HOẠT ĐỘNG' : 'TẠM DỪNG'}
+          </Tag>
+
+          <Button
+            type="primary"
+            icon={<PlayCircleOutlined />}
+            onClick={handleRunJob}
+            loading={loading}
+          >
+            Chạy ngay
+          </Button>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: spacing[6] }}>
+          {/* KHỐI 1: Thông tin chung */}
+          <div style={{ borderBottom: `1px solid ${colors.border.split}`, paddingBottom: spacing[5] }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: spacing[2], marginBottom: spacing[4] }}>
+              <CodeOutlined style={{ color: colors.primary[500], fontSize: 20 }} />
+              <Text strong style={{ fontSize: typography.fontSize.base, textTransform: 'uppercase', color: colors.text.primary }}>
+                Thông tin chung
+              </Text>
+            </div>
+
+            {/* Hàng 1: Mã Job, Tên Job, Loại Job, Mã dịch vụ */}
+            <Row gutter={[16, 16]}>
+              <Col xs={24} sm={12} md={6}>
+                <div>
+                  <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                    Mã Job
+                  </Text>
+                  <Text code strong style={{ fontSize: typography.fontSize.base, color: '#000000' }}>
+                    {job.code}
+                  </Text>
+                </div>
+              </Col>
+
+              <Col xs={24} sm={12} md={6}>
+                <div>
+                  <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                    Tên Job
+                  </Text>
+                  <Text strong style={{ fontSize: typography.fontSize.base }}>
+                    {job.name}
+                  </Text>
+                </div>
+              </Col>
+
+              <Col xs={24} sm={12} md={6}>
+                <div>
+                  <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                    Loại Job
+                  </Text>
+                  <Text strong style={{ fontSize: typography.fontSize.base }}>
+                    {categoryMap[job.category] || job.category}
+                  </Text>
+                </div>
+              </Col>
+
+              <Col xs={24} sm={12} md={6}>
+                <div>
+                  <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                    Mã dịch vụ
+                  </Text>
+                  <Text code strong style={{ fontSize: typography.fontSize.base, color: '#000000' }}>
+                    {job.serviceCode || 'SVC_CIC_CORE_SYNC'}
+                  </Text>
+                </div>
+              </Col>
+            </Row>
+
+            {/* Hàng 2: Mô tả Job */}
+            <Row gutter={[16, 16]} style={{ marginTop: spacing[4] }}>
+              <Col xs={24}>
+                <div>
+                  <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                    Mô tả Job
+                  </Text>
+                  <Text style={{ fontSize: typography.fontSize.base, color: colors.text.primary }}>
+                    {job.description || 'Không có mô tả'}
+                  </Text>
+                </div>
+              </Col>
+            </Row>
+
+            {/* Hàng 3: Tham số bổ sung */}
+            <Row gutter={[16, 16]} style={{ marginTop: spacing[4] }}>
+              <Col xs={24}>
+                <div>
+                  <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                    Tham số bổ sung (YAML/JSON)
+                  </Text>
+                  <pre
+                    style={{
+                      fontFamily: typography.fontFamily.mono,
+                      fontSize: typography.fontSize.sm,
+                      backgroundColor: '#f8fafc',
+                      color: '#0f172a',
+                      border: `1px solid ${colors.border.base}`,
+                      borderRadius: radius.md,
+                      padding: spacing[3],
+                      margin: 0,
+                      maxHeight: 200,
+                      overflowY: 'auto',
+                    }}
+                  >
+                    {job.params || '# Không có tham số bổ sung'}
+                  </pre>
+                </div>
+              </Col>
+            </Row>
+          </div>
+
+          {/* KHỐI 2: Cấu hình Lập lịch & Xử lý lỗi */}
+          <div style={{ borderBottom: `1px solid ${colors.border.split}`, paddingBottom: spacing[5] }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: spacing[2], marginBottom: spacing[4] }}>
+              <CalendarOutlined style={{ color: colors.primary[500], fontSize: 20 }} />
+              <Text strong style={{ fontSize: typography.fontSize.base, textTransform: 'uppercase', color: colors.text.primary }}>
+                Lập lịch và xử lý lỗi
+              </Text>
+            </div>
+
+            {/* HÀNG 1: Điều kiện kích hoạt, Thời gian chờ tối đa, Xử lý khi bỏ lỡ, Cho phép chạy song song */}
+            <Row gutter={[16, 16]}>
+              <Col xs={24} sm={12} md={6}>
+                <div>
+                  <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                    Điều kiện kích hoạt
+                  </Text>
+                  <Text strong style={{ fontSize: typography.fontSize.base }}>
+                    {triggerTypeMap[job.triggerType || 'SCHEDULER'] || 'Bộ lập lịch (Scheduler)'}
+                  </Text>
+                </div>
+              </Col>
+
+              <Col xs={24} sm={12} md={6}>
+                <div>
+                  <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                    Thời gian chờ tối đa
+                  </Text>
+                  <Text strong style={{ fontSize: typography.fontSize.base }}>
+                    {job.timeout || 300} giây
+                  </Text>
+                </div>
+              </Col>
+
+              <Col xs={24} sm={12} md={6}>
+                <div>
+                  <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                    Xử lý khi bỏ lỡ lượt chạy
+                  </Text>
+                  <Text strong style={{ fontSize: typography.fontSize.base }}>
+                    {misfireMap[job.misfire || 'FIRE_NOW']}
+                  </Text>
+                </div>
+              </Col>
+
+              <Col xs={24} sm={12} md={6}>
+                <div>
+                  <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                    Cho phép chạy song song
+                  </Text>
+                  <Text strong style={{ fontSize: typography.fontSize.base }}>
+                    {job.concurrent ? 'Khóa chạy song song' : 'Cho phép chạy song song'}
+                  </Text>
+                </div>
+              </Col>
+            </Row>
+
+            {/* HÀNG 2: Biểu thức Cron, Số lần thử lại tối đa, Khoảng chờ ban đầu, Giãn cách thời gian */}
+            <Row gutter={[16, 16]} style={{ marginTop: spacing[4] }}>
+              <Col xs={24} sm={12} md={6}>
+                <div>
+                  <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                    Biểu thức Cron
+                  </Text>
+                  <code
+                    style={{
+                      background: colors.neutral[100],
+                      padding: '4px 10px',
+                      borderRadius: radius.md,
+                      fontFamily: typography.fontFamily.mono,
+                      fontWeight: 'bold',
+                      fontSize: typography.fontSize.base,
+                      color: '#000000',
+                    }}
+                  >
+                    {job.cron || job.schedule?.expression || '0 0 1 * * *'}
+                  </code>
+                  <Text type="secondary" style={{ fontSize: typography.fontSize.xs, display: 'block', marginTop: 4, color: colors.primary[600] }}>
+                    💡 Diễn giải: {getCronDescription(job.cron || job.schedule?.expression || '0 0 1 * * *')}
+                  </Text>
+                </div>
+              </Col>
+
+              <Col xs={24} sm={12} md={6}>
+                <div>
+                  <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                    Số lần thử lại tối đa
+                  </Text>
+                  <Text strong style={{ fontSize: typography.fontSize.base }}>
+                    {job.maxRetries ?? job.retryPolicy?.maxRetries ?? 3} lần
+                  </Text>
+                </div>
+              </Col>
+
+              <Col xs={24} sm={12} md={6}>
+                <div>
+                  <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                    Khoảng chờ ban đầu
+                  </Text>
+                  <Text strong style={{ fontSize: typography.fontSize.base }}>
+                    {job.retryInterval ?? 60} giây
+                  </Text>
+                </div>
+              </Col>
+
+              <Col xs={24} sm={12} md={6}>
+                <div>
+                  <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                    Giãn cách thời gian (Backoff)
+                  </Text>
+                  <Text strong style={{ fontSize: typography.fontSize.base }}>
+                    {backoffMap[job.backoff || 'EXPONENTIAL_2X'] || 'Cấp số nhân - 2x'}
+                  </Text>
+                </div>
+              </Col>
+            </Row>
+          </div>
+
+          {/* KHỐI 3: Thiết lập Cảnh báo Sự cố */}
+          <div style={{ borderBottom: `1px solid ${colors.border.split}`, paddingBottom: spacing[5] }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: spacing[2], marginBottom: spacing[4] }}>
+              <BellOutlined style={{ color: colors.primary[500], fontSize: 20 }} />
+              <Text strong style={{ fontSize: typography.fontSize.base, textTransform: 'uppercase', color: colors.text.primary }}>
+                Thiết lập cảnh báo sự cố
+              </Text>
+            </div>
+
+            <div>
+              <div style={{ marginBottom: spacing[4] }}>
+                <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 6 }}>
+                  Email nhận cảnh báo chung
+                </Text>
+                <Space wrap size={[6, 6]}>
+                  {emailTags.map((email) => (
+                    <Tag key={email} color="blue" icon={<MailOutlined />}>
+                      {email}
+                    </Tag>
+                  ))}
+                </Space>
+              </div>
+
+              <Text strong style={{ fontSize: typography.fontSize.sm, display: 'block', marginBottom: spacing[2] }}>
+                Cấu hình thông báo
+              </Text>
+
+              <Table
+                columns={notificationColumns}
+                dataSource={notificationData}
+                pagination={false}
+                size="small"
+                bordered
+                rowKey="key"
+                scroll={{ x: 750 }}
+              />
+            </div>
+          </div>
+
+          {/* KHỐI 4: Bảng Lịch sử thay đổi (Audit Change History Collapse) */}
+          <ChangeHistoryCollapse data={mockChangeHistoryData} />
+
+          {/* Action Footer Bar */}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              gap: spacing[3],
+              marginTop: spacing[4],
+              paddingTop: spacing[4],
+              borderTop: `1px solid ${colors.border.split}`,
+            }}
+          >
+            <Button onClick={() => router.push('/ops-support/job-management')} style={{ minWidth: 100 }}>
+              Đóng
+            </Button>
+          </div>
+        </div>
+      </Card>
 
       {/* Run Progress Drawer */}
       {job && (

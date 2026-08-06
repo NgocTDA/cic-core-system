@@ -147,6 +147,21 @@ Trước khi tạo mới hoặc sửa đổi bất kỳ giao diện, component n
 - **Modal:** Tiêu đề ở dạng chữ thường viết hoa chữ đầu (không viết IN HOA toàn bộ), lược bỏ icon tiêu đề, các nút footer phải được căn giữa (`justifyContent: 'center'`) và đồng bộ kích thước/bo góc.
 - **Form/Card:** Không tự tạo màu nền/khoảng cách/kiểu dáng khác biệt mà không sử dụng tokens.
 
+### 8. Quy định Bảng Lịch sử thay đổi (Audit Change History Table)
+Tất cả màn hình Xem chi tiết bắt buộc phải có **Bảng Lịch sử thay đổi** thống kê các lần cập nhật làm thay đổi dữ liệu của người dùng/hệ thống:
+- **Bố cục**: Đặt trong `<Collapse>` (mặc định thu gọn `defaultActiveKey={[]}`).
+- **Cấu hình Bảng**: Tối đa chiều cao `250px` (`scroll={{ y: 250, x: 1300 }}`), không phân trang (`pagination={false}`), hiển thị tối đa 20 bản ghi mới nhất xếp ở trên cùng.
+- **Cấu trúc 8 cột chuẩn**:
+  1. `STT` (50px, align center)
+  2. `Thời gian` (170px): Hiển thị `dd/mm/yyyy`, hover hiển thị tooltip `dd/mm/yyyy hh:mm:ss`.
+  3. `Người cập nhật` (160px): Hiển thị username, hover hiển thị tooltip Họ và tên đầy đủ.
+  4. `Hành động` (140px): Tên hành động tác động dữ liệu.
+  5. `Giá trị cũ` (220px): Giá trị trước thay đổi.
+  6. `Giá trị mới` (220px): Giá trị sau thay đổi thành công.
+  7. `Địa chỉ IP` (130px): IP thiết bị thực hiện.
+  8. `Mô tả` (240px): Lý do/ghi chú/tệp đính kèm (nếu > 2 dòng có "Xem tiếp", file dạng link tải về).
+- **Shared Component**: Sử dụng `<ChangeHistoryCollapse data={historyItems} />` từ `@/components/ui`.
+
 ---
 
 ## Naming conventions

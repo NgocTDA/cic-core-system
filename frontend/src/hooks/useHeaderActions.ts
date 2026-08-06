@@ -1,33 +1,46 @@
 import { useLayoutEffect } from 'react';
 import { useHeaderContext, type HeaderAction } from '../context/HeaderContext';
 
-interface HeaderConfig {
+export interface HeaderConfig {
   title?: string;
+  onBack?: () => void;
+  breadcrumb?: string;
   actions?: HeaderAction[];
 }
 
 /**
- * A hook to register page-specific title and actions to the AppHeader.
- * Both title and actions are automatically cleared when the component unmounts.
+ * A hook to register page-specific title, back button, breadcrumb and actions to the AppHeader.
+ * All settings are automatically cleared when the component unmounts.
  * 
- * @param config - Object with optional title and actions.
- * @param deps - Dependency array, same as useEffect.
+ * @param configOrActions - HeaderConfig object or HeaderAction array.
+ * @param deps - Dependency array.
  */
 const useHeaderActions = (configOrActions: HeaderConfig | HeaderAction[], deps: React.DependencyList = []) => {
-  const { setPageActions, clearPageActions, setPageTitle, clearPageTitle } = useHeaderContext();
+  const {
+    setPageActions,
+    clearPageActions,
+    setPageTitle,
+    clearPageTitle,
+    setOnBack,
+    clearOnBack,
+    setBreadcrumb,
+    clearBreadcrumb,
+  } = useHeaderContext();
 
   useLayoutEffect(() => {
     if (Array.isArray(configOrActions)) {
-      // Legacy usage: useHeaderActions([...actions], deps)
       setPageActions(configOrActions);
     } else {
-      // New usage: useHeaderActions({ title, actions }, deps)
       if (configOrActions.title) setPageTitle(configOrActions.title);
       if (configOrActions.actions) setPageActions(configOrActions.actions);
+      if (configOrActions.onBack) setOnBack(configOrActions.onBack);
+      if (configOrActions.breadcrumb) setBreadcrumb(configOrActions.breadcrumb);
     }
     return () => {
       clearPageActions();
       clearPageTitle();
+      clearOnBack();
+      clearBreadcrumb();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);

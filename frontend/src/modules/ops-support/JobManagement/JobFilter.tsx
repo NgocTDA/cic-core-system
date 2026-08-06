@@ -1,142 +1,173 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Select, Input, Button } from 'antd';
+import { Select, Input, Popover, Checkbox, Button, Tooltip, Typography } from 'antd';
 import { FilterOutlined } from '@ant-design/icons';
 import { FilterBar, FilterCol } from '@/components/ui';
 import { useJobManagement } from './useJobManagement';
 
+const { Text } = Typography;
+
+const FILTER_OPTIONS = [
+  { key: 'code', label: 'Mã Job' },
+  { key: 'name', label: 'Tên Job' },
+  { key: 'serviceCode', label: 'Mã dịch vụ' },
+  { key: 'category', label: 'Loại Job' },
+  { key: 'status', label: 'Trạng thái' },
+];
+
 const JobFilter: React.FC = () => {
   const {
-    searchQuery,
+    filterCode,
+    filterName,
+    filterServiceCode,
     filterStatus,
     filterCategory,
-    filterOwner,
-    filterPriority,
-    filterRunStatus,
-    setSearchQuery,
+    setFilterCode,
+    setFilterName,
+    setFilterServiceCode,
     setFilterStatus,
     setFilterCategory,
-    setFilterOwner,
-    setFilterPriority,
-    setFilterRunStatus,
-    jobs,
+    setSearchQuery,
   } = useJobManagement();
 
-  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [visibleFilters, setVisibleFilters] = useState<string[]>([
+    'code',
+    'name',
+    'serviceCode',
+    'category',
+    'status',
+  ]);
+
+  const toggleFilter = (key: string, checked: boolean) => {
+    if (checked) {
+      setVisibleFilters((prev) => [...prev, key]);
+    } else {
+      setVisibleFilters((prev) => prev.filter((k) => k !== key));
+      // Reset filter value when hidden
+      if (key === 'code') setFilterCode('');
+      if (key === 'name') setFilterName('');
+      if (key === 'serviceCode') setFilterServiceCode('');
+      if (key === 'category') setFilterCategory('');
+      if (key === 'status') setFilterStatus('');
+    }
+  };
 
   const handleReset = () => {
     setSearchQuery('');
+    setFilterCode('');
+    setFilterName('');
+    setFilterServiceCode('');
     setFilterStatus('');
     setFilterCategory('');
-    setFilterOwner('');
-    setFilterPriority('');
-    setFilterRunStatus('');
   };
 
-  const owners = [...new Set(jobs.map((j) => j.owner))];
+  const popoverContent = (
+    <div style={{ width: 190, padding: '4px 0' }}>
+      <Text strong style={{ fontSize: 13, display: 'block', marginBottom: 10, borderBottom: '1px solid #f0f0f0', paddingBottom: 6 }}>
+        Hiển thị các bộ lọc
+      </Text>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {FILTER_OPTIONS.map((opt) => (
+          <Checkbox
+            key={opt.key}
+            checked={visibleFilters.includes(opt.key)}
+            onChange={(e) => toggleFilter(opt.key, e.target.checked)}
+          >
+            {opt.label}
+          </Checkbox>
+        ))}
+      </div>
+    </div>
+  );
 
   return (
     <FilterBar
       inCard
       onSearch={() => {}}
       onReset={handleReset}
+      showAddFilter={false}
       extra={
-        <Button
-          type="text"
-          icon={<FilterOutlined />}
-          onClick={() => setShowAdvanced(!showAdvanced)}
+        <Popover
+          content={popoverContent}
+          trigger="click"
+          placement="bottomRight"
         >
-          {showAdvanced ? 'Ít hơn' : 'Chi tiết'}
-        </Button>
+          <Tooltip title="Thêm hoặc bớt các ô tìm kiếm trên thanh bộ lọc">
+            <Button icon={<FilterOutlined />}>Thêm bộ lọc</Button>
+          </Tooltip>
+        </Popover>
       }
     >
-      <FilterCol minWidth={200}>
-        <Input
-          placeholder="Tìm kiếm Mã, Tên Job"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          allowClear
-        />
-      </FilterCol>
+      {visibleFilters.includes('code') && (
+        <FilterCol minWidth={170}>
+          <Input
+            placeholder="Mã Job..."
+            value={filterCode}
+            onChange={(e) => setFilterCode(e.target.value)}
+            allowClear
+          />
+        </FilterCol>
+      )}
 
-      <FilterCol>
-        <Select
-          placeholder="Danh mục"
-          value={filterCategory || undefined}
-          onChange={setFilterCategory}
-          allowClear
-          options={[
-            { value: 'DATA_SYNC', label: 'Đồng bộ dữ liệu' },
-            { value: 'REPORT', label: 'Báo cáo' },
-            { value: 'CLEANUP', label: 'Dọn dẹp' },
-            { value: 'VALIDATION', label: 'Kiểm tra' },
-            { value: 'BATCH', label: 'Xử lý hàng loạt' },
-          ]}
-        />
-      </FilterCol>
+      {visibleFilters.includes('name') && (
+        <FilterCol minWidth={190}>
+          <Input
+            placeholder="Tên Job..."
+            value={filterName}
+            onChange={(e) => setFilterName(e.target.value)}
+            allowClear
+          />
+        </FilterCol>
+      )}
 
-      <FilterCol>
-        <Select
-          placeholder="Trạng thái"
-          value={filterStatus || undefined}
-          onChange={setFilterStatus}
-          allowClear
-          options={[
-            { value: 'ACTIVE', label: 'Hoạt động' },
-            { value: 'INACTIVE', label: 'Tạm dừng' },
-            { value: 'ARCHIVED', label: 'Lưu trữ' },
-          ]}
-        />
-      </FilterCol>
+      {visibleFilters.includes('serviceCode') && (
+        <FilterCol minWidth={170}>
+          <Input
+            placeholder="Mã dịch vụ..."
+            value={filterServiceCode}
+            onChange={(e) => setFilterServiceCode(e.target.value)}
+            allowClear
+          />
+        </FilterCol>
+      )}
 
-      <FilterCol>
-        <Select
-          placeholder="Chủ sở hữu"
-          value={filterOwner || undefined}
-          onChange={setFilterOwner}
-          allowClear
-          options={owners.map((owner) => ({
-            value: owner,
-            label: owner,
-          }))}
-        />
-      </FilterCol>
+      {visibleFilters.includes('category') && (
+        <FilterCol minWidth={170}>
+          <Select
+            placeholder="Loại Job"
+            value={filterCategory || undefined}
+            onChange={setFilterCategory}
+            allowClear
+            style={{ width: '100%' }}
+            options={[
+              { value: 'DATA_SYNC', label: 'Đồng bộ dữ liệu' },
+              { value: 'REPORT', label: 'Sinh báo cáo' },
+              { value: 'CLEANUP', label: 'Dọn dẹp & Lưu trữ' },
+              { value: 'VALIDATION', label: 'Kiểm tra & Đối soát' },
+              { value: 'BATCH', label: 'Xử lý lô / Batch' },
+              { value: 'SPRING_BEAN', label: 'Spring Component' },
+              { value: 'REST_API', label: 'REST API Endpoint' },
+              { value: 'SQL_SCRIPT', label: 'SQL Procedure' },
+            ]}
+          />
+        </FilterCol>
+      )}
 
-      {showAdvanced && (
-        <>
-          <FilterCol>
-            <Select
-              placeholder="Độ ưu tiên"
-              value={filterPriority || undefined}
-              onChange={(val) => setFilterPriority(val as number | '')}
-              allowClear
-              options={[
-                { value: 1, label: 'Level 1 - Cực kỳ cao' },
-                { value: 2, label: 'Level 2 - Cao' },
-                { value: 3, label: 'Level 3 - Bình thường' },
-                { value: 4, label: 'Level 4 - Thấp' },
-                { value: 5, label: 'Level 5 - Cực thấp' },
-              ]}
-            />
-          </FilterCol>
-
-          <FilterCol>
-            <Select
-              placeholder="Trạng thái chạy"
-              value={filterRunStatus || undefined}
-              onChange={setFilterRunStatus}
-              allowClear
-              options={[
-                { value: 'RUNNING', label: 'Đang chạy' },
-                { value: 'IDLE', label: 'Chờ' },
-                { value: 'SCHEDULED', label: 'Đã lên lịch' },
-                { value: 'FAILED', label: 'Thất bại' },
-                { value: 'PAUSED', label: 'Tạm dừng' },
-              ]}
-            />
-          </FilterCol>
-        </>
+      {visibleFilters.includes('status') && (
+        <FilterCol minWidth={140}>
+          <Select
+            placeholder="Trạng thái"
+            value={filterStatus || undefined}
+            onChange={setFilterStatus}
+            allowClear
+            style={{ width: '100%' }}
+            options={[
+              { value: 'ACTIVE', label: 'Hoạt động' },
+              { value: 'INACTIVE', label: 'Tạm dừng' },
+            ]}
+          />
+        </FilterCol>
       )}
     </FilterBar>
   );

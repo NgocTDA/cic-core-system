@@ -88,7 +88,10 @@
       "Bash(node shot.mjs)",
       "Bash(sed 's|/tools/srs-outline|/tools/confluence-to-word|; s|text=Mô tả chung|text=Nguồn Confluence|' probe404.mjs)",
       "Bash(node probe404b.mjs)",
-      "PowerShell(Get-NetTCPConnection -LocalPort 3000 -State Listen -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique | ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue }; Start-Sleep -Seconds 2; if \\(Get-NetTCPConnection -LocalPort 3000 -State Listen -ErrorAction SilentlyContinue\\) { \"van con\" } else { \"da dung server\" })"
+      "PowerShell(Get-NetTCPConnection -LocalPort 3000 -State Listen -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique | ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue }; Start-Sleep -Seconds 2; if \\(Get-NetTCPConnection -LocalPort 3000 -State Listen -ErrorAction SilentlyContinue\\) { \"van con\" } else { \"da dung server\" })",
+      "mcp__reqwise-figma__figma_status",
+      "mcp__reqwise-figma__figma_docs",
+      "mcp__reqwise-figma__figma_rules"
     ],
     "additionalDirectories": [
       "c:\\Users\\ngoct\\Downloads\\Code\\cic-core-system\\frontend\\app\\product-mgmt\\catalog\\products"

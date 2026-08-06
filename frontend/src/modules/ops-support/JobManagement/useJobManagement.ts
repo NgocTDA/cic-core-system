@@ -12,12 +12,18 @@ interface UseJobManagementReturn {
   selectedJob: IJob | null;
   stats: JobManagementStats;
   searchQuery: string;
+  filterCode: string;
+  filterName: string;
+  filterServiceCode: string;
   filterStatus: string;
   filterCategory: string;
   filterOwner: string;
   filterPriority: number | '';
   filterRunStatus: string;
   setSearchQuery: (query: string) => void;
+  setFilterCode: (code: string) => void;
+  setFilterName: (name: string) => void;
+  setFilterServiceCode: (serviceCode: string) => void;
   setFilterStatus: (status: string) => void;
   setFilterCategory: (category: string) => void;
   setFilterOwner: (owner: string) => void;
@@ -31,6 +37,9 @@ interface UseJobManagementReturn {
 
 export const useJobManagement = (): UseJobManagementReturn => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [filterCode, setFilterCode] = useState('');
+  const [filterName, setFilterName] = useState('');
+  const [filterServiceCode, setFilterServiceCode] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
   const [filterCategory, setFilterCategory] = useState('');
   const [filterOwner, setFilterOwner] = useState('');
@@ -42,19 +51,44 @@ export const useJobManagement = (): UseJobManagementReturn => {
 
   const filteredJobs = useMemo(() => {
     return jobs.filter((job) => {
+      // Direct field filters
+      const cTerm = filterCode.trim().toLowerCase();
+      const nTerm = filterName.trim().toLowerCase();
+      const sTerm = filterServiceCode.trim().toLowerCase();
+
+      const matchesCode = !cTerm || job.code.toLowerCase().includes(cTerm);
+      const matchesName = !nTerm || job.name.toLowerCase().includes(nTerm);
+      const matchesServiceCode = !sTerm || (job.serviceCode && job.serviceCode.toLowerCase().includes(sTerm));
+
+      // Global fallback search query if used
+      const q = searchQuery.trim().toLowerCase();
       const matchesSearch =
-        job.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        job.name.toLowerCase().includes(searchQuery.toLowerCase());
+        !q ||
+        job.code.toLowerCase().includes(q) ||
+        job.name.toLowerCase().includes(q) ||
+        (job.serviceCode && job.serviceCode.toLowerCase().includes(q));
 
       const matchesStatus = !filterStatus || job.status === filterStatus;
       const matchesCategory = !filterCategory || job.category === filterCategory;
-      const matchesOwner = !filterOwner || job.owner === filterOwner;
-      const matchesPriority = filterPriority === '' || job.priority === filterPriority;
-      const matchesRunStatus = !filterRunStatus || job.runStatus === filterRunStatus;
 
-      return matchesSearch && matchesStatus && matchesCategory && matchesOwner && matchesPriority && matchesRunStatus;
+      return (
+        matchesCode &&
+        matchesName &&
+        matchesServiceCode &&
+        matchesSearch &&
+        matchesStatus &&
+        matchesCategory
+      );
     });
-  }, [jobs, searchQuery, filterStatus, filterCategory, filterOwner, filterPriority, filterRunStatus]);
+  }, [
+    jobs,
+    filterCode,
+    filterName,
+    filterServiceCode,
+    searchQuery,
+    filterStatus,
+    filterCategory,
+  ]);
 
   const selectedJob = useMemo(
     () => jobs.find((j) => j.id === selectedJobId) || null,
@@ -129,12 +163,18 @@ export const useJobManagement = (): UseJobManagementReturn => {
     selectedJob,
     stats,
     searchQuery,
+    filterCode,
+    filterName,
+    filterServiceCode,
     filterStatus,
     filterCategory,
     filterOwner,
     filterPriority,
     filterRunStatus,
     setSearchQuery,
+    setFilterCode,
+    setFilterName,
+    setFilterServiceCode,
     setFilterStatus,
     setFilterCategory,
     setFilterOwner,

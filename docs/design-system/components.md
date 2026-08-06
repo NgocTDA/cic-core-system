@@ -296,3 +296,33 @@ import { tablePagination } from '@/components/ui';
   },
 }
 ```
+
+---
+
+## ChangeHistoryCollapse
+
+Bảng thống kê Lịch sử thay đổi (Audit log) chuẩn cho mọi màn hình Xem chi tiết. Bọc trong `<Collapse>` thu gọn mặc định.
+
+```tsx
+import { ChangeHistoryCollapse } from '@/components/ui';
+
+<ChangeHistoryCollapse data={historyList} />
+```
+
+**Props:**
+
+| Prop | Type | Default | Mô tả |
+|---|---|---|---|
+| `data` | `IChangeHistoryItem[]` | `[]` | Danh sách lịch sử tác động thay đổi |
+| `defaultActive` | `boolean` | `false` | Mở sẵn Panel nếu `true` |
+
+**Cấu trúc 8 cột chuẩn:**
+1. `STT` (50px, align center)
+2. `Thời gian` (170px): `dd/mm/yyyy` (hover hiển thị `dd/mm/yyyy hh:mm:ss`)
+3. `Người cập nhật` (160px): `username` (hover hiển thị họ tên đầy đủ)
+4. `Hành động` (140px): Tên thao tác nghiệp vụ
+5. `Giá trị cũ` (220px): Thông số trước thay đổi
+6. `Giá trị mới` (220px): Thông số mới sau thay đổi
+7. `Địa chỉ IP` (130px): IP thiết bị truy cập
+8. `Mô tả` (240px): Lý do/ghi chú/tệp đính kèm (> 2 dòng hiển thị "..." kèm nút "Xem tiếp")
+
