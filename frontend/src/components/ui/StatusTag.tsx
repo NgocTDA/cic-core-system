@@ -8,7 +8,8 @@ import { Tag } from 'antd';
 export const STATUS_CONFIG = {
   // Activation
   ACTIVE:    { color: 'success',    label: 'Hoạt động' },
-  INACTIVE:  { color: 'default',    label: 'Vô hiệu hóa' },
+  INACTIVE:  { color: 'default',    label: 'Ngừng hoạt động' },
+  ARCHIVED:  { color: 'default',    label: 'Đã lưu trữ' },
 
   // Job execution
   RUNNING:   { color: 'processing', label: 'Đang chạy' },

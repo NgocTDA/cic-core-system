@@ -1,0 +1,80 @@
+@startuml FUNC-HTVH-036_seq-02
+title FEAT-HTVH-036-02 — Kích hoạt chạy Job thủ công (đơn lẻ và hàng loạt)
+
+skinparam sequenceMessageAlign center
+skinparam maxMessageSize 240
+
+actor "Người dùng\n(ROLE-QTHT / ROLE-QLVH)" as NSD
+participant "MH-HTVH-036-001\nDanh sách Job" as MH_DS
+participant "Thanh tác vụ\nAppHeader" as CMP_HEADER
+participant "MH-HTVH-036-006\nPopup Xác nhận" as MH_CONF
+participant "Lớp nghiệp vụ\nuseJobManagement" as HT_LOGIC
+participant "Dịch vụ Job\nHT-JOB" as HT_JOB
+participant "Bộ lập lịch\nHT-SCH" as HT_SCH
+database "CSDL\nJOB_EXECUTION_LOG" as CSDL
+
+== Nhánh A: Chạy hàng loạt từ thanh tác vụ ==
+NSD -> MH_DS : Tích chọn N dòng bằng ô đánh dấu
+activate MH_DS
+MH_DS -> MH_DS : Cập nhật danh sách dòng đang chọn
+alt Vai trò không có quyền "run" và "delete"
+  MH_DS --> NSD : Ô đánh dấu bị vô hiệu hóa
+else Có quyền
+  MH_DS -> CMP_HEADER : Đăng ký nút "Chạy Job (N)"
+  CMP_HEADER --> NSD : Hiện nút chính "Chạy Job (N)"
+end
+deactivate MH_DS
+
+NSD -> CMP_HEADER : Nhấp "Chạy Job (N)"
+activate CMP_HEADER
+CMP_HEADER -> MH_CONF : Mở popup xác nhận\n(căn giữa, không icon tiêu đề)
+deactivate CMP_HEADER
+activate MH_CONF
+alt N = 1
+  MH_CONF --> NSD : CONF_001 — kèm Mã Job và Tên Job của bản ghi đã chọn
+else N > 1
+  MH_CONF --> NSD : CONF_002 — kèm tổng số N Job sẽ được kích hoạt
+end
+
+alt Người dùng nhấp "Hủy"
+  NSD -> MH_CONF : Hủy
+  MH_CONF --> MH_DS : Đóng popup, giữ nguyên danh sách chọn
+else Người dùng nhấp "Chạy ngay"
+  NSD -> MH_CONF : Chạy ngay
+  MH_CONF -> HT_LOGIC : Kích hoạt lần lượt từng Job đã chọn
+  deactivate MH_CONF
+  activate HT_LOGIC
+  loop mỗi Job đã chọn
+    HT_LOGIC -> HT_JOB : Yêu cầu kích hoạt chạy ngay
+    activate HT_JOB
+    alt Job bật "Khóa chạy song song" và đang có lượt chạy dở dang
+      HT_JOB --> HT_LOGIC : ERR_016 — từ chối kích hoạt
+    else Đủ điều kiện chạy
+      HT_JOB -> HT_SCH : Đưa vào hàng đợi thực thi\n(điều kiện kích hoạt = Thủ công)
+      HT_SCH --> HT_JOB : Đã tiếp nhận
+      HT_JOB -> CSDL : Ghi lượt chạy mới\n(trạng thái = Đang chạy, người kích hoạt)
+      HT_JOB --> HT_LOGIC : Mã lượt chạy
+    end
+    deactivate HT_JOB
+    HT_LOGIC -> HT_LOGIC : Đặt trạng thái chạy của Job là "Đang chạy"
+  end
+  HT_LOGIC --> MH_DS : Danh sách đã cập nhật
+  deactivate HT_LOGIC
+  MH_DS -> MH_DS : Xóa trắng danh sách chọn, ẩn nút "Chạy Job (N)"
+  MH_DS --> NSD : SUC_001 "Đã kích hoạt chạy N Job thành công"
+end
+
+== Nhánh B: Chạy đơn lẻ từ menu thao tác ==
+NSD -> MH_DS : Menu thao tác > "Chạy ngay"
+activate MH_DS
+MH_DS -> MH_CONF : Mở popup xác nhận kèm Mã Job và Tên Job
+activate MH_CONF
+NSD -> MH_CONF : Chạy ngay
+MH_CONF -> HT_LOGIC : Kích hoạt Job
+deactivate MH_CONF
+HT_LOGIC -> HT_JOB : Yêu cầu kích hoạt chạy ngay
+HT_JOB -> CSDL : Ghi lượt chạy mới
+MH_DS --> NSD : SUC_002 "Job {mã Job} đã bắt đầu chạy thành công"
+deactivate MH_DS
+
+@enduml

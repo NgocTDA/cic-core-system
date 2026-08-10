@@ -33,6 +33,7 @@ interface UseJobManagementReturn {
   getJobRuns: (jobId: string) => IJobRun[];
   runJob: (jobId: string) => void;
   stopJob: (jobId: string) => void;
+  toggleJobStatus: (jobId: string) => void;
 }
 
 export const useJobManagement = (): UseJobManagementReturn => {
@@ -155,6 +156,18 @@ export const useJobManagement = (): UseJobManagementReturn => {
     setJobs(jobs.map((j) => (j.id === jobId ? newJob : j)));
   }, [jobs]);
 
+  const toggleJobStatus = useCallback((jobId: string) => {
+    setJobs((prevJobs) =>
+      prevJobs.map((j) => {
+        if (j.id === jobId) {
+          const nextStatus = j.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
+          return { ...j, status: nextStatus };
+        }
+        return j;
+      })
+    );
+  }, []);
+
   return {
     jobs,
     runs,
@@ -184,5 +197,6 @@ export const useJobManagement = (): UseJobManagementReturn => {
     getJobRuns,
     runJob,
     stopJob,
+    toggleJobStatus,
   };
 };

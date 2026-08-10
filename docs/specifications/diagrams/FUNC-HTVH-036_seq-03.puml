@@ -1,0 +1,69 @@
+@startuml FUNC-HTVH-036_seq-03
+title FEAT-HTVH-036-03 — Xem chi tiết cấu hình Job và theo dõi tiến độ chạy
+
+skinparam sequenceMessageAlign center
+skinparam maxMessageSize 240
+
+actor "Người dùng" as NSD
+participant "MH-HTVH-036-001\nDanh sách Job" as MH_DS
+participant "MH-HTVH-036-002\nPopup Chi tiết Job" as MH_CT
+participant "CMP-HIST-001\nBảng Lịch sử thay đổi" as CMP_HIST
+participant "MH-HTVH-036-003\nNgăn tiến độ chạy" as MH_TD
+participant "Dịch vụ Job\nHT-JOB" as HT_JOB
+database "CSDL" as CSDL
+
+NSD -> MH_DS : Nhấp vào dòng bản ghi\nhoặc chọn "Xem chi tiết"
+activate MH_DS
+MH_DS -> HT_JOB : Lấy cấu hình Job theo định danh
+activate HT_JOB
+HT_JOB -> CSDL : Truy vấn JOB_DEFINITION
+CSDL --> HT_JOB : Bản ghi cấu hình
+HT_JOB --> MH_DS : Cấu hình Job
+deactivate HT_JOB
+MH_DS -> MH_CT : Mở popup rộng 70vw, căn giữa
+deactivate MH_DS
+activate MH_CT
+MH_CT --> NSD : Thanh thao tác nhanh (thẻ trạng thái + nút Chạy ngay)\nKhối 1 Thông tin chung\nKhối 2 Lập lịch và xử lý lỗi\nKhối 3 Thiết lập cảnh báo sự cố\nKhối 4 Lịch sử thay đổi
+
+== Xem bảng lịch sử thay đổi ==
+NSD -> CMP_HIST : Mở khối thu gọn "Lịch sử thay đổi"
+activate CMP_HIST
+CMP_HIST -> HT_JOB : Lấy nhật ký thay đổi của Job
+HT_JOB -> CSDL : Truy vấn JOB_AUDIT_HISTORY
+CSDL --> HT_JOB : Danh sách bản ghi
+HT_JOB --> CMP_HIST : Danh sách sắp xếp giảm dần theo thời gian
+CMP_HIST -> CMP_HIST : Lấy 20 bản ghi mới nhất
+CMP_HIST --> NSD : Bảng 8 cột chuẩn,\nvùng cuộn cao 250px, không phân trang
+deactivate CMP_HIST
+
+== Kích hoạt chạy từ popup chi tiết ==
+NSD -> MH_CT : Nhấp "Chạy ngay"
+MH_CT --> NSD : CONF_001 — Popup xác nhận thực hiện Job
+NSD -> MH_CT : Xác nhận "Chạy ngay"
+MH_CT -> HT_JOB : Yêu cầu kích hoạt chạy ngay
+HT_JOB -> CSDL : Ghi lượt chạy mới
+MH_CT -> MH_TD : Mở ngăn theo dõi tiến độ\n(rộng 700px, trượt từ mép phải)
+deactivate MH_CT
+activate MH_TD
+MH_TD --> NSD : SUC_002 và INF_002 "Job đang chạy"
+
+loop Trong khi lượt chạy chưa kết thúc
+  MH_TD -> HT_JOB : Đọc tiến độ và nhật ký thực thi
+  HT_JOB --> MH_TD : Phần trăm tiến độ, số bản ghi,\nbước hiện tại, dòng nhật ký mới
+  MH_TD --> NSD : Cập nhật thanh tiến độ, chỉ số\nvà khung nhật ký thời gian thực
+end
+
+alt Người dùng nhấp "Dừng"
+  NSD -> MH_TD : Dừng
+  MH_TD -> HT_JOB : Yêu cầu dừng lượt chạy
+  HT_JOB -> CSDL : Cập nhật lượt chạy = Đã hủy
+  MH_TD --> NSD : SUC_008 "Đã dừng Job thành công"
+else Lượt chạy hoàn tất
+  MH_TD --> NSD : INF_003 "Job đã hoàn thành trong {n} giây\nvới {m} bản ghi xử lý"
+end
+
+NSD -> MH_TD : Nhấp "Tải" hoặc "Sao" nhật ký
+MH_TD --> NSD : Tệp {mã Job}-progress.log\nhoặc nội dung trong bộ nhớ tạm
+deactivate MH_TD
+
+@enduml

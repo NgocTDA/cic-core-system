@@ -91,7 +91,17 @@
       "PowerShell(Get-NetTCPConnection -LocalPort 3000 -State Listen -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique | ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue }; Start-Sleep -Seconds 2; if \\(Get-NetTCPConnection -LocalPort 3000 -State Listen -ErrorAction SilentlyContinue\\) { \"van con\" } else { \"da dung server\" })",
       "mcp__reqwise-figma__figma_status",
       "mcp__reqwise-figma__figma_docs",
-      "mcp__reqwise-figma__figma_rules"
+      "mcp__reqwise-figma__figma_rules",
+      "mcp__reqwise-figma__figma_write",
+      "mcp__reqwise-figma__figma_read",
+      "Bash(python3 -c ' *)",
+      "Bash(curl -s -o /dev/null -w \"root:%{http_code}\\\\n\" http://localhost:8787/)",
+      "Bash(curl -s -o /dev/null -w \"plantuml:%{http_code}\\\\n\" http://localhost:8787/plantuml/)",
+      "Bash(curl -s -o test.png -w \"%{http_code} %{content_type} %{size_download}\\\\n\" -X POST --data-binary @FUNC-HTVH-006_state-01.puml http://localhost:8787/png)",
+      "Bash(curl -s -D - -o FUNC-HTVH-006_nav-01.png -H \"Content-Type: text/plain; charset=UTF-8\" -X POST --data-binary @FUNC-HTVH-006_nav-01.puml http://localhost:8787/png)",
+      "Bash(rm -f *.png *.svg)",
+      "Bash(./render.sh)",
+      "Bash(rm -f _check.txt)"
     ],
     "additionalDirectories": [
       "c:\\Users\\ngoct\\Downloads\\Code\\cic-core-system\\frontend\\app\\product-mgmt\\catalog\\products"

@@ -1,0 +1,60 @@
+@startuml FUNC-HTVH-036_seq-01
+title FEAT-HTVH-036-01 — Tra cứu và xem danh sách Job
+
+skinparam sequenceMessageAlign center
+skinparam maxMessageSize 240
+
+actor "Người dùng\n(ROLE-QTHT / ROLE-QLVH / ROLE-XEM)" as NSD
+participant "MH-HTVH-036-001\nDanh sách Quản lý Job" as MH_DS
+participant "Thanh bộ lọc\nJobFilter" as CMP_FILTER
+participant "Bảng dữ liệu\nJobList" as CMP_GRID
+participant "Lớp nghiệp vụ\nuseJobManagement" as HT_LOGIC
+participant "Dịch vụ Job\nHT-JOB" as HT_JOB
+database "CSDL\nJOB_DEFINITION" as CSDL
+
+NSD -> MH_DS : Truy cập /ops-support/job-management
+activate MH_DS
+MH_DS -> HT_LOGIC : Khởi tạo trạng thái bộ lọc
+activate HT_LOGIC
+HT_LOGIC -> HT_JOB : Lấy danh sách Job
+activate HT_JOB
+HT_JOB -> CSDL : Truy vấn danh sách Job
+CSDL --> HT_JOB : Tập bản ghi Job
+HT_JOB --> HT_LOGIC : Danh sách Job
+deactivate HT_JOB
+HT_LOGIC --> MH_DS : Danh sách đã lọc
+deactivate HT_LOGIC
+MH_DS -> CMP_GRID : Dựng bảng 8 cột cấu hình + cột Thao tác
+MH_DS --> NSD : Hiển thị danh sách, phân trang 20 bản ghi/trang
+deactivate MH_DS
+
+== Lọc theo tiêu chí trên thanh bộ lọc ==
+NSD -> CMP_FILTER : Nhập Mã Job / Tên Job / Mã dịch vụ,\nchọn Loại Job, Trạng thái
+activate CMP_FILTER
+CMP_FILTER -> HT_LOGIC : Cập nhật điều kiện lọc
+activate HT_LOGIC
+HT_LOGIC -> HT_LOGIC : Kết hợp các điều kiện bằng phép "và",\nso khớp không phân biệt hoa thường
+HT_LOGIC --> CMP_GRID : Danh sách đã lọc
+deactivate HT_LOGIC
+CMP_GRID --> NSD : Bảng cập nhật ngay lập tức
+deactivate CMP_FILTER
+
+alt Không có bản ghi phù hợp
+  CMP_GRID --> NSD : INF_001 — Bảng rỗng, giữ nguyên điều kiện lọc
+end
+
+== Lọc trực tiếp trên tiêu đề cột ==
+NSD -> CMP_GRID : Nhấp biểu tượng phễu tại cột\nLoại Job / Điều kiện kích hoạt / Trạng thái
+activate CMP_GRID
+CMP_GRID -> CMP_GRID : Áp dụng điều kiện lọc\ntrên tập bản ghi đang hiển thị
+CMP_GRID --> NSD : Bảng chỉ còn dòng thỏa điều kiện
+deactivate CMP_GRID
+
+== Diễn giải biểu thức Cron ==
+NSD -> CMP_GRID : Rê chuột vào ô Biểu thức Cron
+activate CMP_GRID
+CMP_GRID -> CMP_GRID : Diễn giải biểu thức sang tiếng Việt
+CMP_GRID --> NSD : Chú giải "💡 Diễn giải: Chạy hằng ngày\nvào lúc 01:00:00 AM" (sau 0,15 giây)
+deactivate CMP_GRID
+
+@enduml

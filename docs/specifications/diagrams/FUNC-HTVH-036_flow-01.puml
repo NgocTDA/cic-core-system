@@ -1,0 +1,76 @@
+@startuml FUNC-HTVH-036_flow-01
+title FUNC-HTVH-036 — Luồng nghiệp vụ tổng thể Quản lý Job
+
+skinparam activity {
+  BackgroundColor #F5F8FF
+  BorderColor #1F4E79
+  FontColor #0F172A
+  DiamondBackgroundColor #FFF7E6
+  DiamondBorderColor #FA8C16
+}
+skinparam ArrowColor #1F4E79
+
+|Người dùng|
+start
+:Truy cập Menu Hỗ trợ vận hành >\nQuản trị hệ thống > Quản lý job;
+
+|Hệ thống|
+:Nạp danh sách Job và dựng cột hiển thị\ntheo cấu hình của người dùng;
+:Dựng menu thao tác theo quyền\ncủa vai trò đang đăng nhập;
+
+|Người dùng|
+:Thu hẹp danh sách bằng thanh bộ lọc\nvà bộ lọc trên tiêu đề cột;
+
+if (Mục đích thao tác?) then (Tra cứu thông tin)
+  |Người dùng|
+  :Mở popup Chi tiết Job;
+  |Hệ thống|
+  :Hiển thị ba khối cấu hình\nvà bảng Lịch sử thay đổi;
+  |Người dùng|
+  :Mở popup Lịch sử chạy Job để đối chiếu\nthời lượng, số bản ghi, số lần thử lại;
+
+elseif (Vận hành khẩn cấp) then (Chạy Job ngay)
+  |Người dùng|
+  :Tích chọn một hoặc nhiều Job;
+  :Nhấp "Chạy Job (N)";
+  |Hệ thống|
+  :Hiển thị popup xác nhận\nkèm thông tin Job;
+  |Người dùng|
+  if (Xác nhận?) then (Chạy ngay)
+    |Hệ thống|
+    :Đưa Job vào hàng đợi thực thi\nvà ghi lượt chạy mới;
+    :Theo dõi tiến độ trên ngăn bên phải;
+    :Gửi cảnh báo theo ma trận thông báo\nđã cấu hình;
+  else (Hủy)
+    |Hệ thống|
+    :Đóng popup, giữ nguyên danh sách chọn;
+  endif
+
+elseif (Điều chỉnh cấu hình) then (Thiết lập / Chỉnh sửa)
+  |Người dùng|
+  :Mở màn hình Thiết lập Job;
+  :Nhập Thông tin chung, Lập lịch và xử lý lỗi,\nThiết lập cảnh báo sự cố;
+  |Hệ thống|
+  :Kiểm tra ràng buộc\nBR-HTVH-036-001 đến BR-HTVH-036-008;
+  if (Dữ liệu hợp lệ?) then (Có)
+    :Ghi cấu hình, ghi nhật ký thay đổi,\nđăng ký lại lịch chạy;
+  else (Không)
+    :Đánh dấu ô nhập lỗi và giữ người dùng\nở lại màn hình;
+    stop
+  endif
+
+else (Điều chỉnh trạng thái)
+  |Người dùng|
+  :Chọn "Kích hoạt" hoặc "Vô hiệu hóa";
+  |Hệ thống|
+  :Đổi trạng thái Job, cập nhật lịch chạy tự động,\nghi nhật ký thay đổi;
+endif
+
+|Hệ thống|
+:Cập nhật lại danh sách và thông báo kết quả;
+
+|Người dùng|
+:Kết xuất danh sách ra tệp Excel khi cần;
+stop
+
+@enduml

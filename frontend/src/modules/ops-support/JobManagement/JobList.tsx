@@ -10,6 +10,7 @@ import {
   DeleteOutlined,
   CopyOutlined,
   HistoryOutlined,
+  PoweroffOutlined,
 } from '@ant-design/icons';
 import { ActionMenu, StatusTag, CodeText, tablePagination } from '@/components/ui';
 import { colors, typography } from '@/design-system';
@@ -27,6 +28,7 @@ interface Props {
   onRowClick: (id: string) => void;
   onRun: (id: string) => void;
   onEdit: (id: string) => void;
+  onToggleStatus?: (job: IJob) => void;
   onViewHistory?: (job: IJob) => void;
   onBulkRun?: (ids: string[]) => void;
   onBulkDelete?: (ids: string[]) => void;
@@ -57,6 +59,7 @@ const JobList: React.FC<Props> = ({
   onRowClick,
   onRun,
   onEdit,
+  onToggleStatus,
   onViewHistory,
   onBulkRun,
   onBulkDelete,
@@ -201,7 +204,7 @@ const JobList: React.FC<Props> = ({
       width: 140,
       filters: [
         { text: 'Hoạt động', value: 'ACTIVE' },
-        { text: 'Tạm dừng', value: 'INACTIVE' },
+        { text: 'Ngừng hoạt động', value: 'INACTIVE' },
       ],
       onFilter: (value, record) => record.status === value,
       render: (status) => <StatusTag status={status} />,
@@ -223,16 +226,19 @@ const JobList: React.FC<Props> = ({
               onRowClick(record.id);
             },
           },
-          {
-            key: 'history',
-            icon: <HistoryOutlined />,
-            label: 'Lịch sử chạy Job',
+        ];
+
+        if (hasPermission(currentRole, 'edit')) {
+          items.push({
+            key: 'edit',
+            icon: <EditOutlined />,
+            label: 'Chỉnh sửa',
             onClick: (info) => {
               info?.domEvent?.stopPropagation();
-              if (onViewHistory) onViewHistory(record);
+              onEdit(record.id);
             },
-          },
-        ];
+          });
+        }
 
         if (hasPermission(currentRole, 'run')) {
           items.push({
@@ -247,16 +253,46 @@ const JobList: React.FC<Props> = ({
         }
 
         if (hasPermission(currentRole, 'edit')) {
-          items.push({
-            key: 'edit',
-            icon: <EditOutlined />,
-            label: 'Chỉnh sửa',
-            onClick: (info) => {
-              info?.domEvent?.stopPropagation();
-              onEdit(record.id);
-            },
-          });
+          if (record.status === 'ACTIVE') {
+            items.push({
+              key: 'deactivate',
+              icon: <PoweroffOutlined />,
+              label: 'Vô hiệu hóa',
+              onClick: (info) => {
+                info?.domEvent?.stopPropagation();
+                if (onToggleStatus) {
+                  onToggleStatus(record);
+                } else {
+                  message.success(`Đã vô hiệu hóa Job ${record.code}`);
+                }
+              },
+            });
+          } else {
+            items.push({
+              key: 'activate',
+              icon: <PoweroffOutlined />,
+              label: 'Kích hoạt',
+              onClick: (info) => {
+                info?.domEvent?.stopPropagation();
+                if (onToggleStatus) {
+                  onToggleStatus(record);
+                } else {
+                  message.success(`Đã kích hoạt Job ${record.code}`);
+                }
+              },
+            });
+          }
         }
+
+        items.push({
+          key: 'history',
+          icon: <HistoryOutlined />,
+          label: 'Lịch sử chạy Job',
+          onClick: (info) => {
+            info?.domEvent?.stopPropagation();
+            if (onViewHistory) onViewHistory(record);
+          },
+        });
 
         if (hasPermission(currentRole, 'delete')) {
           items.push({
@@ -295,47 +331,6 @@ const JobList: React.FC<Props> = ({
 
   return (
     <div>
-      {selectedRowKeys.length > 0 && hasPermission(currentRole, 'edit') && (
-        <div
-          style={{
-            marginBottom: '16px',
-            padding: '12px 16px',
-            background: colors.bg.subtle,
-            borderRadius: '4px',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <Text>Đã chọn {selectedRowKeys.length} job</Text>
-          <Space>
-            {hasPermission(currentRole, 'run') && (
-              <Button
-                type="primary"
-                icon={<PlayCircleOutlined />}
-                onClick={handleBulkRun}
-              >
-                Chạy ({selectedRowKeys.length})
-              </Button>
-            )}
-            {hasPermission(currentRole, 'delete') && (
-              <Popconfirm
-                title="Xóa các job được chọn?"
-                description={`Bạn sắp xóa ${selectedRowKeys.length} job. Hành động này không thể hoàn tác.`}
-                okText="Xóa"
-                cancelText="Hủy"
-                okButtonProps={{ danger: true, loading: isDeleting }}
-                onConfirm={handleBulkDelete}
-              >
-                <Button danger icon={<DeleteOutlined />}>
-                  Xóa ({selectedRowKeys.length})
-                </Button>
-              </Popconfirm>
-            )}
-            <Button onClick={() => setSelectedRowKeys([])}>Bỏ chọn</Button>
-          </Space>
-        </div>
-      )}
       <Table
         columns={filteredColumns}
         dataSource={data}

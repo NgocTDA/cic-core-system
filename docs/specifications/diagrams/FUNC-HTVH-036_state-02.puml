@@ -1,0 +1,40 @@
+@startuml FUNC-HTVH-036_state-02
+title Đối tượng LUOTCHAY — Vòng đời một lượt thực thi Job
+
+skinparam state {
+  BackgroundColor #F5F8FF
+  BorderColor #1F4E79
+  FontColor #0F172A
+}
+skinparam ArrowColor #1F4E79
+
+state "ST-LUOTCHAY-03 — RUNNING\nĐang chạy" as RUNNING
+state "ST-LUOTCHAY-01 — SUCCESS\nThành công" as SUCCESS
+state "ST-LUOTCHAY-02 — FAILED\nLỗi" as FAILED
+state "ST-LUOTCHAY-04 — CANCELLED\nĐã hủy" as CANCELLED
+
+[*] --> RUNNING : Bộ lập lịch kích hoạt theo biểu thức Cron,\nhoặc người dùng kích hoạt thủ công
+
+RUNNING --> SUCCESS : Xử lý xong toàn bộ bản ghi
+RUNNING --> FAILED : Gặp sự cố hoặc vượt quá\nThời gian chờ tối đa
+RUNNING --> CANCELLED : Người dùng nhấp "Dừng"\ntrên ngăn theo dõi tiến độ
+
+FAILED --> RUNNING : Tự động thử lại khi Số lần thử lại\nnhỏ hơn Số lần thử lại tối đa
+
+SUCCESS --> [*]
+CANCELLED --> [*]
+FAILED --> [*] : Đã dùng hết số lần thử lại cho phép
+
+note right of FAILED
+  Mỗi lần thử lại làm tăng "Số lần thử lại" của lượt chạy.
+  Khoảng chờ trước lần thử đầu lấy từ "Khoảng chờ ban đầu",
+  các lần sau nhân theo hệ số Backoff
+  (Cố định / Cấp số nhân 2x / 3x / 5x).
+end note
+
+note bottom of RUNNING
+  Khi bật "Khóa chạy song song", hệ thống không khởi tạo lượt chạy
+  mới nếu Job đang có một lượt ở trạng thái Đang chạy (ERR_016).
+end note
+
+@enduml

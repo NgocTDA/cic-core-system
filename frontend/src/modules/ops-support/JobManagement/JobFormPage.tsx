@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import {
   Form,
@@ -35,7 +35,6 @@ import type {
   IJob,
   IConsoleNotificationMatrix,
   TriggerTypeOption,
-  BackoffStrategyConsole,
 } from './types';
 import { getCronDescription } from './cronUtils';
 
@@ -95,6 +94,7 @@ const JobFormContent: React.FC = () => {
 
           // Trigger & Schedule & Error Handling
           triggerType: found.triggerType || 'SCHEDULER',
+          dependsOn: found.dependsOn || [],
           cron: found.cron || found.schedule?.expression || '0 0 1 * * *',
           eventName: 'EVT_DATA_IMPORTED',
 
@@ -105,7 +105,6 @@ const JobFormContent: React.FC = () => {
           // Retry policy
           maxRetries: found.maxRetries ?? found.retryPolicy?.maxRetries ?? 3,
           retryInterval: found.retryInterval ?? 60,
-          backoff: (found.backoff as BackoffStrategyConsole) || 'EXPONENTIAL_2X',
 
           // Notifications
           notifyEmails: emailTags,
@@ -126,6 +125,7 @@ const JobFormContent: React.FC = () => {
         params: `# Tham số YAML/JSON động\nsourceApi: "https://api.internal/v1"\nbatchSize: 500`,
 
         triggerType: 'SCHEDULER',
+        dependsOn: [],
         cron: '0 0 1 * * *',
         eventName: 'EVT_DATA_IMPORTED',
 
@@ -135,13 +135,21 @@ const JobFormContent: React.FC = () => {
 
         maxRetries: 3,
         retryInterval: 60,
-        backoff: 'EXPONENTIAL_2X',
 
         notifyEmails: ['admin@cic.org.vn', 'alert@cic.org.vn'],
         notificationMatrix: DEFAULT_NOTIFICATION_MATRIX,
       });
     }
   }, [jobId, cloneId, isEditMode, form, router]);
+
+  const dependsOnOptions = useMemo(() => {
+    return mockJobs
+      .filter((j) => !isEditMode || j.id !== jobId)
+      .map((j) => ({
+        value: j.id,
+        label: `${j.code} - ${j.name}`,
+      }));
+  }, [isEditMode, jobId]);
 
   useHeaderActions(
     {
@@ -434,7 +442,7 @@ const JobFormContent: React.FC = () => {
               </Text>
             </div>
 
-            {/* HÀNG 1: Điều kiện kích hoạt, Thời gian chờ tối đa, Xử lý khi bỏ lỡ, Cho phép chạy song song */}
+            {/* HÀNG 1: Điều kiện kích hoạt (25%) | Job cần hoàn thành trước (50%) | Chờ ban đầu (12.5%) | Chờ tối đa (12.5%) */}
             <Row gutter={[16, 16]}>
               <Col xs={24} sm={12} md={6}>
                 <Form.Item
@@ -453,62 +461,50 @@ const JobFormContent: React.FC = () => {
                 </Form.Item>
               </Col>
 
-              <Col xs={24} sm={12} md={6}>
+              <Col xs={24} sm={24} md={12}>
                 <Form.Item
-                  name="timeout"
-                  label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Thời gian chờ tối đa (giây)</Text>}
-                  rules={[
-                    { required: true, message: 'Vui lòng nhập thời gian chờ' },
-                    { type: 'number', min: 1, max: 86400, message: 'Từ 1 đến 86400 giây' },
-                  ]}
+                  name="dependsOn"
+                  label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Job cần hoàn thành trước</Text>}
+                >
+                  <Select
+                    mode="multiple"
+                    allowClear
+                    placeholder="Chọn Job cần hoàn thành..."
+                    style={{ width: '100%' }}
+                    options={dependsOnOptions}
+                    maxTagCount="responsive"
+                  />
+                </Form.Item>
+              </Col>
+
+              <Col xs={12} sm={6} md={3}>
+                <Form.Item
+                  name="retryInterval"
+                  label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Chờ ban đầu (giây)</Text>}
+                  rules={[{ type: 'number', min: 1, max: 86400, message: 'Từ 1 đến 86400s' }]}
                 >
                   <InputNumber min={1} max={86400} precision={0} style={{ width: '100%' }} suffix="s" />
                 </Form.Item>
               </Col>
 
-              <Col xs={24} sm={12} md={6}>
+              <Col xs={12} sm={6} md={3}>
                 <Form.Item
-                  name="misfire"
-                  label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Xử lý khi bỏ lỡ lượt chạy</Text>}
+                  name="timeout"
+                  label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Chờ tối đa (giây)</Text>}
+                  rules={[
+                    { required: true, message: 'Nhập thời gian chờ' },
+                    { type: 'number', min: 1, max: 86400, message: 'Từ 1 đến 86400s' },
+                  ]}
                 >
-                  <Select
-                    style={{ width: '100%' }}
-                    options={[
-                      { value: 'FIRE_NOW', label: 'Chạy bù ngay khi đủ điều kiện' },
-                      { value: 'DO_NOTHING', label: 'Bỏ qua lượt lỗi, chờ lịch tiếp theo' },
-                    ]}
-                  />
-                </Form.Item>
-              </Col>
-
-              <Col xs={24} sm={12} md={6}>
-                <Form.Item
-                  name="concurrent"
-                  label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Cho phép chạy song song</Text>}
-                >
-                  <Select
-                    style={{ width: '100%' }}
-                    options={[
-                      { value: true, label: 'Khóa chạy song song' },
-                      { value: false, label: 'Cho phép chạy song song' },
-                    ]}
-                  />
+                  <InputNumber min={1} max={86400} precision={0} style={{ width: '100%' }} suffix="s" />
                 </Form.Item>
               </Col>
             </Row>
 
-            {/* HÀNG 2: Biểu thức Cron, Số lần thử lại tối đa, Khoảng chờ ban đầu, Giãn cách thời gian */}
+            {/* HÀNG 2: Biểu thức Cron | Số lần thử lại tối đa | Chạy song song | Xử lý khi bỏ lỡ lượt chạy */}
             <Row gutter={[16, 16]} style={{ marginTop: spacing[3] }}>
               <Col xs={24} sm={12} md={6}>
-                {watchTriggerType === 'EVENT' ? (
-                  <Form.Item
-                    name="eventName"
-                    label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Tên sự kiện kích hoạt</Text>}
-                    rules={[{ required: true, message: 'Vui lòng nhập tên sự kiện' }]}
-                  >
-                    <Input placeholder="VD: EVT_CUSTOMER_DATA_IMPORTED" style={{ fontFamily: typography.fontFamily.mono }} />
-                  </Form.Item>
-                ) : (
+                {watchTriggerType === 'SCHEDULER' && (
                   <Form.Item
                     name="cron"
                     label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Biểu thức Cron</Text>}
@@ -527,6 +523,28 @@ const JobFormContent: React.FC = () => {
                     />
                   </Form.Item>
                 )}
+
+                {watchTriggerType === 'EVENT' && (
+                  <Form.Item
+                    name="eventName"
+                    label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Tên sự kiện kích hoạt</Text>}
+                    rules={[{ required: true, message: 'Vui lòng nhập tên sự kiện' }]}
+                  >
+                    <Input placeholder="VD: EVT_CUSTOMER_DATA_IMPORTED" style={{ fontFamily: typography.fontFamily.mono }} />
+                  </Form.Item>
+                )}
+
+                {watchTriggerType === 'MANUAL' && (
+                  <Form.Item
+                    label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Cơ chế kích hoạt</Text>}
+                  >
+                    <Input
+                      disabled
+                      value="Thủ công (Giao diện / API)"
+                      style={{ background: colors.neutral[100], color: colors.text.secondary }}
+                    />
+                  </Form.Item>
+                )}
               </Col>
 
               <Col xs={24} sm={12} md={6}>
@@ -541,30 +559,35 @@ const JobFormContent: React.FC = () => {
 
               <Col xs={24} sm={12} md={6}>
                 <Form.Item
-                  name="retryInterval"
-                  label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Khoảng chờ ban đầu (giây)</Text>}
-                  rules={[{ type: 'number', min: 1, max: 86400, message: 'Từ 1 đến 86400 giây' }]}
-                >
-                  <InputNumber min={1} max={86400} precision={0} style={{ width: '100%' }} suffix="s" />
-                </Form.Item>
-              </Col>
-
-              <Col xs={24} sm={12} md={6}>
-                <Form.Item
-                  name="backoff"
-                  label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Giãn cách thời gian (Backoff)</Text>}
+                  name="concurrent"
+                  label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Chạy song song</Text>}
                 >
                   <Select
                     style={{ width: '100%' }}
                     options={[
-                      { value: 'FIXED', label: 'Cố định' },
-                      { value: 'EXPONENTIAL_2X', label: 'Cấp số nhân - 2x' },
-                      { value: 'EXPONENTIAL_3X', label: 'Cấp số nhân - 3x' },
-                      { value: 'EXPONENTIAL_5X', label: 'Cấp số nhân - 5x' },
+                      { value: true, label: 'Khóa chạy song song' },
+                      { value: false, label: 'Cho phép chạy song song' },
                     ]}
                   />
                 </Form.Item>
               </Col>
+
+              {watchTriggerType === 'SCHEDULER' && (
+                <Col xs={24} sm={12} md={6}>
+                  <Form.Item
+                    name="misfire"
+                    label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Xử lý khi bỏ lỡ lượt chạy</Text>}
+                  >
+                    <Select
+                      style={{ width: '100%' }}
+                      options={[
+                        { value: 'FIRE_NOW', label: 'Chạy bù ngay khi đủ điều kiện' },
+                        { value: 'DO_NOTHING', label: 'Bỏ qua lượt lỗi, chờ lịch tiếp theo' },
+                      ]}
+                    />
+                  </Form.Item>
+                </Col>
+              )}
             </Row>
           </div>
 

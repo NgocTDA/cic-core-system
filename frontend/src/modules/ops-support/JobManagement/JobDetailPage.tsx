@@ -32,7 +32,6 @@ import useHeaderActions from '@/hooks/useHeaderActions';
 import { colors, spacing, radius, typography } from '@/design-system';
 import { mockJobs, mockChangeHistoryData } from './mockData';
 import type { IJob } from './types';
-import RunProgressDrawer from './modals/RunProgressDrawer';
 import { getCronDescription } from './cronUtils';
 
 const { Text } = Typography;
@@ -53,13 +52,6 @@ const misfireMap: Record<string, string> = {
   DO_NOTHING: 'Bỏ qua lượt lỗi, chờ lịch tiếp theo',
 };
 
-const backoffMap: Record<string, string> = {
-  FIXED: 'Cố định',
-  EXPONENTIAL_2X: 'Cấp số nhân - 2x',
-  EXPONENTIAL_3X: 'Cấp số nhân - 3x',
-  EXPONENTIAL_5X: 'Cấp số nhân - 5x',
-};
-
 const triggerTypeMap: Record<string, string> = {
   SCHEDULER: 'Bộ lập lịch (Scheduler)',
   EVENT: 'Theo sự kiện (Event-driven)',
@@ -73,7 +65,6 @@ const JobDetailPage: React.FC = () => {
 
   const [job, setJob] = useState<IJob | null>(null);
   const [loading, setLoading] = useState(false);
-  const [isRunning, setIsRunning] = useState(false);
 
   useEffect(() => {
     if (jobId) {
@@ -129,19 +120,9 @@ const JobDetailPage: React.FC = () => {
         </div>
       ),
       onOk: () => {
-        setIsRunning(true);
         message.success(`Job ${job.code} đã bắt đầu chạy thành công`);
       },
     });
-  };
-
-  const handleStopJob = () => {
-    setLoading(true);
-    setTimeout(() => {
-      message.success('Đã dừng Job thành công');
-      setLoading(false);
-      setIsRunning(false);
-    }, 1000);
   };
 
   if (!job) {
@@ -395,7 +376,7 @@ const JobDetailPage: React.FC = () => {
               </Text>
             </div>
 
-            {/* HÀNG 1: Điều kiện kích hoạt, Thời gian chờ tối đa, Xử lý khi bỏ lỡ, Cho phép chạy song song */}
+            {/* HÀNG 1: Điều kiện kích hoạt (25%) | Job cần hoàn thành trước (50%) | Chờ ban đầu (12.5%) | Chờ tối đa (12.5%) */}
             <Row gutter={[16, 16]}>
               <Col xs={24} sm={12} md={6}>
                 <div>
@@ -408,41 +389,52 @@ const JobDetailPage: React.FC = () => {
                 </div>
               </Col>
 
-              <Col xs={24} sm={12} md={6}>
+              <Col xs={24} sm={24} md={12}>
                 <div>
                   <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
-                    Thời gian chờ tối đa
+                    Job cần hoàn thành trước
+                  </Text>
+                  {job.dependsOn && job.dependsOn.length > 0 ? (
+                    <Space size={[4, 4]} wrap>
+                      {job.dependsOn.map((depId) => {
+                        const depJob = mockJobs.find((j) => j.id === depId);
+                        return (
+                          <Tag key={depId} color="blue">
+                            {depJob ? `${depJob.code}` : depId}
+                          </Tag>
+                        );
+                      })}
+                    </Space>
+                  ) : (
+                    <Text type="secondary" style={{ fontStyle: 'italic' }}>Không có</Text>
+                  )}
+                </div>
+              </Col>
+
+              <Col xs={12} sm={6} md={3}>
+                <div>
+                  <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                    Chờ ban đầu (giây)
                   </Text>
                   <Text strong style={{ fontSize: typography.fontSize.base }}>
-                    {job.timeout || 300} giây
+                    {job.retryInterval ?? 60}s
                   </Text>
                 </div>
               </Col>
 
-              <Col xs={24} sm={12} md={6}>
+              <Col xs={12} sm={6} md={3}>
                 <div>
                   <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
-                    Xử lý khi bỏ lỡ lượt chạy
+                    Chờ tối đa (giây)
                   </Text>
                   <Text strong style={{ fontSize: typography.fontSize.base }}>
-                    {misfireMap[job.misfire || 'FIRE_NOW']}
-                  </Text>
-                </div>
-              </Col>
-
-              <Col xs={24} sm={12} md={6}>
-                <div>
-                  <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
-                    Cho phép chạy song song
-                  </Text>
-                  <Text strong style={{ fontSize: typography.fontSize.base }}>
-                    {job.concurrent ? 'Khóa chạy song song' : 'Cho phép chạy song song'}
+                    {job.timeout || 300}s
                   </Text>
                 </div>
               </Col>
             </Row>
 
-            {/* HÀNG 2: Biểu thức Cron, Số lần thử lại tối đa, Khoảng chờ ban đầu, Giãn cách thời gian */}
+            {/* HÀNG 2: Biểu thức Cron | Số lần thử lại tối đa | Chạy song song | Xử lý khi bỏ lỡ lượt chạy */}
             <Row gutter={[16, 16]} style={{ marginTop: spacing[4] }}>
               <Col xs={24} sm={12} md={6}>
                 <div>
@@ -482,24 +474,26 @@ const JobDetailPage: React.FC = () => {
               <Col xs={24} sm={12} md={6}>
                 <div>
                   <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
-                    Khoảng chờ ban đầu
+                    Chạy song song
                   </Text>
                   <Text strong style={{ fontSize: typography.fontSize.base }}>
-                    {job.retryInterval ?? 60} giây
+                    {job.concurrent ? 'Khóa chạy song song' : 'Cho phép chạy song song'}
                   </Text>
                 </div>
               </Col>
 
-              <Col xs={24} sm={12} md={6}>
-                <div>
-                  <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
-                    Giãn cách thời gian (Backoff)
-                  </Text>
-                  <Text strong style={{ fontSize: typography.fontSize.base }}>
-                    {backoffMap[job.backoff || 'EXPONENTIAL_2X'] || 'Cấp số nhân - 2x'}
-                  </Text>
-                </div>
-              </Col>
+              {(!job.triggerType || job.triggerType === 'SCHEDULER') && (
+                <Col xs={24} sm={12} md={6}>
+                  <div>
+                    <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                      Xử lý khi bỏ lỡ lượt chạy
+                    </Text>
+                    <Text strong style={{ fontSize: typography.fontSize.base }}>
+                      {misfireMap[job.misfire || 'FIRE_NOW']}
+                    </Text>
+                  </div>
+                </Col>
+              )}
             </Row>
           </div>
 
@@ -562,17 +556,6 @@ const JobDetailPage: React.FC = () => {
           </div>
         </div>
       </Card>
-
-      {/* Run Progress Drawer */}
-      {job && (
-        <RunProgressDrawer
-          visible={isRunning}
-          jobName={job.name}
-          jobCode={job.code}
-          onClose={() => setIsRunning(false)}
-          onStop={() => handleStopJob()}
-        />
-      )}
     </PageLayout>
   );
 };

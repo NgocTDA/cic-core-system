@@ -1,0 +1,59 @@
+@startuml FUNC-HTVH-036_seq-07
+title FEAT-HTVH-036-07 — Cấu hình cột hiển thị và kết xuất dữ liệu
+
+skinparam sequenceMessageAlign center
+skinparam maxMessageSize 240
+
+actor "Người dùng" as NSD
+participant "Thanh tác vụ\nAppHeader" as CMP_HEADER
+participant "CMP-POPOVER-001\nCài đặt hiển thị" as CMP_POP
+participant "CMP-EXPORT-001\nXuất Excel" as CMP_EXP
+participant "Bảng dữ liệu\nJobList" as CMP_GRID
+participant "Dịch vụ kết xuất\nHT-XUAT" as HT_XUAT
+
+== Cấu hình cột hiển thị ==
+NSD -> CMP_HEADER : Nhấp "Cài đặt hiển thị"
+CMP_HEADER -> CMP_POP : Mở popover rộng 260px
+activate CMP_POP
+CMP_POP --> NSD : Ô tìm kiếm trường thông tin,\ndòng thống kê số cột đang chọn,\nnút "Chọn tất cả" / "Bỏ chọn",\ndanh sách 8 cột có thể ẩn hiện
+
+NSD -> CMP_POP : Nhập từ khóa tên cột
+CMP_POP --> NSD : Lọc danh sách cột theo tên
+
+NSD -> CMP_POP : Bỏ tích một cột
+alt Còn nhiều hơn một cột đang hiển thị
+  CMP_POP -> CMP_GRID : Cập nhật danh sách cột hiển thị
+  CMP_GRID --> NSD : Bảng ẩn cột tương ứng ngay lập tức
+else Chỉ còn đúng một cột
+  CMP_POP --> NSD : Không cho bỏ tích, giữ lại ít nhất một cột
+end
+
+note right of CMP_GRID
+  Cột "Thao tác" luôn hiển thị và cố định bên phải,
+  không nằm trong danh sách cấu hình (BR-HTVH-036-013).
+end note
+deactivate CMP_POP
+
+== Kết xuất dữ liệu ==
+NSD -> CMP_HEADER : Nhấp "Xuất Excel"
+CMP_HEADER -> CMP_EXP : Mở menu 3 tùy chọn
+activate CMP_EXP
+CMP_EXP --> NSD : Xuất trang hiện tại / Xuất theo bộ lọc / In trang hiện tại
+
+alt Danh sách sau lọc rỗng
+  CMP_EXP --> NSD : WAR_003 "Không có dữ liệu để kết xuất"
+else Xuất trang hiện tại
+  NSD -> CMP_EXP : Chọn "Xuất trang hiện tại"
+  CMP_EXP -> HT_XUAT : Kết xuất các bản ghi trên trang đang xem
+  HT_XUAT --> NSD : Tệp .xlsx và SUC_009
+else Xuất theo bộ lọc
+  NSD -> CMP_EXP : Chọn "Xuất theo bộ lọc"
+  CMP_EXP -> HT_XUAT : Kết xuất toàn bộ bản ghi thỏa điều kiện lọc
+  HT_XUAT --> NSD : Tệp .xlsx và SUC_010
+else In trang hiện tại
+  NSD -> CMP_EXP : Chọn "In trang hiện tại"
+  CMP_EXP --> NSD : Mở hộp thoại in của trình duyệt
+end
+deactivate CMP_EXP
+
+@enduml

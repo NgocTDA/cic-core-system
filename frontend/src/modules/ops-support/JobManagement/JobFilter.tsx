@@ -164,7 +164,7 @@ const JobFilter: React.FC = () => {
             style={{ width: '100%' }}
             options={[
               { value: 'ACTIVE', label: 'Hoạt động' },
-              { value: 'INACTIVE', label: 'Tạm dừng' },
+              { value: 'INACTIVE', label: 'Ngừng hoạt động' },
             ]}
           />
         </FilterCol>

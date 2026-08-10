@@ -53,7 +53,6 @@ export interface IJobSchedule {
 
 export type JobConsoleType = 'SPRING_BEAN' | 'REST_API' | 'SQL_SCRIPT';
 export type MisfirePolicyConsole = 'FIRE_NOW' | 'DO_NOTHING';
-export type BackoffStrategyConsole = 'FIXED' | 'EXPONENTIAL_2X' | 'EXPONENTIAL_3X' | 'EXPONENTIAL_5X';
 export type TriggerTypeOption = 'SCHEDULER' | 'EVENT' | 'MANUAL';
 export type SchedulerOption = 'CRON_EXPRESSION' | 'TIME_PICKER';
 
@@ -101,8 +100,6 @@ export interface IJob {
 
   maxRetries?: number;
   retryInterval?: number;
-  backoff?: BackoffStrategyConsole;
-  backoffMultiplier?: string;
 
   enableNotify?: boolean;
   notifyEmails?: string;

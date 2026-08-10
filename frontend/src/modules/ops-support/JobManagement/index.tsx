@@ -44,6 +44,7 @@ const JobManagement: React.FC = () => {
   const {
     filteredJobs,
     runJob,
+    toggleJobStatus,
   } = useJobManagement();
 
   const handleAddJob = useCallback(() => {
@@ -52,6 +53,15 @@ const JobManagement: React.FC = () => {
 
   const handleEditJob = (id: string) => {
     router.push(`/ops-support/job-management/${id}/edit`);
+  };
+
+  const handleToggleStatus = (job: IJob) => {
+    toggleJobStatus(job.id);
+    if (job.status === 'ACTIVE') {
+      message.success(`Đã vô hiệu hóa Job ${job.code}`);
+    } else {
+      message.success(`Đã kích hoạt Job ${job.code}`);
+    }
   };
 
   const handleRowClick = (id: string) => {
@@ -211,6 +221,7 @@ const JobManagement: React.FC = () => {
         onRowClick={handleRowClick}
         onRun={handleConfirmRunJob}
         onEdit={handleEditJob}
+        onToggleStatus={handleToggleStatus}
         onViewHistory={setHistoryJob}
         onBulkRun={handleBulkRun}
         onBulkDelete={handleBulkDelete}

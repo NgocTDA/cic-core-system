@@ -1,0 +1,49 @@
+@startuml FUNC-HTVH-036_seq-04
+title FEAT-HTVH-036-04 — Tra cứu lịch sử chạy Job
+
+skinparam sequenceMessageAlign center
+skinparam maxMessageSize 240
+
+actor "Người dùng" as NSD
+participant "MH-HTVH-036-001\nDanh sách Job" as MH_DS
+participant "MH-HTVH-036-004\nPopup Lịch sử chạy Job" as MH_LS
+participant "Dịch vụ Job\nHT-JOB" as HT_JOB
+database "CSDL\nJOB_EXECUTION_LOG" as CSDL
+
+NSD -> MH_DS : Menu thao tác > "Lịch sử chạy Job"
+activate MH_DS
+MH_DS -> MH_LS : Mở popup rộng 70vw, căn giữa,\ntiêu đề kèm Tên Job và Mã Job
+deactivate MH_DS
+activate MH_LS
+MH_LS -> HT_JOB : Lấy danh sách lượt chạy của Job
+activate HT_JOB
+HT_JOB -> CSDL : Truy vấn lượt chạy theo định danh Job
+CSDL --> HT_JOB : Danh sách lượt chạy
+HT_JOB --> MH_LS : Danh sách sắp xếp giảm dần\ntheo thời gian bắt đầu
+deactivate HT_JOB
+MH_LS --> NSD : Bảng 8 cột, phân trang 10 bản ghi/trang:\nSTT, Mã lượt chạy, Thời gian bắt đầu, Thời gian kết thúc,\nThời lượng, Bản ghi xử lý, Số lần thử lại, Trạng thái
+
+alt Job chưa có lượt chạy nào
+  MH_LS --> NSD : INF_001 — Bảng rỗng
+end
+
+== Lọc theo tiêu chí ==
+NSD -> MH_LS : Chọn Trạng thái chạy\n(Thành công / Lỗi / Đang chạy)
+MH_LS -> MH_LS : Lọc tập dữ liệu đang hiển thị
+MH_LS --> NSD : Bảng chỉ còn lượt chạy thỏa điều kiện
+
+NSD -> MH_LS : Chọn khoảng ngày "Từ ngày – Đến ngày"
+MH_LS -> MH_LS : Lọc theo thời gian bắt đầu của lượt chạy
+MH_LS --> NSD : Bảng cập nhật
+
+alt Người dùng nhấp "Làm mới"
+  NSD -> MH_LS : Làm mới
+  MH_LS -> MH_LS : Xóa toàn bộ điều kiện lọc trong popup
+  MH_LS --> NSD : Trở về toàn bộ danh sách lượt chạy
+end
+
+NSD -> MH_LS : Nhấp "Đóng"
+MH_LS --> MH_DS : Đóng popup, trở về danh sách Job
+deactivate MH_LS
+
+@enduml
