@@ -10,12 +10,12 @@ Hướng dẫn này giúp Codex hiểu codebase và làm việc nhất quán v�
 
 | ID | Tên | Màu (`colors.subsystem.*`) |
 |---|---|---|
-| `kkn` | Kênh kết nối | `#fa8c16` (cam) |
-| `data-collection` | Thu thập & xử lý dữ liệu | `#1890ff` (xanh dương) |
-| `product-mgmt` | Quản lý & tạo lập sản phẩm | `#52c41a` (xanh lá) |
-| `ops-support` | Hỗ trợ vận hành | `#722ed1` (tím) |
-| `analytics-reporting` | Báo cáo thống kê | `#eb2f96` (hồng) |
-| `data-governance` | Quản trị dữ liệu | `#13c2c2` (teal) |
+| `kkn` | Kênh kết nối | `#f59e0b` (amber gold) |
+| `data-collection` | Thu thập & xử lý dữ liệu | `#38bdf8` (sky blue) |
+| `product-mgmt` | Quản lý & tạo lập sản phẩm | `#2a765b` (reqhub emerald) |
+| `ops-support` | Hỗ trợ vận hành | `#8b5cf6` (iris violet) |
+| `analytics-reporting` | Báo cáo thống kê | `#f43f5e` (rose coral) |
+| `data-governance` | Quản trị dữ liệu | `#14b8a6` (deep mint) |
 
 Ngoài 6 subsystem trên, `SUB_SYSTEMS` còn có các subsystem mở rộng:
 

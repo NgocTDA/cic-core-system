@@ -23,12 +23,12 @@ export const colors = {
 
     // ─── Subsystem accent colors ─────────────────────────────
     subsystem: {
-        kkn:        '#fa8c16', // Kênh kết nối       — Orange
-        collection: '#1890ff', // Thu thập dữ liệu   — Blue
-        product:    '#52c41a', // Quản lý sản phẩm   — Green
-        ops:        '#722ed1', // Hỗ trợ vận hành    — Purple
-        analytics:  '#eb2f96', // Báo cáo thống kê   — Pink
-        governance: '#13c2c2', // Quản trị dữ liệu   — Teal
+        kkn:        '#f59e0b', // Kênh kết nối       — Amber Gold (calibrated)
+        collection: '#38bdf8', // Thu thập dữ liệu   — Sky Teal-Blue (calibrated)
+        product:    '#2a765b', // Quản lý sản phẩm   — ReqHub Emerald (calibrated)
+        ops:        '#8b5cf6', // Hỗ trợ vận hành    — Modern Iris/Violet (calibrated)
+        analytics:  '#f43f5e', // Báo cáo thống kê   — Rose Coral (calibrated)
+        governance: '#14b8a6', // Quản trị dữ liệu   — Deep Mint (calibrated)
         design:     '#7c3aed', // Design System      — Indigo
         portal:     '#0050b3', // Web Portal         — Navy Blue
         tools:      '#1f4e79', // Công cụ nội bộ      — CIC Navy
@@ -66,6 +66,40 @@ export const colors = {
     },
     processing: '#1677ff',
 
+    // ─── Status / Tag tokens (Organic pastel palette) ─────────
+    statusTag: {
+        active: {
+            bg:     '#ddf0e2',
+            text:   '#21603c',
+            border: '#c3e4cc',
+        },
+        warning: {
+            bg:     '#faecd9',
+            text:   '#895311',
+            border: '#f3d4a8',
+        },
+        error: {
+            bg:     '#fae4df',
+            text:   '#913426',
+            border: '#f2bab0',
+        },
+        processing: {
+            bg:     '#e6f4ff',
+            text:   '#0958d9',
+            border: '#bae0ff',
+        },
+        neutral: {
+            bg:     '#eaf0ed',
+            text:   '#365b4e',
+            border: '#d0dfd8',
+        },
+        notice: {
+            bg:     '#fff3d5',
+            text:   '#674400',
+            border: '#e5c879',
+        },
+    },
+
     // ─── Neutral scale (gray) ─────────────────────────────────
     neutral: {
         0:    '#ffffff',
@@ -84,22 +118,23 @@ export const colors = {
 
     // ─── Background surfaces ──────────────────────────────────
     bg: {
-        page:      '#f5f7fa', // main content background
+        page:      '#f4f5f2', // Warm off-white canvas (ReqHub)
         container: '#ffffff', // cards, panels
-        subtle:    '#fafafa', // subtle rows, alternating
+        subtle:    '#fbfcfa', // subtle rows, header surface
+        context:   '#edf3ed', // context banners, muted sage tint
         overlay:   'rgba(0, 0, 0, 0.45)',
     },
 
-    // ─── Sidebar (dark theme) ─────────────────────────────────
+    // ─── Sidebar (dark theme — Forest Ink luxury) ─────────────
     sidebar: {
-        bg:           '#2e3035',
-        bgDeep:       '#1f2024',
-        text:         'rgba(255, 255, 255, 0.85)',
-        textSecond:   'rgba(255, 255, 255, 0.45)',
-        selectedBg:   '#fa8c16',
+        bg:           '#132620', // Deep Forest Noir (đậm và sang hơn)
+        bgDeep:       '#0f1f1a', // Dark Pine footer
+        text:         'rgba(255, 255, 255, 0.88)',
+        textSecond:   '#b1c3bc', // Muted sage text
+        selectedBg:   '#2b4b40', // Solid Dark Sage (ReqHub active pill)
         selectedText: '#ffffff',
-        hoverBg:      'rgba(255, 255, 255, 0.08)',
-        divider:      'rgba(255, 255, 255, 0.12)',
+        hoverBg:      '#1f3c32', // Deep sage hover
+        divider:      '#244338', // Deep pine divider
     },
 
     // ─── Text ─────────────────────────────────────────────────
@@ -113,9 +148,9 @@ export const colors = {
 
     // ─── Border ───────────────────────────────────────────────
     border: {
-        base:    '#d9d9d9',
-        split:   '#f0f0f0',
-        subtle:  '#f5f5f5',
+        base:    '#d8e0dc', // Soft sage border (ReqHub)
+        split:   '#e8edea', // Soft divider line
+        subtle:  '#f0f4f1', // Ultra-subtle border
     },
 } as const;
 

@@ -1,69 +1,60 @@
 @startuml FUNC-HTVH-036_seq-03
-title FEAT-HTVH-036-03 — Xem chi tiết cấu hình Job và theo dõi tiến độ chạy
+title FEAT-HTVH-036-03 — Thiết lập Job mới
 
 skinparam sequenceMessageAlign center
-skinparam maxMessageSize 240
+skinparam maxMessageSize 250
 
-actor "Người dùng" as NSD
+actor "Người dùng\n(ROLE-QTHT / ROLE-QLVH)" as NSD
 participant "MH-HTVH-036-001\nDanh sách Job" as MH_DS
-participant "MH-HTVH-036-002\nPopup Chi tiết Job" as MH_CT
-participant "CMP-HIST-001\nBảng Lịch sử thay đổi" as CMP_HIST
-participant "MH-HTVH-036-003\nNgăn tiến độ chạy" as MH_TD
+participant "MH-HTVH-036-005\nMàn hình Thiết lập Job" as MH_FORM
 participant "Dịch vụ Job\nHT-JOB" as HT_JOB
+participant "Bộ lập lịch\nHT-SCH" as HT_SCH
 database "CSDL" as CSDL
 
-NSD -> MH_DS : Nhấp vào dòng bản ghi\nhoặc chọn "Xem chi tiết"
-activate MH_DS
-MH_DS -> HT_JOB : Lấy cấu hình Job theo định danh
-activate HT_JOB
-HT_JOB -> CSDL : Truy vấn JOB_DEFINITION
-CSDL --> HT_JOB : Bản ghi cấu hình
-HT_JOB --> MH_DS : Cấu hình Job
-deactivate HT_JOB
-MH_DS -> MH_CT : Mở popup rộng 70vw, căn giữa
-deactivate MH_DS
-activate MH_CT
-MH_CT --> NSD : Thanh thao tác nhanh (thẻ trạng thái + nút Chạy ngay)\nKhối 1 Thông tin chung\nKhối 2 Lập lịch và xử lý lỗi\nKhối 3 Thiết lập cảnh báo sự cố\nKhối 4 Lịch sử thay đổi
+NSD -> MH_DS : Nhấp "Thiết lập job mới"
+MH_DS -> MH_FORM : Điều hướng /job-management/create
+MH_FORM -> MH_FORM : Nạp giá trị mặc định\n(Thời gian chờ 300 giây, Số lần thử lại 3,\nKhoảng chờ ban đầu 60 giây, Backoff Cấp số nhân 2x,\nXử lý khi bỏ lỡ = Chạy bù ngay)
+MH_FORM --> NSD : Tiêu đề "Thiết lập Job mới",\nô Mã Job cho phép nhập
 
-== Xem bảng lịch sử thay đổi ==
-NSD -> CMP_HIST : Mở khối thu gọn "Lịch sử thay đổi"
-activate CMP_HIST
-CMP_HIST -> HT_JOB : Lấy nhật ký thay đổi của Job
-HT_JOB -> CSDL : Truy vấn JOB_AUDIT_HISTORY
-CSDL --> HT_JOB : Danh sách bản ghi
-HT_JOB --> CMP_HIST : Danh sách sắp xếp giảm dần theo thời gian
-CMP_HIST -> CMP_HIST : Lấy 20 bản ghi mới nhất
-CMP_HIST --> NSD : Bảng 8 cột chuẩn,\nvùng cuộn cao 250px, không phân trang
-deactivate CMP_HIST
+== Nhập và kiểm tra dữ liệu ==
+NSD -> MH_FORM : Nhập Khối 1 — Thông tin chung
+MH_FORM -> MH_FORM : Tự chuyển Mã Job sang chữ in hoa\nvà loại bỏ ký tự ngoài tập cho phép
 
-== Kích hoạt chạy từ popup chi tiết ==
-NSD -> MH_CT : Nhấp "Chạy ngay"
-MH_CT --> NSD : CONF_001 — Popup xác nhận thực hiện Job
-NSD -> MH_CT : Xác nhận "Chạy ngay"
-MH_CT -> HT_JOB : Yêu cầu kích hoạt chạy ngay
-HT_JOB -> CSDL : Ghi lượt chạy mới
-MH_CT -> MH_TD : Mở ngăn theo dõi tiến độ\n(rộng 700px, trượt từ mép phải)
-deactivate MH_CT
-activate MH_TD
-MH_TD --> NSD : SUC_002 và INF_002 "Job đang chạy"
-
-loop Trong khi lượt chạy chưa kết thúc
-  MH_TD -> HT_JOB : Đọc tiến độ và nhật ký thực thi
-  HT_JOB --> MH_TD : Phần trăm tiến độ, số bản ghi,\nbước hiện tại, dòng nhật ký mới
-  MH_TD --> NSD : Cập nhật thanh tiến độ, chỉ số\nvà khung nhật ký thời gian thực
+NSD -> MH_FORM : Chọn Điều kiện kích hoạt
+alt Điều kiện kích hoạt = Theo sự kiện
+  MH_FORM --> NSD : Ẩn ô Biểu thức Cron,\nhiện ô Tên sự kiện kích hoạt (bắt buộc)
+else Bộ lập lịch hoặc Thủ công
+  MH_FORM --> NSD : Hiện ô Biểu thức Cron kèm dòng diễn giải\ntiếng Việt, cập nhật theo từng ký tự nhập vào
 end
 
-alt Người dùng nhấp "Dừng"
-  NSD -> MH_TD : Dừng
-  MH_TD -> HT_JOB : Yêu cầu dừng lượt chạy
-  HT_JOB -> CSDL : Cập nhật lượt chạy = Đã hủy
-  MH_TD --> NSD : SUC_008 "Đã dừng Job thành công"
-else Lượt chạy hoàn tất
-  MH_TD --> NSD : INF_003 "Job đã hoàn thành trong {n} giây\nvới {m} bản ghi xử lý"
+NSD -> MH_FORM : Nhập Khối 2 — Lập lịch và xử lý lỗi
+NSD -> MH_FORM : Nhập Khối 3 — Thiết lập cảnh báo sự cố
+
+== Ghi dữ liệu ==
+NSD -> MH_FORM : Nhấp "Lưu"
+MH_FORM -> MH_FORM : Kiểm tra toàn bộ ràng buộc\nBR-HTVH-036-001 đến BR-HTVH-036-008
+
+alt Dữ liệu chưa hợp lệ
+  MH_FORM --> NSD : ERR_014 và đánh dấu từng ô nhập lỗi
+else Dữ liệu hợp lệ
+  MH_FORM -> HT_JOB : Ghi cấu hình Job
+  HT_JOB -> CSDL : Thêm mới JOB_DEFINITION
+  HT_JOB -> CSDL : Ghi JOB_AUDIT_HISTORY\n(giá trị cũ, giá trị mới, địa chỉ IP)
+  HT_JOB -> HT_SCH : Đăng ký lại lịch chạy theo biểu thức Cron
+  alt Đăng ký lịch thất bại
+    HT_SCH --> HT_JOB : Lỗi đăng ký lịch
+    MH_FORM --> NSD : WAR_001 "Đã lưu cấu hình nhưng\nchưa cập nhật được lịch chạy tự động"
+  else Đăng ký lịch thành công
+    HT_SCH --> HT_JOB : Đã cập nhật lịch
+    HT_JOB --> MH_FORM : Kết quả thành công
+    MH_FORM --> NSD : SUC_006 "Lưu cấu hình Job thành công"
+  end
+  MH_FORM -> MH_DS : Trở về danh sách Quản lý Job
 end
 
-NSD -> MH_TD : Nhấp "Tải" hoặc "Sao" nhật ký
-MH_TD --> NSD : Tệp {mã Job}-progress.log\nhoặc nội dung trong bộ nhớ tạm
-deactivate MH_TD
+alt Người dùng nhấp "Hủy" hoặc biểu tượng quay lại
+  NSD -> MH_FORM : Hủy
+  MH_FORM -> MH_DS : Trở về danh sách, không ghi dữ liệu
+end
 
 @enduml

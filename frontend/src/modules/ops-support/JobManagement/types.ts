@@ -48,7 +48,7 @@ export interface IJobSchedule {
   jobId: string;
   dependsOnJobId: string;
   dependencyType: 'HARD' | 'SOFT';
-  conditionType?: 'SUCCESS' | 'ALWAYS';
+  conditionType?: 'SUCCESS' | 'FAILURE' | 'ALWAYS';
 }
 
 export type JobConsoleType = 'SPRING_BEAN' | 'REST_API' | 'SQL_SCRIPT';
@@ -66,6 +66,7 @@ export interface IConsoleNotificationEventChannels {
 export interface IConsoleNotificationMatrix {
   onStart: IConsoleNotificationEventChannels;
   onSuccess: IConsoleNotificationEventChannels;
+  onSlaBreach: IConsoleNotificationEventChannels;
   onFailure: IConsoleNotificationEventChannels;
   onRetry: IConsoleNotificationEventChannels;
 }
@@ -114,6 +115,14 @@ export interface IJob {
 
   notificationConfig?: IJobNotificationConfig;
   dependsOn: string[];
+  dependencies?: {
+    jobId: string;
+    conditionType: 'SUCCESS' | 'FAILURE' | 'ALWAYS';
+  }[];
+
+  slaTimeout?: number;
+  retentionSuccess?: number;
+  retentionError?: number;
 
   successCount: number;
   failureCount: number;
@@ -151,6 +160,8 @@ export interface IJobRun {
   recordsFailed?: number;
   errorMessage?: string;
   errorDetail?: string;
+  nodeIp?: string;
+  dynamicParams?: string;
   logs?: IRunLog[];
 }
 

@@ -38,10 +38,11 @@ const SectionCard: React.FC<SectionCardProps> = ({
 
   return (
     <Card
-      variant="borderless"
       style={{
         borderRadius: radius.lg,
         boxShadow: shadows.xs,
+        border: `1px solid ${colors.border.base}`,
+        background: colors.bg.container,
         ...(flex
           ? {
               flex: 1,

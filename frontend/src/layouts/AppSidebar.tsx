@@ -174,27 +174,64 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, onCollapse, isMobile
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
           <SubSystemSwitcher mode="header" collapsed={collapsed} />
-          {/* ConfigProvider scoped — selected item màu theo subsystem đang active */}
+          {/* ConfigProvider scoped — selected item theo phong cách Hướng A (Left Indicator Bar + Subtle Tint) */}
           <ConfigProvider
             theme={{
               components: {
                 Menu: {
-                  darkItemSelectedBg: activeSubSystem.color,
+                  darkItemSelectedBg: colors.sidebar.selectedBg,
                   darkItemSelectedColor: colors.text.inverse,
+                  darkItemHoverBg: colors.sidebar.hoverBg,
+                  darkItemHoverColor: colors.text.inverse,
+                  darkItemColor: colors.sidebar.textSecond,
                 },
               },
             }}
           >
-            <Menu
-              theme="dark"
-              mode="inline"
-              inlineCollapsed={collapsed}
-              selectedKeys={[selectedMenuPath]}
-              openKeys={openKeys}
-              onOpenChange={onOpenChange}
-              items={activeMenu}
-              style={{ background: colors.sidebar.bg, borderRight: 0 }}
-            />
+            <div className="cic-sidebar-menu-wrapper">
+              <Menu
+                theme="dark"
+                mode="inline"
+                inlineCollapsed={collapsed}
+                selectedKeys={[selectedMenuPath]}
+                openKeys={openKeys}
+                onOpenChange={onOpenChange}
+                items={activeMenu}
+                style={{ background: colors.sidebar.bg, borderRight: 0 }}
+              />
+            </div>
+            <style jsx global>{`
+              .cic-sidebar-menu-wrapper .ant-menu-dark .ant-menu-item-selected {
+                position: relative;
+                background-color: ${colors.sidebar.selectedBg} !important;
+                font-weight: 600;
+              }
+              .cic-sidebar-menu-wrapper .ant-menu-dark .ant-menu-item-selected::before {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 6px;
+                bottom: 6px;
+                width: 3.5px;
+                background-color: ${activeSubSystem.color};
+                border-radius: 0 4px 4px 0;
+              }
+              .cic-sidebar-menu-wrapper .ant-menu-dark .ant-menu-item-selected .anticon {
+                color: ${activeSubSystem.color} !important;
+              }
+              .cic-sidebar-menu-wrapper .ant-menu-dark .ant-menu-item-selected a {
+                color: #ffffff !important;
+              }
+              .cic-sidebar-menu-wrapper .ant-menu-dark .ant-menu-item,
+              .cic-sidebar-menu-wrapper .ant-menu-dark .ant-menu-submenu-title {
+                transition: background-color 150ms ease, color 150ms ease !important;
+              }
+              .cic-sidebar-menu-wrapper .ant-menu-dark .ant-menu-item:hover,
+              .cic-sidebar-menu-wrapper .ant-menu-dark .ant-menu-submenu-title:hover {
+                background-color: ${colors.sidebar.hoverBg} !important;
+                color: #ffffff !important;
+              }
+            `}</style>
           </ConfigProvider>
         </div>
 

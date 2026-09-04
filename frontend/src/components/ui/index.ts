@@ -6,11 +6,15 @@
 //  consistent layout patterns across all list/detail pages.
 // ============================================================
 
-// ─── Layout ──────────────────────────────────────────────────
+// ─── Layout & Headers ────────────────────────────────────────
 export { default as PageLayout }       from './PageLayout';
 export { default as FilterBar }        from './FilterBar';
 export { FilterCol }                   from './FilterBar';
 export { default as SectionCard }      from './SectionCard';
+export { default as ContextBanner }    from './ContextBanner';
+export type { ContextBannerAction, ContextBannerProps } from './ContextBanner';
+export { default as MetricSummaryBar } from './MetricSummaryBar';
+export type { MetricItem, MetricSummaryBarProps } from './MetricSummaryBar';
 export { default as StatusSummaryBar } from './StatusSummaryBar';
 export type { SummaryItem }            from './StatusSummaryBar';
 

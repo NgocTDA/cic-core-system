@@ -12,6 +12,7 @@ import {
   Table,
   Checkbox,
   message,
+  Input,
 } from 'antd';
 import {
   PlayCircleOutlined,
@@ -78,6 +79,15 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
             <div><Text type="secondary">Mã Job: </Text><Text code strong style={{ color: '#000000' }}>{job.code}</Text></div>
             <div><Text type="secondary">Tên Job: </Text><Text strong>{job.name}</Text></div>
           </div>
+          <div style={{ marginTop: 16 }}>
+            <div style={{ marginBottom: 8, fontWeight: 500 }}>Tham số chạy bổ sung (JSON/YAML):</div>
+            <Input.TextArea 
+              defaultValue={job.params || ''}
+              placeholder='{ "run_date": "2023-10-01" }'
+              rows={4}
+              maxLength={1500}
+            />
+          </div>
         </div>
       ),
       okText: 'Chạy ngay',
@@ -101,10 +111,10 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
     ? job.notifyEmails.split(/[,;]\s*/).filter(Boolean)
     : ['admin@cic.org.vn', 'alert@cic.org.vn'];
 
-  // Matrix table data formatting
   const matrix = job.notificationMatrix || {
     onStart: { sms: false, push: false, email: true, customRecipients: [] },
     onSuccess: { sms: false, push: false, email: true, customRecipients: [] },
+    onSlaBreach: { sms: false, push: false, email: true, customRecipients: [] },
     onFailure: { sms: true, push: true, email: true, customRecipients: ['alert_group@cic.org.vn'] },
     onRetry: { sms: false, push: true, email: false, customRecipients: [] },
   };
@@ -189,6 +199,7 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
   const notificationData = [
     { key: 'onStart', eventLabel: 'Khi bắt đầu chạy Job', ...matrix.onStart },
     { key: 'onSuccess', eventLabel: 'Khi hoàn tất thành công', ...matrix.onSuccess },
+    { key: 'onSlaBreach', eventLabel: 'Khi chạy chậm quá SLA', ...matrix.onSlaBreach },
     { key: 'onFailure', eventLabel: 'Khi gặp sự cố / Thất bại', ...matrix.onFailure },
     { key: 'onRetry', eventLabel: 'Khi thử lại (Retry)', ...matrix.onRetry },
   ];
@@ -359,29 +370,18 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
                   </div>
                 </Col>
 
-                <Col xs={24} sm={24} md={12}>
+                <Col xs={12} sm={6} md={6}>
                   <div>
                     <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
-                      Job cần hoàn thành trước
+                      SLA dự kiến (giây)
                     </Text>
-                    {job.dependsOn && job.dependsOn.length > 0 ? (
-                      <Space size={[4, 4]} wrap>
-                        {job.dependsOn.map((depId) => {
-                          const depJob = mockJobs.find((j) => j.id === depId);
-                          return (
-                            <Tag key={depId} color="blue">
-                              {depJob ? `${depJob.code}` : depId}
-                            </Tag>
-                          );
-                        })}
-                      </Space>
-                    ) : (
-                      <Text type="secondary" style={{ fontStyle: 'italic' }}>Không có</Text>
-                    )}
+                    <Text strong style={{ fontSize: typography.fontSize.base }}>
+                      {job.slaTimeout ?? 1800}s
+                    </Text>
                   </div>
                 </Col>
 
-                <Col xs={12} sm={6} md={3}>
+                <Col xs={12} sm={6} md={6}>
                   <div>
                     <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
                       Chờ ban đầu (giây)
@@ -392,7 +392,7 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
                   </div>
                 </Col>
 
-                <Col xs={12} sm={6} md={3}>
+                <Col xs={12} sm={6} md={6}>
                   <div>
                     <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
                       Chờ tối đa (giây)
@@ -465,6 +465,70 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
                   </Col>
                 )}
               </Row>
+
+              {/* HÀNG 3: Retention */}
+              <Row gutter={[16, 16]} style={{ marginTop: spacing[4] }}>
+                <Col xs={12} sm={6} md={6}>
+                  <div>
+                    <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                      Lưu log thành công (ngày)
+                    </Text>
+                    <Text strong style={{ fontSize: typography.fontSize.base }}>
+                      {job.retentionSuccess ?? 7}
+                    </Text>
+                  </div>
+                </Col>
+                <Col xs={12} sm={6} md={6}>
+                  <div>
+                    <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                      Lưu log lỗi (ngày)
+                    </Text>
+                    <Text strong style={{ fontSize: typography.fontSize.base }}>
+                      {job.retentionError ?? 30}
+                    </Text>
+                  </div>
+                </Col>
+              </Row>
+            </div>
+
+            {/* KHỐI CẤU HÌNH PHỤ THUỘC */}
+            <div style={{ borderBottom: `1px solid ${colors.border.split}`, paddingBottom: spacing[5] }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: spacing[2], marginBottom: spacing[4] }}>
+                <CodeOutlined style={{ color: colors.primary[500], fontSize: 20 }} />
+                <Text strong style={{ fontSize: typography.fontSize.base, textTransform: 'uppercase', color: colors.text.primary }}>
+                  Cấu hình phụ thuộc
+                </Text>
+              </div>
+              {job.dependencies && job.dependencies.length > 0 ? (
+                <Table
+                  dataSource={job.dependencies}
+                  pagination={false}
+                  rowKey="jobId"
+                  bordered
+                  size="small"
+                  columns={[
+                    {
+                      title: 'Mã Job xử lý trước',
+                      dataIndex: 'jobId',
+                      render: (id) => {
+                        const depJob = mockJobs.find((j) => j.id === id);
+                        return <Text strong>{depJob ? `${depJob.code} - ${depJob.name}` : id}</Text>;
+                      }
+                    },
+                    {
+                      title: 'Điều kiện kích hoạt',
+                      dataIndex: 'conditionType',
+                      render: (type) => (
+                        <Text>
+                          {type === 'SUCCESS' ? 'Khi thành công' : type === 'FAILURE' ? 'Khi thất bại' : 'Luôn luôn (Bất kể kết quả)'}
+                        </Text>
+                      )
+                    }
+                  ]}
+                />
+              ) : (
+                <Text type="secondary" style={{ fontStyle: 'italic' }}>Không có cấu hình phụ thuộc.</Text>
+              )}
             </div>
 
             {/* KHỐI 3: Thiết lập Cảnh báo Sự cố */}

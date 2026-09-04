@@ -1,70 +1,80 @@
 @startuml FUNC-HTVH-036_seq-06
-title FEAT-HTVH-036-06 — Điều chỉnh trạng thái hoạt động và xóa Job
+title FEAT-HTVH-036-06 — Kích hoạt chạy Job thủ công (đơn lẻ và hàng loạt)
 
 skinparam sequenceMessageAlign center
 skinparam maxMessageSize 240
 
 actor "Người dùng\n(ROLE-QTHT / ROLE-QLVH)" as NSD
 participant "MH-HTVH-036-001\nDanh sách Job" as MH_DS
+participant "Thanh tác vụ\nAppHeader" as CMP_HEADER
+participant "MH-HTVH-036-006\nPopup Xác nhận" as MH_CONF
 participant "Lớp nghiệp vụ\nuseJobManagement" as HT_LOGIC
 participant "Dịch vụ Job\nHT-JOB" as HT_JOB
 participant "Bộ lập lịch\nHT-SCH" as HT_SCH
-database "CSDL" as CSDL
+database "CSDL\nJOB_EXECUTION_LOG" as CSDL
 
-NSD -> MH_DS : Mở menu thao tác của một dòng
+== Nhánh A: Chạy hàng loạt từ thanh tác vụ ==
+NSD -> MH_DS : Tích chọn N dòng bằng ô đánh dấu
 activate MH_DS
-MH_DS -> MH_DS : Dựng mục menu theo quyền của vai trò\nvà theo trạng thái hiện tại của Job
-MH_DS --> NSD : Danh sách mục khả dụng
+MH_DS -> MH_DS : Cập nhật danh sách dòng đang chọn
+alt Vai trò không có quyền "run" và "delete"
+  MH_DS --> NSD : Ô đánh dấu bị vô hiệu hóa
+else Có quyền
+  MH_DS -> CMP_HEADER : Đăng ký nút "Chạy Job (N)"
+  CMP_HEADER --> NSD : Hiện nút chính "Chạy Job (N)"
+end
+deactivate MH_DS
 
-== Điều chỉnh trạng thái hoạt động ==
-alt Job đang ở trạng thái Hoạt động
-  NSD -> MH_DS : Chọn "Vô hiệu hóa"
-  MH_DS -> HT_LOGIC : Đổi trạng thái Job
+NSD -> CMP_HEADER : Nhấp "Chạy Job (N)"
+activate CMP_HEADER
+CMP_HEADER -> MH_CONF : Mở popup xác nhận\n(căn giữa, không icon tiêu đề)
+deactivate CMP_HEADER
+activate MH_CONF
+alt N = 1
+  MH_CONF --> NSD : CONF_001 — kèm Mã Job và Tên Job của bản ghi đã chọn
+else N > 1
+  MH_CONF --> NSD : CONF_002 — kèm tổng số N Job sẽ được kích hoạt
+end
+
+alt Người dùng nhấp "Hủy"
+  NSD -> MH_CONF : Hủy
+  MH_CONF --> MH_DS : Đóng popup, giữ nguyên danh sách chọn
+else Người dùng nhấp "Chạy ngay"
+  NSD -> MH_CONF : Chạy ngay
+  MH_CONF -> HT_LOGIC : Kích hoạt lần lượt từng Job đã chọn
+  deactivate MH_CONF
   activate HT_LOGIC
-  HT_LOGIC -> HT_JOB : Cập nhật trạng thái sang Ngừng hoạt động
-  activate HT_JOB
-  HT_JOB -> HT_SCH : Gỡ lịch chạy tự động
-  HT_JOB -> CSDL : Cập nhật JOB_DEFINITION
-  HT_JOB -> CSDL : Ghi JOB_AUDIT_HISTORY
-  HT_JOB --> HT_LOGIC : Thành công
-  deactivate HT_JOB
+  loop mỗi Job đã chọn
+    HT_LOGIC -> HT_JOB : Yêu cầu kích hoạt chạy ngay
+    activate HT_JOB
+    alt Job bật "Khóa chạy song song" và đang có lượt chạy dở dang
+      HT_JOB --> HT_LOGIC : ERR_016 — từ chối kích hoạt
+    else Đủ điều kiện chạy
+      HT_JOB -> HT_SCH : Đưa vào hàng đợi thực thi\n(điều kiện kích hoạt = Thủ công)
+      HT_SCH --> HT_JOB : Đã tiếp nhận
+      HT_JOB -> CSDL : Ghi lượt chạy mới\n(trạng thái = Đang chạy, người kích hoạt)
+      HT_JOB --> HT_LOGIC : Mã lượt chạy
+    end
+    deactivate HT_JOB
+    HT_LOGIC -> HT_LOGIC : Đặt trạng thái chạy của Job là "Đang chạy"
+  end
   HT_LOGIC --> MH_DS : Danh sách đã cập nhật
   deactivate HT_LOGIC
-  MH_DS --> NSD : SUC_004 "Đã vô hiệu hóa Job {mã Job}"\nThẻ trạng thái chuyển sang "Ngừng hoạt động"
-else Job đang ở trạng thái Ngừng hoạt động
-  NSD -> MH_DS : Chọn "Kích hoạt"
-  MH_DS -> HT_LOGIC : Đổi trạng thái Job
-  HT_LOGIC -> HT_JOB : Cập nhật trạng thái sang Hoạt động
-  HT_JOB -> HT_SCH : Đăng ký lại lịch chạy theo biểu thức Cron
-  HT_JOB -> CSDL : Cập nhật JOB_DEFINITION
-  HT_JOB -> CSDL : Ghi JOB_AUDIT_HISTORY
-  MH_DS --> NSD : SUC_003 "Đã kích hoạt Job {mã Job}"\nThẻ trạng thái chuyển sang "Hoạt động"
+  MH_DS -> MH_DS : Xóa trắng danh sách chọn, ẩn nút "Chạy Job (N)"
+  MH_DS --> NSD : SUC_001 "Đã kích hoạt chạy N Job thành công"
 end
 
-note over MH_DS, CSDL
-  Vô hiệu hóa Job đang có lượt chạy dở dang: lượt chạy hiện tại
-  vẫn tiếp tục tới khi kết thúc, chỉ các lượt tiếp theo bị gỡ khỏi
-  lịch tự động (WAR_002).
-end note
-
-== Xóa Job ==
-alt Vai trò có quyền xóa
-  NSD -> MH_DS : Chọn "Xóa"
-  MH_DS -> HT_JOB : Yêu cầu xóa Job
-  activate HT_JOB
-  alt Job đang được Job khác khai báo là phụ thuộc
-    HT_JOB --> MH_DS : Từ chối xóa
-    MH_DS --> NSD : ERR_023 "Không thể xóa Job vì đang có Job khác phụ thuộc"
-  else Không có ràng buộc phụ thuộc
-    HT_JOB -> CSDL : Đánh dấu xóa bản ghi JOB_DEFINITION
-    HT_JOB -> CSDL : Ghi JOB_AUDIT_HISTORY
-    HT_JOB --> MH_DS : Thành công
-    MH_DS --> NSD : SUC_007 "Đã xóa Job {mã Job}"
-  end
-  deactivate HT_JOB
-else Vai trò không có quyền xóa
-  MH_DS --> NSD : Mục "Xóa" không xuất hiện trên menu thao tác
-end
+== Nhánh B: Chạy đơn lẻ từ menu thao tác ==
+NSD -> MH_DS : Menu thao tác > "Chạy ngay"
+activate MH_DS
+MH_DS -> MH_CONF : Mở popup xác nhận kèm Mã Job và Tên Job
+activate MH_CONF
+NSD -> MH_CONF : Chạy ngay
+MH_CONF -> HT_LOGIC : Kích hoạt Job
+deactivate MH_CONF
+HT_LOGIC -> HT_JOB : Yêu cầu kích hoạt chạy ngay
+HT_JOB -> CSDL : Ghi lượt chạy mới
+MH_DS --> NSD : SUC_002 "Job {mã Job} đã bắt đầu chạy thành công"
 deactivate MH_DS
 
 @enduml

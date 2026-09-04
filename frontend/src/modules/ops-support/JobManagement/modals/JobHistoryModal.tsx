@@ -8,6 +8,7 @@ import {
   DatePicker,
   Button,
   Typography,
+  Input,
 } from 'antd';
 import type { TableProps } from 'antd';
 import { StatusTag, CodeText, FilterBar, FilterCol, tablePagination } from '@/components/ui';
@@ -30,6 +31,7 @@ const JobHistoryModal: React.FC<JobHistoryModalProps> = ({
   onClose,
 }) => {
   const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined);
+  const [nodeFilter, setNodeFilter] = useState<string>('');
 
   // Filter runs for the current job
   const jobRuns = useMemo(() => {
@@ -41,14 +43,16 @@ const JobHistoryModal: React.FC<JobHistoryModalProps> = ({
   const filteredData = useMemo(() => {
     return jobRuns.filter((run) => {
       if (statusFilter && run.status !== statusFilter) return false;
+      if (nodeFilter && run.nodeIp && !run.nodeIp.includes(nodeFilter)) return false;
       return true;
     });
-  }, [jobRuns, statusFilter]);
+  }, [jobRuns, statusFilter, nodeFilter]);
 
   if (!job) return null;
 
   const handleReset = () => {
     setStatusFilter(undefined);
+    setNodeFilter('');
   };
 
   const formatDuration = (ms?: number) => {
@@ -136,6 +140,13 @@ const JobHistoryModal: React.FC<JobHistoryModalProps> = ({
       ),
     },
     {
+      title: 'Node thực thi',
+      dataIndex: 'nodeIp',
+      key: 'nodeIp',
+      width: 140,
+      render: (ip?: string) => ip ? <Text style={{ fontSize: typography.fontSize.xs, fontFamily: typography.fontFamily.mono }}>{ip}</Text> : '—',
+    },
+    {
       title: 'Trạng thái',
       dataIndex: 'status',
       key: 'status',
@@ -176,6 +187,15 @@ const JobHistoryModal: React.FC<JobHistoryModalProps> = ({
                   { label: 'Lỗi (FAILED)', value: 'FAILED' },
                   { label: 'Đang chạy (RUNNING)', value: 'RUNNING' },
                 ]}
+              />
+            </FilterCol>
+
+            <FilterCol minWidth={160}>
+              <Input 
+                placeholder="Node thực thi" 
+                value={nodeFilter} 
+                onChange={(e) => setNodeFilter(e.target.value)} 
+                allowClear 
               />
             </FilterCol>
 

@@ -1,75 +1,70 @@
 @startuml FUNC-HTVH-036_seq-05
-title FEAT-HTVH-036-05 — Thiết lập mới và cập nhật cấu hình Job
+title FEAT-HTVH-036-05 — Điều chỉnh trạng thái hoạt động và xóa Job
 
 skinparam sequenceMessageAlign center
-skinparam maxMessageSize 250
+skinparam maxMessageSize 240
 
 actor "Người dùng\n(ROLE-QTHT / ROLE-QLVH)" as NSD
 participant "MH-HTVH-036-001\nDanh sách Job" as MH_DS
-participant "MH-HTVH-036-005\nMàn hình Thiết lập Job" as MH_FORM
+participant "Lớp nghiệp vụ\nuseJobManagement" as HT_LOGIC
 participant "Dịch vụ Job\nHT-JOB" as HT_JOB
 participant "Bộ lập lịch\nHT-SCH" as HT_SCH
 database "CSDL" as CSDL
 
-alt Thiết lập Job mới
-  NSD -> MH_DS : Nhấp "Thiết lập job mới"
-  MH_DS -> MH_FORM : Điều hướng /job-management/create
-  MH_FORM -> MH_FORM : Nạp giá trị mặc định\n(Thời gian chờ 300 giây, Số lần thử lại 3,\nKhoảng chờ ban đầu 60 giây, Backoff Cấp số nhân 2x,\nXử lý khi bỏ lỡ = Chạy bù ngay)
-  MH_FORM --> NSD : Tiêu đề "Thiết lập Job mới",\nô Mã Job cho phép nhập
-else Cập nhật Job đang có
-  NSD -> MH_DS : Menu thao tác > "Chỉnh sửa"
-  MH_DS -> MH_FORM : Điều hướng /job-management/{id}/edit
-  MH_FORM -> HT_JOB : Lấy cấu hình Job theo định danh
-  HT_JOB -> CSDL : Truy vấn JOB_DEFINITION
-  CSDL --> HT_JOB : Bản ghi cấu hình
-  HT_JOB --> MH_FORM : Cấu hình Job
-  alt Không tìm thấy bản ghi
-    MH_FORM --> NSD : ERR_015 "Job không tồn tại"
-    MH_FORM -> MH_DS : Tự động trở về danh sách
-  else Tìm thấy
-    MH_FORM --> NSD : Tiêu đề "Cập nhật thông tin Job",\nô Mã Job bị khóa không cho sửa
-  end
-end
+NSD -> MH_DS : Mở menu thao tác của một dòng
+activate MH_DS
+MH_DS -> MH_DS : Dựng mục menu theo quyền của vai trò\nvà theo trạng thái hiện tại của Job
+MH_DS --> NSD : Danh sách mục khả dụng
 
-== Nhập và kiểm tra dữ liệu ==
-NSD -> MH_FORM : Nhập Khối 1 — Thông tin chung
-MH_FORM -> MH_FORM : Tự chuyển Mã Job sang chữ in hoa\nvà loại bỏ ký tự ngoài tập cho phép
-
-NSD -> MH_FORM : Chọn Điều kiện kích hoạt
-alt Điều kiện kích hoạt = Theo sự kiện
-  MH_FORM --> NSD : Ẩn ô Biểu thức Cron,\nhiện ô Tên sự kiện kích hoạt (bắt buộc)
-else Bộ lập lịch hoặc Thủ công
-  MH_FORM --> NSD : Hiện ô Biểu thức Cron kèm dòng diễn giải\ntiếng Việt, cập nhật theo từng ký tự nhập vào
-end
-
-NSD -> MH_FORM : Nhập Khối 2 — Lập lịch và xử lý lỗi
-NSD -> MH_FORM : Nhập Khối 3 — Thiết lập cảnh báo sự cố
-
-== Ghi dữ liệu ==
-NSD -> MH_FORM : Nhấp "Lưu"
-MH_FORM -> MH_FORM : Kiểm tra toàn bộ ràng buộc\nBR-HTVH-036-001 đến BR-HTVH-036-008
-
-alt Dữ liệu chưa hợp lệ
-  MH_FORM --> NSD : ERR_014 và đánh dấu từng ô nhập lỗi
-else Dữ liệu hợp lệ
-  MH_FORM -> HT_JOB : Ghi cấu hình Job
-  HT_JOB -> CSDL : Thêm mới / Cập nhật JOB_DEFINITION
-  HT_JOB -> CSDL : Ghi JOB_AUDIT_HISTORY\n(giá trị cũ, giá trị mới, địa chỉ IP)
+== Điều chỉnh trạng thái hoạt động ==
+alt Job đang ở trạng thái Hoạt động
+  NSD -> MH_DS : Chọn "Vô hiệu hóa"
+  MH_DS -> HT_LOGIC : Đổi trạng thái Job
+  activate HT_LOGIC
+  HT_LOGIC -> HT_JOB : Cập nhật trạng thái sang Ngừng hoạt động
+  activate HT_JOB
+  HT_JOB -> HT_SCH : Gỡ lịch chạy tự động
+  HT_JOB -> CSDL : Cập nhật JOB_DEFINITION
+  HT_JOB -> CSDL : Ghi JOB_AUDIT_HISTORY
+  HT_JOB --> HT_LOGIC : Thành công
+  deactivate HT_JOB
+  HT_LOGIC --> MH_DS : Danh sách đã cập nhật
+  deactivate HT_LOGIC
+  MH_DS --> NSD : SUC_004 "Đã vô hiệu hóa Job {mã Job}"\nThẻ trạng thái chuyển sang "Ngừng hoạt động"
+else Job đang ở trạng thái Ngừng hoạt động
+  NSD -> MH_DS : Chọn "Kích hoạt"
+  MH_DS -> HT_LOGIC : Đổi trạng thái Job
+  HT_LOGIC -> HT_JOB : Cập nhật trạng thái sang Hoạt động
   HT_JOB -> HT_SCH : Đăng ký lại lịch chạy theo biểu thức Cron
-  alt Đăng ký lịch thất bại
-    HT_SCH --> HT_JOB : Lỗi đăng ký lịch
-    MH_FORM --> NSD : WAR_001 "Đã lưu cấu hình nhưng\nchưa cập nhật được lịch chạy tự động"
-  else Đăng ký lịch thành công
-    HT_SCH --> HT_JOB : Đã cập nhật lịch
-    HT_JOB --> MH_FORM : Kết quả thành công
-    MH_FORM --> NSD : SUC_005 / SUC_006 "Lưu cấu hình Job thành công"
-  end
-  MH_FORM -> MH_DS : Trở về danh sách Quản lý Job
+  HT_JOB -> CSDL : Cập nhật JOB_DEFINITION
+  HT_JOB -> CSDL : Ghi JOB_AUDIT_HISTORY
+  MH_DS --> NSD : SUC_003 "Đã kích hoạt Job {mã Job}"\nThẻ trạng thái chuyển sang "Hoạt động"
 end
 
-alt Người dùng nhấp "Hủy" hoặc biểu tượng quay lại
-  NSD -> MH_FORM : Hủy
-  MH_FORM -> MH_DS : Trở về danh sách, không ghi dữ liệu
+note over MH_DS, CSDL
+  Vô hiệu hóa Job đang có lượt chạy dở dang: lượt chạy hiện tại
+  vẫn tiếp tục tới khi kết thúc, chỉ các lượt tiếp theo bị gỡ khỏi
+  lịch tự động (WAR_002).
+end note
+
+== Xóa Job ==
+alt Vai trò có quyền xóa
+  NSD -> MH_DS : Chọn "Xóa"
+  MH_DS -> HT_JOB : Yêu cầu xóa Job
+  activate HT_JOB
+  alt Job đang được Job khác khai báo là phụ thuộc
+    HT_JOB --> MH_DS : Từ chối xóa
+    MH_DS --> NSD : ERR_023 "Không thể xóa Job vì đang có Job khác phụ thuộc"
+  else Không có ràng buộc phụ thuộc
+    HT_JOB -> CSDL : Đánh dấu xóa bản ghi JOB_DEFINITION
+    HT_JOB -> CSDL : Ghi JOB_AUDIT_HISTORY
+    HT_JOB --> MH_DS : Thành công
+    MH_DS --> NSD : SUC_007 "Đã xóa Job {mã Job}"
+  end
+  deactivate HT_JOB
+else Vai trò không có quyền xóa
+  MH_DS --> NSD : Mục "Xóa" không xuất hiện trên menu thao tác
 end
+deactivate MH_DS
 
 @enduml

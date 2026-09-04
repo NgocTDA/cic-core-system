@@ -1,59 +1,49 @@
 @startuml FUNC-HTVH-036_seq-07
-title FEAT-HTVH-036-07 — Cấu hình cột hiển thị và kết xuất dữ liệu
+title FEAT-HTVH-036-07 — Tra cứu lịch sử chạy Job
 
 skinparam sequenceMessageAlign center
 skinparam maxMessageSize 240
 
 actor "Người dùng" as NSD
-participant "Thanh tác vụ\nAppHeader" as CMP_HEADER
-participant "CMP-POPOVER-001\nCài đặt hiển thị" as CMP_POP
-participant "CMP-EXPORT-001\nXuất Excel" as CMP_EXP
-participant "Bảng dữ liệu\nJobList" as CMP_GRID
-participant "Dịch vụ kết xuất\nHT-XUAT" as HT_XUAT
+participant "MH-HTVH-036-001\nDanh sách Job" as MH_DS
+participant "MH-HTVH-036-004\nPopup Lịch sử chạy Job" as MH_LS
+participant "Dịch vụ Job\nHT-JOB" as HT_JOB
+database "CSDL\nJOB_EXECUTION_LOG" as CSDL
 
-== Cấu hình cột hiển thị ==
-NSD -> CMP_HEADER : Nhấp "Cài đặt hiển thị"
-CMP_HEADER -> CMP_POP : Mở popover rộng 260px
-activate CMP_POP
-CMP_POP --> NSD : Ô tìm kiếm trường thông tin,\ndòng thống kê số cột đang chọn,\nnút "Chọn tất cả" / "Bỏ chọn",\ndanh sách 8 cột có thể ẩn hiện
+NSD -> MH_DS : Menu thao tác > "Lịch sử chạy Job"
+activate MH_DS
+MH_DS -> MH_LS : Mở popup rộng 70vw, căn giữa,\ntiêu đề kèm Tên Job và Mã Job
+deactivate MH_DS
+activate MH_LS
+MH_LS -> HT_JOB : Lấy danh sách lượt chạy của Job
+activate HT_JOB
+HT_JOB -> CSDL : Truy vấn lượt chạy theo định danh Job
+CSDL --> HT_JOB : Danh sách lượt chạy
+HT_JOB --> MH_LS : Danh sách sắp xếp giảm dần\ntheo thời gian bắt đầu
+deactivate HT_JOB
+MH_LS --> NSD : Bảng 8 cột, phân trang 10 bản ghi/trang:\nSTT, Mã lượt chạy, Thời gian bắt đầu, Thời gian kết thúc,\nThời lượng, Bản ghi xử lý, Số lần thử lại, Trạng thái
 
-NSD -> CMP_POP : Nhập từ khóa tên cột
-CMP_POP --> NSD : Lọc danh sách cột theo tên
-
-NSD -> CMP_POP : Bỏ tích một cột
-alt Còn nhiều hơn một cột đang hiển thị
-  CMP_POP -> CMP_GRID : Cập nhật danh sách cột hiển thị
-  CMP_GRID --> NSD : Bảng ẩn cột tương ứng ngay lập tức
-else Chỉ còn đúng một cột
-  CMP_POP --> NSD : Không cho bỏ tích, giữ lại ít nhất một cột
+alt Job chưa có lượt chạy nào
+  MH_LS --> NSD : INF_001 — Bảng rỗng
 end
 
-note right of CMP_GRID
-  Cột "Thao tác" luôn hiển thị và cố định bên phải,
-  không nằm trong danh sách cấu hình (BR-HTVH-036-013).
-end note
-deactivate CMP_POP
+== Lọc theo tiêu chí ==
+NSD -> MH_LS : Chọn Trạng thái chạy\n(Thành công / Lỗi / Đang chạy)
+MH_LS -> MH_LS : Lọc tập dữ liệu đang hiển thị
+MH_LS --> NSD : Bảng chỉ còn lượt chạy thỏa điều kiện
 
-== Kết xuất dữ liệu ==
-NSD -> CMP_HEADER : Nhấp "Xuất Excel"
-CMP_HEADER -> CMP_EXP : Mở menu 3 tùy chọn
-activate CMP_EXP
-CMP_EXP --> NSD : Xuất trang hiện tại / Xuất theo bộ lọc / In trang hiện tại
+NSD -> MH_LS : Chọn khoảng ngày "Từ ngày – Đến ngày"
+MH_LS -> MH_LS : Lọc theo thời gian bắt đầu của lượt chạy
+MH_LS --> NSD : Bảng cập nhật
 
-alt Danh sách sau lọc rỗng
-  CMP_EXP --> NSD : WAR_003 "Không có dữ liệu để kết xuất"
-else Xuất trang hiện tại
-  NSD -> CMP_EXP : Chọn "Xuất trang hiện tại"
-  CMP_EXP -> HT_XUAT : Kết xuất các bản ghi trên trang đang xem
-  HT_XUAT --> NSD : Tệp .xlsx và SUC_009
-else Xuất theo bộ lọc
-  NSD -> CMP_EXP : Chọn "Xuất theo bộ lọc"
-  CMP_EXP -> HT_XUAT : Kết xuất toàn bộ bản ghi thỏa điều kiện lọc
-  HT_XUAT --> NSD : Tệp .xlsx và SUC_010
-else In trang hiện tại
-  NSD -> CMP_EXP : Chọn "In trang hiện tại"
-  CMP_EXP --> NSD : Mở hộp thoại in của trình duyệt
+alt Người dùng nhấp "Làm mới"
+  NSD -> MH_LS : Làm mới
+  MH_LS -> MH_LS : Xóa toàn bộ điều kiện lọc trong popup
+  MH_LS --> NSD : Trở về toàn bộ danh sách lượt chạy
 end
-deactivate CMP_EXP
+
+NSD -> MH_LS : Nhấp "Đóng"
+MH_LS --> MH_DS : Đóng popup, trở về danh sách Job
+deactivate MH_LS
 
 @enduml

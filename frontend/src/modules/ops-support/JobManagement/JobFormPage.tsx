@@ -50,6 +50,7 @@ const SYSTEM_USERS = [
 const DEFAULT_NOTIFICATION_MATRIX: IConsoleNotificationMatrix = {
   onStart: { sms: false, push: false, email: true, customRecipients: [] },
   onSuccess: { sms: false, push: false, email: true, customRecipients: [] },
+  onSlaBreach: { sms: false, push: false, email: true, customRecipients: [] },
   onFailure: { sms: true, push: true, email: true, customRecipients: ['alert_group@cic.org.vn'] },
   onRetry: { sms: false, push: true, email: false, customRecipients: [] },
 };
@@ -69,6 +70,15 @@ const JobFormContent: React.FC = () => {
 
   const watchTriggerType: TriggerTypeOption = Form.useWatch('triggerType', form) || 'SCHEDULER';
   const watchCron: string = Form.useWatch('cron', form) || '';
+  const watchDependencies: any[] = Form.useWatch('dependencies', form) || [];
+
+  useEffect(() => {
+    if (watchDependencies && watchDependencies.length > 0) {
+      if (watchTriggerType !== 'EVENT') {
+        form.setFieldsValue({ triggerType: 'EVENT' });
+      }
+    }
+  }, [watchDependencies, watchTriggerType, form]);
 
   useEffect(() => {
     const targetId = jobId || cloneId;
@@ -95,9 +105,13 @@ const JobFormContent: React.FC = () => {
           // Trigger & Schedule & Error Handling
           triggerType: found.triggerType || 'SCHEDULER',
           dependsOn: found.dependsOn || [],
+          dependencies: found.dependencies || [],
           cron: found.cron || found.schedule?.expression || '0 0 1 * * *',
           eventName: 'EVT_DATA_IMPORTED',
 
+          slaTimeout: found.slaTimeout || 1800,
+          retentionSuccess: found.retentionSuccess || 7,
+          retentionError: found.retentionError || 30,
           timeout: found.timeout || 300,
           misfire: found.misfire || 'FIRE_NOW',
           concurrent: found.concurrent ?? true, // Default: Khóa chạy song song (true)
@@ -126,9 +140,13 @@ const JobFormContent: React.FC = () => {
 
         triggerType: 'SCHEDULER',
         dependsOn: [],
+        dependencies: [],
         cron: '0 0 1 * * *',
         eventName: 'EVT_DATA_IMPORTED',
 
+        slaTimeout: 1800,
+        retentionSuccess: 7,
+        retentionError: 30,
         timeout: 300,
         misfire: 'FIRE_NOW',
         concurrent: true, // Mặc định Khóa chạy song song
@@ -286,6 +304,7 @@ const JobFormContent: React.FC = () => {
   const notificationData = [
     { key: 'onStart', eventKey: 'onStart', eventLabel: 'Khi bắt đầu chạy Job' },
     { key: 'onSuccess', eventKey: 'onSuccess', eventLabel: 'Khi hoàn tất thành công' },
+    { key: 'onSlaBreach', eventKey: 'onSlaBreach', eventLabel: 'Khi chạy chậm quá SLA' },
     { key: 'onFailure', eventKey: 'onFailure', eventLabel: 'Khi gặp sự cố / Thất bại' },
     { key: 'onRetry', eventKey: 'onRetry', eventLabel: 'Khi thử lại (Retry)' },
   ];
@@ -452,6 +471,7 @@ const JobFormContent: React.FC = () => {
                 >
                   <Select
                     style={{ width: '100%' }}
+                    disabled={watchDependencies && watchDependencies.length > 0}
                     options={[
                       { value: 'SCHEDULER', label: 'Bộ lập lịch (Scheduler)' },
                       { value: 'EVENT', label: 'Theo sự kiện (Event-driven)' },
@@ -461,23 +481,17 @@ const JobFormContent: React.FC = () => {
                 </Form.Item>
               </Col>
 
-              <Col xs={24} sm={24} md={12}>
+              <Col xs={12} sm={6} md={6}>
                 <Form.Item
-                  name="dependsOn"
-                  label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Job cần hoàn thành trước</Text>}
+                  name="slaTimeout"
+                  label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>SLA dự kiến (s)</Text>}
+                  rules={[{ type: 'number', min: 1, message: 'Từ 1s' }]}
                 >
-                  <Select
-                    mode="multiple"
-                    allowClear
-                    placeholder="Chọn Job cần hoàn thành..."
-                    style={{ width: '100%' }}
-                    options={dependsOnOptions}
-                    maxTagCount="responsive"
-                  />
+                  <InputNumber min={1} precision={0} style={{ width: '100%' }} suffix="s" />
                 </Form.Item>
               </Col>
 
-              <Col xs={12} sm={6} md={3}>
+              <Col xs={12} sm={6} md={6}>
                 <Form.Item
                   name="retryInterval"
                   label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Chờ ban đầu (giây)</Text>}
@@ -487,7 +501,9 @@ const JobFormContent: React.FC = () => {
                 </Form.Item>
               </Col>
 
-              <Col xs={12} sm={6} md={3}>
+
+
+              <Col xs={12} sm={6} md={6}>
                 <Form.Item
                   name="timeout"
                   label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Chờ tối đa (giây)</Text>}
@@ -589,6 +605,99 @@ const JobFormContent: React.FC = () => {
                 </Col>
               )}
             </Row>
+
+            {/* HÀNG 3: Retention */}
+            <Row gutter={[16, 16]} style={{ marginTop: spacing[3] }}>
+              <Col xs={12} sm={6} md={6}>
+                <Form.Item
+                  name="retentionSuccess"
+                  label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Lưu log thành công (ngày)</Text>}
+                >
+                  <InputNumber min={0} precision={0} style={{ width: '100%' }} suffix="ngày" />
+                </Form.Item>
+              </Col>
+              <Col xs={12} sm={6} md={6}>
+                <Form.Item
+                  name="retentionError"
+                  label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Lưu log lỗi (ngày)</Text>}
+                >
+                  <InputNumber min={0} precision={0} style={{ width: '100%' }} suffix="ngày" />
+                </Form.Item>
+              </Col>
+            </Row>
+          </div>
+
+          {/* KHỐI CẤU HÌNH PHỤ THUỘC */}
+          <div style={{ borderBottom: `1px solid ${colors.border.split}`, paddingBottom: spacing[5] }}>
+            <Form.List name="dependencies">
+              {(fields, { add, remove }) => (
+                <>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: spacing[4] }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: spacing[2] }}>
+                      <CodeOutlined style={{ color: colors.primary[500], fontSize: 20 }} />
+                      <Text strong style={{ fontSize: typography.fontSize.base, textTransform: 'uppercase', color: colors.text.primary }}>
+                        Cấu hình phụ thuộc
+                      </Text>
+                    </div>
+                    <Button type="dashed" onClick={() => add({ conditionType: 'SUCCESS' })}>
+                      + Thêm Job phụ thuộc
+                    </Button>
+                  </div>
+                  <Table
+                    dataSource={fields}
+                    pagination={false}
+                    rowKey="name"
+                    bordered
+                    size="small"
+                    columns={[
+                      {
+                        title: 'Mã Job xử lý trước',
+                        dataIndex: 'name',
+                        width: '40%',
+                        render: (name) => (
+                          <Form.Item name={[name, 'jobId']} noStyle rules={[{ required: true, message: 'Vui lòng chọn Job' }]}>
+                            <Select
+                              showSearch
+                              placeholder="Chọn Job..."
+                              options={dependsOnOptions}
+                              style={{ width: '100%' }}
+                            />
+                          </Form.Item>
+                        )
+                      },
+                      {
+                        title: 'Điều kiện',
+                        dataIndex: 'name',
+                        width: '40%',
+                        render: (name) => (
+                          <Form.Item name={[name, 'conditionType']} noStyle rules={[{ required: true, message: 'Vui lòng chọn ĐK' }]}>
+                            <Select
+                              options={[
+                                { value: 'SUCCESS', label: 'Khi thành công' },
+                                { value: 'FAILURE', label: 'Khi thất bại' },
+                                { value: 'ALWAYS', label: 'Luôn luôn (Bất kể kết quả)' },
+                              ]}
+                              style={{ width: '100%' }}
+                            />
+                          </Form.Item>
+                        )
+                      },
+                      {
+                        title: '',
+                        key: 'action',
+                        width: '20%',
+                        align: 'center',
+                        render: (_, field) => (
+                          <Button type="text" danger onClick={() => remove(field.name)}>
+                            Xóa
+                          </Button>
+                        )
+                      }
+                    ]}
+                  />
+                </>
+              )}
+            </Form.List>
           </div>
 
           {/* KHỐI 3: Thiết lập Cảnh báo Sự cố */}

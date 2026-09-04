@@ -179,29 +179,29 @@ import { StatusTag } from '@/components/ui';
 <StatusTag status="RUNNING" minWidth={100} />
 ```
 
-**Predefined statuses:**
+**Predefined statuses (sử dụng palette hữu cơ `colors.statusTag`):**
 
-| Status | Màu | Label mặc định |
+| Status | Role / Palette | Label mặc định |
 |---|---|---|
-| `ACTIVE` | success | Hoạt động |
-| `INACTIVE` | default | Vô hiệu hóa |
-| `RUNNING` | processing | Đang chạy |
-| `IDLE` | default | Chờ (Idle) |
-| `SCHEDULED` | warning | Đã đặt lịch |
-| `FAILED` | error | Lỗi |
-| `PAUSED` | warning | Tạm dừng |
-| `PENDING` | warning | Chờ duyệt |
-| `APPROVED` | success | Đã duyệt |
-| `REJECTED` | error | Từ chối |
-| `UNREAD` | error | Chưa đọc |
-| `READ` | default | Đã đọc |
-| `VALID` | success | Hợp lệ |
-| `INVALID` | error | Không hợp lệ |
-| `ERROR` | error | Hồ sơ lỗi |
-| `REVIEWING` | warning | Đang xem xét |
-| `CLOSED` | default | Đã đóng |
+| `ACTIVE` | `active` (xanh ngọc nhạt) | Hoạt động |
+| `INACTIVE` | `neutral` (xám rêu nhạt) | Ngừng hoạt động |
+| `RUNNING` | `processing` (xanh dương nhạt) | Đang chạy |
+| `IDLE` | `neutral` | Chờ (Idle) |
+| `SCHEDULED` | `warning` (vàng hổ phách nhạt) | Đã đặt lịch |
+| `FAILED` | `error` (đỏ cam nhạt) | Lỗi |
+| `PAUSED` | `warning` | Tạm dừng |
+| `PENDING` | `warning` | Chờ duyệt |
+| `APPROVED` | `active` | Đã duyệt |
+| `REJECTED` | `error` | Từ chối |
+| `UNREAD` | `error` | Chưa đọc |
+| `READ` | `neutral` | Đã đọc |
+| `VALID` | `active` | Hợp lệ |
+| `INVALID` | `error` | Không hợp lệ |
+| `ERROR` | `error` | Hồ sơ lỗi |
+| `REVIEWING` | `warning` | Đang xem xét |
+| `CLOSED` | `neutral` | Đã đóng |
 
-> Nếu cần status không có trong list, truyền string tuỳ ý — StatusTag sẽ render `default` color với label là chính string đó.
+> Nếu cần status không có trong list, truyền string tuỳ ý — StatusTag sẽ render `neutral` role với label là chính string đó.
 
 ---
 
@@ -325,4 +325,62 @@ import { ChangeHistoryCollapse } from '@/components/ui';
 6. `Giá trị mới` (220px): Thông số mới sau thay đổi
 7. `Địa chỉ IP` (130px): IP thiết bị truy cập
 8. `Mô tả` (240px): Lý do/ghi chú/tệp đính kèm (> 2 dòng hiển thị "..." kèm nút "Xem tiếp")
+
+---
+
+## ContextBanner
+
+Băng hiển thị ngữ cảnh không gian làm việc, dự án hoặc đơn vị báo cáo/ngân hàng đang chọn. Nền màu xanh xám dịu `colors.bg.context` (`#edf3ed`), viền nhẹ `colors.border.base` (`#d8e0dc`), bo góc `radius.md`.
+
+```tsx
+import { ContextBanner } from '@/components/ui';
+
+<ContextBanner
+  label="Không gian vận hành"
+  value="OPS · Vận hành Hệ thống & Lập lịch Tác vụ"
+  action={{
+    label: 'Làm mới phiên',
+    onClick: handleRefresh,
+  }}
+  note="Quyền thực thi tác vụ và cập nhật biểu thức Cron được kiểm soát tự động theo vai trò hiện tại trong phiên làm việc."
+/>
+```
+
+**Props:**
+
+| Prop | Type | Default | Mô tả |
+|---|---|---|---|
+| `label` | `ReactNode` | — | Tiêu đề/nhãn ngữ cảnh (vd "Dự án hiện tại", "Không gian vận hành") |
+| `value` | `ReactNode` | — | Giá trị chính hoặc tên phạm vi |
+| `action` | `{ label: string, onClick?: () => void, icon?: ReactNode, loading?: boolean }` | — | Cấu hình nút bấm thao tác phụ (outline button) |
+| `note` | `ReactNode` | — | Dòng ghi chú giải thích quyền/hướng dẫn mờ bên dưới |
+| `children` | `ReactNode` | — | Custom controls bổ sung (ví dụ dropdown Select chọn đơn vị) |
+
+---
+
+## MetricSummaryBar
+
+Băng đo lường chỉ số 4 cột (hoặc N cột) tinh gọn hiển thị ở đầu trang danh mục hoặc trên bảng dữ liệu. Nền trắng `colors.bg.container`, viền `colors.border.base`, vách ngăn giữa các cột `1px solid #d8e0dc`, nhãn chỉ số nhỏ `#64746d`, con số thống kê to đậm `#18312a`. Tự động co giãn 2 cột trên màn hình nhỏ.
+
+```tsx
+import { MetricSummaryBar } from '@/components/ui';
+
+<MetricSummaryBar
+  items={[
+    { label: 'TỔNG SỐ JOB', value: 48 },
+    { label: 'ĐANG KÍCH HOẠT', value: 42, color: '#18312a' },
+    { label: 'TẠM DỪNG', value: 6, color: '#64746d' },
+    { label: 'KÍCH HOẠT GẦN NHẤT', value: 'Hôm nay', color: '#2a765b' },
+  ]}
+/>
+```
+
+**Props:**
+
+| Prop | Type | Default | Mô tả |
+|---|---|---|---|
+| `items` | `MetricItem[]` | `[]` | Mảng các chỉ số đo lường (`label`, `value`, `subText`, `color`, `onClick`, `active`) |
+| `columns` | `number` | `4` | Số cột chia đều trên Desktop (mặc định 4) |
+| `style` | `CSSProperties` | — | Custom inline style |
+
 

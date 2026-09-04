@@ -10,24 +10,16 @@ skinparam ArrowColor #1F4E79
 
 state "ST-JOB-01 — ACTIVE\nHoạt động" as ACTIVE
 state "ST-JOB-02 — INACTIVE\nNgừng hoạt động" as INACTIVE
-state "ST-JOB-03 — ARCHIVED\nLưu trữ" as ARCHIVED #EEEEEE
 
 [*] --> ACTIVE : Thiết lập Job mới\n(FEAT-HTVH-036-05)
 
-ACTIVE --> INACTIVE : Menu thao tác > "Vô hiệu hóa"\n(FEAT-HTVH-036-06)\ngỡ lịch chạy tự động
-INACTIVE --> ACTIVE : Menu thao tác > "Kích hoạt"\n(FEAT-HTVH-036-06)\nđăng ký lại lịch chạy
+ACTIVE --> INACTIVE : Menu thao tác > "Vô hiệu hóa"\n(FEAT-HTVH-036-05)\ngỡ lịch chạy tự động
+INACTIVE --> ACTIVE : Menu thao tác > "Kích hoạt"\n(FEAT-HTVH-036-05)\nđăng ký lại lịch chạy
 
-ACTIVE --> ARCHIVED : Đưa vào lưu trữ
-INACTIVE --> ARCHIVED : Đưa vào lưu trữ
 
 ACTIVE --> [*] : Xóa (chỉ vai trò có quyền xóa)
 INACTIVE --> [*] : Xóa (chỉ vai trò có quyền xóa)
 
-note right of ARCHIVED
-  Trạng thái ARCHIVED đã được khai báo trong mô hình
-  dữ liệu nhưng chưa có thao tác nào trên giao diện
-  chuyển sang — xem mục Vấn đề còn mở, dòng 7.
-end note
 
 note bottom of INACTIVE
   Job ở trạng thái Ngừng hoạt động vẫn có thể được kích hoạt

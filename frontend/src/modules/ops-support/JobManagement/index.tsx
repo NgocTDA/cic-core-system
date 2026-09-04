@@ -2,13 +2,14 @@
 
 import React, { useState, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { message, Modal } from 'antd';
+import { message, Modal, Input } from 'antd';
 import { PlusOutlined, PlayCircleOutlined } from '@ant-design/icons';
 import useHeaderActions from '@/hooks/useHeaderActions';
 import {
   PageLayout,
   DisplaySettingPopover,
   ExportExcelDropdown,
+  MetricSummaryBar,
   type IDisplayColumnOption,
 } from '@/components/ui';
 import { useJobManagement } from './useJobManagement';
@@ -40,6 +41,7 @@ const JobManagement: React.FC = () => {
   const [historyJob, setHistoryJob] = useState<IJob | null>(null);
   const [visibleColumns, setVisibleColumns] = useState<string[]>(DEFAULT_VISIBLE_KEYS);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const dynamicParamsRef = React.useRef<string>('');
 
   const {
     filteredJobs,
@@ -80,6 +82,9 @@ const JobManagement: React.FC = () => {
     const selectedCount = selectedRowKeys.length;
     if (selectedCount === 0) return;
 
+    const target = selectedCount === 1 ? mockJobs.find((j) => j.id === selectedRowKeys[0]) : null;
+    dynamicParamsRef.current = target?.params || '';
+
     Modal.confirm({
       title: 'Xác nhận thực hiện Job',
       icon: null,
@@ -91,15 +96,22 @@ const JobManagement: React.FC = () => {
               ? 'Bạn có chắc chắn muốn kích hoạt chạy Job đã chọn ngay bây giờ không?'
               : `Bạn có chắc chắn muốn kích hoạt chạy ${selectedCount} Job đã chọn ngay bây giờ không?`}
           </p>
-          {selectedCount === 1 && (() => {
-            const target = mockJobs.find((j) => j.id === selectedRowKeys[0]);
-            return target ? (
+          {target && (
               <div style={{ background: '#f8fafc', padding: '10px 14px', borderRadius: 6, border: '1px solid #d9d9d9' }}>
                 <div><span style={{ color: 'rgba(0,0,0,0.45)' }}>Mã Job: </span><span style={{ fontFamily: 'monospace', fontWeight: 'bold', color: '#000000' }}>{target.code}</span></div>
                 <div><span style={{ color: 'rgba(0,0,0,0.45)' }}>Tên Job: </span><span style={{ fontWeight: 'bold' }}>{target.name}</span></div>
               </div>
-            ) : null;
-          })()}
+          )}
+          <div style={{ marginTop: 16 }}>
+            <div style={{ marginBottom: 8, fontWeight: 500 }}>Tham số chạy bổ sung (JSON/YAML) (Tùy chọn):</div>
+            <Input.TextArea 
+              defaultValue={target?.params || ''}
+              placeholder='{ "run_date": "2023-10-01" }'
+              rows={4}
+              maxLength={1500}
+              onChange={(e) => dynamicParamsRef.current = e.target.value}
+            />
+          </div>
         </div>
       ),
       okText: 'Chạy ngay',
@@ -113,10 +125,15 @@ const JobManagement: React.FC = () => {
         </div>
       ),
       onOk: () => {
+        // In reality, pass dynamicParamsRef.current to runJob
         selectedRowKeys.forEach((id) => runJob(id as string));
         message.success(`Đã kích hoạt chạy ${selectedCount} Job thành công`);
         setSelectedRowKeys([]);
+        dynamicParamsRef.current = '';
       },
+      onCancel: () => {
+        dynamicParamsRef.current = '';
+      }
     });
   }, [selectedRowKeys, runJob]);
 
@@ -175,6 +192,8 @@ const JobManagement: React.FC = () => {
 
   const handleConfirmRunJob = (id: string) => {
     const target = mockJobs.find((j) => j.id === id);
+    dynamicParamsRef.current = target?.params || '';
+    
     Modal.confirm({
       title: 'Xác nhận thực hiện Job',
       icon: null,
@@ -188,6 +207,16 @@ const JobManagement: React.FC = () => {
               <div><span style={{ color: 'rgba(0,0,0,0.45)' }}>Tên Job: </span><span style={{ fontWeight: 'bold' }}>{target.name}</span></div>
             </div>
           )}
+          <div style={{ marginTop: 16 }}>
+            <div style={{ marginBottom: 8, fontWeight: 500 }}>Tham số chạy bổ sung (JSON/YAML) (Tùy chọn):</div>
+            <Input.TextArea 
+              defaultValue={target?.params || ''}
+              placeholder='{ "run_date": "2023-10-01" }'
+              rows={4}
+              maxLength={1500}
+              onChange={(e) => dynamicParamsRef.current = e.target.value}
+            />
+          </div>
         </div>
       ),
       okText: 'Chạy ngay',
@@ -201,15 +230,34 @@ const JobManagement: React.FC = () => {
         </div>
       ),
       onOk: () => {
+        // In reality, pass dynamicParamsRef.current to runJob
         runJob(id);
         message.success(`Job ${target?.code || id} đã bắt đầu chạy thành công`);
+        dynamicParamsRef.current = '';
       },
+      onCancel: () => {
+        dynamicParamsRef.current = '';
+      }
     });
   };
 
+  const totalJobs = mockJobs.length;
+  const activeJobs = mockJobs.filter((j) => j.status === 'ACTIVE').length;
+  const inactiveJobs = mockJobs.filter((j) => j.status === 'INACTIVE').length;
+
   return (
     <PageLayout>
-      {/* Filter Card */}
+      {/* Metric Summary Bar */}
+      <MetricSummaryBar
+        items={[
+          { label: 'TỔNG SỐ JOB', value: totalJobs },
+          { label: 'ĐANG KÍCH HOẠT', value: activeJobs, color: '#18312a' },
+          { label: 'VÔ HIỆU HÓA', value: inactiveJobs, color: '#64746d' },
+          { label: 'KÍCH HOẠT GẦN NHẤT', value: 'Hôm nay', color: '#2a765b' },
+        ]}
+      />
+
+      {/* Filter Card with Context Banner style */}
       <JobFilter />
 
       {/* Job List Table */}

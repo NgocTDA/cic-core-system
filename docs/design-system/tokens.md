@@ -22,12 +22,12 @@
 
 | Token | Hex | Subsystem |
 |---|---|---|
-| `colors.subsystem.kkn` | `#fa8c16` | Kênh kết nối |
-| `colors.subsystem.collection` | `#1890ff` | Thu thập dữ liệu |
-| `colors.subsystem.product` | `#52c41a` | Quản lý sản phẩm |
-| `colors.subsystem.ops` | `#722ed1` | Hỗ trợ vận hành |
-| `colors.subsystem.analytics` | `#eb2f96` | Báo cáo thống kê |
-| `colors.subsystem.governance` | `#13c2c2` | Quản trị dữ liệu |
+| `colors.subsystem.kkn` | `#f59e0b` | Kênh kết nối (Amber Gold) |
+| `colors.subsystem.collection` | `#38bdf8` | Thu thập dữ liệu (Sky Teal-Blue) |
+| `colors.subsystem.product` | `#2a765b` | Quản lý sản phẩm (ReqHub Emerald) |
+| `colors.subsystem.ops` | `#8b5cf6` | Hỗ trợ vận hành (Modern Iris/Violet) |
+| `colors.subsystem.analytics` | `#f43f5e` | Báo cáo thống kê (Rose Coral) |
+| `colors.subsystem.governance` | `#14b8a6` | Quản trị dữ liệu (Deep Mint) |
 | `colors.subsystem.design` | `#7c3aed` | Design System |
 | `colors.subsystem.portal` | `#0050b3` | Web Portal |
 | `colors.subsystem.tools` | `#1f4e79` | Công cụ nội bộ (CIC Navy) |
@@ -61,6 +61,19 @@ Bảng màu navy/blue riêng cho subsystem `tools` (CIC UI Doc Generator…).
 | `colors.info.base` | `#1677ff` | Info (= primary) |
 | `colors.info.dark` | `#0958d9` | |
 
+### Status Tag Palette (colors.statusTag)
+
+Gam màu hữu cơ (Organic Pastel) độ bão hòa thấp, chống chói mắt cho các thẻ trạng thái trong bảng dữ liệu:
+
+| Role | Nền (`bg`) | Chữ (`text`) | Viền (`border`) | Trạng thái áp dụng |
+|---|---|---|---|---|
+| `active` | `#ddf0e2` | `#21603c` | `#c3e4cc` | `ACTIVE`, `APPROVED`, `VALID` |
+| `warning` | `#faecd9` | `#895311` | `#f3d4a8` | `SCHEDULED`, `PAUSED`, `PENDING`, `REVIEWING` |
+| `error` | `#fae4df` | `#913426` | `#f2bab0` | `FAILED`, `REJECTED`, `UNREAD`, `INVALID`, `ERROR` |
+| `processing` | `#e6f4ff` | `#0958d9` | `#bae0ff` | `RUNNING` |
+| `neutral` | `#eaf0ed` | `#365b4e` | `#d0dfd8` | `INACTIVE`, `ARCHIVED`, `IDLE`, `READ`, `CLOSED` |
+| `notice` | `#fff3d5` | `#674400` | `#e5c879` | Cảnh báo quan trọng, one-time keys |
+
 ### Neutral Scale
 
 | Token | Hex | Thường dùng cho |
@@ -79,23 +92,24 @@ Bảng màu navy/blue riêng cho subsystem `tools` (CIC UI Doc Generator…).
 
 | Token | Hex | Dùng cho |
 |---|---|---|
-| `colors.bg.page` | `#f5f7fa` | Layout background, content area |
+| `colors.bg.page` | `#f4f5f2` | Layout background, content area (Warm Off-white Canvas) |
 | `colors.bg.container` | `#ffffff` | Card, panel, header |
-| `colors.bg.subtle` | `#fafafa` | Alternating rows |
+| `colors.bg.subtle` | `#fbfcfa` | Alternating rows, header surface |
+| `colors.bg.context` | `#edf3ed` | Context banners, muted sage tint |
 | `colors.bg.overlay` | `rgba(0,0,0,0.45)` | Modal overlay |
 
-### Sidebar (Dark theme)
+### Sidebar (Dark theme — Forest Ink Luxury)
 
 | Token | Giá trị | Dùng cho |
 |---|---|---|
-| `colors.sidebar.bg` | `#2e3035` | Nền sidebar |
-| `colors.sidebar.bgDeep` | `#1f2024` | Footer sidebar |
-| `colors.sidebar.text` | `rgba(255,255,255,0.85)` | Text chính |
-| `colors.sidebar.textSecond` | `rgba(255,255,255,0.45)` | Text phụ, version |
-| `colors.sidebar.selectedBg` | `#fa8c16` | Menu item đang chọn |
-| `colors.sidebar.selectedText` | `#ffffff` | |
-| `colors.sidebar.hoverBg` | `rgba(255,255,255,0.08)` | Hover |
-| `colors.sidebar.divider` | `rgba(255,255,255,0.12)` | Đường kẻ ngang |
+| `colors.sidebar.bg` | `#132620` | Nền sidebar (Deep Forest Noir đậm sâu) |
+| `colors.sidebar.bgDeep` | `#0f1f1a` | Footer sidebar (Dark Pine) |
+| `colors.sidebar.text` | `rgba(255,255,255,0.88)` | Text chính trên nền tối |
+| `colors.sidebar.textSecond` | `#b1c3bc` | Text phụ, version, icon mặc định |
+| `colors.sidebar.selectedBg` | `#2b4b40` | Nền menu item đang chọn (Solid Dark Sage + Left Indicator) |
+| `colors.sidebar.selectedText` | `#ffffff` | Chữ menu item đang chọn |
+| `colors.sidebar.hoverBg` | `#1f3c32` | Nền menu item khi hover chuột |
+| `colors.sidebar.divider` | `#244338` | Đường kẻ ngang, viền phân cách |
 
 ### Text
 
@@ -111,9 +125,9 @@ Bảng màu navy/blue riêng cho subsystem `tools` (CIC UI Doc Generator…).
 
 | Token | Hex | Dùng cho |
 |---|---|---|
-| `colors.border.base` | `#d9d9d9` | Input, card border |
-| `colors.border.split` | `#f0f0f0` | Table row divider |
-| `colors.border.subtle` | `#f5f5f5` | Subtle section divider |
+| `colors.border.base` | `#d8e0dc` | Input, card border (Soft Sage Line) |
+| `colors.border.split` | `#e8edea` | Table row divider |
+| `colors.border.subtle` | `#f0f4f1` | Subtle section divider |
 
 ---
 

@@ -1,5 +1,8 @@
 import React from 'react';
 import { Tag } from 'antd';
+import { colors } from '@/design-system';
+
+export type StatusRole = keyof typeof colors.statusTag;
 
 // ─── STATUS_CONFIG ────────────────────────────────────────────
 // Predefined color + label mapping for common status values
@@ -7,32 +10,32 @@ import { Tag } from 'antd';
 
 export const STATUS_CONFIG = {
   // Activation
-  ACTIVE:    { color: 'success',    label: 'Hoạt động' },
-  INACTIVE:  { color: 'default',    label: 'Ngừng hoạt động' },
-  ARCHIVED:  { color: 'default',    label: 'Đã lưu trữ' },
+  ACTIVE:    { role: 'active' as StatusRole,     color: 'success',    label: 'Hoạt động' },
+  INACTIVE:  { role: 'neutral' as StatusRole,    color: 'default',    label: 'Ngừng hoạt động' },
+  ARCHIVED:  { role: 'neutral' as StatusRole,    color: 'default',    label: 'Đã lưu trữ' },
 
   // Job execution
-  RUNNING:   { color: 'processing', label: 'Đang chạy' },
-  IDLE:      { color: 'default',    label: 'Chờ (Idle)' },
-  SCHEDULED: { color: 'warning',    label: 'Đã đặt lịch' },
-  FAILED:    { color: 'error',      label: 'Lỗi' },
-  PAUSED:    { color: 'warning',    label: 'Tạm dừng' },
+  RUNNING:   { role: 'processing' as StatusRole, color: 'processing', label: 'Đang chạy' },
+  IDLE:      { role: 'neutral' as StatusRole,    color: 'default',    label: 'Chờ (Idle)' },
+  SCHEDULED: { role: 'warning' as StatusRole,    color: 'warning',    label: 'Đã đặt lịch' },
+  FAILED:    { role: 'error' as StatusRole,      color: 'error',      label: 'Lỗi' },
+  PAUSED:    { role: 'warning' as StatusRole,    color: 'warning',    label: 'Tạm dừng' },
 
   // Approval workflow
-  PENDING:   { color: 'warning',    label: 'Chờ duyệt' },
-  APPROVED:  { color: 'success',    label: 'Đã duyệt' },
-  REJECTED:  { color: 'error',      label: 'Từ chối' },
+  PENDING:   { role: 'warning' as StatusRole,    color: 'warning',    label: 'Chờ duyệt' },
+  APPROVED:  { role: 'active' as StatusRole,     color: 'success',    label: 'Đã duyệt' },
+  REJECTED:  { role: 'error' as StatusRole,      color: 'error',      label: 'Từ chối' },
 
   // Notification read-state
-  UNREAD:    { color: 'error',      label: 'Chưa đọc' },
-  READ:      { color: 'default',    label: 'Đã đọc' },
+  UNREAD:    { role: 'error' as StatusRole,      color: 'error',      label: 'Chưa đọc' },
+  READ:      { role: 'neutral' as StatusRole,    color: 'default',    label: 'Đã đọc' },
 
   // Data quality
-  VALID:     { color: 'success',    label: 'Hợp lệ' },
-  INVALID:   { color: 'error',      label: 'Không hợp lệ' },
-  ERROR:     { color: 'error',      label: 'Hồ sơ lỗi' },
-  REVIEWING: { color: 'warning',    label: 'Đang xem xét' },
-  CLOSED:    { color: 'default',    label: 'Đã đóng' },
+  VALID:     { role: 'active' as StatusRole,     color: 'success',    label: 'Hợp lệ' },
+  INVALID:   { role: 'error' as StatusRole,      color: 'error',      label: 'Không hợp lệ' },
+  ERROR:     { role: 'error' as StatusRole,      color: 'error',      label: 'Hồ sơ lỗi' },
+  REVIEWING: { role: 'warning' as StatusRole,    color: 'warning',    label: 'Đang xem xét' },
+  CLOSED:    { role: 'neutral' as StatusRole,    color: 'default',    label: 'Đã đóng' },
 } as const;
 
 export type StatusKey = keyof typeof STATUS_CONFIG;
@@ -52,16 +55,26 @@ const StatusTag: React.FC<StatusTagProps> = ({
   minWidth,
   style,
 }) => {
-  const config = STATUS_CONFIG[status as StatusKey] ?? {
+  const config = (STATUS_CONFIG as Record<string, { role: StatusRole; color: string; label: string }>)[status] ?? {
+    role: 'neutral',
     color: 'default',
     label: status,
   };
 
+  const palette = colors.statusTag[config.role] ?? colors.statusTag.neutral;
+
   return (
     <Tag
-      color={config.color}
       bordered={bordered}
       style={{
+        backgroundColor: palette.bg,
+        color: palette.text,
+        borderColor: bordered ? palette.border : 'transparent',
+        fontWeight: 600,
+        fontSize: '12px',
+        lineHeight: '20px',
+        padding: '0 8px',
+        borderRadius: '4px',
         ...(minWidth ? { minWidth, textAlign: 'center', margin: 0 } : {}),
         ...style,
       }}

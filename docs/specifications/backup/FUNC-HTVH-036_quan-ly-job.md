@@ -106,7 +106,6 @@
 |---|---|---|---|---|
 | 1 | MH-HTVH-036-001 | Danh sách Quản lý Job | FEAT-HTVH-036-01, -02, -03, -04, -06, -07 | Trang chính tại `/ops-support/job-management`. Gồm thanh bộ lọc trong thẻ, bảng dữ liệu 8 cột cấu hình được + cột Thao tác cố định bên phải, và các nút trên thanh tác vụ. |
 | 2 | MH-HTVH-036-002 | Popup Chi tiết Job | FEAT-HTVH-036-03 | Cửa sổ nổi rộng `70vw`, căn giữa. Gồm thanh trạng thái + nút *Chạy ngay*, ba khối cấu hình chỉ đọc và khối Lịch sử thay đổi. |
-| 3 | MH-HTVH-036-003 | Ngăn theo dõi tiến độ chạy Job | FEAT-HTVH-036-02 | Ngăn trượt từ mép phải, rộng `700px`. Gồm thanh tiến độ, hai chỉ số thời lượng / số bản ghi, bước hiện tại và khung nhật ký thời gian thực. |
 | 4 | MH-HTVH-036-004 | Popup Lịch sử chạy Job | FEAT-HTVH-036-04 | Cửa sổ nổi rộng `70vw`, căn giữa. Gồm thanh lọc theo trạng thái và khoảng thời gian, bảng 8 cột phân trang 10 bản ghi/trang. |
 | 5 | MH-HTVH-036-005 | Thiết lập / Cập nhật Job | FEAT-HTVH-036-05 | Trang biểu mẫu tại `/create` và `/{id}/edit`. Ba khối nhập liệu ngăn bằng đường kẻ, hai nút *Lưu* / *Hủy* căn giữa cuối trang. |
 | 6 | MH-HTVH-036-006 | Popup Xác nhận thực hiện Job | FEAT-HTVH-036-02 | Cửa sổ xác nhận căn giữa, không icon tiêu đề, hai nút *Hủy* / *Chạy ngay* căn giữa ở chân. |
@@ -129,7 +128,7 @@
    │                 └── Nút "Chạy ngay"
    │                          └──> [MH-HTVH-036-006 Popup Xác nhận]
    │                                   └── "Chạy ngay"
-   │                                            └──> [MH-HTVH-036-003 Ngăn tiến độ chạy]
+   │                                            └──> Hiển thị thông báo thành công
    ├── Menu thao tác > "Lịch sử chạy Job"
    │        └──> [MH-HTVH-036-004 Popup Lịch sử chạy Job]
    ├── Menu thao tác > "Chạy ngay"  |  Thanh tác vụ > "Chạy Job (N)"
@@ -155,7 +154,6 @@
 |---|---|---|---|
 | ST-JOB-01 | `ACTIVE` | Hoạt động | Job đang được bộ lập lịch theo dõi và chạy tự động theo biểu thức Cron. |
 | ST-JOB-02 | `INACTIVE` | Ngừng hoạt động | Job đã bị gỡ khỏi lịch tự động, vẫn có thể được kích hoạt chạy thủ công. |
-| ST-JOB-03 | `ARCHIVED` | Lưu trữ | Job đã ngừng sử dụng, giữ lại cấu hình và lịch sử để tra cứu. |
 
 **Đối tượng nghiệp vụ `LUOTCHAY` — trạng thái một lượt thực thi**
 
@@ -201,9 +199,9 @@
 | BR-HTVH-036-003 | Tên Job là bắt buộc, tối đa 100 ký tự. Mã dịch vụ là bắt buộc, tối đa 50 ký tự. Loại Job là bắt buộc, chọn từ 8 giá trị đã định nghĩa. | FEAT-HTVH-036-05 | ERR_003, ERR_004, ERR_005, ERR_006 |
 | BR-HTVH-036-004 | Mô tả Job tối đa 1000 ký tự. Tham số bổ sung (YAML/JSON) tối đa 1500 ký tự. Cả hai ô đều hiển thị bộ đếm ký tự. | FEAT-HTVH-036-05 | ERR_007, ERR_008 |
 | BR-HTVH-036-005 | Khi Điều kiện kích hoạt là `SCHEDULER` hoặc `MANUAL`, ô **Biểu thức Cron** hiển thị và là bắt buộc. Khi Điều kiện kích hoạt là `EVENT`, ô Biểu thức Cron bị ẩn và thay bằng ô **Tên sự kiện kích hoạt** là bắt buộc. | FEAT-HTVH-036-05 | ERR_011, ERR_012 |
-| BR-HTVH-036-006 | Thời gian chờ tối đa là bắt buộc, giá trị nguyên trong khoảng 1 đến 86400 giây. | FEAT-HTVH-036-05 | ERR_009, ERR_010 |
+| BR-HTVH-036-006 | Chờ tối đa (giây) là bắt buộc, giá trị nguyên trong khoảng 1 đến 86400 giây. | FEAT-HTVH-036-05 | ERR_009, ERR_010 |
 | BR-HTVH-036-007 | Số lần thử lại tối đa là giá trị nguyên trong khoảng 0 đến 10 lần. | FEAT-HTVH-036-05 | ERR_013 |
-| BR-HTVH-036-008 | Khoảng chờ ban đầu là giá trị nguyên trong khoảng 1 đến 86400 giây. Khoảng chờ giữa các lần thử lại tiếp theo được nhân theo hệ số Backoff đã chọn (Cố định / Cấp số nhân 2x / 3x / 5x). | FEAT-HTVH-036-05 | ERR_010 |
+| BR-HTVH-036-008 | Chờ ban đầu (giây) là giá trị nguyên trong khoảng 1 đến 86400 giây. Khai báo thêm các Job cần hoàn thành trước (nếu có) thông qua droplist đa chọn. | FEAT-HTVH-036-05 | ERR_010 |
 | BR-HTVH-036-009 | Khi bật "Khóa chạy song song", hệ thống không khởi tạo lượt chạy mới nếu Job đang có một lượt ở trạng thái `RUNNING`. | FEAT-HTVH-036-02 | ERR_016 |
 | BR-HTVH-036-010 | Mọi thao tác kích hoạt chạy Job — đơn lẻ hay hàng loạt, từ danh sách hay từ popup chi tiết — đều phải qua popup xác nhận. Popup không có icon tiêu đề, hai nút được căn giữa ở chân. | FEAT-HTVH-036-02 | CONF_001, CONF_002 |
 | BR-HTVH-036-011 | Nút *Chạy Job (N)* chỉ xuất hiện trên thanh tác vụ khi số dòng được chọn lớn hơn 0, và biến mất ngay khi bỏ chọn hết. Sau khi kích hoạt thành công, danh sách chọn được xóa trắng. | FEAT-HTVH-036-02 | Không áp dụng |
@@ -352,7 +350,7 @@ Cho phép người dùng có quyền `run` kích hoạt Job chạy ngay ngoài l
 
 Cả hai cách đều bắt buộc đi qua popup xác nhận. Khi chọn đúng một Job, popup hiển thị Mã Job và Tên Job của bản ghi đó để người dùng đối chiếu; khi chọn nhiều Job, popup hiển thị tổng số Job sẽ được kích hoạt.
 
-Sau khi kích hoạt từ popup Chi tiết Job, hệ thống mở ngăn theo dõi tiến độ ở mép phải màn hình, hiển thị thanh tiến độ, thời lượng đã chạy, số bản ghi đã xử lý, bước đang thực hiện và khung nhật ký thời gian thực. Người dùng có thể dừng lượt chạy, tải nhật ký về máy hoặc sao chép nhật ký vào bộ nhớ tạm.
+Sau khi kích hoạt từ màn hình hoặc popup Chi tiết Job, hệ thống đưa Job vào hàng đợi thực thi và hiển thị thông báo "Job {mã Job} đã bắt đầu chạy thành công". Trang/popup Chi tiết Job giữ nguyên, không đóng.
 
 Trường hợp ngoại lệ: Job có bật "Khóa chạy song song" và đang có lượt chạy dở dang thì không được kích hoạt thêm lượt mới.
 
@@ -381,14 +379,7 @@ Trường hợp ngoại lệ: Job có bật "Khóa chạy song song" và đang c
 | 1 | Người dùng | Mở menu thao tác của một dòng và chọn **Chạy ngay** | Hệ thống mở popup xác nhận kèm Mã Job và Tên Job của dòng đó. |
 | 2 | Người dùng | Nhấp **Chạy ngay** | Hệ thống đưa Job vào hàng đợi thực thi, sinh bản ghi lượt chạy mới và hiển thị SUC_002. |
 
-**Luồng chính — theo dõi tiến độ**
 
-| Bước | Tác nhân | Hành động | Phản hồi của hệ thống |
-|---|---|---|---|
-| 1 | Người dùng | Nhấp **Chạy ngay** trên popup Chi tiết Job và xác nhận | Hệ thống mở MH-HTVH-036-003 trượt từ mép phải, rộng 700px, tiêu đề "Tiến độ: {tên Job}". |
-| 2 | Hệ thống | — | Hiển thị dải thông báo "Job đang chạy" (INF_002), thanh tiến độ ở trạng thái đang chạy, hai chỉ số Thời gian và Bản ghi xử lý, thẻ bước hiện tại và khung nhật ký nền tối. |
-| 3 | Hệ thống | Định kỳ trong khi lượt chạy chưa kết thúc | Cập nhật phần trăm tiến độ, thời lượng, số bản ghi đã xử lý và bổ sung dòng nhật ký mới; khung nhật ký tự cuộn xuống dòng cuối. |
-| 4 | Hệ thống | Khi tiến độ đạt 100% | Đổi dải thông báo sang "Job đã hoàn thành" (INF_003) kèm tổng thời lượng và tổng số bản ghi; thanh tiến độ chuyển sang trạng thái thành công; nút *Dừng* biến mất. |
 
 **Luồng thay thế**
 
@@ -555,8 +546,8 @@ Ràng buộc: mọi trường trên popup này đều ở chế độ chỉ đ�
 │   Tham số bổ sung (YAML/JSON)  ← khối mã, cuộn tối đa 180px          │
 ├──────────────────────────────────────────────────────────────────────┤
 │ ◇ LẬP LỊCH VÀ XỬ LÝ LỖI                                              │
-│   ĐK kích hoạt │ Thời gian chờ tối đa │ Xử lý khi bỏ lỡ │ Song song  │
-│   Biểu thức Cron │ Số lần thử lại │ Khoảng chờ ban đầu │ Backoff     │
+│   ĐK kích hoạt │ Job cần hoàn thành trước │ Chờ ban đầu (giây) │ Chờ tối đa (giây) │
+│   Biểu thức Cron │ Số lần thử lại │ Chạy song song │ Xử lý khi bỏ lỡ │
 │     💡 Diễn giải: Chạy hằng ngày vào lúc 01:00:00 AM                 │
 ├──────────────────────────────────────────────────────────────────────┤
 │ ◇ THIẾT LẬP CẢNH BÁO SỰ CỐ                                           │
@@ -583,13 +574,13 @@ Ràng buộc: mọi trường trên popup này đều ở chế độ chỉ đ�
 | 8 | **Mô tả Job** | Chữ, chỉ đọc | Không | Tối đa 1000 ký tự | Trống thì hiển thị "Không có mô tả" |
 | 9 | **Tham số bổ sung** | Khối mã cuộn được, chỉ đọc | Không | Tối đa 1500 ký tự, cao tối đa 180px | Giữ nguyên xuống dòng và thụt đầu dòng của YAML/JSON |
 | 10 | **Điều kiện kích hoạt** | Chữ, chỉ đọc | Bắt buộc | 3 giá trị | Bộ lập lịch (Scheduler) / Theo sự kiện (Event-driven) / Thủ công (Manual) |
-| 11 | **Thời gian chờ tối đa** | Chữ, chỉ đọc | Bắt buộc / 300 | 1–86400 | Hiển thị kèm đơn vị "giây" |
+| 11 | **Chờ tối đa (giây)** | Chữ, chỉ đọc | Bắt buộc / 300 | 1–86400 | — |
 | 12 | **Xử lý khi bỏ lỡ lượt chạy** | Chữ, chỉ đọc | Bắt buộc / FIRE_NOW | 2 giá trị | "Chạy bù ngay khi đủ điều kiện" / "Bỏ qua lượt lỗi, chờ lịch tiếp theo" |
-| 13 | **Cho phép chạy song song** | Chữ, chỉ đọc | Bắt buộc | 2 giá trị | "Khóa chạy song song" / "Cho phép chạy song song" |
+| 13 | **Chạy song song** | Chữ, chỉ đọc | Bắt buộc | 2 giá trị | "Khóa chạy song song" / "Cho phép chạy song song" |
 | 14 | **Biểu thức Cron** | Chữ dạng mã có nền, chỉ đọc | Bắt buộc | Cú pháp Cron 5 hoặc 6 trường | Kèm dòng diễn giải tiếng Việt ngay bên dưới (BR-HTVH-036-014) |
 | 15 | **Số lần thử lại tối đa** | Chữ, chỉ đọc | Bắt buộc / 3 | 0–10 | Hiển thị kèm đơn vị "lần" |
-| 16 | **Khoảng chờ ban đầu** | Chữ, chỉ đọc | Bắt buộc / 60 | 1–86400 | Hiển thị kèm đơn vị "giây" |
-| 17 | **Giãn cách thời gian (Backoff)** | Chữ, chỉ đọc | Bắt buộc / EXPONENTIAL_2X | 4 giá trị | Cố định / Cấp số nhân 2x / 3x / 5x |
+| 16 | **Chờ ban đầu (giây)** | Chữ, chỉ đọc | Bắt buộc / 60 | 1–86400 | — |
+| 17 | **Job cần hoàn thành trước** | Danh sách thẻ, chỉ đọc | Không | Chọn nhiều Job | Tách bằng dấu phẩy, mỗi Job một thẻ |
 | 18 | **Email nhận cảnh báo chung** | Danh sách thẻ, chỉ đọc | Không | Nhiều địa chỉ | Tách bằng dấu phẩy hoặc chấm phẩy, mỗi địa chỉ một thẻ |
 | 19 | **Bảng ma trận cảnh báo** | Bảng, chỉ đọc | Bắt buộc | 4 dòng × 5 cột | Bốn sự kiện: Khi bắt đầu chạy / Khi hoàn tất thành công / Khi gặp sự cố / Khi thử lại. Ba cột kênh dùng ô đánh dấu bị vô hiệu hóa; cột cuối liệt kê người nhận riêng dạng thẻ, trống thì ghi "Chưa cấu hình" |
 | 20 | **Khối Lịch sử thay đổi** | Khối thu gọn chứa bảng | Bắt buộc / Đóng | 20 bản ghi, cuộn cao 250px | Đủ 8 cột chuẩn theo BR-HTVH-036-015, không phân trang |
@@ -819,8 +810,8 @@ Ràng buộc: toàn bộ kiểm tra dữ liệu thực hiện trước khi ghi; 
 │ [Tham số bổ sung (YAML/JSON)                            0/1500        ]  │
 ├──────────────────────────────────────────────────────────────────────────┤
 │ ◇ LẬP LỊCH VÀ XỬ LÝ LỖI                                                  │
-│ [ĐK kích hoạt*▾] [TG chờ tối đa*] [Xử lý khi bỏ lỡ ▾] [Chạy song song ▾] │
-│ [Biểu thức Cron*] [Số lần thử lại] [Khoảng chờ đầu   ] [Backoff       ▾] │
+│ [ĐK kích hoạt*▾] [Job hoàn thành trước ▾] [Chờ ban đầu  ] [Chờ tối đa*  ] │
+│ [Biểu thức Cron*] [Số lần thử lại] [Chạy song song ▾] [Xử lý khi bỏ lỡ ▾] │
 │  💡 Diễn giải: Chạy hằng ngày vào lúc 01:00:00 AM                        │
 ├──────────────────────────────────────────────────────────────────────────┤
 │ ◇ THIẾT LẬP CẢNH BÁO SỰ CỐ                                               │
@@ -849,14 +840,14 @@ Ràng buộc: toàn bộ kiểm tra dữ liệu thực hiện trước khi ghi; 
 | 6 | **Mô tả Job** | Ô nhập nhiều dòng, 3 dòng | Không | Tối đa 1000 ký tự | Hiển thị bộ đếm ký tự (BR-HTVH-036-004) |
 | 7 | **Tham số bổ sung** | Ô nhập nhiều dòng, 4 dòng, phông đơn cách | Không | Tối đa 1500 ký tự | Nội dung dạng YAML hoặc JSON, hiển thị bộ đếm ký tự (BR-HTVH-036-004) |
 | 8 | **Điều kiện kích hoạt** | Danh sách chọn một | Bắt buộc / `SCHEDULER` | 3 tùy chọn | Bộ lập lịch (Scheduler) / Theo sự kiện (Event-driven) / Thủ công (Manual). Điều khiển hiển thị ô Biểu thức Cron (BR-HTVH-036-005) |
-| 9 | **Thời gian chờ tối đa (giây)** | Ô nhập số | Bắt buộc / 300 | 1–86400, số nguyên | Quá thời gian này thì lượt chạy bị dừng và ghi trạng thái lỗi (BR-HTVH-036-006) |
+| 9 | **Chờ tối đa (giây)** | Ô nhập số | Bắt buộc / 300 | 1–86400, số nguyên | Quá thời gian này thì lượt chạy bị dừng và ghi trạng thái lỗi (BR-HTVH-036-006) |
 | 10 | **Xử lý khi bỏ lỡ lượt chạy** | Danh sách chọn một | Không / `FIRE_NOW` | 2 tùy chọn | "Chạy bù ngay khi đủ điều kiện" / "Bỏ qua lượt lỗi, chờ lịch tiếp theo" |
-| 11 | **Cho phép chạy song song** | Danh sách chọn một | Không / "Khóa chạy song song" | 2 tùy chọn | "Khóa chạy song song" chặn lượt chạy mới khi Job đang chạy (BR-HTVH-036-009) |
+| 11 | **Chạy song song** | Danh sách chọn một | Không / "Khóa chạy song song" | 2 tùy chọn | "Khóa chạy song song" chặn lượt chạy mới khi Job đang chạy (BR-HTVH-036-009) |
 | 12 | **Biểu thức Cron** | Ô nhập chữ, phông đơn cách in đậm | Bắt buộc khi ĐK kích hoạt ≠ EVENT / `0 0 1 * * *` | Cú pháp Cron 5 hoặc 6 trường | Kèm dòng diễn giải tiếng Việt cập nhật theo từng ký tự (BR-HTVH-036-005, BR-HTVH-036-014) |
 | 13 | **Tên sự kiện kích hoạt** | Ô nhập chữ, phông đơn cách | Bắt buộc khi ĐK kích hoạt = EVENT / `EVT_DATA_IMPORTED` | — | Thay thế ô Biểu thức Cron ở cùng vị trí (BR-HTVH-036-005) |
 | 14 | **Số lần thử lại tối đa** | Ô nhập số | Không / 3 | 0–10, số nguyên | Đơn vị "lần" (BR-HTVH-036-007) |
-| 15 | **Khoảng chờ ban đầu (giây)** | Ô nhập số | Không / 60 | 1–86400, số nguyên | Khoảng chờ trước lần thử lại đầu tiên (BR-HTVH-036-008) |
-| 16 | **Giãn cách thời gian (Backoff)** | Danh sách chọn một | Không / `EXPONENTIAL_2X` | 4 tùy chọn | Cố định / Cấp số nhân 2x / 3x / 5x (BR-HTVH-036-008) |
+| 15 | **Chờ ban đầu (giây)** | Ô nhập số | Không / 60 | 1–86400, số nguyên | Khoảng chờ trước lần thử lại đầu tiên (BR-HTVH-036-008) |
+| 16 | **Job cần hoàn thành trước** | Danh sách chọn nhiều | Không | Chọn nhiều Job | Chọn các Job phụ thuộc từ danh sách (BR-HTVH-036-008) |
 | 17 | **Email nhận cảnh báo chung** | Ô nhập nhiều thẻ | Không / `admin@cic.org.vn`, `alert@cic.org.vn` | Nhiều địa chỉ | Tự tách thẻ khi gõ dấu chấm phẩy hoặc dấu phẩy |
 | 18 | **Bảng ma trận cảnh báo** | Bảng có ô nhập | Bắt buộc | 4 dòng × 5 cột | Bốn sự kiện × ba kênh (SMS / Push (Web) / Email) + cột người nhận riêng |
 | 19 | Ô chọn kênh trên ma trận | Ô đánh dấu | Không / theo mặc định từng sự kiện | — | Mặc định: bắt đầu và thành công bật Email; thất bại bật cả ba kênh; thử lại bật Push |

@@ -12,7 +12,7 @@ import {
   HistoryOutlined,
   PoweroffOutlined,
 } from '@ant-design/icons';
-import { ActionMenu, StatusTag, CodeText, tablePagination } from '@/components/ui';
+import { ActionMenu, StatusTag, CodeText, tablePagination, SectionCard } from '@/components/ui';
 import { colors, typography } from '@/design-system';
 import { useRole, hasPermission } from '@/context/RoleContext';
 import type { IJob } from './types';
@@ -330,7 +330,7 @@ const JobList: React.FC<Props> = ({
   };
 
   return (
-    <div>
+    <SectionCard title="Danh sách tác vụ" count={data.length} flex>
       <Table
         columns={filteredColumns}
         dataSource={data}
@@ -344,7 +344,7 @@ const JobList: React.FC<Props> = ({
           style: { cursor: 'pointer' },
         })}
       />
-    </div>
+    </SectionCard>
   );
 };
 

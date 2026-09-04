@@ -94,7 +94,12 @@ const JobFilter: React.FC = () => {
           placement="bottomRight"
         >
           <Tooltip title="Thêm hoặc bớt các ô tìm kiếm trên thanh bộ lọc">
-            <Button icon={<FilterOutlined />}>Thêm bộ lọc</Button>
+            <Button
+              icon={<FilterOutlined />}
+              style={{ background: '#ffffff', borderColor: '#9fb3a9', color: '#18312a' }}
+            >
+              Thêm bộ lọc
+            </Button>
           </Tooltip>
         </Popover>
       }

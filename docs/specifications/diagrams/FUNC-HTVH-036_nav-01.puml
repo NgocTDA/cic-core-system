@@ -19,7 +19,6 @@ state "MH-HTVH-036-005\nThiết lập / Cập nhật Job\n«Trang»" as FORM
 state "MH-HTVH-036-004\nLịch sử chạy Job\n«Popup»" as LS
 state "MH-HTVH-036-002\nChi tiết Job\n«Popup»" as CT
 state "MH-HTVH-036-006\nXác nhận thực hiện Job\n«Popup»" as CONF
-state "MH-HTVH-036-003\nTiến độ chạy Job\n«Ngăn trượt»" as TD
 
 [*] --> DS : Chọn menu "Hỗ trợ vận hành > Quản trị hệ thống > Quản lý job"
 
@@ -29,14 +28,13 @@ DS --> LS : Menu thao tác > "Lịch sử chạy Job"
 DS --> CT : Nhấp dòng bản ghi\nhoặc Menu thao tác > "Xem chi tiết"
 DS --> CONF : "Chạy Job (N)"\nhoặc Menu thao tác > "Chạy ngay"
 CT --> CONF : "Chạy ngay"
-CONF --> TD : "Chạy ngay" (khi mở từ Chi tiết Job)
+CONF -[dashed]-> CT : "Chạy ngay" (khi mở từ Chi tiết Job)
 
 ' ── Nét đứt: thao tác quay lại màn hình trước ──
 FORM -[dashed]-> DS : "Lưu" (hợp lệ) / "Hủy"\n/ biểu tượng quay lại
 LS -[dashed]-> DS : "Đóng"
 CT -[dashed]-> DS : "Đóng"
 CONF -[dashed]-> DS : "Chạy ngay" (khi mở từ danh sách)\nhoặc "Hủy"
-TD -[dashed]-> CT : "Đóng"
 
 ' ── Thao tác không chuyển màn hình ──
 DS --> DS : "Kích hoạt" / "Vô hiệu hóa" / "Xóa" /\n"Cài đặt hiển thị" / "Xuất Excel"
@@ -45,7 +43,7 @@ legend bottom
   |= Ký hiệu |= Ý nghĩa |
   | Nét liền | Thao tác mở màn hình tiếp theo |
   | Nét đứt | Thao tác quay lại màn hình trước |
-  | «Trang» / «Popup» / «Ngăn trượt» | Kiểu màn hình |
+  | «Trang» / «Popup» | Kiểu màn hình |
   MH-HTVH-036-007 (Chi tiết Job toàn màn hình) không có trên sơ đồ
   vì chưa có thao tác nào của người dùng dẫn tới — xem mục
   Vấn đề còn mở, dòng 6.

@@ -35,8 +35,8 @@ const ZONES: Zone[] = [
         x: 0, y: 0, w: 22, h: 100,
         description: 'Sidebar điều hướng cố định bên trái. Dark theme với màu riêng của từng subsystem khi active.',
         tokens: [
-            { key: 'colors.sidebar.bg',          value: '#2e3035' },
-            { key: 'colors.sidebar.bgDeep',       value: '#1f2024' },
+            { key: 'colors.sidebar.bg',          value: colors.sidebar.bg },
+            { key: 'colors.sidebar.bgDeep',       value: colors.sidebar.bgDeep },
             { key: 'layout.sidebarWidth',         value: '256px' },
             { key: 'layout.sidebarCollapsedWidth',value: '64px' },
             { key: 'zIndex.sticky',               value: '1100' },
@@ -78,7 +78,7 @@ const ZONES: Zone[] = [
         x: 22, y: 13, w: 78, h: 87,
         description: 'Vùng nội dung chính. Bao gồm PageLayout wrapper cho mọi page.',
         tokens: [
-            { key: 'colors.bg.page',          value: '#f5f7fa' },
+            { key: 'colors.bg.page',          value: colors.bg.page },
             { key: 'layout.contentPadding',    value: '16px 24px 24px' },
             { key: 'layout.contentPaddingMobile', value: '16px' },
         ],
@@ -97,7 +97,7 @@ const ZONES: Zone[] = [
         x: 0, y: 0, w: 22, h: 15,
         description: 'Component chuyển đổi giữa 7 phân hệ. Hiển thị tên + màu sắc của subsystem đang active.',
         tokens: [
-            { key: 'colors.sidebar.bg',     value: '#2e3035' },
+            { key: 'colors.sidebar.bg',     value: colors.sidebar.bg },
             { key: 'colors.subsystem.*',    value: '7 màu khác nhau' },
         ],
         notes: [
