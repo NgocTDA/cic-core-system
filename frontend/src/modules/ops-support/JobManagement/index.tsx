@@ -9,7 +9,6 @@ import {
   PageLayout,
   DisplaySettingPopover,
   ExportExcelDropdown,
-  MetricSummaryBar,
   type IDisplayColumnOption,
 } from '@/components/ui';
 import { useJobManagement } from './useJobManagement';
@@ -241,22 +240,8 @@ const JobManagement: React.FC = () => {
     });
   };
 
-  const totalJobs = mockJobs.length;
-  const activeJobs = mockJobs.filter((j) => j.status === 'ACTIVE').length;
-  const inactiveJobs = mockJobs.filter((j) => j.status === 'INACTIVE').length;
-
   return (
     <PageLayout>
-      {/* Metric Summary Bar */}
-      <MetricSummaryBar
-        items={[
-          { label: 'TỔNG SỐ JOB', value: totalJobs },
-          { label: 'ĐANG KÍCH HOẠT', value: activeJobs, color: '#18312a' },
-          { label: 'VÔ HIỆU HÓA', value: inactiveJobs, color: '#64746d' },
-          { label: 'KÍCH HOẠT GẦN NHẤT', value: 'Hôm nay', color: '#2a765b' },
-        ]}
-      />
-
       {/* Filter Card with Context Banner style */}
       <JobFilter />
 

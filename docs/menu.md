@@ -88,6 +88,8 @@ Tài liệu này đồng bộ theo `SUB_SYSTEMS` và `DESIGN_SYSTEM_SUB` đang �
   - Quản lý file upload (`/product-mgmt/articles/upload`)
   - Quản lý bài viết, phân tích cảnh báo (`/product-mgmt/articles/list`)
   - Hệ thống đăng bài/ẩn bài và tích hợp đăng bài trên web SBV (`/product-mgmt/articles/publish`)
+- **SP phân tích ngành, trung bình ngành**
+  - Danh sách SP tạo lập (`/product-mgmt/industry-analysis/created-products`)
 - **Tổng hợp dữ liệu cho hệ thống M5**
   - Danh sách yêu cầu từ hệ thống M5 (`/product-mgmt/m5/requests`)
   - Tra cứu dữ liệu đã gửi hệ thống M5 (`/product-mgmt/m5/sent-data`)

@@ -22,9 +22,11 @@ export const STATUS_CONFIG = {
   PAUSED:    { role: 'warning' as StatusRole,    color: 'warning',    label: 'Tạm dừng' },
 
   // Approval workflow
+  DRAFT:     { role: 'neutral' as StatusRole,    color: 'default',    label: 'Tạo mới' },
   PENDING:   { role: 'warning' as StatusRole,    color: 'warning',    label: 'Chờ duyệt' },
   APPROVED:  { role: 'active' as StatusRole,     color: 'success',    label: 'Đã duyệt' },
-  REJECTED:  { role: 'error' as StatusRole,      color: 'error',      label: 'Từ chối' },
+  REJECTED:  { role: 'error' as StatusRole,      color: 'error',      label: 'Từ chối duyệt' },
+  RECALLED:  { role: 'warning' as StatusRole,    color: 'warning',    label: 'Thu hồi' },
 
   // Notification read-state
   UNREAD:    { role: 'error' as StatusRole,      color: 'error',      label: 'Chưa đọc' },

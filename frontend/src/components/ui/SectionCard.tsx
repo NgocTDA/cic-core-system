@@ -56,7 +56,7 @@ const SectionCard: React.FC<SectionCardProps> = ({
       }}
       styles={{
         body: {
-          padding: noPadding ? 0 : '0 20px 20px',
+          padding: noPadding ? 0 : (hasHeader ? '0 20px 20px' : '16px 20px 20px'),
           ...(flex
             ? {
                 flex: 1,

@@ -12,7 +12,7 @@ import {
   HistoryOutlined,
   PoweroffOutlined,
 } from '@ant-design/icons';
-import { ActionMenu, StatusTag, CodeText, tablePagination, SectionCard } from '@/components/ui';
+import { ActionMenu, StatusTag, tablePagination, SectionCard } from '@/components/ui';
 import { colors, typography } from '@/design-system';
 import { useRole, hasPermission } from '@/context/RoleContext';
 import type { IJob } from './types';
@@ -95,21 +95,28 @@ const JobList: React.FC<Props> = ({
     setIsDeleting(false);
   };
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [data]);
+
   const columns: TableProps<IJob>['columns'] = [
     {
       title: 'STT',
       key: 'stt',
       width: 60,
       align: 'center' as const,
-      render: (_, __, index) => index + 1,
+      render: (_, __, index) => (currentPage - 1) * pageSize + index + 1,
     },
     {
       title: 'Mã Job',
       dataIndex: 'code',
       key: 'code',
-      width: 150,
+      width: 220,
       render: (code) => (
-        <Text code strong style={{ color: '#000000', fontSize: typography.fontSize.base }}>
+        <Text strong style={{ color: colors.primary[500], whiteSpace: 'nowrap' }}>
           {code}
         </Text>
       ),
@@ -118,26 +125,24 @@ const JobList: React.FC<Props> = ({
       title: 'Tên Job',
       dataIndex: 'name',
       key: 'name',
-      width: 220,
+      width: 280,
       ellipsis: true,
-      render: (name) => <Text strong style={{ fontSize: typography.fontSize.base }}>{name}</Text>,
+      render: (name) => <Text strong>{name}</Text>,
     },
     {
       title: 'Mã dịch vụ',
       dataIndex: 'serviceCode',
       key: 'serviceCode',
-      width: 170,
+      width: 155,
       render: (serviceCode) => (
-        <Text code style={{ color: '#000000', fontSize: typography.fontSize.base }}>
-          {serviceCode || 'SVC_CIC_CORE_SYNC'}
-        </Text>
+        <Text type="secondary">{serviceCode || 'SVC_CIC_CORE_SYNC'}</Text>
       ),
     },
     {
       title: 'Loại Job',
       dataIndex: 'category',
       key: 'category',
-      width: 170,
+      width: 155,
       filters: [
         { text: 'Đồng bộ dữ liệu', value: 'DATA_SYNC' },
         { text: 'Sinh báo cáo', value: 'REPORT' },
@@ -146,53 +151,46 @@ const JobList: React.FC<Props> = ({
         { text: 'Xử lý lô', value: 'BATCH' },
       ],
       onFilter: (value, record) => record.category === value,
-      render: (category) => (
-        <Text style={{ fontSize: typography.fontSize.base }}>
-          {categoryMap[category] || category}
-        </Text>
-      ),
+      render: (category) => categoryMap[category] || category,
     },
     {
       title: 'Điều kiện kích hoạt',
       dataIndex: 'triggerType',
       key: 'triggerType',
-      width: 175,
+      width: 150,
       filters: [
         { text: 'Bộ lập lịch', value: 'SCHEDULER' },
         { text: 'Theo sự kiện', value: 'EVENT' },
         { text: 'Thủ công', value: 'MANUAL' },
       ],
       onFilter: (value, record) => (record.triggerType || 'SCHEDULER') === value,
-      render: (triggerType) => (
-        <Text style={{ fontSize: typography.fontSize.base }}>
-          {triggerTypeMap[triggerType || 'SCHEDULER'] || 'Bộ lập lịch'}
-        </Text>
-      ),
+      render: (triggerType) => triggerTypeMap[triggerType || 'SCHEDULER'] || 'Bộ lập lịch',
     },
     {
       title: 'Biểu thức Cron',
       dataIndex: 'cron',
       key: 'cron',
-      width: 140,
+      width: 125,
       render: (cron, record) => {
         const cronExpr = cron || record.schedule?.expression || '0 0 1 * * *';
         const description = getCronDescription(cronExpr);
         return (
           <Tooltip title={`💡 Diễn giải: ${description}`} mouseEnterDelay={0.15}>
-            <code
+            <span
               style={{
-                fontFamily: typography.fontFamily.mono,
-                fontWeight: 'bold',
-                fontSize: typography.fontSize.base,
-                color: '#000000',
+                fontFamily: typography.fontFamily.sans,
+                fontWeight: typography.fontWeight.medium,
+                fontSize: typography.fontSize.sm,
+                color: colors.text.primary,
                 background: colors.neutral[100],
-                padding: '2px 6px',
+                padding: '2px 8px',
                 borderRadius: 4,
                 cursor: 'pointer',
+                display: 'inline-block',
               }}
             >
               {cronExpr}
-            </code>
+            </span>
           </Tooltip>
         );
       },
@@ -201,7 +199,7 @@ const JobList: React.FC<Props> = ({
       title: 'Trạng thái',
       dataIndex: 'status',
       key: 'status',
-      width: 140,
+      width: 120,
       filters: [
         { text: 'Hoạt động', value: 'ACTIVE' },
         { text: 'Ngừng hoạt động', value: 'INACTIVE' },
@@ -213,7 +211,7 @@ const JobList: React.FC<Props> = ({
       title: 'Thao tác',
       key: 'action',
       align: 'center' as const,
-      width: 80,
+      width: 75,
       fixed: 'right' as const,
       render: (_, record) => {
         const items: MenuProps['items'] = [
@@ -335,8 +333,26 @@ const JobList: React.FC<Props> = ({
         columns={filteredColumns}
         dataSource={data}
         rowKey="id"
-        pagination={tablePagination({ total: data.length })}
-        scroll={{ x: 1200 }}
+        pagination={tablePagination({
+          current: currentPage,
+          pageSize,
+          total: data.length,
+          showQuickJumper: false,
+          itemRender: (page, type, originalElement) => {
+            if (type === 'prev' || type === 'next') {
+              return originalElement;
+            }
+            if (type === 'page') {
+              return page === currentPage ? originalElement : null;
+            }
+            return null;
+          },
+          onChange: (page, size) => {
+            setCurrentPage(page);
+            setPageSize(size);
+          },
+        })}
+        scroll={{ x: 1340, y: 'calc(100vh - 350px)' }}
         size="middle"
         rowSelection={rowSelection}
         onRow={(record) => ({

@@ -162,6 +162,33 @@ Tất cả màn hình Xem chi tiết bắt buộc phải có **Bảng Lịch s�
   8. `Mô tả` (240px): Lý do/ghi chú/tệp đính kèm (nếu > 2 dòng có "Xem tiếp", file dạng link tải về).
 - **Shared Component**: Sử dụng `<ChangeHistoryCollapse data={historyItems} />` từ `@/components/ui`.
 
+### 9. Tiêu chuẩn giao diện danh sách (List Page Standards — chuẩn mực từ `/ops-support/job-management`)
+Mọi màn hình danh sách (List Page) phải tuân thủ nghiêm ngặt các quy chuẩn giao diện, kiểu chữ, định dạng dữ liệu và phân trang sau:
+
+- **Bộ tìm kiếm (`FilterBar`)**:
+  - Bắt buộc dùng `inCard` (hoặc `variant="context"`): nền màu Sage tint (`#edf3ed`), viền mờ nhạt `colors.border.base`, bo góc `radius.md` tạo cảm giác Context Banner nhất quán.
+  - Tích hợp nút/popover "Thêm bộ lọc" (`<Button icon={<FilterOutlined />} style={{ background: '#ffffff', borderColor: '#9fb3a9', color: '#18312a' }}>`) cho phép người dùng tùy biến ẩn/hiện các trường lọc.
+  - Thiết lập `minWidth` hợp lý cho từng `<FilterCol>` (130px - 220px) để các ô tìm kiếm trải đều, các nút *Tìm kiếm* (Primary) và *Đặt lại* (`ReloadOutlined`) luôn neo vững ở góc phải.
+- **Thẻ bảng dữ liệu (`SectionCard`)**:
+  - Không lặp lại tiêu đề nếu Header trang đã có tên chức năng rõ ràng: Dùng `<SectionCard flex>`. Chỉ đặt `title` và `count` (`<SectionCard title="Tên danh sách" count={data.length} flex>`) khi trang có nhiều khối danh sách hoặc cần phân đoạn riêng biệt.
+  - Chọn hàng loạt (`rowSelection`): Khi người dùng chọn các dòng dữ liệu, Header tự động hiển thị nút thao tác lô (vd: `Gửi duyệt (${selectedRowKeys.length})` hoặc `Chạy Job (${selectedRowKeys.length})`).
+  - Tương tác click dòng: nhấp vào bất kỳ đâu trên dòng dữ liệu (`onRow -> onClick`) mở trực tiếp Modal chi tiết.
+- **Font chữ, style & Định dạng dữ liệu**:
+  - **Mã định danh (Mã Job, Mã SP, Mã hồ sơ)**: Dùng font sans-serif đậm màu xanh primary (`<Text strong style={{ color: colors.primary[500], whiteSpace: 'nowrap' }}>{code}</Text>`) hoặc `<CodeText>{code}</CodeText>`.
+  - **Tên đối tượng**: Dùng `<Text strong>{name}</Text>`, bật `ellipsis: true` kèm `Tooltip` nếu văn bản dài.
+  - **Người tạo / Người duyệt / Người cập nhật**:
+    - Hiển thị trực tiếp `username`, **TUYỆT ĐỐI KHÔNG thêm ký tự `@` phía trước** (hiển thị `admin`, `nguyenvana`, KHÔNG DÙNG `@admin`, `@nguyenvana`).
+    - Bắt buộc có thuộc tính `whiteSpace: 'nowrap'`.
+    - Bọc trong `<Tooltip title={fullName}>` để khi hover sẽ hiển thị Họ và tên đầy đủ.
+  - **Ngày tháng**: Căn giữa (`align: 'center'`), định dạng `dd/MM/yyyy`, hover hiển thị tooltip `dd/MM/yyyy HH:mm:ss`. Nếu trống hiển thị `—`.
+- **Phân trang (`tablePagination`)**:
+  - Luôn sử dụng helper chuẩn `tablePagination({ current: currentPage, pageSize, total: data.length, showQuickJumper: false, onChange })`.
+  - Quản lý state `currentPage` và `pageSize`, tự động reset về trang 1 khi danh sách dữ liệu lọc thay đổi (`React.useEffect(() => { setCurrentPage(1); }, [data])`).
+- **Cột Thao tác (`ActionMenu`)**:
+  - Chiều rộng chuẩn `width: 75`, `align: 'center'`, `fixed: 'right'`.
+  - Sử dụng dropdown 3 chấm `<ActionMenu items={items} />` chuẩn Rule 2, KHÔNG dàn trải nhiều nút icon nhỏ rời rạc gây rối mắt và tràn màn hình.
+  - Các hành động mang tính rủi ro/phá hủy (Từ chối, Xóa, Thu hồi) phải đặt `danger: true` và có divider (`{ type: 'divider' }`) ngăn cách.
+
 ---
 
 ## Naming conventions

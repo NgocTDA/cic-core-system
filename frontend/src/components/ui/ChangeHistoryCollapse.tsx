@@ -11,7 +11,6 @@ import {
   UpOutlined,
 } from '@ant-design/icons';
 import { colors, typography } from '@/design-system';
-import CodeText from './CodeText';
 
 const { Text } = Typography;
 
@@ -114,7 +113,7 @@ export const ChangeHistoryCollapse: React.FC<ChangeHistoryCollapseProps> = ({
 
         return (
           <Tooltip title={fullStr} placement="top">
-            <span style={{ fontFamily: typography.fontFamily.mono, fontSize: typography.fontSize.xs }}>
+            <span style={{ fontSize: typography.fontSize.xs }}>
               {dateStr}
             </span>
           </Tooltip>
@@ -152,11 +151,11 @@ export const ChangeHistoryCollapse: React.FC<ChangeHistoryCollapseProps> = ({
       width: 220,
       render: (val?: string) =>
         val ? (
-          <CodeText style={{ fontSize: 11, color: colors.neutral[600] }}>
+          <Text style={{ fontSize: typography.fontSize.xs, color: colors.neutral[700] }}>
             {val}
-          </CodeText>
+          </Text>
         ) : (
-          <Text type="secondary" style={{ fontSize: 11 }}>—</Text>
+          <Text type="secondary" style={{ fontSize: typography.fontSize.xs }}>—</Text>
         ),
     },
     {
@@ -166,11 +165,11 @@ export const ChangeHistoryCollapse: React.FC<ChangeHistoryCollapseProps> = ({
       width: 220,
       render: (val?: string) =>
         val ? (
-          <CodeText style={{ fontSize: 11, color: colors.success.base }}>
+          <Text strong style={{ fontSize: typography.fontSize.xs, color: colors.success.dark }}>
             {val}
-          </CodeText>
+          </Text>
         ) : (
-          <Text type="secondary" style={{ fontSize: 11 }}>—</Text>
+          <Text type="secondary" style={{ fontSize: typography.fontSize.xs }}>—</Text>
         ),
     },
     {
@@ -179,7 +178,9 @@ export const ChangeHistoryCollapse: React.FC<ChangeHistoryCollapseProps> = ({
       key: 'ipAddress',
       width: 130,
       render: (ip?: string) => (
-        <CodeText style={{ fontSize: 11 }}>{ip || '192.168.1.100'}</CodeText>
+        <Text style={{ fontSize: typography.fontSize.xs, color: colors.neutral[700] }}>
+          {ip || '192.168.1.100'}
+        </Text>
       ),
     },
     {

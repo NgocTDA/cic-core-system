@@ -303,6 +303,14 @@ export const SUB_SYSTEMS: SubSystem[] = [
                 ]
             },
             {
+                key: 'pm-industry-analysis',
+                label: 'SP phân tích ngành, trung bình ngành',
+                icon: <BarChartOutlined />,
+                children: [
+                    { key: 'pm-ia-created-products', label: 'Danh sách SP tạo lập', path: '/product-mgmt/industry-analysis/created-products' },
+                ]
+            },
+            {
                 key: 'pm-m5',
                 label: 'Tổng hợp dữ liệu cho hệ thống M5',
                 icon: <ShareAltOutlined />,
