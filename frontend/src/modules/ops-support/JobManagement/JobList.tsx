@@ -1,14 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Table, Typography, Button, Space, Popconfirm, message, Tooltip } from 'antd';
+import { Table, Typography, Button, Space, Modal, message, Tooltip } from 'antd';
 import type { MenuProps, TableProps } from 'antd';
 import {
   EyeOutlined,
   PlayCircleOutlined,
   EditOutlined,
   DeleteOutlined,
-  CopyOutlined,
   HistoryOutlined,
   PoweroffOutlined,
 } from '@ant-design/icons';
@@ -17,6 +16,7 @@ import { colors, typography } from '@/design-system';
 import { useRole, hasPermission } from '@/context/RoleContext';
 import type { IJob } from './types';
 import { getCronDescription } from './cronUtils';
+import { mockJobs, mockJobRuns } from './mockData';
 
 const { Text } = Typography;
 
@@ -28,6 +28,7 @@ interface Props {
   onRowClick: (id: string) => void;
   onRun: (id: string) => void;
   onEdit: (id: string) => void;
+  onDelete?: (id: string) => void;
   onToggleStatus?: (job: IJob) => void;
   onViewHistory?: (job: IJob) => void;
   onBulkRun?: (ids: string[]) => void;
@@ -59,6 +60,7 @@ const JobList: React.FC<Props> = ({
   onRowClick,
   onRun,
   onEdit,
+  onDelete,
   onToggleStatus,
   onViewHistory,
   onBulkRun,
@@ -96,11 +98,64 @@ const JobList: React.FC<Props> = ({
   };
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(20);
 
   React.useEffect(() => {
     setCurrentPage(1);
   }, [data]);
+
+  const handleDeleteJob = (record: IJob) => {
+    // 0. Kiểm tra nếu Job đang hoạt động
+    if (record.status === 'ACTIVE') {
+      message.error('Không thể xóa Job đang ở trạng thái Hoạt động. Vui lòng chuyển sang Ngừng hoạt động trước khi xóa.');
+      return;
+    }
+
+    // 1. Kiểm tra phụ thuộc
+    const dependent = mockJobs.find((j) => j.dependencies?.some((d) => d.jobId === record.id));
+    if (dependent) {
+      message.error(`Không thể xóa vì Job này đang là điều kiện phụ thuộc của Job ${dependent.code}.`);
+      return;
+    }
+
+    // 2. Kiểm tra lịch sử chạy
+    const hasRun = mockJobRuns.some((r) => r.jobId === record.id);
+    if (hasRun) {
+      message.warning('Không thể xóa. Job đã từng phát sinh lượt chạy hoặc đang được sử dụng.');
+      return;
+    }
+
+    // 3. Confirm dialog CONF_002
+    Modal.confirm({
+      title: 'Xác nhận xóa Job',
+      icon: null,
+      centered: true,
+      content: (
+        <div>
+          <p style={{ marginBottom: 12 }}>Bạn có chắc chắn muốn xóa Job không? Dữ liệu sau khi xóa sẽ không thể phục hồi.</p>
+          <div style={{ background: '#f8fafc', padding: '10px 14px', borderRadius: 6, border: '1px solid #d9d9d9' }}>
+            <div><span style={{ color: 'rgba(0,0,0,0.45)' }}>Mã Job: </span><span style={{ fontFamily: 'monospace', fontWeight: 'bold', color: '#000000' }}>{record.code}</span></div>
+            <div><span style={{ color: 'rgba(0,0,0,0.45)' }}>Tên Job: </span><span style={{ fontWeight: 'bold' }}>{record.name}</span></div>
+          </div>
+        </div>
+      ),
+      okText: 'Xác nhận',
+      okButtonProps: { danger: true },
+      cancelText: 'Hủy',
+      footer: (_, { OkBtn, CancelBtn }) => (
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 12, marginTop: 20 }}>
+          <CancelBtn />
+          <OkBtn />
+        </div>
+      ),
+      onOk: () => {
+        if (onDelete) {
+          onDelete(record.id);
+        }
+        message.success('Xóa Job thành công.');
+      },
+    });
+  };
 
   const columns: TableProps<IJob>['columns'] = [
     {
@@ -114,7 +169,7 @@ const JobList: React.FC<Props> = ({
       title: 'Mã Job',
       dataIndex: 'code',
       key: 'code',
-      width: 220,
+      width: 150,
       render: (code) => (
         <Text strong style={{ color: colors.primary[500], whiteSpace: 'nowrap' }}>
           {code}
@@ -125,7 +180,7 @@ const JobList: React.FC<Props> = ({
       title: 'Tên Job',
       dataIndex: 'name',
       key: 'name',
-      width: 280,
+      width: 220,
       ellipsis: true,
       render: (name) => <Text strong>{name}</Text>,
     },
@@ -133,7 +188,7 @@ const JobList: React.FC<Props> = ({
       title: 'Mã dịch vụ',
       dataIndex: 'serviceCode',
       key: 'serviceCode',
-      width: 155,
+      width: 170,
       render: (serviceCode) => (
         <Text type="secondary">{serviceCode || 'SVC_CIC_CORE_SYNC'}</Text>
       ),
@@ -142,7 +197,7 @@ const JobList: React.FC<Props> = ({
       title: 'Loại Job',
       dataIndex: 'category',
       key: 'category',
-      width: 155,
+      width: 170,
       filters: [
         { text: 'Đồng bộ dữ liệu', value: 'DATA_SYNC' },
         { text: 'Sinh báo cáo', value: 'REPORT' },
@@ -157,7 +212,7 @@ const JobList: React.FC<Props> = ({
       title: 'Điều kiện kích hoạt',
       dataIndex: 'triggerType',
       key: 'triggerType',
-      width: 150,
+      width: 175,
       filters: [
         { text: 'Bộ lập lịch', value: 'SCHEDULER' },
         { text: 'Theo sự kiện', value: 'EVENT' },
@@ -170,9 +225,15 @@ const JobList: React.FC<Props> = ({
       title: 'Biểu thức Cron',
       dataIndex: 'cron',
       key: 'cron',
-      width: 125,
+      width: 140,
       render: (cron, record) => {
-        const cronExpr = cron || record.schedule?.expression || '0 0 1 * * *';
+        if (record.triggerType && record.triggerType !== 'SCHEDULER') {
+          return <Text type="secondary">—</Text>;
+        }
+        const cronExpr = cron || record.schedule?.expression;
+        if (!cronExpr) {
+          return <Text type="secondary">—</Text>;
+        }
         const description = getCronDescription(cronExpr);
         return (
           <Tooltip title={`💡 Diễn giải: ${description}`} mouseEnterDelay={0.15}>
@@ -199,10 +260,11 @@ const JobList: React.FC<Props> = ({
       title: 'Trạng thái',
       dataIndex: 'status',
       key: 'status',
-      width: 120,
+      width: 140,
       filters: [
         { text: 'Hoạt động', value: 'ACTIVE' },
         { text: 'Ngừng hoạt động', value: 'INACTIVE' },
+        { text: 'Ngừng hiệu lực', value: 'ARCHIVED' },
       ],
       onFilter: (value, record) => record.status === value,
       render: (status) => <StatusTag status={status} />,
@@ -255,13 +317,11 @@ const JobList: React.FC<Props> = ({
             items.push({
               key: 'deactivate',
               icon: <PoweroffOutlined />,
-              label: 'Vô hiệu hóa',
+              label: 'Ngừng hoạt động',
               onClick: (info) => {
                 info?.domEvent?.stopPropagation();
                 if (onToggleStatus) {
                   onToggleStatus(record);
-                } else {
-                  message.success(`Đã vô hiệu hóa Job ${record.code}`);
                 }
               },
             });
@@ -269,13 +329,11 @@ const JobList: React.FC<Props> = ({
             items.push({
               key: 'activate',
               icon: <PoweroffOutlined />,
-              label: 'Kích hoạt',
+              label: 'Hoạt động',
               onClick: (info) => {
                 info?.domEvent?.stopPropagation();
                 if (onToggleStatus) {
                   onToggleStatus(record);
-                } else {
-                  message.success(`Đã kích hoạt Job ${record.code}`);
                 }
               },
             });
@@ -292,23 +350,22 @@ const JobList: React.FC<Props> = ({
           },
         });
 
-        if (hasPermission(currentRole, 'delete')) {
-          items.push({
-            key: 'divider',
-            type: 'divider',
-          } as any);
+        // Menu Thao tác: Chức năng Xóa luôn hiển thị
+        items.push({
+          key: 'divider',
+          type: 'divider',
+        } as any);
 
-          items.push({
-            key: 'delete',
-            icon: <DeleteOutlined />,
-            label: 'Xóa',
-            danger: true,
-            onClick: (info) => {
-              info?.domEvent?.stopPropagation();
-              message.success(`Đã xóa Job ${record.code}`);
-            },
-          });
-        }
+        items.push({
+          key: 'delete',
+          icon: <DeleteOutlined />,
+          label: 'Xóa',
+          danger: true,
+          onClick: (info) => {
+            info?.domEvent?.stopPropagation();
+            handleDeleteJob(record);
+          },
+        });
 
         return <ActionMenu items={items} />;
       },
@@ -328,7 +385,7 @@ const JobList: React.FC<Props> = ({
   };
 
   return (
-    <SectionCard title="Danh sách tác vụ" count={data.length} flex>
+    <SectionCard flex>
       <Table
         columns={filteredColumns}
         dataSource={data}
@@ -338,15 +395,6 @@ const JobList: React.FC<Props> = ({
           pageSize,
           total: data.length,
           showQuickJumper: false,
-          itemRender: (page, type, originalElement) => {
-            if (type === 'prev' || type === 'next') {
-              return originalElement;
-            }
-            if (type === 'page') {
-              return page === currentPage ? originalElement : null;
-            }
-            return null;
-          },
           onChange: (page, size) => {
             setCurrentPage(page);
             setPageSize(size);

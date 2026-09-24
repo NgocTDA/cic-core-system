@@ -2,7 +2,9 @@
 
 ### Mô tả yêu cầu
 
-Cho phép người dùng có quyền `edit` điều chỉnh cấu hình của Job đã có, trên màn hình biểu mẫu toàn trang chia thành ba khối: Thông tin chung, Lập lịch và xử lý lỗi, Thiết lập cảnh báo sự cố.
+Cho phép người dùng có quyền `edit` điều chỉnh cấu hình của Job đã có, trên màn hình biểu mẫu toàn trang chia thành bốn khối: Thông tin chung, Lập lịch và xử lý lỗi, Cấu hình phụ thuộc, Thiết lập cảnh báo sự cố.
+
+Khối Cấu hình phụ thuộc cho phép khai báo danh sách các Job mà Job hiện tại phụ thuộc (Parent Jobs) và điều kiện kích hoạt tương ứng (Khi thành công, Khi thất bại, Luôn luôn). Khi có cấu hình phụ thuộc, hệ thống tự động khóa Điều kiện kích hoạt về Theo sự kiện (BR-HTVH-036-020) và kiểm tra chống vòng lặp phụ thuộc (BR-HTVH-036-022).
 
 Ô Mã Job bị khóa vì đây là định danh bất biến của Job. Các trường thông tin khác được nạp sẵn từ cấu hình hiện tại để chỉnh sửa.
 
@@ -27,9 +29,10 @@ Ràng buộc: toàn bộ kiểm tra dữ liệu thực hiện trước khi ghi; 
 | 3 | Người dùng | Nhập khối **Thông tin chung** | Ô Mô tả và Tham số bổ sung hiển thị bộ đếm ký tự. Ô Mã Job bị khóa. |
 | 4 | Người dùng | Chọn **Điều kiện kích hoạt** | Nếu chọn *Theo sự kiện*, hệ thống thay ô Biểu thức Cron bằng ô Tên sự kiện kích hoạt; nếu chọn *Bộ lập lịch* hoặc *Thủ công*, hệ thống hiển thị ô Biểu thức Cron kèm dòng diễn giải tiếng Việt. |
 | 5 | Người dùng | Nhập khối **Lập lịch và xử lý lỗi** | Hệ thống chặn giá trị nằm ngoài khoảng cho phép ngay tại ô nhập số. |
-| 6 | Người dùng | Nhập khối **Thiết lập cảnh báo sự cố** | Ô Email nhận cảnh báo chung nhận nhiều địa chỉ, tự tách khi gõ dấu chấm phẩy hoặc dấu phẩy. Bảng ma trận cho phép tích chọn kênh và chọn người nhận riêng cho từng sự kiện. |
-| 7 | Người dùng | Nhấp **Lưu** | Hệ thống kiểm tra toàn bộ ràng buộc BR-HTVH-036-001 đến BR-HTVH-036-008. |
-| 8 | Hệ thống | — | Dữ liệu hợp lệ: ghi cấu hình Job, sinh bản ghi nhật ký thay đổi (giá trị cũ, giá trị mới, địa chỉ IP), đăng ký lại lịch chạy, hiển thị SUC_005 rồi chuyển về danh sách. |
+| 6 | Người dùng | Cấu hình khối **Cấu hình phụ thuộc** | Nhấp **+ Thêm Job phụ thuộc**, chọn Mã Job phụ thuộc và Điều kiện kích hoạt (Khi thành công, Khi thất bại, Luôn luôn) hoặc nhấp Xóa. Nếu danh sách phụ thuộc có ít nhất 1 bản ghi, hệ thống tự động khóa Điều kiện kích hoạt về *Theo sự kiện*. |
+| 7 | Người dùng | Nhập khối **Thiết lập cảnh báo sự cố** | Ô Email nhận cảnh báo chung nhận nhiều địa chỉ, tự tách khi gõ dấu chấm phẩy hoặc dấu phẩy. Bảng ma trận cho phép tích chọn kênh và chọn người nhận riêng cho từng sự kiện. |
+| 8 | Người dùng | Nhấp **Lưu** | Hệ thống kiểm tra toàn bộ ràng buộc BR-HTVH-036-001 đến BR-HTVH-036-008 và BR-HTVH-036-020 đến BR-HTVH-036-022. |
+| 9 | Hệ thống | — | Dữ liệu hợp lệ: ghi cấu hình Job, sinh bản ghi nhật ký thay đổi (giá trị cũ, giá trị mới, địa chỉ IP), đăng ký lại lịch chạy, hiển thị SUC_005 rồi chuyển về danh sách. |
 
 **Luồng thay thế**
 
@@ -47,6 +50,7 @@ Ràng buộc: toàn bộ kiểm tra dữ liệu thực hiện trước khi ghi; 
 | EXC-05-02 | Mở chế độ cập nhật với định danh Job không tồn tại | Hiển thị thông báo lỗi và tự chuyển về danh sách Quản lý Job | ERR_015 |
 | EXC-05-04 | Lỗi khi ghi cấu hình xuống cơ sở dữ liệu | Giữ nguyên dữ liệu người dùng đã nhập, hiển thị thông báo lỗi | ERR_022 |
 | EXC-05-05 | Ghi cấu hình thành công nhưng đăng ký lịch với bộ lập lịch thất bại | Ghi nhận cảnh báo, thông báo cho người dùng rằng cấu hình đã lưu nhưng lịch chạy chưa được cập nhật | WAR_001 |
+| EXC-05-06 | Cấu hình phụ thuộc tạo ra vòng lặp (VD: Job A -> Job B -> Job A) | Hệ thống chặn lưu dữ liệu và hiển thị thông báo lỗi | ERR_023 |
 
 ### Thiết kế giao diện
 
@@ -68,7 +72,7 @@ Ràng buộc: toàn bộ kiểm tra dữ liệu thực hiện trước khi ghi; 
 ├──────────────────────────────────────────────────────────────────────────┤
 │ ◇ CẤU HÌNH PHỤ THUỘC                              [+ Thêm Job phụ thuộc] │
 │ ┌────────────────────┬──────────────────────┬──────────────────────┬─────┐ │
-│ │ Mã Job xử lý trước │ Tên Job              │ Điều kiện kích hoạt  │ Xóa │ │
+│ │ Mã Job phụ thuộc   │ Tên Job              │ Điều kiện kích hoạt  │ Xóa │ │
 │ │ EXTRACT_ERP        │ Trích xuất DB ERP    │ [Khi thành công...▾] │ [x] │ │
 │ └────────────────────┴──────────────────────┴──────────────────────┴─────┘ │
 ├──────────────────────────────────────────────────────────────────────────┤
@@ -110,7 +114,7 @@ Ràng buộc: toàn bộ kiểm tra dữ liệu thực hiện trước khi ghi; 
 | 16.1 | **Lưu log thành công (ngày)** | Ô nhập số | Không / 7 | Số nguyên 0-3650 | Số ngày lưu lại lịch sử chạy thành công. 0 là không lưu |
 | 16.2 | **Lưu log lỗi (ngày)** | Ô nhập số | Không / 30 | Số nguyên 0-3650 | Số ngày lưu lại lịch sử chạy lỗi |
 | 16.3 | **Nút Thêm Job phụ thuộc** | Nút | Không | — | Mở popup chọn nhiều Job cha (Parent Jobs) |
-| 16.4 | **Bảng Job phụ thuộc** | Bảng | Không | Tối đa 10 dòng | Gồm Mã Job xử lý trước, Tên Job, Điều kiện kích hoạt và Xóa. Khóa ĐK Kích hoạt của Job hiện tại về Theo Sự Kiện (BR-HTVH-036-019) |
+| 16.4 | **Bảng Job phụ thuộc** | Bảng | Không | Tối đa 10 dòng | Gồm Mã Job phụ thuộc, Tên Job, Điều kiện kích hoạt và Xóa. Khóa ĐK Kích hoạt của Job hiện tại về Theo Sự Kiện (BR-HTVH-036-020) |
 | 16.5 | **Điều kiện kích hoạt (Parent)** | Chọn một | Bắt buộc (nếu có) / Khi thành công | 3 tùy chọn | Khi thành công / Khi thất bại / Luôn luôn |
 | 17 | **Email nhận cảnh báo chung** | Ô nhập nhiều thẻ | Không / `admin@cic.org.vn`, `alert@cic.org.vn` | Nhiều địa chỉ | Tự tách thẻ khi gõ dấu chấm phẩy hoặc dấu phẩy |
 | 18 | **Bảng ma trận cảnh báo** | Bảng có ô nhập | Bắt buộc | 5 dòng × 5 cột | Năm sự kiện × ba kênh (SMS / Push (Web) / Email) + cột người nhận riêng |
@@ -149,6 +153,7 @@ Ràng buộc: toàn bộ kiểm tra dữ liệu thực hiện trước khi ghi; 
 | 13 | ERR_013 | ERR | Số lần thử lại phải nằm trong khoảng từ 0 đến 10 lần | Số lần thử lại ngoài khoảng |
 | 14 | ERR_014 | ERR | Vui lòng kiểm tra lại các trường thông tin chưa hợp lệ | Biểu mẫu còn ô không hợp lệ khi nhấp Lưu |
 | 15 | ERR_015 | ERR | Job không tồn tại | Mở chế độ cập nhật với định danh không có trên hệ thống |
+| 16 | ERR_023 | ERR | Phát hiện vòng lặp phụ thuộc với Job {mã Job}. Vui lòng kiểm tra lại | Cấu hình phụ thuộc tạo ra vòng lặp khép kín |
 | 17 | ERR_022 | ERR | Không thể lưu cấu hình Job, vui lòng thử lại sau | Lỗi khi ghi dữ liệu |
 | 18 | WAR_001 | WAR | Đã lưu cấu hình nhưng chưa cập nhật được lịch chạy tự động | Đăng ký lịch với bộ lập lịch thất bại |
 | 19 | SUC_005 | SUC | Lưu cấu hình Job {mã Job} thành công | Cập nhật Job thành công |
@@ -162,5 +167,7 @@ Ràng buộc: toàn bộ kiểm tra dữ liệu thực hiện trước khi ghi; 
 | 4 | Khi nhập Số lần thử lại tối đa là 11, hệ thống phải chặn giá trị và không cho phép ghi dữ liệu. | BR-HTVH-036-007 |
 | 5 | Khi nhấp Lưu với biểu mẫu còn ô bắt buộc bỏ trống, hệ thống phải giữ người dùng ở lại màn hình và đánh dấu từng ô lỗi. | BR-HTVH-036-003 đến BR-HTVH-036-008 |
 | 6 | Khi lưu thành công, hệ thống phải sinh một bản ghi trong Bảng Lịch sử thay đổi ghi rõ giá trị cũ, giá trị mới và địa chỉ IP. | BR-HTVH-036-015 |
+| 7 | Khi Job có ít nhất 1 Job phụ thuộc, hệ thống phải tự động khóa ô Điều kiện kích hoạt về *Theo sự kiện*. | BR-HTVH-036-020 |
+| 8 | Khi cấu hình Job phụ thuộc tạo ra vòng lặp, hệ thống phải chặn lưu và báo lỗi ERR_023. | BR-HTVH-036-022 |
 
 ---

@@ -66,7 +66,7 @@ Ràng buộc: mọi trường trên popup này đều ở chế độ chỉ đ�
 ├──────────────────────────────────────────────────────────────────────┤
 │ ◇ CẤU HÌNH PHỤ THUỘC                                                 │
 │   ┌────────────────────┬──────────────────────┬──────────────────────┐ │
-│   │ Mã Job xử lý trước │ Tên Job              │ Điều kiện kích hoạt  │ │
+│   │ Mã Job phụ thuộc   │ Tên Job              │ Điều kiện kích hoạt  │ │
 │   │ EXTRACT_ERP        │ Trích xuất DB ERP    │ Khi thành công       │ │
 │   └────────────────────┴──────────────────────┴──────────────────────┘ │
 ├──────────────────────────────────────────────────────────────────────┤
@@ -102,7 +102,7 @@ Ràng buộc: mọi trường trên popup này đều ở chế độ chỉ đ�
 | 16 | **Chờ ban đầu (giây)** | Chữ, chỉ đọc | Bắt buộc / 60 | 1–86400 | — |
 | 17 | **SLA dự kiến (giây)** | Chữ, chỉ đọc | Không | Số nguyên | — |
 | 17.1 | **Lưu log thành công/lỗi (ngày)** | Chữ, chỉ đọc | Bắt buộc | Số nguyên | — |
-| 17.2 | **Bảng Job phụ thuộc** | Bảng chỉ đọc | Không | Gồm 3 cột | Mã Job xử lý trước, Tên Job, Điều kiện kích hoạt |
+| 17.2 | **Bảng Job phụ thuộc** | Bảng chỉ đọc | Không | Gồm 3 cột | Mã Job phụ thuộc, Tên Job, Điều kiện kích hoạt |
 | 18 | **Email nhận cảnh báo chung** | Danh sách thẻ, chỉ đọc | Không | Nhiều địa chỉ | Tách bằng dấu phẩy hoặc chấm phẩy, mỗi địa chỉ một thẻ |
 | 19 | **Bảng ma trận cảnh báo** | Bảng, chỉ đọc | Bắt buộc | 5 dòng × 5 cột | Năm sự kiện: Khi bắt đầu chạy / Khi hoàn tất thành công / Khi gặp sự cố / Khi thử lại. Ba cột kênh dùng ô đánh dấu bị vô hiệu hóa; cột cuối liệt kê người nhận riêng dạng thẻ, trống thì ghi "Chưa cấu hình" |
 | 20 | **Khối Lịch sử thay đổi** | Khối thu gọn chứa bảng | Bắt buộc / Đóng | 20 bản ghi, cuộn cao 250px | Đủ 8 cột chuẩn theo BR-HTVH-036-015, không phân trang |

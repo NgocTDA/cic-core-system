@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useMemo } from 'react';
-import { useRouter, useParams, useSearchParams } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import {
   Form,
   Input,
@@ -16,6 +16,8 @@ import {
   Col,
   Typography,
   message,
+  Modal,
+  Tooltip,
 } from 'antd';
 import {
   ArrowLeftOutlined,
@@ -58,43 +60,41 @@ const DEFAULT_NOTIFICATION_MATRIX: IConsoleNotificationMatrix = {
 const JobFormContent: React.FC = () => {
   const router = useRouter();
   const params = useParams();
-  const searchParams = useSearchParams();
 
   const jobId = params?.id as string | undefined;
-  const cloneId = searchParams?.get('cloneId');
   const isEditMode = !!jobId;
 
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [job, setJob] = useState<IJob | null>(null);
+  const [initialUpdatedAt, setInitialUpdatedAt] = useState<string>('');
 
   const watchTriggerType: TriggerTypeOption = Form.useWatch('triggerType', form) || 'SCHEDULER';
   const watchCron: string = Form.useWatch('cron', form) || '';
-  const watchDependencies: any[] = Form.useWatch('dependencies', form) || [];
+  const watchDependencies = Form.useWatch('dependencies', form);
+  const dependenciesCount = watchDependencies?.length || 0;
 
   useEffect(() => {
-    if (watchDependencies && watchDependencies.length > 0) {
-      if (watchTriggerType !== 'EVENT') {
-        form.setFieldsValue({ triggerType: 'EVENT' });
-      }
-    }
-  }, [watchDependencies, watchTriggerType, form]);
-
-  useEffect(() => {
-    const targetId = jobId || cloneId;
+    const targetId = jobId;
 
     if (targetId) {
       const found = mockJobs.find((j) => j.id === targetId);
       if (found) {
         setJob(found);
+        setInitialUpdatedAt(found.updatedAt || '');
 
         const emailTags = found.notifyEmails
           ? found.notifyEmails.split(/[,;]\s*/).filter(Boolean)
           : ['admin@cic.org.vn'];
 
+        const resolvedDependencies =
+          found.dependencies && found.dependencies.length > 0
+            ? found.dependencies
+            : (found.dependsOn || []).map((id) => ({ jobId: id, conditionType: 'SUCCESS' }));
+
         form.setFieldsValue({
-          code: isEditMode ? found.code : `${found.code}_COPY`,
-          name: isEditMode ? found.name : `${found.name} (Bản sao)`,
+          code: found.code,
+          name: found.name,
           category: found.category || 'DATA_SYNC',
           serviceCode: found.serviceCode || 'SVC_CIC_CORE_SYNC',
           description: found.description || '',
@@ -102,16 +102,16 @@ const JobFormContent: React.FC = () => {
             found.params ||
             `# Tham số YAML/JSON động\nsourceApi: "https://api.internal/v1"\nbatchSize: 500`,
 
-          // Trigger & Schedule & Error Handling
+          // Trigger & Schedule & Error Handling - BR-HTVH-027-026: giữ nguyên triggerType đã chọn
           triggerType: found.triggerType || 'SCHEDULER',
           dependsOn: found.dependsOn || [],
-          dependencies: found.dependencies || [],
+          dependencies: resolvedDependencies,
           cron: found.cron || found.schedule?.expression || '0 0 1 * * *',
           eventName: 'EVT_DATA_IMPORTED',
 
           slaTimeout: found.slaTimeout || 1800,
-          retentionSuccess: found.retentionSuccess || 7,
-          retentionError: found.retentionError || 30,
+          retentionSuccess: found.retentionSuccess ?? 7,
+          retentionError: found.retentionError ?? 30,
           timeout: found.timeout || 300,
           misfire: found.misfire || 'FIRE_NOW',
           concurrent: found.concurrent ?? true, // Default: Khóa chạy song song (true)
@@ -129,7 +129,7 @@ const JobFormContent: React.FC = () => {
         router.push('/ops-support/job-management');
       }
     } else {
-      // Set defaults for new job
+      // Set defaults for new job (BR-HTVH-027-030: chỉ dòng onFailure được bật email & push mặc định)
       form.setFieldsValue({
         code: 'JOB_DATA_PROCESS',
         name: 'Xử lý dữ liệu định kỳ',
@@ -155,24 +155,62 @@ const JobFormContent: React.FC = () => {
         retryInterval: 60,
 
         notifyEmails: ['admin@cic.org.vn', 'alert@cic.org.vn'],
-        notificationMatrix: DEFAULT_NOTIFICATION_MATRIX,
+        notificationMatrix: {
+          onStart: { sms: false, push: false, email: false, customRecipients: [] },
+          onSuccess: { sms: false, push: false, email: false, customRecipients: [] },
+          onSlaBreach: { sms: false, push: false, email: false, customRecipients: [] },
+          onFailure: { sms: false, push: true, email: true, customRecipients: ['alert_group@cic.org.vn'] },
+          onRetry: { sms: false, push: false, email: false, customRecipients: [] },
+        },
       });
     }
-  }, [jobId, cloneId, isEditMode, form, router]);
+  }, [jobId, isEditMode, form, router]);
+
+  // Dropdown chọn Job phụ thuộc: BR-HTVH-027-028 chỉ gồm Job ST-JOB-01 (ACTIVE), trừ Job hiện tại và Job đã chọn
+  const currentSelectedDepIds = useMemo(() => {
+    return (watchDependencies || []).map((d: any) => d?.jobId).filter(Boolean);
+  }, [watchDependencies]);
 
   const dependsOnOptions = useMemo(() => {
     return mockJobs
-      .filter((j) => !isEditMode || j.id !== jobId)
+      .filter((j) => j.status === 'ACTIVE' && (!isEditMode || j.id !== jobId))
       .map((j) => ({
         value: j.id,
-        label: `${j.code} - ${j.name}`,
+        label: j.code,
+        jobName: j.name,
+        disabled: currentSelectedDepIds.includes(j.id),
       }));
-  }, [isEditMode, jobId]);
+  }, [isEditMode, jobId, currentSelectedDepIds]);
+
+  const handleCancel = () => {
+    if (form.isFieldsTouched()) {
+      Modal.confirm({
+        title: 'Xác nhận hủy thay đổi',
+        content: 'Bạn có chắc chắn muốn hủy thay đổi cấu hình Job không?',
+        icon: null,
+        centered: true,
+        okText: 'Rời khỏi',
+        cancelText: 'Ở lại',
+        okButtonProps: { danger: true },
+        footer: (_, { OkBtn, CancelBtn }) => (
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 12, marginTop: 20 }}>
+            <CancelBtn />
+            <OkBtn />
+          </div>
+        ),
+        onOk: () => {
+          router.push('/ops-support/job-management');
+        },
+      });
+    } else {
+      router.push('/ops-support/job-management');
+    }
+  };
 
   useHeaderActions(
     {
       title: isEditMode ? 'Cập nhật thông tin Job' : 'Thiết lập Job mới',
-      onBack: () => router.push('/ops-support/job-management'),
+      onBack: handleCancel,
       breadcrumb: isEditMode
         ? 'Hỗ trợ vận hành > Quản lý Job > Cập nhật thông tin Job'
         : 'Hỗ trợ vận hành > Quản lý Job > Thiết lập Job mới',
@@ -185,12 +223,39 @@ const JobFormContent: React.FC = () => {
       setLoading(true);
       const values = await form.validateFields();
 
-      message.success(
-        isEditMode
-          ? `Lưu cấu hình Job ${values.code} thành công`
-          : `Lưu Job mới ${values.code} thành công`
-      );
+      // Kiểm soát xung đột Ngày cập nhật (BR-HTVH-027-034 / WAR_003)
+      if (isEditMode && jobId) {
+        const latestJob = mockJobs.find((j) => j.id === jobId);
+        if (latestJob && initialUpdatedAt && latestJob.updatedAt !== initialUpdatedAt) {
+          message.warning('Dữ liệu đã bị thay đổi bởi người khác. Vui lòng làm mới trang.');
+          setLoading(false);
+          return;
+        }
+      }
 
+      // Circular dependency validation (BR-HTVH-027-023)
+      if (isEditMode && values.dependencies && values.dependencies.length > 0) {
+        const hasSelfDep = values.dependencies.some((d: any) => d?.jobId === jobId);
+        if (hasSelfDep) {
+          message.error(`Phát hiện phụ thuộc vòng tròn giữa các Job. Vui lòng kiểm tra lại quan hệ phụ thuộc.`);
+          return;
+        }
+      }
+
+      // Kiểm tra người nhận cảnh báo khi bật kênh (BR-HTVH-027-035 / ERR_001)
+      const matrix = values.notificationMatrix;
+      const emails = values.notifyEmails || [];
+      if (matrix) {
+        for (const [eventKey, config] of Object.entries(matrix as Record<string, any>)) {
+          if (config?.email && (!emails || emails.length === 0) && (!config?.customRecipients || config.customRecipients.length === 0)) {
+            message.error('Trường bắt buộc không được để trống: Vui lòng nhập email nhận cảnh báo khi đã bật kênh Email.');
+            setLoading(false);
+            return;
+          }
+        }
+      }
+
+      message.success('Lưu cấu hình Job thành công.');
       router.push('/ops-support/job-management');
     } catch (error: any) {
       message.error(error.message || 'Vui lòng kiểm tra lại các trường thông tin chưa hợp lệ');
@@ -471,7 +536,6 @@ const JobFormContent: React.FC = () => {
                 >
                   <Select
                     style={{ width: '100%' }}
-                    disabled={watchDependencies && watchDependencies.length > 0}
                     options={[
                       { value: 'SCHEDULER', label: 'Bộ lập lịch (Scheduler)' },
                       { value: 'EVENT', label: 'Theo sự kiện (Event-driven)' },
@@ -500,8 +564,6 @@ const JobFormContent: React.FC = () => {
                   <InputNumber min={1} max={86400} precision={0} style={{ width: '100%' }} suffix="s" />
                 </Form.Item>
               </Col>
-
-
 
               <Col xs={12} sm={6} md={6}>
                 <Form.Item
@@ -547,18 +609,6 @@ const JobFormContent: React.FC = () => {
                     rules={[{ required: true, message: 'Vui lòng nhập tên sự kiện' }]}
                   >
                     <Input placeholder="VD: EVT_CUSTOMER_DATA_IMPORTED" style={{ fontFamily: typography.fontFamily.mono }} />
-                  </Form.Item>
-                )}
-
-                {watchTriggerType === 'MANUAL' && (
-                  <Form.Item
-                    label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Cơ chế kích hoạt</Text>}
-                  >
-                    <Input
-                      disabled
-                      value="Thủ công (Giao diện / API)"
-                      style={{ background: colors.neutral[100], color: colors.text.secondary }}
-                    />
                   </Form.Item>
                 )}
               </Col>
@@ -627,80 +677,101 @@ const JobFormContent: React.FC = () => {
             </Row>
           </div>
 
-          {/* KHỐI CẤU HÌNH PHỤ THUỘC */}
+          {/* KHỐI 3: Cấu hình phụ thuộc */}
           <div style={{ borderBottom: `1px solid ${colors.border.split}`, paddingBottom: spacing[5] }}>
             <Form.List name="dependencies">
-              {(fields, { add, remove }) => (
-                <>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: spacing[4] }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: spacing[2] }}>
-                      <CodeOutlined style={{ color: colors.primary[500], fontSize: 20 }} />
-                      <Text strong style={{ fontSize: typography.fontSize.base, textTransform: 'uppercase', color: colors.text.primary }}>
-                        Cấu hình phụ thuộc
-                      </Text>
-                    </div>
-                    <Button type="dashed" onClick={() => add({ conditionType: 'SUCCESS' })}>
-                      + Thêm Job phụ thuộc
-                    </Button>
-                  </div>
-                  <Table
-                    dataSource={fields}
-                    pagination={false}
-                    rowKey="name"
-                    bordered
-                    size="small"
-                    columns={[
-                      {
-                        title: 'Mã Job xử lý trước',
-                        dataIndex: 'name',
-                        width: '40%',
-                        render: (name) => (
-                          <Form.Item name={[name, 'jobId']} noStyle rules={[{ required: true, message: 'Vui lòng chọn Job' }]}>
-                            <Select
-                              showSearch
-                              placeholder="Chọn Job..."
-                              options={dependsOnOptions}
-                              style={{ width: '100%' }}
-                            />
-                          </Form.Item>
-                        )
-                      },
-                      {
-                        title: 'Điều kiện',
-                        dataIndex: 'name',
-                        width: '40%',
-                        render: (name) => (
-                          <Form.Item name={[name, 'conditionType']} noStyle rules={[{ required: true, message: 'Vui lòng chọn ĐK' }]}>
-                            <Select
-                              options={[
-                                { value: 'SUCCESS', label: 'Khi thành công' },
-                                { value: 'FAILURE', label: 'Khi thất bại' },
-                                { value: 'ALWAYS', label: 'Luôn luôn (Bất kể kết quả)' },
-                              ]}
-                              style={{ width: '100%' }}
-                            />
-                          </Form.Item>
-                        )
-                      },
-                      {
-                        title: '',
-                        key: 'action',
-                        width: '20%',
-                        align: 'center',
-                        render: (_, field) => (
-                          <Button type="text" danger onClick={() => remove(field.name)}>
-                            Xóa
+              {(fields, { add, remove }) => {
+                const isLimitReached = fields.length >= 10;
+                return (
+                  <>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: spacing[4] }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: spacing[2] }}>
+                        <CodeOutlined style={{ color: colors.primary[500], fontSize: 20 }} />
+                        <Text strong style={{ fontSize: typography.fontSize.base, textTransform: 'uppercase', color: colors.text.primary }}>
+                          Cấu hình phụ thuộc
+                        </Text>
+                      </div>
+                      <Tooltip title={isLimitReached ? 'Số lượng cấu hình đã đạt giới hạn cho phép (tối đa 10 Job)' : undefined}>
+                        <span>
+                          <Button
+                            type="dashed"
+                            disabled={isLimitReached}
+                            onClick={() => add({ conditionType: 'SUCCESS' })}
+                          >
+                            + Thêm Job phụ thuộc
                           </Button>
-                        )
-                      }
-                    ]}
-                  />
-                </>
-              )}
+                        </span>
+                      </Tooltip>
+                    </div>
+                    <Table
+                      dataSource={fields}
+                      pagination={false}
+                      rowKey="name"
+                      bordered
+                      size="small"
+                      columns={[
+                        {
+                          title: 'Mã Job phụ thuộc',
+                          dataIndex: 'name',
+                          width: '30%',
+                          render: (name) => (
+                            <Form.Item name={[name, 'jobId']} noStyle rules={[{ required: true, message: 'Vui lòng chọn Job' }]}>
+                              <Select
+                                showSearch
+                                placeholder="Chọn Job phụ thuộc..."
+                                options={dependsOnOptions}
+                                style={{ width: '100%' }}
+                              />
+                            </Form.Item>
+                          )
+                        },
+                        {
+                          title: 'Tên Job',
+                          dataIndex: 'name',
+                          width: '35%',
+                          render: (name) => {
+                            const selectedJobId = form.getFieldValue(['dependencies', name, 'jobId']);
+                            const targetJob = mockJobs.find((j) => j.id === selectedJobId);
+                            return <Text>{targetJob?.name || '—'}</Text>;
+                          }
+                        },
+                        {
+                          title: 'Điều kiện kích hoạt',
+                          dataIndex: 'name',
+                          width: '25%',
+                          render: (name) => (
+                            <Form.Item name={[name, 'conditionType']} noStyle rules={[{ required: true, message: 'Vui lòng chọn ĐK' }]}>
+                              <Select
+                                options={[
+                                  { value: 'SUCCESS', label: 'Khi thành công' },
+                                  { value: 'FAILURE', label: 'Khi thất bại' },
+                                  { value: 'ALWAYS', label: 'Luôn luôn' },
+                                ]}
+                                style={{ width: '100%' }}
+                              />
+                            </Form.Item>
+                          )
+                        },
+                        {
+                          title: 'Thao tác',
+                          key: 'action',
+                          width: '10%',
+                          align: 'center',
+                          render: (_, field) => (
+                            <Button type="text" danger onClick={() => remove(field.name)}>
+                              Xóa
+                            </Button>
+                          )
+                        }
+                      ]}
+                    />
+                  </>
+                );
+              }}
             </Form.List>
           </div>
 
-          {/* KHỐI 3: Thiết lập Cảnh báo Sự cố */}
+          {/* KHỐI 4: Thiết lập Cảnh báo Sự cố */}
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: spacing[2], marginBottom: spacing[4] }}>
               <BellOutlined style={{ color: colors.primary[500], fontSize: 20 }} />
@@ -761,7 +832,7 @@ const JobFormContent: React.FC = () => {
             >
               Lưu
             </Button>
-            <Button onClick={() => router.push('/ops-support/job-management')} style={{ minWidth: 100 }}>
+            <Button onClick={handleCancel} style={{ minWidth: 100 }}>
               Hủy
             </Button>
           </div>

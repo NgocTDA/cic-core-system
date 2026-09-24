@@ -28,11 +28,15 @@ else Bộ lập lịch hoặc Thủ công
 end
 
 NSD -> MH_FORM : Nhập Khối 2 — Lập lịch và xử lý lỗi
-NSD -> MH_FORM : Nhập Khối 3 — Thiết lập cảnh báo sự cố
+NSD -> MH_FORM : Cấu hình Khối 3 — Cấu hình phụ thuộc
+opt Có ít nhất 1 Job phụ thuộc
+  MH_FORM --> NSD : Tự động khóa Điều kiện kích hoạt về Theo sự kiện (BR-HTVH-036-020)
+end
+NSD -> MH_FORM : Nhập Khối 4 — Thiết lập cảnh báo sự cố
 
 == Ghi dữ liệu ==
 NSD -> MH_FORM : Nhấp "Lưu"
-MH_FORM -> MH_FORM : Kiểm tra toàn bộ ràng buộc\nBR-HTVH-036-001 đến BR-HTVH-036-008
+MH_FORM -> MH_FORM : Kiểm tra toàn bộ ràng buộc\nBR-HTVH-036-001 đến BR-HTVH-036-008,\nBR-HTVH-036-020 đến BR-HTVH-036-022
 
 alt Dữ liệu chưa hợp lệ
   MH_FORM --> NSD : ERR_014 và đánh dấu từng ô nhập lỗi

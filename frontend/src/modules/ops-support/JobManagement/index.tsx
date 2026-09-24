@@ -12,7 +12,7 @@ import {
   type IDisplayColumnOption,
 } from '@/components/ui';
 import { useJobManagement } from './useJobManagement';
-import { useRole } from '@/context/RoleContext';
+import { useRole, hasPermission } from '@/context/RoleContext';
 import { mockJobs } from './mockData';
 import JobFilter from './JobFilter';
 import JobList from './JobList';
@@ -46,6 +46,7 @@ const JobManagement: React.FC = () => {
     filteredJobs,
     runJob,
     toggleJobStatus,
+    deleteJob,
   } = useJobManagement();
 
   const handleAddJob = useCallback(() => {
@@ -57,11 +58,34 @@ const JobManagement: React.FC = () => {
   };
 
   const handleToggleStatus = (job: IJob) => {
-    toggleJobStatus(job.id);
+    // BR-HTVH-027-027:
     if (job.status === 'ACTIVE') {
-      message.success(`Đã vô hiệu hóa Job ${job.code}`);
+      // Check if any ACTIVE job depends on this job
+      const dependentJobs = mockJobs.filter(
+        (j) => j.status === 'ACTIVE' && j.dependencies?.some((dep) => dep.jobId === job.id)
+      );
+      if (dependentJobs.length > 0) {
+        message.error(
+          `Không thể ngừng hoạt động Job này vì Job ${dependentJobs[0].code} đang hoạt động và phụ thuộc vào Job này.`
+        );
+        return;
+      }
+      toggleJobStatus(job.id);
+      message.success('Cập nhật trạng thái Job thành công.');
     } else {
-      message.success(`Đã kích hoạt Job ${job.code}`);
+      // Switching from INACTIVE / ARCHIVED -> ACTIVE
+      // Check if any parent job this job depends on is not ACTIVE
+      const inactiveParents = (job.dependencies || [])
+        .map((dep) => mockJobs.find((j) => j.id === dep.jobId))
+        .filter((parent) => parent && parent.status !== 'ACTIVE');
+
+      if (inactiveParents.length > 0) {
+        message.warning(
+          `Job ${inactiveParents[0]?.code} phụ thuộc đang không hoạt động. Job này có thể không được kích hoạt đúng lịch.`
+        );
+      }
+      toggleJobStatus(job.id);
+      message.success('Cập nhật trạng thái Job thành công.');
     }
   };
 
@@ -124,10 +148,27 @@ const JobManagement: React.FC = () => {
         </div>
       ),
       onOk: () => {
-        // In reality, pass dynamicParamsRef.current to runJob
-        selectedRowKeys.forEach((id) => runJob(id as string));
-        message.success(`Đã kích hoạt chạy ${selectedCount} Job thành công`);
-        setSelectedRowKeys([]);
+        const selectedJobs = selectedRowKeys
+          .map((id) => mockJobs.find((j) => j.id === id))
+          .filter(Boolean) as IJob[];
+        const rejectedIds: React.Key[] = [];
+        let successCount = 0;
+
+        selectedJobs.forEach((job) => {
+          // BR-HTVH-027-031: concurrent check
+          if (job.concurrent && job.runStatus === 'RUNNING') {
+            rejectedIds.push(job.id);
+            message.warning(`Job ${job.code} đang trong tiến trình chạy. Vui lòng đợi lượt chạy hoàn tất.`);
+          } else {
+            runJob(job.id);
+            successCount++;
+          }
+        });
+
+        if (successCount > 0) {
+          message.success(`Kích hoạt thành công ${successCount}/${selectedJobs.length} Job.`);
+        }
+        setSelectedRowKeys(rejectedIds);
         dynamicParamsRef.current = '';
       },
       onCancel: () => {
@@ -159,7 +200,7 @@ const JobManagement: React.FC = () => {
       },
     ];
 
-    if (selectedRowKeys.length > 0) {
+    if (selectedRowKeys.length > 0 && hasPermission(currentRole, 'run')) {
       actions.push({
         key: 'run_selected',
         label: `Chạy Job (${selectedRowKeys.length})`,
@@ -169,16 +210,18 @@ const JobManagement: React.FC = () => {
       });
     }
 
-    actions.push({
-      key: 'add',
-      label: 'Thiết lập job mới',
-      type: 'primary' as const,
-      icon: <PlusOutlined />,
-      onClick: handleAddJob,
-    });
+    if (hasPermission(currentRole, 'create')) {
+      actions.push({
+        key: 'add',
+        label: 'Thiết lập job mới',
+        type: selectedRowKeys.length > 0 ? ('default' as const) : ('primary' as const),
+        icon: <PlusOutlined />,
+        onClick: handleAddJob,
+      });
+    }
 
     return actions;
-  }, [handleAddJob, visibleColumns, selectedRowKeys, handleConfirmRunSelectedJobs]);
+  }, [handleAddJob, visibleColumns, selectedRowKeys, handleConfirmRunSelectedJobs, currentRole]);
 
   // Register Header Actions
   useHeaderActions(
@@ -254,6 +297,7 @@ const JobManagement: React.FC = () => {
         onRowClick={handleRowClick}
         onRun={handleConfirmRunJob}
         onEdit={handleEditJob}
+        onDelete={deleteJob}
         onToggleStatus={handleToggleStatus}
         onViewHistory={setHistoryJob}
         onBulkRun={handleBulkRun}

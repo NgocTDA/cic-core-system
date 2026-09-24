@@ -13,6 +13,7 @@ import {
   Checkbox,
   message,
   Input,
+  Empty,
 } from 'antd';
 import {
   PlayCircleOutlined,
@@ -24,8 +25,9 @@ import {
   MailOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-import { ChangeHistoryCollapse } from '@/components/ui';
+import { ChangeHistoryCollapse, StatusTag } from '@/components/ui';
 import { colors, spacing, radius, typography } from '@/design-system';
+import { useRole, hasPermission } from '@/context/RoleContext';
 import type { IJob } from './types';
 import { mockChangeHistoryData, mockJobs } from './mockData';
 import { getCronDescription } from './cronUtils';
@@ -65,6 +67,7 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
   job,
   onClose,
 }) => {
+  const { currentRole } = useRole();
   if (!job) return null;
 
   const handleRunJob = () => {
@@ -118,6 +121,11 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
     onFailure: { sms: true, push: true, email: true, customRecipients: ['alert_group@cic.org.vn'] },
     onRetry: { sms: false, push: true, email: false, customRecipients: [] },
   };
+
+  const dependencies =
+    job.dependencies && job.dependencies.length > 0
+      ? job.dependencies
+      : (job.dependsOn || []).map((id) => ({ jobId: id, conditionType: 'SUCCESS' }));
 
   const notificationColumns = [
     {
@@ -197,11 +205,11 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
   ];
 
   const notificationData = [
-    { key: 'onStart', eventLabel: 'Khi bắt đầu chạy Job', ...matrix.onStart },
+    { key: 'onStart', eventLabel: 'Khi bắt đầu chạy', ...matrix.onStart },
     { key: 'onSuccess', eventLabel: 'Khi hoàn tất thành công', ...matrix.onSuccess },
     { key: 'onSlaBreach', eventLabel: 'Khi chạy chậm quá SLA', ...matrix.onSlaBreach },
-    { key: 'onFailure', eventLabel: 'Khi gặp sự cố / Thất bại', ...matrix.onFailure },
-    { key: 'onRetry', eventLabel: 'Khi thử lại (Retry)', ...matrix.onRetry },
+    { key: 'onFailure', eventLabel: 'Khi gặp sự cố', ...matrix.onFailure },
+    { key: 'onRetry', eventLabel: 'Khi thử lại', ...matrix.onRetry },
   ];
 
   return (
@@ -233,20 +241,17 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
               borderBottom: `1px solid ${colors.border.split}`,
             }}
           >
-            <Tag
-              color={job.status === 'ACTIVE' ? 'green' : 'default'}
-              style={{ fontSize: 13, padding: '4px 12px', margin: 0 }}
-            >
-              {job.status === 'ACTIVE' ? 'ĐANG HOẠT ĐỘNG' : 'TẠM DỪNG'}
-            </Tag>
+            <StatusTag status={job.status} />
 
-            <Button
-              type="primary"
-              icon={<PlayCircleOutlined />}
-              onClick={handleRunJob}
-            >
-              Chạy ngay
-            </Button>
+            {hasPermission(currentRole, 'run') && job.status !== 'ARCHIVED' && (
+              <Button
+                type="primary"
+                icon={<PlayCircleOutlined />}
+                onClick={handleRunJob}
+              >
+                Chạy ngay
+              </Button>
+            )}
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: spacing[5] }}>
@@ -376,7 +381,7 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
                       SLA dự kiến (giây)
                     </Text>
                     <Text strong style={{ fontSize: typography.fontSize.base }}>
-                      {job.slaTimeout ?? 1800}s
+                      {job.slaTimeout ? `${job.slaTimeout}s` : 'Chưa cấu hình'}
                     </Text>
                   </div>
                 </Col>
@@ -411,22 +416,28 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
                     <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
                       Biểu thức Cron
                     </Text>
-                    <code
-                      style={{
-                        background: colors.neutral[100],
-                        padding: '4px 10px',
-                        borderRadius: radius.md,
-                        fontFamily: typography.fontFamily.mono,
-                        fontWeight: 'bold',
-                        fontSize: typography.fontSize.base,
-                        color: '#000000',
-                      }}
-                    >
-                      {job.cron || job.schedule?.expression || '0 0 1 * * *'}
-                    </code>
-                    <Text type="secondary" style={{ fontSize: typography.fontSize.xs, display: 'block', marginTop: 4, color: colors.primary[600] }}>
-                      💡 Diễn giải: {getCronDescription(job.cron || job.schedule?.expression || '0 0 1 * * *')}
-                    </Text>
+                    {(!job.triggerType || job.triggerType === 'SCHEDULER') && (job.cron || job.schedule?.expression) ? (
+                      <>
+                        <code
+                          style={{
+                            background: colors.neutral[100],
+                            padding: '4px 10px',
+                            borderRadius: radius.md,
+                            fontFamily: typography.fontFamily.mono,
+                            fontWeight: 'bold',
+                            fontSize: typography.fontSize.base,
+                            color: '#000000',
+                          }}
+                        >
+                          {job.cron || job.schedule?.expression}
+                        </code>
+                        <Text type="secondary" style={{ fontSize: typography.fontSize.xs, display: 'block', marginTop: 4, color: colors.primary[600] }}>
+                          💡 Diễn giải: {getCronDescription(job.cron || job.schedule?.expression || '')}
+                        </Text>
+                      </>
+                    ) : (
+                      <Text strong style={{ fontSize: typography.fontSize.base }}>—</Text>
+                    )}
                   </div>
                 </Col>
 
@@ -471,27 +482,27 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
                 <Col xs={12} sm={6} md={6}>
                   <div>
                     <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
-                      Lưu log thành công (ngày)
+                      Lưu log thành công
                     </Text>
                     <Text strong style={{ fontSize: typography.fontSize.base }}>
-                      {job.retentionSuccess ?? 7}
+                      {job.retentionSuccess === 0 ? 'Xóa sau khi lượt chạy kết thúc' : `${job.retentionSuccess ?? 7} ngày`}
                     </Text>
                   </div>
                 </Col>
                 <Col xs={12} sm={6} md={6}>
                   <div>
                     <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
-                      Lưu log lỗi (ngày)
+                      Lưu log lỗi
                     </Text>
                     <Text strong style={{ fontSize: typography.fontSize.base }}>
-                      {job.retentionError ?? 30}
+                      {job.retentionError === 0 ? 'Xóa sau khi lượt chạy kết thúc' : `${job.retentionError ?? 30} ngày`}
                     </Text>
                   </div>
                 </Col>
               </Row>
             </div>
 
-            {/* KHỐI CẤU HÌNH PHỤ THUỘC */}
+            {/* KHỐI 3: Cấu hình phụ thuộc */}
             <div style={{ borderBottom: `1px solid ${colors.border.split}`, paddingBottom: spacing[5] }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: spacing[2], marginBottom: spacing[4] }}>
                 <CodeOutlined style={{ color: colors.primary[500], fontSize: 20 }} />
@@ -499,25 +510,35 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
                   Cấu hình phụ thuộc
                 </Text>
               </div>
-              {job.dependencies && job.dependencies.length > 0 ? (
+              {dependencies && dependencies.length > 0 ? (
                 <Table
-                  dataSource={job.dependencies}
+                  dataSource={dependencies}
                   pagination={false}
                   rowKey="jobId"
                   bordered
                   size="small"
                   columns={[
                     {
-                      title: 'Mã Job xử lý trước',
+                      title: 'Mã Job phụ thuộc',
+                      dataIndex: 'jobId',
+                      width: 180,
+                      render: (id) => {
+                        const depJob = mockJobs.find((j) => j.id === id);
+                        return <Text strong style={{ color: colors.primary[500] }}>{depJob?.code || id}</Text>;
+                      }
+                    },
+                    {
+                      title: 'Tên Job',
                       dataIndex: 'jobId',
                       render: (id) => {
                         const depJob = mockJobs.find((j) => j.id === id);
-                        return <Text strong>{depJob ? `${depJob.code} - ${depJob.name}` : id}</Text>;
+                        return <Text>{depJob?.name || '—'}</Text>;
                       }
                     },
                     {
                       title: 'Điều kiện kích hoạt',
                       dataIndex: 'conditionType',
+                      width: 200,
                       render: (type) => (
                         <Text>
                           {type === 'SUCCESS' ? 'Khi thành công' : type === 'FAILURE' ? 'Khi thất bại' : 'Luôn luôn (Bất kể kết quả)'}
@@ -527,11 +548,11 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
                   ]}
                 />
               ) : (
-                <Text type="secondary" style={{ fontStyle: 'italic' }}>Không có cấu hình phụ thuộc.</Text>
+                <Empty description="Không có Job phụ thuộc" image={Empty.PRESENTED_IMAGE_SIMPLE} />
               )}
             </div>
 
-            {/* KHỐI 3: Thiết lập Cảnh báo Sự cố */}
+            {/* KHỐI 4: Thiết lập Cảnh báo Sự cố */}
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: spacing[2], marginBottom: spacing[3] }}>
                 <BellOutlined style={{ color: colors.primary[500], fontSize: 18 }} />
