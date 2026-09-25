@@ -2,8 +2,11 @@
 
 export const dynamic = 'force-dynamic';
 
-import React from 'react';
-import JobFormPage from '@/modules/ops-support/JobManagement/JobFormPage';
+import dynamicImport from 'next/dynamic';
+
+const JobFormPage = dynamicImport(() => import('@/modules/ops-support/JobManagement/JobFormPage'), {
+  ssr: false,
+});
 
 export default function CreateJobPage() {
     return <JobFormPage />;

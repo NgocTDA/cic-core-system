@@ -70,6 +70,24 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
   const { currentRole } = useRole();
   if (!job) return null;
 
+  const isViewerRole = currentRole === 'ROLE-CBNV' || currentRole === 'VIEWER';
+
+  // Helper mask secrets in YAML/JSON (M2-03)
+  const maskSecretParams = (paramsStr?: string): string => {
+    if (!paramsStr) return '# Không có tham số bổ sung';
+    if (!isViewerRole) return paramsStr;
+    return paramsStr.replace(
+      /((?:password|secret|token|key|pwd)[\w-]*\s*[:=]\s*)(['"]?)([^'"\n\r]+)(['"]?)/gi,
+      '$1$2******$4'
+    );
+  };
+
+  // Helper mask email before @ (M2-03)
+  const maskEmail = (email: string): string => {
+    if (!isViewerRole) return email;
+    return email.replace(/^[^@]+/, '*****');
+  };
+
   const handleRunJob = () => {
     Modal.confirm({
       title: 'Xác nhận thực hiện Job',
@@ -77,9 +95,9 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
       centered: true,
       content: (
         <div>
-          <p style={{ marginBottom: 12 }}>Bạn có chắc chắn muốn kích hoạt chạy Job này ngay bây giờ không?</p>
-          <div style={{ background: '#f8fafc', padding: '10px 14px', borderRadius: radius.md, border: `1px solid ${colors.border.base}` }}>
-            <div><Text type="secondary">Mã Job: </Text><Text code strong style={{ color: '#000000' }}>{job.code}</Text></div>
+          <p style={{ marginBottom: 12 }}>Bạn có chắc chắn muốn kích hoạt chạy job không?</p>
+          <div style={{ background: colors.bg.subtle, padding: '10px 14px', borderRadius: radius.md, border: `1px solid ${colors.border.base}` }}>
+            <div><Text type="secondary">Mã Job: </Text><Text code strong style={{ color: colors.text.primary }}>{job.code}</Text></div>
             <div><Text type="secondary">Tên Job: </Text><Text strong>{job.name}</Text></div>
           </div>
           <div style={{ marginTop: 16 }}>
@@ -110,9 +128,17 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
   };
 
   // Email tags list parsing
-  const emailTags = job.notifyEmails
+  const rawEmailTags = job.notifyEmails
     ? job.notifyEmails.split(/[,;]\s*/).filter(Boolean)
     : ['admin@cic.org.vn', 'alert@cic.org.vn'];
+  const emailTags = rawEmailTags.map(maskEmail);
+
+  const historyData = mockChangeHistoryData.map((item) => ({
+    ...item,
+    ipAddress: isViewerRole && item.ipAddress
+      ? item.ipAddress.replace(/^\d+\.\d+\.\d+\./, '***.***.***.')
+      : item.ipAddress,
+  }));
 
   const matrix = job.notificationMatrix || {
     onStart: { sms: false, push: false, email: true, customRecipients: [] },
@@ -192,7 +218,7 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
           <Space wrap size={[4, 4]}>
             {recipients.map((item) => (
               <Tag key={item} color="blue">
-                {item}
+                {maskEmail(item)}
               </Tag>
             ))}
           </Space>
@@ -243,7 +269,7 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
           >
             <StatusTag status={job.status} />
 
-            {hasPermission(currentRole, 'run') && job.status !== 'ARCHIVED' && (
+            {hasPermission(currentRole, 'run') && job.status === 'ACTIVE' && (
               <Button
                 type="primary"
                 icon={<PlayCircleOutlined />}
@@ -271,7 +297,7 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
                     <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
                       Mã Job
                     </Text>
-                    <Text code strong style={{ fontSize: typography.fontSize.base, color: '#000000' }}>
+                    <Text code strong style={{ fontSize: typography.fontSize.base, color: colors.text.primary }}>
                       {job.code}
                     </Text>
                   </div>
@@ -304,7 +330,7 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
                     <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
                       Mã dịch vụ
                     </Text>
-                    <Text code strong style={{ fontSize: typography.fontSize.base, color: '#000000' }}>
+                    <Text code strong style={{ fontSize: typography.fontSize.base, color: colors.text.primary }}>
                       {job.serviceCode || 'SVC_CIC_CORE_SYNC'}
                     </Text>
                   </div>
@@ -336,8 +362,8 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
                       style={{
                         fontFamily: typography.fontFamily.mono,
                         fontSize: typography.fontSize.sm,
-                        backgroundColor: '#f8fafc',
-                        color: '#0f172a',
+                        backgroundColor: colors.bg.subtle,
+                        color: colors.text.primary,
                         border: `1px solid ${colors.border.base}`,
                         borderRadius: radius.md,
                         padding: spacing[3],
@@ -346,7 +372,7 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
                         overflowY: 'auto',
                       }}
                     >
-                      {job.params || '# Không có tham số bổ sung'}
+                      {maskSecretParams(job.params)}
                     </pre>
                   </div>
                 </Col>
@@ -362,7 +388,7 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
                 </Text>
               </div>
 
-              {/* HÀNG 1: Điều kiện kích hoạt (25%) | Job cần hoàn thành trước (50%) | Chờ ban đầu (12.5%) | Chờ tối đa (12.5%) */}
+              {/* HÀNG 1: Điều kiện kích hoạt | Tên sự kiện (nếu EVENT) | SLA dự kiến | Chờ ban đầu */}
               <Row gutter={[16, 16]}>
                 <Col xs={24} sm={12} md={6}>
                   <div>
@@ -375,13 +401,39 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
                   </div>
                 </Col>
 
+                {job.triggerType === 'EVENT' ? (
+                  <Col xs={24} sm={12} md={6}>
+                    <div>
+                      <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                        Tên sự kiện kích hoạt
+                      </Text>
+                      <Text strong style={{ fontSize: typography.fontSize.base, fontFamily: typography.fontFamily.mono }}>
+                        {job.eventName || 'EVT_CUSTOMER_DATA_IMPORTED'}
+                      </Text>
+                    </div>
+                  </Col>
+                ) : (
+                  <Col xs={12} sm={6} md={6}>
+                    <div>
+                      <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                        SLA dự kiến (giây)
+                      </Text>
+                      <Text strong style={{ fontSize: typography.fontSize.base }}>
+                        {job.slaTimeout ? `${job.slaTimeout}s` : 'Chưa cấu hình'}
+                      </Text>
+                    </div>
+                  </Col>
+                )}
+
                 <Col xs={12} sm={6} md={6}>
                   <div>
                     <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
-                      SLA dự kiến (giây)
+                      {job.triggerType === 'EVENT' ? 'SLA dự kiến (giây)' : 'Chờ ban đầu (giây)'}
                     </Text>
                     <Text strong style={{ fontSize: typography.fontSize.base }}>
-                      {job.slaTimeout ? `${job.slaTimeout}s` : 'Chưa cấu hình'}
+                      {job.triggerType === 'EVENT'
+                        ? (job.slaTimeout ? `${job.slaTimeout}s` : 'Chưa cấu hình')
+                        : `${job.retryInterval ?? 60}s`}
                     </Text>
                   </div>
                 </Col>
@@ -389,21 +441,12 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
                 <Col xs={12} sm={6} md={6}>
                   <div>
                     <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
-                      Chờ ban đầu (giây)
+                      {job.triggerType === 'EVENT' ? 'Chờ ban đầu (giây)' : 'Chờ tối đa (giây)'}
                     </Text>
                     <Text strong style={{ fontSize: typography.fontSize.base }}>
-                      {job.retryInterval ?? 60}s
-                    </Text>
-                  </div>
-                </Col>
-
-                <Col xs={12} sm={6} md={6}>
-                  <div>
-                    <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
-                      Chờ tối đa (giây)
-                    </Text>
-                    <Text strong style={{ fontSize: typography.fontSize.base }}>
-                      {job.timeout || 300}s
+                      {job.triggerType === 'EVENT'
+                        ? `${job.retryInterval ?? 60}s`
+                        : `${job.timeout || 300}s`}
                     </Text>
                   </div>
                 </Col>
@@ -426,17 +469,17 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
                             fontFamily: typography.fontFamily.mono,
                             fontWeight: 'bold',
                             fontSize: typography.fontSize.base,
-                            color: '#000000',
+                            color: colors.text.primary,
                           }}
                         >
                           {job.cron || job.schedule?.expression}
                         </code>
                         <Text type="secondary" style={{ fontSize: typography.fontSize.xs, display: 'block', marginTop: 4, color: colors.primary[600] }}>
-                          💡 Diễn giải: {getCronDescription(job.cron || job.schedule?.expression || '')}
+                          Diễn giải: {getCronDescription(job.cron || job.schedule?.expression || '')}
                         </Text>
                       </>
                     ) : (
-                      <Text strong style={{ fontSize: typography.fontSize.base }}>—</Text>
+                      <Text strong style={{ fontSize: typography.fontSize.base }}>-</Text>
                     )}
                   </div>
                 </Col>
@@ -463,18 +506,18 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
                   </div>
                 </Col>
 
-                {(!job.triggerType || job.triggerType === 'SCHEDULER') && (
-                  <Col xs={24} sm={12} md={6}>
-                    <div>
-                      <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
-                        Xử lý khi bỏ lỡ lượt chạy
-                      </Text>
-                      <Text strong style={{ fontSize: typography.fontSize.base }}>
-                        {misfireMap[job.misfire || 'FIRE_NOW']}
-                      </Text>
-                    </div>
-                  </Col>
-                )}
+                <Col xs={24} sm={12} md={6}>
+                  <div>
+                    <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                      Xử lý khi bỏ lỡ lượt chạy
+                    </Text>
+                    <Text strong style={{ fontSize: typography.fontSize.base }}>
+                      {(!job.triggerType || job.triggerType === 'SCHEDULER')
+                        ? misfireMap[job.misfire || 'FIRE_NOW']
+                        : '-'}
+                    </Text>
+                  </div>
+                </Col>
               </Row>
 
               {/* HÀNG 3: Retention */}
@@ -485,7 +528,7 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
                       Lưu log thành công
                     </Text>
                     <Text strong style={{ fontSize: typography.fontSize.base }}>
-                      {job.retentionSuccess === 0 ? 'Xóa sau khi lượt chạy kết thúc' : `${job.retentionSuccess ?? 7} ngày`}
+                      {job.retentionSuccess === 0 ? 'Xóa sau khi lượt chạy kết thúc' : `${job.retentionSuccess ?? 3650} ngày`}
                     </Text>
                   </div>
                 </Col>
@@ -495,7 +538,7 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
                       Lưu log lỗi
                     </Text>
                     <Text strong style={{ fontSize: typography.fontSize.base }}>
-                      {job.retentionError === 0 ? 'Xóa sau khi lượt chạy kết thúc' : `${job.retentionError ?? 30} ngày`}
+                      {job.retentionError === 0 ? 'Xóa sau khi lượt chạy kết thúc' : `${job.retentionError ?? 3650} ngày`}
                     </Text>
                   </div>
                 </Col>
@@ -519,12 +562,12 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
                   size="small"
                   columns={[
                     {
-                      title: 'Mã Job phụ thuộc',
+                      title: 'Mã Job phụ thuộc (xử lý trước)',
                       dataIndex: 'jobId',
-                      width: 180,
+                      width: 220,
                       render: (id) => {
                         const depJob = mockJobs.find((j) => j.id === id);
-                        return <Text strong style={{ color: colors.primary[500] }}>{depJob?.code || id}</Text>;
+                        return <Text strong style={{ color: colors.text.primary, fontFamily: typography.fontFamily.mono }}>{depJob?.code || id}</Text>;
                       }
                     },
                     {
@@ -591,8 +634,8 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
               </div>
             </div>
 
-            {/* KHỐI 4: Bảng Lịch sử thay đổi (Audit Change History Collapse) */}
-            <ChangeHistoryCollapse data={mockChangeHistoryData} />
+            {/* KHỐI 5: Bảng Lịch sử thay đổi (Audit Change History Collapse) */}
+            <ChangeHistoryCollapse data={historyData} />
           </div>
         </div>
       </Modal>

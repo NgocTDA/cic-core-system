@@ -3,8 +3,8 @@ import type { ChannelType } from '@/modules/kkn/NotificationTemplate/TemplateTyp
 // Job categories
 export type JobCategory = 'DATA_SYNC' | 'REPORT' | 'CLEANUP' | 'VALIDATION' | 'BATCH';
 
-// Job lifecycle status
-export type JobStatus = 'ACTIVE' | 'INACTIVE' | 'ARCHIVED';
+// Job lifecycle status - G-03: Chỉ có 2 nhãn Hoạt động (ACTIVE) và Không hoạt động (INACTIVE)
+export type JobStatus = 'ACTIVE' | 'INACTIVE';
 
 // Runtime status (last execution state)
 /* export */ type JobRunStatus = 'RUNNING' | 'IDLE' | 'SCHEDULED' | 'FAILED' | 'PAUSED';
@@ -14,8 +14,8 @@ export type JobStatus = 'ACTIVE' | 'INACTIVE' | 'ARCHIVED';
 
 export type JobPriority = 1 | 2 | 3 | 4 | 5;
 
-// User roles (role-based UI)
-export type UserRole = 'ADMIN' | 'MANAGER' | 'VIEWER';
+// User roles (role-based UI) - M1-08, M2-03, M3-13
+export type UserRole = 'ADMIN' | 'MANAGER' | 'VIEWER' | 'ROLE-QTHT' | 'ROLE-QLVH' | 'ROLE-CBNV';
 
 export interface IJobSchedule {
   type: 'CRON' | 'MANUAL' | 'ONCE';
@@ -93,6 +93,7 @@ export interface IJob {
   targetLabel?: string;
   serviceCode?: string;
   triggerType?: TriggerTypeOption;
+  eventName?: string; // Tên sự kiện kích hoạt (cho Job EVENT - M2-02, M3-11)
   schedulerType?: SchedulerOption;
   cron?: string;
   misfire?: MisfirePolicyConsole;

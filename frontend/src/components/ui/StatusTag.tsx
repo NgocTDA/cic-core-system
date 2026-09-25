@@ -9,14 +9,15 @@ export type StatusRole = keyof typeof colors.statusTag;
 // across all modules. Extend as needed.
 
 export const STATUS_CONFIG = {
-  // Activation
-  ACTIVE:    { role: 'active' as StatusRole,     color: 'success',    label: 'Hoạt động' },
-  INACTIVE:  { role: 'neutral' as StatusRole,    color: 'default',    label: 'Ngừng hoạt động' },
-  ARCHIVED:  { role: 'neutral' as StatusRole,    color: 'default',    label: 'Đã lưu trữ' },
+  ACTIVE:            { role: 'active' as StatusRole,     color: 'success',    label: 'Hoạt động' },
+  INACTIVE:          { role: 'error' as StatusRole,      color: 'error',      label: 'Ngừng hoạt động' },
+  'Ngừng hoạt động': { role: 'error' as StatusRole,      color: 'error',      label: 'Ngừng hoạt động' },
+  'Không hoạt động': { role: 'error' as StatusRole,      color: 'error',      label: 'Ngừng hoạt động' },
+  ARCHIVED:          { role: 'neutral' as StatusRole,    color: 'default',    label: 'Đã lưu trữ' },
 
   // Job execution
   SUCCESS:   { role: 'active' as StatusRole,     color: 'success',    label: 'Thành công' },
-  FAILED:    { role: 'error' as StatusRole,      color: 'error',      label: 'Lỗi' },
+  FAILED:    { role: 'error' as StatusRole,      color: 'error',      label: 'Thất bại' },
   RUNNING:   { role: 'processing' as StatusRole, color: 'processing', label: 'Đang chạy' },
   IDLE:      { role: 'neutral' as StatusRole,    color: 'default',    label: 'Chờ (Idle)' },
   SCHEDULED: { role: 'warning' as StatusRole,    color: 'warning',    label: 'Đã đặt lịch' },

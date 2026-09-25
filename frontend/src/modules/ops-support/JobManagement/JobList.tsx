@@ -11,8 +11,8 @@ import {
   HistoryOutlined,
   PoweroffOutlined,
 } from '@ant-design/icons';
-import { ActionMenu, StatusTag, tablePagination, SectionCard } from '@/components/ui';
-import { colors, typography } from '@/design-system';
+import { ActionMenu, CodeText, StatusTag, tablePagination, SectionCard } from '@/components/ui';
+import { colors, typography, spacing, radius } from '@/design-system';
 import { useRole, hasPermission } from '@/context/RoleContext';
 import type { IJob } from './types';
 import { getCronDescription } from './cronUtils';
@@ -133,9 +133,9 @@ const JobList: React.FC<Props> = ({
       content: (
         <div>
           <p style={{ marginBottom: 12 }}>Bạn có chắc chắn muốn xóa Job không? Dữ liệu sau khi xóa sẽ không thể phục hồi.</p>
-          <div style={{ background: '#f8fafc', padding: '10px 14px', borderRadius: 6, border: '1px solid #d9d9d9' }}>
-            <div><span style={{ color: 'rgba(0,0,0,0.45)' }}>Mã Job: </span><span style={{ fontFamily: 'monospace', fontWeight: 'bold', color: '#000000' }}>{record.code}</span></div>
-            <div><span style={{ color: 'rgba(0,0,0,0.45)' }}>Tên Job: </span><span style={{ fontWeight: 'bold' }}>{record.name}</span></div>
+          <div style={{ background: colors.bg.subtle, padding: `${spacing[2]} ${spacing[3]}`, borderRadius: radius.md, border: `1px solid ${colors.neutral[300]}` }}>
+            <div><span style={{ color: colors.text.secondary }}>Mã Job: </span><span style={{ fontFamily: typography.fontFamily.mono, fontWeight: 'bold', color: colors.text.primary }}>{record.code}</span></div>
+            <div><span style={{ color: colors.text.secondary }}>Tên Job: </span><span style={{ fontWeight: 'bold' }}>{record.name}</span></div>
           </div>
         </div>
       ),
@@ -169,11 +169,9 @@ const JobList: React.FC<Props> = ({
       title: 'Mã Job',
       dataIndex: 'code',
       key: 'code',
-      width: 150,
+      width: 240,
       render: (code) => (
-        <Text strong style={{ color: colors.primary[500], whiteSpace: 'nowrap' }}>
-          {code}
-        </Text>
+        <CodeText style={{ color: colors.text.primary, whiteSpace: 'nowrap' }}>{code}</CodeText>
       ),
     },
     {
@@ -228,18 +226,18 @@ const JobList: React.FC<Props> = ({
       width: 140,
       render: (cron, record) => {
         if (record.triggerType && record.triggerType !== 'SCHEDULER') {
-          return <Text type="secondary">—</Text>;
+          return <Text type="secondary">-</Text>;
         }
         const cronExpr = cron || record.schedule?.expression;
         if (!cronExpr) {
-          return <Text type="secondary">—</Text>;
+          return <Text type="secondary">-</Text>;
         }
         const description = getCronDescription(cronExpr);
         return (
-          <Tooltip title={`💡 Diễn giải: ${description}`} mouseEnterDelay={0.15}>
+          <Tooltip title={`Diễn giải: ${description}`} mouseEnterDelay={0.15}>
             <span
               style={{
-                fontFamily: typography.fontFamily.sans,
+                fontFamily: typography.fontFamily.mono,
                 fontWeight: typography.fontWeight.medium,
                 fontSize: typography.fontSize.sm,
                 color: colors.text.primary,
@@ -264,7 +262,6 @@ const JobList: React.FC<Props> = ({
       filters: [
         { text: 'Hoạt động', value: 'ACTIVE' },
         { text: 'Ngừng hoạt động', value: 'INACTIVE' },
-        { text: 'Ngừng hiệu lực', value: 'ARCHIVED' },
       ],
       onFilter: (value, record) => record.status === value,
       render: (status) => <StatusTag status={status} />,
@@ -276,15 +273,33 @@ const JobList: React.FC<Props> = ({
       width: 75,
       fixed: 'right' as const,
       render: (_, record) => {
+        // M5-02: ROLE-CBNV (hoặc VIEWER) chỉ xem chi tiết và lịch sử chạy
+        const isViewerRole = currentRole === 'ROLE-CBNV' || currentRole === 'VIEWER';
+
+        if (isViewerRole) {
+          const viewerItems: MenuProps['items'] = [
+            {
+              key: 'view',
+              icon: <EyeOutlined />,
+              label: 'Xem chi tiết',
+              onClick: () => onRowClick(record.id),
+            },
+            {
+              key: 'history',
+              icon: <HistoryOutlined />,
+              label: 'Lịch sử chạy Job',
+              onClick: () => { if (onViewHistory) onViewHistory(record); },
+            },
+          ];
+          return <ActionMenu items={viewerItems} />;
+        }
+
         const items: MenuProps['items'] = [
           {
             key: 'view',
             icon: <EyeOutlined />,
             label: 'Xem chi tiết',
-            onClick: (info) => {
-              info?.domEvent?.stopPropagation();
-              onRowClick(record.id);
-            },
+            onClick: () => onRowClick(record.id),
           },
         ];
 
@@ -293,10 +308,7 @@ const JobList: React.FC<Props> = ({
             key: 'edit',
             icon: <EditOutlined />,
             label: 'Chỉnh sửa',
-            onClick: (info) => {
-              info?.domEvent?.stopPropagation();
-              onEdit(record.id);
-            },
+            onClick: () => onEdit(record.id),
           });
         }
 
@@ -305,10 +317,7 @@ const JobList: React.FC<Props> = ({
             key: 'run',
             icon: <PlayCircleOutlined />,
             label: 'Chạy ngay',
-            onClick: (info) => {
-              info?.domEvent?.stopPropagation();
-              onRun(record.id);
-            },
+            onClick: () => onRun(record.id),
           });
         }
 
@@ -318,24 +327,14 @@ const JobList: React.FC<Props> = ({
               key: 'deactivate',
               icon: <PoweroffOutlined />,
               label: 'Ngừng hoạt động',
-              onClick: (info) => {
-                info?.domEvent?.stopPropagation();
-                if (onToggleStatus) {
-                  onToggleStatus(record);
-                }
-              },
+              onClick: () => { if (onToggleStatus) onToggleStatus(record); },
             });
           } else {
             items.push({
               key: 'activate',
               icon: <PoweroffOutlined />,
               label: 'Hoạt động',
-              onClick: (info) => {
-                info?.domEvent?.stopPropagation();
-                if (onToggleStatus) {
-                  onToggleStatus(record);
-                }
-              },
+              onClick: () => { if (onToggleStatus) onToggleStatus(record); },
             });
           }
         }
@@ -344,28 +343,25 @@ const JobList: React.FC<Props> = ({
           key: 'history',
           icon: <HistoryOutlined />,
           label: 'Lịch sử chạy Job',
-          onClick: (info) => {
-            info?.domEvent?.stopPropagation();
-            if (onViewHistory) onViewHistory(record);
-          },
+          onClick: () => { if (onViewHistory) onViewHistory(record); },
         });
 
-        // Menu Thao tác: Chức năng Xóa luôn hiển thị
-        items.push({
-          key: 'divider',
-          type: 'divider',
-        } as any);
+        // M5-01: Menu của Job Hoạt động KHÔNG CÓ Xóa và KHÔNG CÓ divider.
+        // Chỉ Job Ngừng hoạt động (INACTIVE) mới có đường phân cách và chức năng Xóa.
+        if (record.status !== 'ACTIVE' && hasPermission(currentRole, 'delete')) {
+          items.push({
+            key: 'divider',
+            type: 'divider',
+          } as any);
 
-        items.push({
-          key: 'delete',
-          icon: <DeleteOutlined />,
-          label: 'Xóa',
-          danger: true,
-          onClick: (info) => {
-            info?.domEvent?.stopPropagation();
-            handleDeleteJob(record);
-          },
-        });
+          items.push({
+            key: 'delete',
+            icon: <DeleteOutlined />,
+            label: 'Xóa',
+            danger: true,
+            onClick: () => handleDeleteJob(record),
+          });
+        }
 
         return <ActionMenu items={items} />;
       },
@@ -380,7 +376,7 @@ const JobList: React.FC<Props> = ({
     selectedRowKeys,
     onChange: (keys) => setSelectedRowKeys(keys),
     getCheckboxProps: (record) => ({
-      disabled: !hasPermission(currentRole, 'run') && !hasPermission(currentRole, 'delete'),
+      disabled: !hasPermission(currentRole, 'run'),
     }),
   };
 
@@ -400,7 +396,7 @@ const JobList: React.FC<Props> = ({
             setPageSize(size);
           },
         })}
-        scroll={{ x: 1340, y: 'calc(100vh - 350px)' }}
+        scroll={{ x: 1430, y: 'calc(100vh - 350px)' }}
         size="middle"
         rowSelection={rowSelection}
         onRow={(record) => ({

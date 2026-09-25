@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Select, Input, Popover, Checkbox, Button, Tooltip, Typography } from 'antd';
 import { FilterOutlined } from '@ant-design/icons';
 import { FilterBar, FilterCol } from '@/components/ui';
+import { colors } from '@/design-system';
 import { useJobManagement } from './useJobManagement';
 
 const { Text } = Typography;
@@ -96,7 +97,7 @@ const JobFilter: React.FC = () => {
           <Tooltip title="Thêm hoặc bớt các ô tìm kiếm trên thanh bộ lọc">
             <Button
               icon={<FilterOutlined />}
-              style={{ background: '#ffffff', borderColor: '#9fb3a9', color: '#18312a' }}
+              style={{ background: colors.bg.container, borderColor: colors.border.base, color: colors.text.primary }}
             >
               Thêm bộ lọc
             </Button>
@@ -160,17 +161,16 @@ const JobFilter: React.FC = () => {
       )}
 
       {visibleFilters.includes('status') && (
-        <FilterCol minWidth={140}>
+        <FilterCol minWidth={170}>
           <Select
             placeholder="Trạng thái"
             value={filterStatus || undefined}
-            onChange={setFilterStatus}
+            onChange={(val) => setFilterStatus(val || '')}
             allowClear
             style={{ width: '100%' }}
             options={[
               { value: 'ACTIVE', label: 'Hoạt động' },
               { value: 'INACTIVE', label: 'Ngừng hoạt động' },
-              { value: 'ARCHIVED', label: 'Ngừng hiệu lực' },
             ]}
           />
         </FilterCol>

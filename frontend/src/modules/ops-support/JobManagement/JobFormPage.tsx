@@ -18,9 +18,10 @@ import {
   message,
   Modal,
   Tooltip,
+  Radio,
+  Tag,
 } from 'antd';
 import {
-  ArrowLeftOutlined,
   CodeOutlined,
   CalendarOutlined,
   BellOutlined,
@@ -32,6 +33,7 @@ import {
 import { PageLayout } from '@/components/ui';
 import useHeaderActions from '@/hooks/useHeaderActions';
 import { colors, spacing, radius, typography } from '@/design-system';
+import { useRole, hasPermission } from '@/context/RoleContext';
 import { mockJobs } from './mockData';
 import type {
   IJob,
@@ -42,11 +44,12 @@ import { getCronDescription } from './cronUtils';
 
 const { Text } = Typography;
 
+// M3-17: Username - Họ tên - Email
 const SYSTEM_USERS = [
-  { value: 'admin_01@cic.org.vn', label: 'admin_01 — Nguyễn Văn Admin (Quản trị hệ thống)' },
-  { value: 'operator_01@cic.org.vn', label: 'operator_01 — Trần Văn Vận Hành (Chuyên viên vận hành)' },
-  { value: 'manager_01@cic.org.vn', label: 'manager_01 — Lê Văn Quản Lý (Trưởng phòng CNTT)' },
-  { value: 'alert_group@cic.org.vn', label: 'alert_group@cic.org.vn — Nhóm trực ca 24/7' },
+  { value: 'admin_01@cic.org.vn', label: 'admin_01 - Nguyễn Văn Admin - admin_01@cic.org.vn', isInternal: true },
+  { value: 'operator_01@cic.org.vn', label: 'operator_01 - Trần Văn Vận Hành - operator_01@cic.org.vn', isInternal: true },
+  { value: 'manager_01@cic.org.vn', label: 'manager_01 - Lê Văn Quản Lý - manager_01@cic.org.vn', isInternal: true },
+  { value: 'alert_group@cic.org.vn', label: 'alert_group@cic.org.vn - Nhóm trực ca 24/7 - alert_group@cic.org.vn', isInternal: true },
 ];
 
 const DEFAULT_NOTIFICATION_MATRIX: IConsoleNotificationMatrix = {
@@ -60,6 +63,10 @@ const DEFAULT_NOTIFICATION_MATRIX: IConsoleNotificationMatrix = {
 const JobFormContent: React.FC = () => {
   const router = useRouter();
   const params = useParams();
+  const { currentRole } = useRole();
+
+  const canManageParam = hasPermission(currentRole, 'manage_param');
+  const canConfigDep = hasPermission(currentRole, 'config_dependency');
 
   const jobId = params?.id as string | undefined;
   const isEditMode = !!jobId;
@@ -68,11 +75,12 @@ const JobFormContent: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [job, setJob] = useState<IJob | null>(null);
   const [initialUpdatedAt, setInitialUpdatedAt] = useState<string>('');
+  const [hasCircularError, setHasCircularError] = useState(false);
 
   const watchTriggerType: TriggerTypeOption = Form.useWatch('triggerType', form) || 'SCHEDULER';
   const watchCron: string = Form.useWatch('cron', form) || '';
   const watchDependencies = Form.useWatch('dependencies', form);
-  const dependenciesCount = watchDependencies?.length || 0;
+  const watchMaxRetries = Form.useWatch('maxRetries', form);
 
   useEffect(() => {
     const targetId = jobId;
@@ -84,7 +92,7 @@ const JobFormContent: React.FC = () => {
         setInitialUpdatedAt(found.updatedAt || '');
 
         const emailTags = found.notifyEmails
-          ? found.notifyEmails.split(/[,;]\s*/).filter(Boolean)
+          ? found.notifyEmails.split(/[,;\n]\s*/).filter(Boolean)
           : ['admin@cic.org.vn'];
 
         const resolvedDependencies =
@@ -102,25 +110,22 @@ const JobFormContent: React.FC = () => {
             found.params ||
             `# Tham số YAML/JSON động\nsourceApi: "https://api.internal/v1"\nbatchSize: 500`,
 
-          // Trigger & Schedule & Error Handling - BR-HTVH-027-026: giữ nguyên triggerType đã chọn
           triggerType: found.triggerType || 'SCHEDULER',
           dependsOn: found.dependsOn || [],
           dependencies: resolvedDependencies,
-          cron: found.cron || found.schedule?.expression || '0 0 1 * * *',
-          eventName: 'EVT_DATA_IMPORTED',
+          cron: found.cron || found.schedule?.expression || '0 0 1 * * ?',
+          eventName: found.eventName || 'EVT_DATA_IMPORTED',
 
           slaTimeout: found.slaTimeout || 1800,
-          retentionSuccess: found.retentionSuccess ?? 7,
-          retentionError: found.retentionError ?? 30,
+          retentionSuccess: found.retentionSuccess ?? 3650,
+          retentionError: found.retentionError ?? 3650,
           timeout: found.timeout || 300,
           misfire: found.misfire || 'FIRE_NOW',
-          concurrent: found.concurrent ?? true, // Default: Khóa chạy song song (true)
+          concurrent: found.concurrent ?? true, // Mặc định: Khóa chạy song song (true)
 
-          // Retry policy
           maxRetries: found.maxRetries ?? found.retryPolicy?.maxRetries ?? 3,
           retryInterval: found.retryInterval ?? 60,
 
-          // Notifications
           notifyEmails: emailTags,
           notificationMatrix: found.notificationMatrix || DEFAULT_NOTIFICATION_MATRIX,
         });
@@ -129,7 +134,8 @@ const JobFormContent: React.FC = () => {
         router.push('/ops-support/job-management');
       }
     } else {
-      // Set defaults for new job (BR-HTVH-027-030: chỉ dòng onFailure được bật email & push mặc định)
+      // M3-05: Giá trị mặc định 3650 cho Lưu log thành công và Lưu log lỗi
+      // M3-06: Cron 0 0 1 * * ?
       form.setFieldsValue({
         code: 'JOB_DATA_PROCESS',
         name: 'Xử lý dữ liệu định kỳ',
@@ -141,15 +147,15 @@ const JobFormContent: React.FC = () => {
         triggerType: 'SCHEDULER',
         dependsOn: [],
         dependencies: [],
-        cron: '0 0 1 * * *',
+        cron: '0 0 1 * * ?',
         eventName: 'EVT_DATA_IMPORTED',
 
         slaTimeout: 1800,
-        retentionSuccess: 7,
-        retentionError: 30,
+        retentionSuccess: 3650,
+        retentionError: 3650,
         timeout: 300,
         misfire: 'FIRE_NOW',
-        concurrent: true, // Mặc định Khóa chạy song song
+        concurrent: true,
 
         maxRetries: 3,
         retryInterval: 60,
@@ -166,7 +172,6 @@ const JobFormContent: React.FC = () => {
     }
   }, [jobId, isEditMode, form, router]);
 
-  // Dropdown chọn Job phụ thuộc: BR-HTVH-027-028 chỉ gồm Job ST-JOB-01 (ACTIVE), trừ Job hiện tại và Job đã chọn
   const currentSelectedDepIds = useMemo(() => {
     return (watchDependencies || []).map((d: any) => d?.jobId).filter(Boolean);
   }, [watchDependencies]);
@@ -186,11 +191,11 @@ const JobFormContent: React.FC = () => {
     if (form.isFieldsTouched()) {
       Modal.confirm({
         title: 'Xác nhận hủy thay đổi',
-        content: 'Bạn có chắc chắn muốn hủy thay đổi cấu hình Job không?',
+        content: 'Bạn có chắc chắn muốn hủy thay đổi cấu hình job không? Dữ liệu sau khi hủy thay đổi cấu hình sẽ không thể phục hồi.',
         icon: null,
         centered: true,
-        okText: 'Rời khỏi',
-        cancelText: 'Ở lại',
+        okText: 'Tiếp tục',
+        cancelText: 'Hủy',
         okButtonProps: { danger: true },
         footer: (_, { OkBtn, CancelBtn }) => (
           <div style={{ display: 'flex', justifyContent: 'center', gap: 12, marginTop: 20 }}>
@@ -221,9 +226,10 @@ const JobFormContent: React.FC = () => {
   const handleSubmit = async () => {
     try {
       setLoading(true);
+      setHasCircularError(false);
       const values = await form.validateFields();
 
-      // Kiểm soát xung đột Ngày cập nhật (BR-HTVH-027-034 / WAR_003)
+      // M4-08 / WAR_003: Xung đột dữ liệu khi chỉnh sửa
       if (isEditMode && jobId) {
         const latestJob = mockJobs.find((j) => j.id === jobId);
         if (latestJob && initialUpdatedAt && latestJob.updatedAt !== initialUpdatedAt) {
@@ -233,35 +239,41 @@ const JobFormContent: React.FC = () => {
         }
       }
 
-      // Circular dependency validation (BR-HTVH-027-023)
+      // M3-16 / ERR_021: Lỗi vòng tròn phụ thuộc
       if (isEditMode && values.dependencies && values.dependencies.length > 0) {
         const hasSelfDep = values.dependencies.some((d: any) => d?.jobId === jobId);
         if (hasSelfDep) {
-          message.error(`Phát hiện phụ thuộc vòng tròn giữa các Job. Vui lòng kiểm tra lại quan hệ phụ thuộc.`);
+          setHasCircularError(true);
+          message.error('Phát hiện phụ thuộc vòng tròn giữa các job. Vui lòng kiểm tra lại quan hệ phụ thuộc.');
+          setLoading(false);
           return;
         }
       }
 
-      // Kiểm tra người nhận cảnh báo khi bật kênh (BR-HTVH-027-035 / ERR_001)
-      const matrix = values.notificationMatrix;
-      const emails = values.notifyEmails || [];
-      if (matrix) {
-        for (const [eventKey, config] of Object.entries(matrix as Record<string, any>)) {
-          if (config?.email && (!emails || emails.length === 0) && (!config?.customRecipients || config.customRecipients.length === 0)) {
-            message.error('Trường bắt buộc không được để trống: Vui lòng nhập email nhận cảnh báo khi đã bật kênh Email.');
-            setLoading(false);
-            return;
-          }
-        }
-      }
-
-      message.success('Lưu cấu hình Job thành công.');
+      // SUC_002: Lưu cấu hình job thành công.
+      message.success('Lưu cấu hình job thành công.');
       router.push('/ops-support/job-management');
     } catch (error: any) {
       message.error(error.message || 'Vui lòng kiểm tra lại các trường thông tin chưa hợp lệ');
     } finally {
       setLoading(false);
     }
+  };
+
+  // M3-17: Tag render custom to distinguish internal user vs external email
+  const recipientTagRender = (props: any) => {
+    const { label, value, closable, onClose } = props;
+    const isInternal = SYSTEM_USERS.some((u) => u.value === value) || (typeof value === 'string' && value.endsWith('@cic.org.vn'));
+    return (
+      <Tag
+        color={isInternal ? 'blue' : 'orange'}
+        closable={closable}
+        onClose={onClose}
+        style={{ marginRight: 4 }}
+      >
+        {label || value}
+      </Tag>
+    );
   };
 
   // Matrix table column configuration
@@ -356,7 +368,8 @@ const JobFormContent: React.FC = () => {
         >
           <Select
             mode="tags"
-            placeholder="Chọn user hoặc gõ email riêng..."
+            tagRender={recipientTagRender}
+            placeholder="Chọn người dùng hoặc nhập email..."
             style={{ width: '100%' }}
             options={SYSTEM_USERS}
             maxTagCount="responsive"
@@ -366,12 +379,13 @@ const JobFormContent: React.FC = () => {
     },
   ];
 
+  // M3-10: Đúng 5 sự kiện chuẩn
   const notificationData = [
-    { key: 'onStart', eventKey: 'onStart', eventLabel: 'Khi bắt đầu chạy Job' },
+    { key: 'onStart', eventKey: 'onStart', eventLabel: 'Khi bắt đầu chạy' },
     { key: 'onSuccess', eventKey: 'onSuccess', eventLabel: 'Khi hoàn tất thành công' },
     { key: 'onSlaBreach', eventKey: 'onSlaBreach', eventLabel: 'Khi chạy chậm quá SLA' },
-    { key: 'onFailure', eventKey: 'onFailure', eventLabel: 'Khi gặp sự cố / Thất bại' },
-    { key: 'onRetry', eventKey: 'onRetry', eventLabel: 'Khi thử lại (Retry)' },
+    { key: 'onFailure', eventKey: 'onFailure', eventLabel: 'Khi gặp sự cố' },
+    { key: 'onRetry', eventKey: 'onRetry', eventLabel: 'Khi thử lại' },
   ];
 
   return (
@@ -403,19 +417,19 @@ const JobFormContent: React.FC = () => {
               <Col xs={24} sm={12} md={6}>
                 <Form.Item
                   name="code"
-                  label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Mã Job (Tối đa 20 ký tự)</Text>}
+                  label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Mã Job</Text>}
                   rules={[
-                    { required: true, message: 'Vui lòng nhập mã Job' },
+                    { required: true, message: 'Mã Job không được để trống.' },
                     {
                       pattern: /^[A-Z0-9_-]{1,20}$/,
-                      message: 'Tối đa 20 ký tự, chỉ gồm chữ in hoa, số, (-), (_)',
+                      message: 'Mã Job tối đa 20 ký tự, chỉ gồm A-Z, 0-9, (-) và (_).',
                     },
                   ]}
-                  extra="Chỉ chấp nhận chữ in hoa, số, (-), (_)"
+                  extra="Tối đa 20 ký tự (A-Z, 0-9, -, _)"
                 >
                   <Input
                     maxLength={20}
-                    placeholder="VD: JOB_EXPORT_DATA"
+                    placeholder="VD: BATCH_SETTLEMENT"
                     disabled={isEditMode}
                     style={{ fontFamily: typography.fontFamily.mono }}
                     onChange={(e) => {
@@ -429,10 +443,10 @@ const JobFormContent: React.FC = () => {
               <Col xs={24} sm={12} md={6}>
                 <Form.Item
                   name="name"
-                  label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Tên Job (Tối đa 100 ký tự)</Text>}
+                  label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Tên Job</Text>}
                   rules={[
-                    { required: true, message: 'Vui lòng nhập tên Job' },
-                    { max: 100, message: 'Tên Job không vượt quá 100 ký tự' },
+                    { required: true, message: 'Tên Job không được để trống.' },
+                    { max: 100, message: 'Tên Job không được vượt quá 100 ký tự.' },
                   ]}
                 >
                   <Input maxLength={100} placeholder="VD: Đồng bộ dữ liệu báo cáo hằng ngày" />
@@ -443,7 +457,7 @@ const JobFormContent: React.FC = () => {
                 <Form.Item
                   name="category"
                   label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Loại Job</Text>}
-                  rules={[{ required: true, message: 'Vui lòng chọn loại Job' }]}
+                  rules={[{ required: true, message: 'Loại Job không được để trống.' }]}
                 >
                   <Select
                     style={{ width: '100%' }}
@@ -465,7 +479,7 @@ const JobFormContent: React.FC = () => {
                 <Form.Item
                   name="serviceCode"
                   label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Mã dịch vụ</Text>}
-                  rules={[{ required: true, message: 'Vui lòng nhập mã dịch vụ' }]}
+                  rules={[{ required: true, message: 'Mã dịch vụ không được để trống.' }]}
                 >
                   <Input maxLength={50} placeholder="VD: SVC_CIC_CORE_SYNC" style={{ fontFamily: typography.fontFamily.mono }} />
                 </Form.Item>
@@ -477,8 +491,8 @@ const JobFormContent: React.FC = () => {
               <Col xs={24}>
                 <Form.Item
                   name="description"
-                  label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Mô tả Job (Tối đa 1000 ký tự)</Text>}
-                  rules={[{ max: 1000, message: 'Mô tả không vượt quá 1000 ký tự' }]}
+                  label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Mô tả Job</Text>}
+                  rules={[{ max: 1000, message: 'Mô tả không được vượt quá 1000 ký tự.' }]}
                 >
                   <Input.TextArea
                     rows={3}
@@ -490,24 +504,25 @@ const JobFormContent: React.FC = () => {
               </Col>
             </Row>
 
-            {/* Hàng 3: Tham số bổ sung (FULL WIDTH) */}
+            {/* Hàng 3: Tham số bổ sung (FULL WIDTH) - M3-14 / M4-07 */}
             <Row gutter={[16, 16]}>
               <Col xs={24}>
                 <Form.Item
                   name="params"
                   label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Tham số bổ sung (YAML/JSON, Tối đa 1500 ký tự)</Text>}
-                  rules={[{ max: 1500, message: 'Tham số bổ sung không vượt quá 1500 ký tự' }]}
+                  rules={[{ max: 1500, message: 'Tham số bổ sung không được vượt quá 1500 ký tự.' }]}
                 >
                   <Input.TextArea
                     rows={4}
                     maxLength={1500}
+                    disabled={!canManageParam}
                     showCount
                     placeholder="# Cấu hình tham số dạng YAML hoặc JSON&#10;sourceApi: 'https://api.internal/v1'&#10;batchSize: 500"
                     style={{
                       fontFamily: typography.fontFamily.mono,
                       fontSize: typography.fontSize.sm,
-                      backgroundColor: '#f8fafc',
-                      color: '#0f172a',
+                      backgroundColor: !canManageParam ? colors.bg.context : colors.bg.subtle,
+                      color: colors.text.primary,
                       border: `1px solid ${colors.border.base}`,
                       borderRadius: radius.md,
                     }}
@@ -526,52 +541,62 @@ const JobFormContent: React.FC = () => {
               </Text>
             </div>
 
-            {/* HÀNG 1: Điều kiện kích hoạt (25%) | Job cần hoàn thành trước (50%) | Chờ ban đầu (12.5%) | Chờ tối đa (12.5%) */}
+            {/* HÀNG 1: Điều kiện kích hoạt (Radio - M3-01 / M4-01) | SLA | Chờ ban đầu | Chờ tối đa */}
             <Row gutter={[16, 16]}>
-              <Col xs={24} sm={12} md={6}>
+              <Col xs={24} sm={24} md={12}>
                 <Form.Item
                   name="triggerType"
                   label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Điều kiện kích hoạt</Text>}
-                  rules={[{ required: true }]}
+                  rules={[{ required: true, message: 'Điều kiện kích hoạt không được để trống.' }]}
                 >
-                  <Select
-                    style={{ width: '100%' }}
-                    options={[
-                      { value: 'SCHEDULER', label: 'Bộ lập lịch (Scheduler)' },
-                      { value: 'EVENT', label: 'Theo sự kiện (Event-driven)' },
-                      { value: 'MANUAL', label: 'Thủ công (Manual)' },
-                    ]}
-                  />
+                  <Radio.Group>
+                    <Radio value="SCHEDULER">Bộ lập lịch (Scheduler)</Radio>
+                    <Radio value="EVENT">Theo sự kiện (Event-driven)</Radio>
+                    <Radio value="MANUAL">Thủ công (Manual)</Radio>
+                  </Radio.Group>
                 </Form.Item>
               </Col>
 
-              <Col xs={12} sm={6} md={6}>
+              <Col xs={12} sm={8} md={4}>
                 <Form.Item
                   name="slaTimeout"
                   label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>SLA dự kiến (s)</Text>}
-                  rules={[{ type: 'number', min: 1, message: 'Từ 1s' }]}
+                  rules={[{ type: 'number', min: 1, message: 'SLA dự kiến phải từ 1 giây.' }]}
                 >
                   <InputNumber min={1} precision={0} style={{ width: '100%' }} suffix="s" />
                 </Form.Item>
               </Col>
 
-              <Col xs={12} sm={6} md={6}>
+              <Col xs={12} sm={8} md={4}>
                 <Form.Item
                   name="retryInterval"
                   label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Chờ ban đầu (giây)</Text>}
-                  rules={[{ type: 'number', min: 1, max: 86400, message: 'Từ 1 đến 86400s' }]}
+                  rules={[
+                    ({ getFieldValue }) => ({
+                      validator(_, value) {
+                        const retries = getFieldValue('maxRetries');
+                        if (retries > 0 && (value === undefined || value === null || value === '')) {
+                          return Promise.reject(new Error('Chờ ban đầu (giây) không được để trống khi số lần thử lại > 0.'));
+                        }
+                        if (value !== undefined && value !== null && (value < 1 || value > 86400)) {
+                          return Promise.reject(new Error('Chờ ban đầu (giây) phải từ 1 đến 86400 giây.'));
+                        }
+                        return Promise.resolve();
+                      },
+                    }),
+                  ]}
                 >
                   <InputNumber min={1} max={86400} precision={0} style={{ width: '100%' }} suffix="s" />
                 </Form.Item>
               </Col>
 
-              <Col xs={12} sm={6} md={6}>
+              <Col xs={12} sm={8} md={4}>
                 <Form.Item
                   name="timeout"
                   label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Chờ tối đa (giây)</Text>}
                   rules={[
-                    { required: true, message: 'Nhập thời gian chờ' },
-                    { type: 'number', min: 1, max: 86400, message: 'Từ 1 đến 86400s' },
+                    { required: true, message: 'Chờ tối đa (giây) không được để trống.' },
+                    { type: 'number', min: 1, max: 86400, message: 'Chờ tối đa (giây) phải từ 1 đến 86400 giây.' },
                   ]}
                 >
                   <InputNumber min={1} max={86400} precision={0} style={{ width: '100%' }} suffix="s" />
@@ -579,45 +604,66 @@ const JobFormContent: React.FC = () => {
               </Col>
             </Row>
 
-            {/* HÀNG 2: Biểu thức Cron | Số lần thử lại tối đa | Chạy song song | Xử lý khi bỏ lỡ lượt chạy */}
+            {/* HÀNG 2: Biểu thức Cron (hoặc Tên sự kiện nếu EVENT) | Số lần thử lại tối đa | Chạy song song (Radio) | Xử lý khi bỏ lỡ (Radio) */}
             <Row gutter={[16, 16]} style={{ marginTop: spacing[3] }}>
-              <Col xs={24} sm={12} md={6}>
-                {watchTriggerType === 'SCHEDULER' && (
+              {watchTriggerType === 'SCHEDULER' && (
+                <Col xs={24} sm={12} md={6}>
                   <Form.Item
                     name="cron"
-                    label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Biểu thức Cron</Text>}
-                    rules={[{ required: true, message: 'Vui lòng nhập biểu thức Cron' }]}
+                    label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Biểu thức Cron (6 trường)</Text>}
+                    rules={[
+                      { required: true, message: 'Biểu thức Cron không được để trống.' },
+                      {
+                        validator(_, value) {
+                          if (!value) return Promise.resolve();
+                          const parts = value.trim().split(/\s+/);
+                          if (parts.length !== 6) {
+                            return Promise.reject(new Error('Biểu thức Cron phải có đúng 6 trường (Giây Phút Giờ Ngày Tháng Thứ).'));
+                          }
+                          return Promise.resolve();
+                        },
+                      },
+                    ]}
                     extra={
                       <div style={{ marginTop: 4 }}>
                         <Text type="secondary" style={{ fontSize: 12, display: 'block' }}>
-                          💡 Diễn giải: <Text strong style={{ color: colors.primary[600] }}>{getCronDescription(watchCron || '0 0 1 * * *')}</Text>
+                          Diễn giải: <Text strong style={{ color: colors.primary[600] }}>{getCronDescription(watchCron || '0 0 1 * * ?')}</Text>
                         </Text>
                       </div>
                     }
                   >
                     <Input
-                      placeholder="0 0 1 * * *"
+                      placeholder="0 0 1 * * ?"
                       style={{ fontFamily: typography.fontFamily.mono, fontWeight: 'bold' }}
                     />
                   </Form.Item>
-                )}
+                </Col>
+              )}
 
-                {watchTriggerType === 'EVENT' && (
+              {watchTriggerType === 'EVENT' && (
+                <Col xs={24} sm={12} md={6}>
                   <Form.Item
                     name="eventName"
                     label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Tên sự kiện kích hoạt</Text>}
-                    rules={[{ required: true, message: 'Vui lòng nhập tên sự kiện' }]}
+                    rules={[
+                      { required: true, message: 'Tên sự kiện kích hoạt không được để trống.' },
+                      { max: 255, message: 'Tên sự kiện kích hoạt không vượt quá 255 ký tự.' },
+                      { pattern: /^[A-Za-z0-9_-]+$/, message: 'Tên sự kiện kích hoạt không hợp lệ (không chứa dấu cách và ký tự đặc biệt).' },
+                    ]}
                   >
                     <Input placeholder="VD: EVT_CUSTOMER_DATA_IMPORTED" style={{ fontFamily: typography.fontFamily.mono }} />
                   </Form.Item>
-                )}
-              </Col>
+                </Col>
+              )}
 
               <Col xs={24} sm={12} md={6}>
                 <Form.Item
                   name="maxRetries"
                   label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Số lần thử lại tối đa</Text>}
-                  rules={[{ type: 'number', min: 0, max: 10, message: 'Từ 0 đến 10 lần' }]}
+                  rules={[
+                    { required: true, message: 'Số lần thử lại tối đa không được để trống.' },
+                    { type: 'number', min: 0, max: 10, message: 'Số lần thử lại tối đa phải từ 0 đến 10 lần.' },
+                  ]}
                 >
                   <InputNumber min={0} max={10} precision={0} style={{ width: '100%' }} placeholder="VD: 3" suffix="lần" />
                 </Form.Item>
@@ -627,14 +673,12 @@ const JobFormContent: React.FC = () => {
                 <Form.Item
                   name="concurrent"
                   label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Chạy song song</Text>}
+                  rules={[{ required: true, message: 'Chạy song song không được để trống.' }]}
                 >
-                  <Select
-                    style={{ width: '100%' }}
-                    options={[
-                      { value: true, label: 'Khóa chạy song song' },
-                      { value: false, label: 'Cho phép chạy song song' },
-                    ]}
-                  />
+                  <Radio.Group>
+                    <Radio value={true}>Khóa chạy song song</Radio>
+                    <Radio value={false}>Cho phép chạy song song</Radio>
+                  </Radio.Group>
                 </Form.Item>
               </Col>
 
@@ -643,25 +687,24 @@ const JobFormContent: React.FC = () => {
                   <Form.Item
                     name="misfire"
                     label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Xử lý khi bỏ lỡ lượt chạy</Text>}
+                    rules={[{ required: true, message: 'Xử lý khi bỏ lỡ lượt chạy không được để trống.' }]}
                   >
-                    <Select
-                      style={{ width: '100%' }}
-                      options={[
-                        { value: 'FIRE_NOW', label: 'Chạy bù ngay khi đủ điều kiện' },
-                        { value: 'DO_NOTHING', label: 'Bỏ qua lượt lỗi, chờ lịch tiếp theo' },
-                      ]}
-                    />
+                    <Radio.Group>
+                      <Radio value="FIRE_NOW">Chạy bù ngay khi đủ điều kiện</Radio>
+                      <Radio value="DO_NOTHING">Bỏ qua lượt lỡ, chờ lịch tiếp theo</Radio>
+                    </Radio.Group>
                   </Form.Item>
                 </Col>
               )}
             </Row>
 
-            {/* HÀNG 3: Retention */}
+            {/* HÀNG 3: Retention (M3-04, M3-05: Mặc định 3650 và bắt buộc) */}
             <Row gutter={[16, 16]} style={{ marginTop: spacing[3] }}>
               <Col xs={12} sm={6} md={6}>
                 <Form.Item
                   name="retentionSuccess"
                   label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Lưu log thành công (ngày)</Text>}
+                  rules={[{ required: true, message: 'Lưu log thành công không được để trống.' }]}
                 >
                   <InputNumber min={0} precision={0} style={{ width: '100%' }} suffix="ngày" />
                 </Form.Item>
@@ -670,6 +713,7 @@ const JobFormContent: React.FC = () => {
                 <Form.Item
                   name="retentionError"
                   label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Lưu log lỗi (ngày)</Text>}
+                  rules={[{ required: true, message: 'Lưu log lỗi không được để trống.' }]}
                 >
                   <InputNumber min={0} precision={0} style={{ width: '100%' }} suffix="ngày" />
                 </Form.Item>
@@ -677,8 +721,17 @@ const JobFormContent: React.FC = () => {
             </Row>
           </div>
 
-          {/* KHỐI 3: Cấu hình phụ thuộc */}
-          <div style={{ borderBottom: `1px solid ${colors.border.split}`, paddingBottom: spacing[5] }}>
+          {/* KHỐI 3: Cấu hình phụ thuộc - M3-08, M3-09, M3-13, M3-15 */}
+          <div
+            style={{
+              borderBottom: `1px solid ${colors.border.split}`,
+              paddingBottom: spacing[5],
+              padding: hasCircularError ? spacing[3] : 0,
+              border: hasCircularError ? `1px solid ${colors.error.base}` : undefined,
+              borderRadius: hasCircularError ? radius.md : undefined,
+              backgroundColor: hasCircularError ? colors.error.light : undefined,
+            }}
+          >
             <Form.List name="dependencies">
               {(fields, { add, remove }) => {
                 const isLimitReached = fields.length >= 10;
@@ -691,11 +744,19 @@ const JobFormContent: React.FC = () => {
                           Cấu hình phụ thuộc
                         </Text>
                       </div>
-                      <Tooltip title={isLimitReached ? 'Số lượng cấu hình đã đạt giới hạn cho phép (tối đa 10 Job)' : undefined}>
+                      <Tooltip
+                        title={
+                          !canConfigDep
+                            ? 'Vai trò Quản lý vận hành (ROLE-QLVH) chỉ được xem cấu hình phụ thuộc'
+                            : isLimitReached
+                            ? 'Số lượng Job phụ thuộc đã đạt giới hạn 10.'
+                            : undefined
+                        }
+                      >
                         <span>
                           <Button
                             type="dashed"
-                            disabled={isLimitReached}
+                            disabled={isLimitReached || !canConfigDep}
                             onClick={() => add({ conditionType: 'SUCCESS' })}
                           >
                             + Thêm Job phụ thuộc
@@ -703,6 +764,13 @@ const JobFormContent: React.FC = () => {
                         </span>
                       </Tooltip>
                     </div>
+
+                    {hasCircularError && (
+                      <div style={{ marginBottom: spacing[3], color: colors.error.base, fontWeight: 500 }}>
+                        ⚠️ Phát hiện phụ thuộc vòng tròn giữa các job. Vui lòng kiểm tra lại quan hệ phụ thuộc.
+                      </div>
+                    )}
+
                     <Table
                       dataSource={fields}
                       pagination={false}
@@ -711,58 +779,59 @@ const JobFormContent: React.FC = () => {
                       size="small"
                       columns={[
                         {
-                          title: 'Mã Job phụ thuộc',
+                          title: 'Mã Job phụ thuộc (xử lý trước)',
                           dataIndex: 'name',
                           width: '30%',
                           render: (name) => (
                             <Form.Item name={[name, 'jobId']} noStyle rules={[{ required: true, message: 'Vui lòng chọn Job' }]}>
                               <Select
                                 showSearch
+                                disabled={!canConfigDep}
                                 placeholder="Chọn Job phụ thuộc..."
                                 options={dependsOnOptions}
                                 style={{ width: '100%' }}
                               />
                             </Form.Item>
-                          )
+                          ),
                         },
                         {
                           title: 'Tên Job',
                           dataIndex: 'name',
-                          width: '35%',
+                          width: '30%',
                           render: (name) => {
                             const selectedJobId = form.getFieldValue(['dependencies', name, 'jobId']);
                             const targetJob = mockJobs.find((j) => j.id === selectedJobId);
                             return <Text>{targetJob?.name || '—'}</Text>;
-                          }
+                          },
                         },
                         {
                           title: 'Điều kiện kích hoạt',
                           dataIndex: 'name',
-                          width: '25%',
+                          width: '30%',
                           render: (name) => (
-                            <Form.Item name={[name, 'conditionType']} noStyle rules={[{ required: true, message: 'Vui lòng chọn ĐK' }]}>
-                              <Select
-                                options={[
-                                  { value: 'SUCCESS', label: 'Khi thành công' },
-                                  { value: 'FAILURE', label: 'Khi thất bại' },
-                                  { value: 'ALWAYS', label: 'Luôn luôn' },
-                                ]}
-                                style={{ width: '100%' }}
-                              />
+                            <Form.Item name={[name, 'conditionType']} noStyle rules={[{ required: true, message: 'Vui lòng chọn điều kiện kích hoạt' }]}>
+                              <Radio.Group disabled={!canConfigDep}>
+                                <Radio value="SUCCESS">Khi thành công</Radio>
+                                <Radio value="FAILURE">Khi thất bại</Radio>
+                                <Radio value="ALWAYS">Luôn luôn</Radio>
+                              </Radio.Group>
                             </Form.Item>
-                          )
+                          ),
                         },
                         {
                           title: 'Thao tác',
                           key: 'action',
                           width: '10%',
                           align: 'center',
-                          render: (_, field) => (
-                            <Button type="text" danger onClick={() => remove(field.name)}>
-                              Xóa
-                            </Button>
-                          )
-                        }
+                          render: (_, field) =>
+                            canConfigDep ? (
+                              <Button type="text" danger onClick={() => remove(field.name)}>
+                                Xóa
+                              </Button>
+                            ) : (
+                              <Text type="secondary">—</Text>
+                            ),
+                        },
                       ]}
                     />
                   </>
@@ -771,7 +840,7 @@ const JobFormContent: React.FC = () => {
             </Form.List>
           </div>
 
-          {/* KHỐI 4: Thiết lập Cảnh báo Sự cố */}
+          {/* KHỐI 4: Thiết lập Cảnh báo Sự cố - M3-07, M3-10 */}
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: spacing[2], marginBottom: spacing[4] }}>
               <BellOutlined style={{ color: colors.primary[500], fontSize: 20 }} />
@@ -785,12 +854,12 @@ const JobFormContent: React.FC = () => {
                 <Col xs={24}>
                   <Form.Item
                     name="notifyEmails"
-                    label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Email nhận cảnh báo chung (Phân cách bằng dấu chấm phẩy ; hoặc Enter)</Text>}
+                    label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Email nhận cảnh báo chung (Phân cách bằng dấu phẩy, dấu chấm phẩy, Enter hoặc xuống dòng)</Text>}
                   >
                     <Select
                       mode="tags"
-                      tokenSeparators={[';', ',']}
-                      placeholder="VD: admin@company.com; alert@company.com"
+                      tokenSeparators={[';', ',', '\n']}
+                      placeholder="VD: admin@company.com, alert@company.com"
                       style={{ width: '100%' }}
                     />
                   </Form.Item>

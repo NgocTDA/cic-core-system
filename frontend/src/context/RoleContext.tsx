@@ -15,7 +15,7 @@ export const RoleProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     const saved = localStorage.getItem('userRole') as UserRole | null;
-    if (saved && ['ADMIN', 'MANAGER', 'VIEWER'].includes(saved)) {
+    if (saved && ['ADMIN', 'MANAGER', 'VIEWER', 'ROLE-QTHT', 'ROLE-QLVH', 'ROLE-CBNV'].includes(saved)) {
       setCurrentRole(saved);
     }
   }, []);
@@ -35,7 +35,10 @@ export const RoleProvider: React.FC<{ children: React.ReactNode }> = ({ children
 export const useRole = (): RoleContextType => {
   const context = useContext(RoleContext);
   if (!context) {
-    throw new Error('useRole must be used within RoleProvider');
+    return {
+      currentRole: 'ADMIN',
+      setRole: () => {},
+    };
   }
   return context;
 };
@@ -52,10 +55,43 @@ export const hasPermission = (role: UserRole, action: string): boolean => {
       'stop',
       'config_notification',
       'config_dependency',
+      'manage_param',
       'export',
     ]),
-    MANAGER: new Set(['view', 'create', 'edit', 'run', 'stop', 'config_notification', 'export']),
+    'ROLE-QTHT': new Set([
+      'view',
+      'create',
+      'edit',
+      'delete',
+      'run',
+      'stop',
+      'config_notification',
+      'config_dependency',
+      'manage_param',
+      'export',
+    ]),
+    MANAGER: new Set([
+      'view',
+      'create',
+      'edit',
+      'run',
+      'stop',
+      'config_notification',
+      'manage_param',
+      'export',
+    ]),
+    'ROLE-QLVH': new Set([
+      'view',
+      'create',
+      'edit',
+      'run',
+      'stop',
+      'config_notification',
+      'manage_param',
+      'export',
+    ]),
     VIEWER: new Set(['view', 'export']),
+    'ROLE-CBNV': new Set(['view', 'export']),
   };
 
   return permissions[role]?.has(action) ?? false;

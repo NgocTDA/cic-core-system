@@ -184,11 +184,11 @@ import { StatusTag } from '@/components/ui';
 | Status | Role / Palette | Label mặc định |
 |---|---|---|
 | `ACTIVE` | `active` (xanh ngọc nhạt) | Hoạt động |
-| `INACTIVE` | `neutral` (xám rêu nhạt) | Ngừng hoạt động |
+| `INACTIVE` | `error` (đỏ cam nhạt) | Ngừng hoạt động |
 | `RUNNING` | `processing` (xanh dương nhạt) | Đang chạy |
 | `IDLE` | `neutral` | Chờ (Idle) |
 | `SCHEDULED` | `warning` (vàng hổ phách nhạt) | Đã đặt lịch |
-| `FAILED` | `error` (đỏ cam nhạt) | Lỗi |
+| `FAILED` | `error` (đỏ cam nhạt) | Thất bại |
 | `PAUSED` | `warning` | Tạm dừng |
 | `PENDING` | `warning` | Chờ duyệt |
 | `APPROVED` | `active` | Đã duyệt |

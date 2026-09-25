@@ -138,9 +138,9 @@ Gam màu hữu cơ (Organic Pastel) độ bão hòa thấp, chống chói mắt 
 | Token | Giá trị |
 |---|---|
 | `typography.fontFamily.sans` | `'Inter', -apple-system, ...` |
-| `typography.fontFamily.mono` | `'JetBrains Mono', 'Fira Code', ...` |
+| `typography.fontFamily.mono` | `'Inter', -apple-system, ...` *(đã thống nhất về Inter)* |
 
-> `sans` cho mọi UI text. `mono` cho code, ID, mã tham chiếu — dùng qua `<CodeText>`.
+> **Quyết định thiết kế:** Toàn bộ UI dùng duy nhất **Inter**. `mono` token giữ nguyên tên để không phá vỡ các component đang dùng, nhưng trỏ về cùng stack với `sans`. Mã Job, Cron expression, code block vẫn dùng `<CodeText>` / `typography.fontFamily.mono` nhưng hiển thị bằng Inter.
 
 ### Font Size
 

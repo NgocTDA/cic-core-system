@@ -4,11 +4,10 @@ import React, { useState, useMemo } from 'react';
 import {
   Modal,
   Table,
-  Select,
   DatePicker,
   Button,
   Typography,
-  Input,
+  Radio,
 } from 'antd';
 import type { TableProps } from 'antd';
 import dayjs from 'dayjs';
@@ -31,46 +30,53 @@ const JobHistoryModal: React.FC<JobHistoryModalProps> = ({
   job,
   onClose,
 }) => {
-  const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined);
-  const [nodeFilter, setNodeFilter] = useState<string>('');
+  const [statusFilter, setStatusFilter] = useState<string>('');
   const [dateRange, setDateRange] = useState<[dayjs.Dayjs | null, dayjs.Dayjs | null] | null>(null);
+
+  // M7-06: Điều kiện lọc chỉ áp dụng khi nhấp Tìm kiếm
+  const [appliedStatus, setAppliedStatus] = useState<string>('');
+  const [appliedDateRange, setAppliedDateRange] = useState<[dayjs.Dayjs | null, dayjs.Dayjs | null] | null>(null);
+
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
-  // Filter runs for the current job - BR-HTVH-027-021 & Vấn đề còn mở #2: Không trả dữ liệu của Job khác khi rỗng
   const jobRuns = useMemo(() => {
     if (!job) return [];
     return mockJobRuns.filter((run) => run.jobId === job.id);
   }, [job]);
 
+  const handleSearch = () => {
+    setAppliedStatus(statusFilter);
+    setAppliedDateRange(dateRange);
+    setCurrentPage(1);
+  };
+
+  const handleReset = () => {
+    setStatusFilter('');
+    setDateRange(null);
+    setAppliedStatus('');
+    setAppliedDateRange(null);
+    setCurrentPage(1);
+  };
+
   const filteredData = useMemo(() => {
     return jobRuns.filter((run) => {
-      if (statusFilter && run.status !== statusFilter) return false;
-      if (nodeFilter && run.nodeIp && !run.nodeIp.toLowerCase().includes(nodeFilter.toLowerCase())) return false;
-      if (dateRange && dateRange[0] && dateRange[1]) {
-        const start = dateRange[0].startOf('day').valueOf();
-        const end = dateRange[1].endOf('day').valueOf();
+      if (appliedStatus && run.status !== appliedStatus) return false;
+      if (appliedDateRange && appliedDateRange[0] && appliedDateRange[1]) {
+        const start = appliedDateRange[0].startOf('day').valueOf();
+        const end = appliedDateRange[1].endOf('day').valueOf();
         const runTime = dayjs(run.startTime).valueOf();
         if (runTime < start || runTime > end) return false;
       }
       return true;
     });
-  }, [jobRuns, statusFilter, nodeFilter, dateRange]);
-
-  React.useEffect(() => {
-    setCurrentPage(1);
-  }, [filteredData]);
+  }, [jobRuns, appliedStatus, appliedDateRange]);
 
   if (!job) return null;
 
-  const handleReset = () => {
-    setStatusFilter(undefined);
-    setNodeFilter('');
-    setDateRange(null);
-  };
-
+  // M7-07: Lượt đang chạy hiển thị '-'
   const formatDuration = (ms?: number, status?: string) => {
-    if (status === 'RUNNING' || !ms) return '—';
+    if (status === 'RUNNING' || !ms) return '-';
     const seconds = Math.floor(ms / 1000);
     if (seconds < 60) return `${seconds}s`;
     const minutes = Math.floor(seconds / 60);
@@ -78,6 +84,7 @@ const JobHistoryModal: React.FC<JobHistoryModalProps> = ({
     return `${minutes}m ${remSeconds}s`;
   };
 
+  // M7-01: Bỏ cột Node thực thi, bảng chuẩn 8 cột
   const columns: TableProps<IJobRun>['columns'] = [
     {
       title: 'STT',
@@ -92,7 +99,7 @@ const JobHistoryModal: React.FC<JobHistoryModalProps> = ({
       key: 'id',
       width: 140,
       render: (id) => (
-        <Text strong style={{ color: colors.primary[500], fontFamily: typography.fontFamily.sans }}>
+        <Text style={{ fontFamily: typography.fontFamily.mono, color: colors.text.primary, fontWeight: 600 }}>
           {id}
         </Text>
       ),
@@ -104,7 +111,7 @@ const JobHistoryModal: React.FC<JobHistoryModalProps> = ({
       width: 170,
       align: 'center',
       render: (time) => {
-        if (!time) return <Text type="secondary">—</Text>;
+        if (!time) return <Text type="secondary">-</Text>;
         const d = dayjs(time);
         return (
           <Text style={{ fontSize: typography.fontSize.sm, color: colors.text.primary, whiteSpace: 'nowrap' }}>
@@ -120,7 +127,7 @@ const JobHistoryModal: React.FC<JobHistoryModalProps> = ({
       width: 170,
       align: 'center',
       render: (time, record) => {
-        if (record.status === 'RUNNING' || !time) return <Text type="secondary">—</Text>;
+        if (record.status === 'RUNNING' || !time) return <Text type="secondary">-</Text>;
         const d = dayjs(time);
         return (
           <Text style={{ fontSize: typography.fontSize.sm, color: colors.text.primary, whiteSpace: 'nowrap' }}>
@@ -147,16 +154,16 @@ const JobHistoryModal: React.FC<JobHistoryModalProps> = ({
       width: 160,
       align: 'center',
       render: (_, record) => {
-        const processed = record.recordsProcessed?.toLocaleString() || 0;
+        const processed = (record.recordsProcessed || 0).toLocaleString('vi-VN');
         const failed = record.recordsFailed;
         return (
           <div style={{ whiteSpace: 'nowrap' }}>
             <Text style={{ color: colors.success.dark, fontWeight: 600, fontSize: typography.fontSize.sm }}>
-              {processed}
+              ✓ {processed}
             </Text>
             {failed && failed > 0 ? (
-              <Text style={{ color: colors.error.base, fontWeight: 600, fontSize: typography.fontSize.sm, marginLeft: 6 }}>
-                / {failed.toLocaleString()} lỗi
+              <Text style={{ color: colors.error.base, fontWeight: 600, fontSize: typography.fontSize.sm, marginLeft: 8 }}>
+                ✕ {failed.toLocaleString('vi-VN')}
               </Text>
             ) : null}
           </div>
@@ -174,21 +181,6 @@ const JobHistoryModal: React.FC<JobHistoryModalProps> = ({
           {count || 0}
         </Text>
       ),
-    },
-    {
-      title: 'Node thực thi',
-      dataIndex: 'nodeIp',
-      key: 'nodeIp',
-      width: 130,
-      align: 'center',
-      render: (ip?: string) =>
-        ip ? (
-          <Text style={{ fontSize: typography.fontSize.sm, color: colors.text.secondary, fontFamily: typography.fontFamily.mono }}>
-            {ip}
-          </Text>
-        ) : (
-          <Text type="secondary">—</Text>
-        ),
     },
     {
       title: 'Trạng thái',
@@ -217,32 +209,22 @@ const JobHistoryModal: React.FC<JobHistoryModalProps> = ({
       }
     >
       <div style={{ padding: '4px 0' }}>
-        {/* Tra cứu theo các tiêu chí */}
+        {/* Tra cứu theo các tiêu chí - M7-01 (bỏ node), M7-03 (Radio trạng thái) */}
         <div style={{ marginBottom: spacing[4] }}>
-          <FilterBar inCard onSearch={() => {}} onReset={handleReset} showAddFilter={false}>
-            <FilterCol minWidth={160}>
-              <Select
-                placeholder="Trạng thái chạy"
-                allowClear
-                value={statusFilter}
-                onChange={setStatusFilter}
-                style={{ width: '100%' }}
-                options={[
-                  { label: 'Thành công', value: 'SUCCESS' },
-                  { label: 'Lỗi', value: 'FAILED' },
-                  { label: 'Đang chạy', value: 'RUNNING' },
-                  { label: 'Đã hủy', value: 'CANCELLED' },
-                ]}
-              />
-            </FilterCol>
-
-            <FilterCol minWidth={160}>
-              <Input 
-                placeholder="Node thực thi..." 
-                value={nodeFilter} 
-                onChange={(e) => setNodeFilter(e.target.value)} 
-                allowClear 
-              />
+          <FilterBar inCard onSearch={handleSearch} onReset={handleReset} showAddFilter={false}>
+            <FilterCol minWidth={380}>
+              <div style={{ display: 'flex', alignItems: 'center', height: 32 }}>
+                <Radio.Group
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                >
+                  <Radio value="">Tất cả</Radio>
+                  <Radio value="RUNNING">Đang chạy</Radio>
+                  <Radio value="SUCCESS">Thành công</Radio>
+                  <Radio value="FAILED">Thất bại</Radio>
+                  <Radio value="CANCELLED">Đã hủy</Radio>
+                </Radio.Group>
+              </div>
             </FilterCol>
 
             <FilterCol minWidth={240}>
@@ -260,7 +242,7 @@ const JobHistoryModal: React.FC<JobHistoryModalProps> = ({
           </FilterBar>
         </div>
 
-        {/* Table Lịch sử chạy */}
+        {/* Table Lịch sử chạy - 8 cột chuẩn */}
         <Table
           columns={columns}
           dataSource={filteredData}
@@ -277,7 +259,7 @@ const JobHistoryModal: React.FC<JobHistoryModalProps> = ({
               setPageSize(size);
             },
           })}
-          scroll={{ x: 1050, y: 340 }}
+          scroll={{ x: 1000, y: 340 }}
         />
       </div>
     </Modal>
