@@ -1,7 +1,6 @@
 'use client';
 
 import { DEMO_REGISTRY } from '@/modules/design-system-explorer/demoRegistry';
-import { colors, spacing, typography } from '@/design-system';
 import { PageLayout } from '@/components/ui';
 
 interface Props {
@@ -21,13 +20,13 @@ export default function DemoPage({ params }: Props) {
                     alignItems: 'center',
                     justifyContent: 'center',
                     minHeight: 320,
-                    gap: spacing[3],
+                    gap: 12,
                 }}>
                     <div style={{ fontSize: 48 }}>🔍</div>
-                    <div style={{ fontSize: typography.fontSize.lg, fontWeight: typography.fontWeight.semibold, color: colors.text.primary }}>
+                    <div style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text)' }}>
                         Demo không tìm thấy
                     </div>
-                    <div style={{ fontSize: typography.fontSize.sm, color: colors.text.secondary, fontFamily: typography.fontFamily.mono }}>
+                    <div style={{ fontSize: '14px', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono, monospace)' }}>
                         {key}
                     </div>
                 </div>

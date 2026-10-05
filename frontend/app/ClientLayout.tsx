@@ -13,7 +13,7 @@ import CommandPalette from '@/components/CommandPalette';
 import viVN_ from 'antd/locale/vi_VN';
 import dayjs from 'dayjs';
 import 'dayjs/locale/vi';
-import { antdTheme, colors } from '@/design-system';
+import { antdTheme } from '@/design-system';
 
 const { Content } = Layout;
 
@@ -56,7 +56,7 @@ const ClientLayout: React.FC<MainLayoutProps> = ({ children }) => {
     };
 
     if (!mounted) {
-        return <div style={{ minHeight: '100vh', background: colors.bg.page }}>{children}</div>;
+        return <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>{children}</div>;
     }
 
     const isLandingPage = pathname === '/';
@@ -77,7 +77,7 @@ const ClientLayout: React.FC<MainLayoutProps> = ({ children }) => {
                                 {children}
                             </div>
                         ) : (
-                            <Layout style={{ height: '100vh', overflow: 'hidden', background: colors.bg.page }}>
+                            <Layout style={{ height: '100vh', overflow: 'hidden', background: 'var(--bg)' }}>
                                 {isMobile ? (
                                     <Drawer
                                         placement="left"
@@ -107,7 +107,7 @@ const ClientLayout: React.FC<MainLayoutProps> = ({ children }) => {
                                         onCollapse={handleToggleCollapse}
                                         isMobile={isMobile}
                                     />
-                                    <Content style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: isMobile ? 'auto' : 'hidden', background: colors.bg.page }}>
+                                    <Content style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: isMobile ? 'auto' : 'hidden', background: 'var(--bg)' }}>
                                         {children}
                                     </Content>
                                 </Layout>

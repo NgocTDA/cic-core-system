@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import { Tabs, Button, Space, message, Empty } from 'antd';
 import { CopyOutlined, DownloadOutlined, LoadingOutlined, CheckCircleFilled } from '@ant-design/icons';
 import { SectionCard } from '@/components/ui';
-import { colors, spacing, radius } from '@/design-system';
 import { downloadDocx } from '@/services/aiService';
 import DocPreview from './DocPreview';
 import WordPreview from './WordPreview';
@@ -44,7 +43,7 @@ const DocResultPanel: React.FC<DocResultPanelProps> = ({ data, confluence, loadi
 
     const tabIcon = (key: string): React.ReactNode => {
         if (loading) return <LoadingOutlined />;
-        if (viewedTabs.has(key)) return <CheckCircleFilled style={{ color: colors.success.base }} />;
+        if (viewedTabs.has(key)) return <CheckCircleFilled style={{ color: 'var(--success)' }} />;
         return null;
     };
 
@@ -90,10 +89,10 @@ const DocResultPanel: React.FC<DocResultPanelProps> = ({ data, confluence, loadi
                                 {confluence ? (
                                     <pre
                                         style={{
-                                            background: colors.neutral[900],
-                                            color: colors.neutral[100],
-                                            padding: spacing[4],
-                                            borderRadius: radius.md,
+                                            background: 'var(--text)',
+                                            color: 'var(--color-neutral-100)',
+                                            padding: 'var(--spacing-16)',
+                                            borderRadius: 'var(--radius-md)',
                                             fontSize: 12,
                                             whiteSpace: 'pre-wrap',
                                             wordBreak: 'break-word',

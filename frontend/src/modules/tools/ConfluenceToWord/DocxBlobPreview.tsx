@@ -2,7 +2,6 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { Spin, Alert, Empty } from 'antd';
-import { spacing, colors } from '@/design-system';
 
 interface DocxBlobPreviewProps {
     blob: Blob | null;
@@ -62,16 +61,16 @@ const DocxBlobPreview: React.FC<DocxBlobPreviewProps> = ({ blob }) => {
         <div style={{ position: 'relative', flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
             <div ref={styleContainerRef} style={{ display: 'none' }} />
             {loading && (
-                <div style={{ textAlign: 'center', padding: spacing[6] }}>
+                <div style={{ textAlign: 'center', padding: 'var(--spacing-24)' }}>
                     <Spin />
-                    <div style={{ marginTop: spacing[2], color: colors.text.secondary, fontSize: 13 }}>
+                    <div style={{ marginTop: 'var(--spacing-8)', color: 'var(--text-muted)', fontSize: 13 }}>
                         Đang dựng bản Word...
                     </div>
                 </div>
             )}
             {error && (
                 <Alert type="error" showIcon message="Lỗi xem trước Word" description={error}
-                    style={{ marginBottom: spacing[3] }} />
+                    style={{ marginBottom: 'var(--spacing-12)' }} />
             )}
             <div
                 ref={containerRef}
@@ -79,8 +78,8 @@ const DocxBlobPreview: React.FC<DocxBlobPreviewProps> = ({ blob }) => {
                     display: loading ? 'none' : 'block',
                     flex: 1,
                     overflow: 'auto',
-                    background: colors.bg.page,
-                    padding: spacing[3],
+                    background: 'var(--bg)',
+                    padding: 'var(--spacing-12)',
                     borderRadius: 8,
                 }}
             />

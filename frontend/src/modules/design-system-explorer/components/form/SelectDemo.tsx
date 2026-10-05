@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import { Form, Select, Typography, Space, Tag, Spin } from 'antd';
 import ComponentShowcase from '../../ComponentShowcase';
-import { colors, typography, spacing } from '@/design-system';
 import useHeaderActions from '@/hooks/useHeaderActions';
 
 const { Text } = Typography;
@@ -92,7 +91,7 @@ const SelectDemo: React.FC = () => {
                 {/* Short list - no search */}
                 <Form.Item
                     name="subsystem"
-                    label={<><Text>Phân hệ</Text> <Text style={{ color: colors.error.base }}>*</Text></>}
+                    label={<><Text>Phân hệ</Text> <Text style={{ color: 'var(--error)' }}>*</Text></>}
                     rules={[{ required: true, message: 'Vui lòng chọn phân hệ' }]}
                 >
                     <Select
@@ -115,8 +114,8 @@ const SelectDemo: React.FC = () => {
                         onSearch={handleSearch}
                         notFoundContent={
                             loading
-                                ? <div style={{ textAlign: 'center', padding: spacing[3] }}><Spin size="small" /></div>
-                                : <Text style={{ color: colors.text.secondary, padding: spacing[3], display: 'block', textAlign: 'center' }}>Không tìm thấy dữ liệu</Text>
+                                ? <div style={{ textAlign: 'center', padding: 'var(--spacing-12)' }}><Spin size="small" /></div>
+                                : <Text style={{ color: 'var(--text-muted)', padding: 'var(--spacing-12)', display: 'block', textAlign: 'center' }}>Không tìm thấy dữ liệu</Text>
                         }
                         options={filteredMany}
                         style={{ width: '100%' }}
@@ -140,13 +139,13 @@ const SelectDemo: React.FC = () => {
                 {/* Multi select responsive tag display */}
                 <div
                     style={{
-                        padding: spacing[3],
-                        background: colors.bg.subtle,
+                        padding: 'var(--spacing-12)',
+                        background: 'var(--bg-subtle)',
                         borderRadius: 6,
-                        border: `1px solid ${colors.border.split}`,
+                        border: `1px solid var(--color-neutral-100)`,
                     }}
                 >
-                    <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.secondary, display: 'block', marginBottom: spacing[2] }}>
+                    <Text style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block', marginBottom: 'var(--spacing-8)' }}>
                         Multi-select: chọn nhiều items → hiển thị maxTagCount=&quot;responsive&quot;
                     </Text>
                     <Select

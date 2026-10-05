@@ -1,6 +1,5 @@
 import React from 'react';
 import { Card, Space, Typography } from 'antd';
-import { colors, shadows, radius } from '../../design-system';
 
 const { Text } = Typography;
 
@@ -39,10 +38,10 @@ const SectionCard: React.FC<SectionCardProps> = ({
   return (
     <Card
       style={{
-        borderRadius: radius.lg,
-        boxShadow: shadows.xs,
-        border: `1px solid ${colors.border.base}`,
-        background: colors.bg.container,
+        borderRadius: 'var(--radius-lg)',
+        boxShadow: 'var(--elevation-1)',
+        border: `1px solid var(--border)`,
+        background: 'var(--surface)',
         ...(flex
           ? {
               flex: 1,
@@ -76,7 +75,7 @@ const SectionCard: React.FC<SectionCardProps> = ({
           <Space size="small">
             <Text
               strong
-              style={{ fontSize: 13, color: colors.text.secondary }}
+              style={{ fontSize: 13, color: 'var(--text-muted)' }}
             >
               {title.toUpperCase()}
               {count !== undefined && ` (${count})`}

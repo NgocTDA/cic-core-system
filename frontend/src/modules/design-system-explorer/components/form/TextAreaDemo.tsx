@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Form, Input, Typography, Tag, Space } from 'antd';
 import ComponentShowcase from '../../ComponentShowcase';
-import { colors, typography, spacing } from '@/design-system';
+import { typography, spacing } from '@/modules/design-system-explorer/tokens';
 import useHeaderActions from '@/hooks/useHeaderActions';
 
 const { Text } = Typography;
@@ -59,10 +59,10 @@ const BLOCKED_CHARS = ['<', '>', "'", '"', ';'];
   allowClear
 />`}
         >
-            <div style={{ display: 'flex', flexDirection: 'column', gap: spacing[5], maxWidth: 560 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-20)', maxWidth: 560 }}>
                 {/* Auto-trim demo */}
                 <div>
-                    <Text style={{ fontSize: typography.fontSize.sm, fontWeight: typography.fontWeight.medium, display: 'block', marginBottom: spacing[2] }}>
+                    <Text style={{ fontSize: '12px', fontWeight: typography.fontWeight.medium, display: 'block', marginBottom: 'var(--spacing-8)' }}>
                         Auto-trim khi blur
                     </Text>
                     <TextArea
@@ -74,7 +74,7 @@ const BLOCKED_CHARS = ['<', '>', "'", '"', ';'];
                         onBlur={(e) => setValue1(e.target.value.trim())}
                     />
                     {value1 && (
-                        <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.tertiary, display: 'block', marginTop: spacing[1] }}>
+                        <Text style={{ fontSize: '11px', color: 'var(--text-subtle)', display: 'block', marginTop: 'var(--spacing-4)' }}>
                             Đã trim: {value1}
                         </Text>
                     )}
@@ -82,7 +82,7 @@ const BLOCKED_CHARS = ['<', '>', "'", '"', ';'];
 
                 {/* Blocked chars demo */}
                 <div>
-                    <Text style={{ fontSize: typography.fontSize.sm, fontWeight: typography.fontWeight.medium, display: 'block', marginBottom: spacing[2] }}>
+                    <Text style={{ fontSize: '12px', fontWeight: typography.fontWeight.medium, display: 'block', marginBottom: 'var(--spacing-8)' }}>
                         Chặn ký tự đặc biệt <code style={{ fontFamily: typography.fontFamily.mono, fontSize: 11 }}>&lt; &gt; ;</code>
                     </Text>
                     <TextArea
@@ -93,7 +93,7 @@ const BLOCKED_CHARS = ['<', '>', "'", '"', ';'];
                         onKeyDown={handleKeyDown}
                     />
                     {blockedKey && (
-                        <Tag color="error" style={{ marginTop: spacing[1] }}>
+                        <Tag color="error" style={{ marginTop: 'var(--spacing-4)' }}>
                             Ký tự {blockedKey} bị chặn
                         </Tag>
                     )}
@@ -101,7 +101,7 @@ const BLOCKED_CHARS = ['<', '>', "'", '"', ';'];
 
                 {/* showCount + maxLength */}
                 <div>
-                    <Text style={{ fontSize: typography.fontSize.sm, fontWeight: typography.fontWeight.medium, display: 'block', marginBottom: spacing[2] }}>
+                    <Text style={{ fontSize: '12px', fontWeight: typography.fontWeight.medium, display: 'block', marginBottom: 'var(--spacing-8)' }}>
                         showCount + maxLength
                     </Text>
                     <TextArea
@@ -115,7 +115,7 @@ const BLOCKED_CHARS = ['<', '>', "'", '"', ';'];
 
                 {/* Form integration */}
                 <div>
-                    <Text style={{ fontSize: typography.fontSize.sm, fontWeight: typography.fontWeight.medium, display: 'block', marginBottom: spacing[2] }}>
+                    <Text style={{ fontSize: '12px', fontWeight: typography.fontWeight.medium, display: 'block', marginBottom: 'var(--spacing-8)' }}>
                         Tích hợp với Form (required)
                     </Text>
                     <Form layout="vertical">

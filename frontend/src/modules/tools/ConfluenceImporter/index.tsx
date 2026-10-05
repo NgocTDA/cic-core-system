@@ -1,11 +1,12 @@
 'use client';
 
+import { SUBSYSTEM_COLORS } from '@/config/subsystems';
+
 import React, { useEffect, useState } from 'react';
 import { Form, Input, Button, message, Space, Typography, Image, Alert, Tag, Modal } from 'antd';
 import { CloudDownloadOutlined, ThunderboltOutlined, FileTextOutlined, KeyOutlined, CheckCircleFilled } from '@ant-design/icons';
 import useHeaderActions from '@/hooks/useHeaderActions';
 import { PageLayout, SectionCard } from '@/components/ui';
-import { spacing, colors } from '@/design-system';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import {
     fetchConfluencePage,
@@ -155,18 +156,18 @@ const ConfluenceImporter: React.FC = () => {
                 style={{
                     display: 'grid',
                     gridTemplateColumns: isMobile ? '1fr' : '380px 1fr',
-                    gap: spacing[4],
+                    gap: 'var(--spacing-16)',
                     alignItems: 'start',
                 }}
             >
                 {/* LEFT — nguồn Confluence */}
                 <SectionCard title="Nguồn Confluence">
-                    <Form layout="vertical" style={{ display: 'flex', flexDirection: 'column', gap: spacing[2] }}>
+                    <Form layout="vertical" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}>
                         {/* Trạng thái PAT cá nhân */}
-                        <Form.Item label="PAT Confluence (tài khoản của bạn)" style={{ marginBottom: spacing[2] }}>
+                        <Form.Item label="PAT Confluence (tài khoản của bạn)" style={{ marginBottom: 'var(--spacing-8)' }}>
                             {pat ? (
                                 <Space wrap>
-                                    <Tag icon={<CheckCircleFilled />} color={colors.success.base}>
+                                    <Tag icon={<CheckCircleFilled />} color={'var(--success)'}>
                                         Đã cấu hình{fullname ? ` · ${fullname}` : ''}
                                     </Tag>
                                     <Button size="small" icon={<KeyOutlined />} onClick={() => setPatOpen(true)}>
@@ -183,7 +184,7 @@ const ConfluenceImporter: React.FC = () => {
                             )}
                         </Form.Item>
 
-                        <Form.Item label="Link Confluence hoặc Page ID" style={{ marginBottom: spacing[2] }}>
+                        <Form.Item label="Link Confluence hoặc Page ID" style={{ marginBottom: 'var(--spacing-8)' }}>
                             <Input
                                 value={link}
                                 onChange={(e) => setLink(e.target.value)}
@@ -196,19 +197,19 @@ const ConfluenceImporter: React.FC = () => {
                             onClick={handleFetch}
                             loading={fetching}
                             block
-                            style={{ marginBottom: spacing[3] }}
+                            style={{ marginBottom: 'var(--spacing-12)' }}
                         >
                             {fetching ? 'Đang kéo dữ liệu...' : 'Kéo dữ liệu'}
                         </Button>
 
                         {page && (
-                            <Text type="secondary" style={{ fontSize: 12, marginBottom: spacing[2] }}>
+                            <Text type="secondary" style={{ fontSize: 12, marginBottom: 'var(--spacing-8)' }}>
                                 Đã kéo: <b>{page.title || page.pageId}</b> · {images.length} ảnh
                             </Text>
                         )}
 
                         {markdown && (
-                            <Form.Item label="Nội dung (markdown — có thể sửa/cắt trước khi sinh)" style={{ marginBottom: spacing[3] }}>
+                            <Form.Item label="Nội dung (markdown — có thể sửa/cắt trước khi sinh)" style={{ marginBottom: 'var(--spacing-12)' }}>
                                 <Input.TextArea
                                     value={markdown}
                                     onChange={(e) => setMarkdown(e.target.value)}
@@ -219,7 +220,7 @@ const ConfluenceImporter: React.FC = () => {
                         )}
 
                         {images.length > 0 && (
-                            <Form.Item label="Ảnh đính kèm (gửi AI + nhúng mockup)" style={{ marginBottom: spacing[3] }}>
+                            <Form.Item label="Ảnh đính kèm (gửi AI + nhúng mockup)" style={{ marginBottom: 'var(--spacing-12)' }}>
                                 <Image.PreviewGroup>
                                     <Space wrap size="small">
                                         {images.map((img, i) => (
@@ -230,7 +231,7 @@ const ConfluenceImporter: React.FC = () => {
                             </Form.Item>
                         )}
 
-                        <Form.Item label="AI Provider" style={{ marginBottom: spacing[3] }}>
+                        <Form.Item label="AI Provider" style={{ marginBottom: 'var(--spacing-12)' }}>
                             <ProviderSelect
                                 providers={providers}
                                 value={providerId}
@@ -242,7 +243,7 @@ const ConfluenceImporter: React.FC = () => {
                                 <Alert
                                     type="warning"
                                     showIcon
-                                    style={{ marginTop: spacing[1] }}
+                                    style={{ marginTop: 'var(--spacing-4)' }}
                                     message="Provider chưa có API key"
                                     description="Provider này chưa được cấu hình apiKey trên server."
                                 />
@@ -250,8 +251,8 @@ const ConfluenceImporter: React.FC = () => {
                             {promptLabel && (
                                 <Tag
                                     icon={<FileTextOutlined />}
-                                    color={colors.subsystem.tools}
-                                    style={{ marginTop: spacing[1] }}
+                                    color={SUBSYSTEM_COLORS.tools}
+                                    style={{ marginTop: 'var(--spacing-4)' }}
                                 >
                                     Prompt: {promptLabel}
                                 </Tag>
@@ -269,7 +270,7 @@ const ConfluenceImporter: React.FC = () => {
                         >
                             {generating ? 'Đang sinh tài liệu...' : 'Sinh tài liệu'}
                         </Button>
-                        <Text type="secondary" style={{ fontSize: 11, marginTop: spacing[1] }}>
+                        <Text type="secondary" style={{ fontSize: 11, marginTop: 'var(--spacing-4)' }}>
                             PAT lưu tại trình duyệt của bạn; key AI do server giữ. Tên bạn ({fullname || '—'}) sẽ điền vào [Tên BA].
                         </Text>
                     </Form>
@@ -291,7 +292,7 @@ const ConfluenceImporter: React.FC = () => {
                 open={patOpen}
                 onCancel={() => setPatOpen(false)}
                 footer={
-                    <div style={{ display: 'flex', justifyContent: 'center', gap: spacing[2] }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: 'var(--spacing-8)' }}>
                         <Button onClick={() => setPatOpen(false)}>Huỷ</Button>
                         <Button type="primary" loading={validating} onClick={handleSavePat}>
                             Kiểm tra &amp; lưu
@@ -305,7 +306,7 @@ const ConfluenceImporter: React.FC = () => {
                     placeholder="Dán Personal Access Token"
                     onPressEnter={handleSavePat}
                 />
-                <Text type="secondary" style={{ fontSize: 12, display: 'block', marginTop: spacing[2] }}>
+                <Text type="secondary" style={{ fontSize: 12, display: 'block', marginTop: 'var(--spacing-8)' }}>
                     PAT lưu tại trình duyệt của bạn (localStorage). Confluence không cho xem lại PAT — nếu mất phải sinh token mới.
                     Tạo PAT: avatar → Settings → Personal Access Tokens.
                 </Text>

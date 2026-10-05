@@ -3,7 +3,6 @@
 import React from 'react';
 import { Modal, Form, Input, Button, Typography, Alert, Space } from 'antd';
 import { CheckCircleOutlined, CloseCircleOutlined, RollbackOutlined, SendOutlined } from '@ant-design/icons';
-import { colors, radius, spacing, typography } from '@/design-system';
 import type { IIndustryProduct } from './types';
 
 const { Text } = Typography;
@@ -34,7 +33,7 @@ export const SendApprovalModal: React.FC<SendApprovalModalProps> = ({
       centered
       destroyOnClose
       footer={
-        <div style={{ display: 'flex', justifyContent: 'center', gap: spacing[3], padding: `${spacing[2]} 0` }}>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 'var(--spacing-12)', padding: `var(--spacing-8) 0` }}>
           <Button onClick={onClose} style={{ minWidth: 90 }}>
             Hủy
           </Button>
@@ -49,25 +48,25 @@ export const SendApprovalModal: React.FC<SendApprovalModalProps> = ({
         </div>
       }
     >
-      <div style={{ padding: `${spacing[3]} 0` }}>
-        <p style={{ color: colors.text.primary, marginBottom: spacing[3] }}>
+      <div style={{ padding: `var(--spacing-12) 0` }}>
+        <p style={{ color: 'var(--text)', marginBottom: 'var(--spacing-12)' }}>
           Bạn có chắc chắn muốn gửi duyệt sản phẩm báo cáo này không?
         </p>
         <div
           style={{
-            backgroundColor: colors.bg.subtle,
-            padding: spacing[3],
-            borderRadius: radius.md,
-            border: `1px solid ${colors.border.base}`,
+            backgroundColor: 'var(--bg-subtle)',
+            padding: 'var(--spacing-12)',
+            borderRadius: 'var(--radius-md)',
+            border: `1px solid var(--border)`,
           }}
         >
-          <div style={{ marginBottom: spacing[1] }}>
-            <Text strong style={{ color: colors.primary[500], marginRight: spacing[2], whiteSpace: 'nowrap' }}>
+          <div style={{ marginBottom: 'var(--spacing-4)' }}>
+            <Text strong style={{ color: 'var(--primary)', marginRight: 'var(--spacing-8)', whiteSpace: 'nowrap' }}>
               {product.code}
             </Text>
-            <Text strong style={{ color: colors.text.primary }}>{product.name}</Text>
+            <Text strong style={{ color: 'var(--text)' }}>{product.name}</Text>
           </div>
-          <Text type="secondary" style={{ fontSize: typography.fontSize.xs, display: 'block' }}>
+          <Text type="secondary" style={{ fontSize: '11px', display: 'block' }}>
             Ngành nghề: {product.industryName} | Năm tài chính: {product.fiscalYear}
           </Text>
         </div>
@@ -108,7 +107,7 @@ export const ApproveModal: React.FC<ApproveModalProps> = ({
       centered
       destroyOnClose
       footer={
-        <div style={{ display: 'flex', justifyContent: 'center', gap: spacing[3], padding: `${spacing[2]} 0` }}>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 'var(--spacing-12)', padding: `var(--spacing-8) 0` }}>
           <Button onClick={onClose} style={{ minWidth: 90 }}>
             Hủy
           </Button>
@@ -123,23 +122,23 @@ export const ApproveModal: React.FC<ApproveModalProps> = ({
         </div>
       }
     >
-      <div style={{ padding: `${spacing[2]} 0` }}>
+      <div style={{ padding: `var(--spacing-8) 0` }}>
         <div
           style={{
-            backgroundColor: colors.bg.subtle,
-            padding: spacing[3],
-            borderRadius: radius.md,
-            border: `1px solid ${colors.border.base}`,
-            marginBottom: spacing[4],
+            backgroundColor: 'var(--bg-subtle)',
+            padding: 'var(--spacing-12)',
+            borderRadius: 'var(--radius-md)',
+            border: `1px solid var(--border)`,
+            marginBottom: 'var(--spacing-16)',
           }}
         >
-          <div style={{ marginBottom: spacing[1] }}>
-            <Text strong style={{ color: colors.primary[500], marginRight: spacing[2], whiteSpace: 'nowrap' }}>
+          <div style={{ marginBottom: 'var(--spacing-4)' }}>
+            <Text strong style={{ color: 'var(--primary)', marginRight: 'var(--spacing-8)', whiteSpace: 'nowrap' }}>
               {product.code}
             </Text>
-            <Text strong style={{ color: colors.text.primary }}>{product.name}</Text>
+            <Text strong style={{ color: 'var(--text)' }}>{product.name}</Text>
           </div>
-          <Text type="secondary" style={{ fontSize: typography.fontSize.xs, display: 'block' }}>
+          <Text type="secondary" style={{ fontSize: '11px', display: 'block' }}>
             Người tạo: {product.createdBy} ({product.creatorFullName}) | Năm tài chính: {product.fiscalYear}
           </Text>
         </div>
@@ -190,7 +189,7 @@ export const RejectModal: React.FC<RejectModalProps> = ({
       centered
       destroyOnClose
       footer={
-        <div style={{ display: 'flex', justifyContent: 'center', gap: spacing[3], padding: `${spacing[2]} 0` }}>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 'var(--spacing-12)', padding: `var(--spacing-8) 0` }}>
           <Button onClick={onClose} style={{ minWidth: 90 }}>
             Hủy
           </Button>
@@ -206,30 +205,30 @@ export const RejectModal: React.FC<RejectModalProps> = ({
         </div>
       }
     >
-      <div style={{ padding: `${spacing[2]} 0` }}>
+      <div style={{ padding: `var(--spacing-8) 0` }}>
         <Alert
           type="warning"
           showIcon
           message="Hồ sơ sau khi từ chối sẽ trả về người tạo để hoàn thiện lại dữ liệu."
-          style={{ marginBottom: spacing[4], borderRadius: radius.md }}
+          style={{ marginBottom: 'var(--spacing-16)', borderRadius: 'var(--radius-md)' }}
         />
 
         <div
           style={{
-            backgroundColor: colors.bg.subtle,
-            padding: spacing[3],
-            borderRadius: radius.md,
-            border: `1px solid ${colors.border.base}`,
-            marginBottom: spacing[4],
+            backgroundColor: 'var(--bg-subtle)',
+            padding: 'var(--spacing-12)',
+            borderRadius: 'var(--radius-md)',
+            border: `1px solid var(--border)`,
+            marginBottom: 'var(--spacing-16)',
           }}
         >
-          <div style={{ marginBottom: spacing[1] }}>
-            <Text strong style={{ color: colors.primary[500], marginRight: spacing[2], whiteSpace: 'nowrap' }}>
+          <div style={{ marginBottom: 'var(--spacing-4)' }}>
+            <Text strong style={{ color: 'var(--primary)', marginRight: 'var(--spacing-8)', whiteSpace: 'nowrap' }}>
               {product.code}
             </Text>
-            <Text strong style={{ color: colors.text.primary }}>{product.name}</Text>
+            <Text strong style={{ color: 'var(--text)' }}>{product.name}</Text>
           </div>
-          <Text type="secondary" style={{ fontSize: typography.fontSize.xs, display: 'block' }}>
+          <Text type="secondary" style={{ fontSize: '11px', display: 'block' }}>
             Người tạo: {product.createdBy} ({product.creatorFullName}) | Năm tài chính: {product.fiscalYear}
           </Text>
         </div>
@@ -284,7 +283,7 @@ export const RecallModal: React.FC<RecallModalProps> = ({
       centered
       destroyOnClose
       footer={
-        <div style={{ display: 'flex', justifyContent: 'center', gap: spacing[3], padding: `${spacing[2]} 0` }}>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 'var(--spacing-12)', padding: `var(--spacing-8) 0` }}>
           <Button onClick={onClose} style={{ minWidth: 90 }}>
             Hủy
           </Button>
@@ -300,30 +299,30 @@ export const RecallModal: React.FC<RecallModalProps> = ({
         </div>
       }
     >
-      <div style={{ padding: `${spacing[2]} 0` }}>
+      <div style={{ padding: `var(--spacing-8) 0` }}>
         <Alert
           type="error"
           showIcon
           message="Báo cáo bị thu hồi sẽ ngừng phục vụ khai thác cho đến khi được chỉnh sửa và duyệt lại."
-          style={{ marginBottom: spacing[4], borderRadius: radius.md }}
+          style={{ marginBottom: 'var(--spacing-16)', borderRadius: 'var(--radius-md)' }}
         />
 
         <div
           style={{
-            backgroundColor: colors.bg.subtle,
-            padding: spacing[3],
-            borderRadius: radius.md,
-            border: `1px solid ${colors.border.base}`,
-            marginBottom: spacing[4],
+            backgroundColor: 'var(--bg-subtle)',
+            padding: 'var(--spacing-12)',
+            borderRadius: 'var(--radius-md)',
+            border: `1px solid var(--border)`,
+            marginBottom: 'var(--spacing-16)',
           }}
         >
-          <div style={{ marginBottom: spacing[1] }}>
-            <Text strong style={{ color: colors.primary[500], marginRight: spacing[2], whiteSpace: 'nowrap' }}>
+          <div style={{ marginBottom: 'var(--spacing-4)' }}>
+            <Text strong style={{ color: 'var(--primary)', marginRight: 'var(--spacing-8)', whiteSpace: 'nowrap' }}>
               {product.code}
             </Text>
-            <Text strong style={{ color: colors.text.primary }}>{product.name}</Text>
+            <Text strong style={{ color: 'var(--text)' }}>{product.name}</Text>
           </div>
-          <Text type="secondary" style={{ fontSize: typography.fontSize.xs, display: 'block' }}>
+          <Text type="secondary" style={{ fontSize: '11px', display: 'block' }}>
             Trạng thái hiện tại: {product.status === 'APPROVED' ? 'Đã duyệt' : 'Chờ duyệt'}
           </Text>
         </div>

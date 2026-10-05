@@ -1,5 +1,5 @@
 import React from 'react';
-import { colors } from '../design-system';
+import { SUBSYSTEM_COLORS } from './subsystems';
 import {
     DashboardOutlined,
     ApiOutlined,
@@ -99,7 +99,7 @@ export const SUB_SYSTEMS: SubSystem[] = [
         id: 'kkn',
         name: 'Kênh kết nối (KKN)',
         icon: <ApiOutlined />,
-        color: colors.subsystem.kkn,
+        color: 'var(--chart-5-amber)',
         menuItems: [
             { key: 'kkn-dashboard', label: 'Dashboard', icon: <DashboardOutlined />, path: '/kkn-dashboard' },
             {
@@ -132,7 +132,7 @@ export const SUB_SYSTEMS: SubSystem[] = [
         id: 'data-collection',
         name: 'Thu thập, xử lý dữ liệu',
         icon: <TableOutlined />,
-        color: colors.subsystem.collection,
+        color: 'var(--chart-6-sky)',
         menuItems: [
             { key: 'data-collection-dashboard', label: 'Dashboard', icon: <DashboardOutlined />, path: '/data-collection/dashboard' },
             {
@@ -265,7 +265,7 @@ export const SUB_SYSTEMS: SubSystem[] = [
         id: 'product-mgmt',
         name: 'Quản lý, tạo lập sản phẩm',
         icon: <FolderOutlined />,
-        color: colors.subsystem.product,
+        color: 'var(--primary)',
         menuItems: [
             { key: 'product-mgmt-dashboard', label: 'Dashboard', icon: <DashboardOutlined />, path: '/product-mgmt/dashboard' },
             {
@@ -444,7 +444,7 @@ export const SUB_SYSTEMS: SubSystem[] = [
         id: 'ops-support',
         name: 'Hỗ trợ vận hành',
         icon: <TeamOutlined />,
-        color: colors.subsystem.ops,
+        color: 'var(--chart-4-indigo)',
         menuItems: [
             { key: 'ops-support-dashboard', label: 'Dashboard', icon: <DashboardOutlined />, path: '/ops-support/dashboard' },
             {
@@ -534,7 +534,7 @@ export const SUB_SYSTEMS: SubSystem[] = [
         id: 'analytics-reporting',
         name: 'Báo cáo thống kê',
         icon: <BarChartOutlined />,
-        color: colors.subsystem.analytics,
+        color: 'var(--chart-8-rose)',
         menuItems: [
             { key: 'analytics-reporting-dashboard', label: 'Dashboard Báo cáo', icon: <DashboardOutlined />, path: '/analytics-reporting/dashboard' },
             {
@@ -592,7 +592,7 @@ export const SUB_SYSTEMS: SubSystem[] = [
         id: 'data-governance',
         name: 'Quản trị dữ liệu',
         icon: <SettingOutlined />,
-        color: colors.subsystem.governance,
+        color: 'var(--color-info-500)',
         menuItems: [
             {
                 key: 'dg-metadata-mgmt',
@@ -663,7 +663,7 @@ export const SUB_SYSTEMS: SubSystem[] = [
         id: 'web-portal',
         name: 'Web Portal (TCTD)',
         icon: <GlobalOutlined />,
-        color: colors.subsystem.portal,
+        color: SUBSYSTEM_COLORS.portal,
         menuItems: [
             {
                 key: 'web-portal-home',
@@ -940,7 +940,7 @@ export const SUB_SYSTEMS: SubSystem[] = [
         id: 'tools',
         name: 'Công cụ nội bộ',
         icon: <AppstoreOutlined />,
-        color: colors.subsystem.tools,
+        color: SUBSYSTEM_COLORS.tools,
         menuItems: [
             {
                 key: 'tools-ui-doc-generator',
@@ -988,7 +988,7 @@ export const SHARED_MENU: MenuItem[] = [];
     id: 'design-system',
     name: 'Design System',
     icon: <BuildOutlined />,
-    color: colors.subsystem.design,
+    color: SUBSYSTEM_COLORS.design,
     menuItems: [
         { key: 'ds-overview', label: 'Tổng quan', icon: <DashboardOutlined />, path: '/design-system' },
         { key: 'ds-layout-explorer', label: 'Layout hệ thống', icon: <LayoutOutlined />, path: '/design-system/layout-explorer' },

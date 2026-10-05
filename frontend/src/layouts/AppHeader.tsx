@@ -11,7 +11,7 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useHeaderContext } from '../context/HeaderContext';
-import { colors, layout, radius, shadows, size, spacing, typography, zIndex } from '../design-system';
+import { layout, zIndex } from '@/config/layout';
 
 const { Header } = Layout;
 const { Title, Text } = Typography;
@@ -62,19 +62,19 @@ const AppHeader: React.FC<AppHeaderProps> = ({ collapsed, onCollapse, isMobile }
 
   const primaryAction = visibleActions.find((action) => action.key === 'add' || action.type === 'primary');
   const secondaryActions = visibleActions.filter((action) => action !== primaryAction);
-  const headerActionGap = Number.parseInt(isMobile ? spacing[1] : spacing[3], 10);
-  const userInfoGap = Number.parseInt(spacing[2], 10);
+  const headerActionGap = isMobile ? 'var(--spacing-4)' : 'var(--spacing-12)';
+  const userInfoGap = 'var(--spacing-8)';
 
   return (
     <Header style={{
-      background: colors.bg.container,
+      background: 'var(--surface)',
       padding: isMobile ? '0 8px' : '0 24px',
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
       height: layout.headerHeight,
       lineHeight: 'normal',
-      boxShadow: shadows.sm,
+      boxShadow: 'var(--elevation-1)',
       position: 'relative',
       zIndex: zIndex.raised,
     }}>
@@ -93,7 +93,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({ collapsed, onCollapse, isMobile }
               <Tooltip title="Quay lại">
                 <Button
                   type="text"
-                  icon={<ArrowLeftOutlined style={{ fontSize: 18, color: colors.text.primary }} />}
+                  icon={<ArrowLeftOutlined style={{ fontSize: 18, color: 'var(--text)' }} />}
                   onClick={effectiveOnBack}
                   style={{
                     padding: '4px 8px',
@@ -101,7 +101,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({ collapsed, onCollapse, isMobile }
                     display: 'inline-flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    borderRadius: radius.md,
+                    borderRadius: 'var(--radius-control)',
                   }}
                 />
               </Tooltip>
@@ -111,7 +111,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({ collapsed, onCollapse, isMobile }
                 {displayTitle}
               </Title>
               {breadcrumb && (
-                <Text type="secondary" style={{ fontSize: 12, display: 'block', marginTop: 2, color: colors.text.secondary }}>
+                <Text type="secondary" style={{ fontSize: 12, display: 'block', marginTop: 2, color: 'var(--text-muted)' }}>
                   {breadcrumb}
                 </Text>
               )}
@@ -136,6 +136,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({ collapsed, onCollapse, isMobile }
             onClick={primaryAction.onClick}
             danger={primaryAction.danger}
             ghost={primaryAction.ghost}
+            style={primaryAction.style}
           >
             {primaryAction.label}
           </Button>
@@ -178,36 +179,36 @@ const AppHeader: React.FC<AppHeaderProps> = ({ collapsed, onCollapse, isMobile }
           aria-label="Thông báo"
           style={{
             color: 'inherit',
-            width: size.lg,
-            height: size.lg,
-            borderRadius: radius.md,
+            width: 40,
+            height: 40,
+            borderRadius: 'var(--radius-md)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: spacing[2],
+            padding: 'var(--spacing-8)',
             lineHeight: 1,
           }}
         >
           <Badge dot offset={[-2, 5]} style={{ display: 'flex', alignItems: 'center' }}>
             <span
               style={{
-                width: size.md,
-                height: size.md,
+                width: 32,
+                height: 32,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 lineHeight: 1,
               }}
             >
-              <BellOutlined style={{ fontSize: typography.fontSize.lg, cursor: 'pointer', display: 'block' }} />
+              <BellOutlined style={{ fontSize: '18px', cursor: 'pointer', display: 'block' }} />
             </span>
           </Badge>
         </Link>
 
         {/* Always visible: user avatar */}
         <Link href="/" style={{ color: 'inherit', textDecoration: 'none' }}>
-          <Space size={userInfoGap} align="center" style={{ cursor: 'pointer', paddingLeft: spacing[1], height: size.lg }}>
-            <Avatar icon={<UserOutlined />} style={{ backgroundColor: colors.primary[500] }} />
+          <Space size={0} align="center" style={{ gap: userInfoGap, cursor: 'pointer', paddingLeft: 'var(--spacing-4)', height: 40 }}>
+            <Avatar icon={<UserOutlined />} style={{ backgroundColor: 'var(--primary)' }} />
             {!isMobile && <span style={{ fontWeight: 500 }}>Admin</span>}
           </Space>
         </Link>

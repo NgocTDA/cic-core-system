@@ -39,6 +39,9 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
+# Writable application data is separate from the read-only configuration mount.
+RUN mkdir -p /app/data/registries && chown -R nextjs:nodejs /app/data
+
 USER nextjs
 
 EXPOSE 3000

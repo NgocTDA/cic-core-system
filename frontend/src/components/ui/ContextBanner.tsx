@@ -1,6 +1,5 @@
 import React from 'react';
 import { Button } from 'antd';
-import { colors, radius, spacing, typography } from '../../design-system';
 
 // ─── ContextBanner ───────────────────────────────────────────
 // Băng hiển thị ngữ cảnh không gian làm việc, dự án hoặc đơn vị
@@ -44,11 +43,11 @@ export const ContextBanner: React.FC<ContextBannerProps> = ({
     <div
       className={className}
       style={{
-        background: colors.bg.context,
-        border: `1px solid ${colors.border.base}`,
-        borderRadius: radius.md,
+        background: 'var(--surface-sunken)',
+        border: `1px solid var(--border)`,
+        borderRadius: 'var(--radius-md)',
         padding: '14px 20px',
-        marginBottom: spacing[4],
+        marginBottom: 'var(--spacing-16)',
         display: 'flex',
         flexDirection: 'column',
         gap: 8,
@@ -68,9 +67,9 @@ export const ContextBanner: React.FC<ContextBannerProps> = ({
           {label && (
             <span
               style={{
-                fontSize: typography.fontSize.sm,
-                fontWeight: typography.fontWeight.medium,
-                color: colors.text.secondary,
+                fontSize: '12px',
+                fontWeight: 500,
+                color: 'var(--text-muted)',
               }}
             >
               {label}:
@@ -79,9 +78,9 @@ export const ContextBanner: React.FC<ContextBannerProps> = ({
           {value && (
             <span
               style={{
-                fontSize: typography.fontSize.base,
-                fontWeight: typography.fontWeight.semibold,
-                color: colors.text.primary,
+                fontSize: '14px',
+                fontWeight: 600,
+                color: 'var(--text)',
                 letterSpacing: '-0.01em',
               }}
             >
@@ -100,11 +99,11 @@ export const ContextBanner: React.FC<ContextBannerProps> = ({
             style={{
               borderColor: '#9fb3a9',
               background: '#ffffff',
-              color: colors.text.primary,
-              fontWeight: typography.fontWeight.medium,
-              fontSize: typography.fontSize.sm,
+              color: 'var(--text)',
+              fontWeight: 500,
+              fontSize: '12px',
               height: 28,
-              borderRadius: radius.sm,
+              borderRadius: 'var(--radius-sm)',
               padding: '0 12px',
             }}
           >
@@ -116,9 +115,9 @@ export const ContextBanner: React.FC<ContextBannerProps> = ({
       {note && (
         <div
           style={{
-            fontSize: typography.fontSize.xs,
+            fontSize: '11px',
             lineHeight: 1.5,
-            color: colors.text.secondary,
+            color: 'var(--text-muted)',
           }}
         >
           {note}

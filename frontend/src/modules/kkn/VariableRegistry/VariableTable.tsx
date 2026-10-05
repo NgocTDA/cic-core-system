@@ -17,7 +17,6 @@ import {
 } from '@ant-design/icons';
 import type { TableProps } from 'antd';
 import { ActionMenu, CodeText, SectionCard, StatusTag, tablePagination } from '@/components/ui';
-import { colors } from '@/design-system';
 import type { IVariable, VariableStatus } from './VariableTypes';
 
 const { Text } = Typography;
@@ -37,6 +36,9 @@ const VariableTable: React.FC<VariableTableProps> = ({
   onToggleStatus,
   onDuplicate,
 }) => {
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [pageSize, setPageSize] = React.useState(20);
+  React.useEffect(() => { setCurrentPage(1); }, [data]);
   const columns: TableProps<IVariable>['columns'] = [
     {
       title: 'Mã biến',
@@ -47,7 +49,7 @@ const VariableTable: React.FC<VariableTableProps> = ({
         <Space>
           {record.isInUse && (
             <Tooltip title="Biến đang được sử dụng trong mẫu tin">
-              <LockOutlined style={{ color: colors.subsystem.kkn }} />
+              <LockOutlined style={{ color: 'var(--chart-5-amber)' }} />
             </Tooltip>
           )}
           <CodeText template>{text}</CodeText>
@@ -98,7 +100,7 @@ const VariableTable: React.FC<VariableTableProps> = ({
     {
       title: 'Thao tác',
       key: 'action',
-      width: 80,
+      width: 75,
       align: 'center',
       fixed: 'right',
       render: (_, record) => (
@@ -143,7 +145,7 @@ const VariableTable: React.FC<VariableTableProps> = ({
         columns={columns}
         dataSource={data}
         rowKey="id"
-        pagination={tablePagination({ pageSize: 10 })}
+        pagination={tablePagination({ current: currentPage, pageSize, total: data.length, showQuickJumper: false, onChange: (page, size) => { setCurrentPage(page); setPageSize(size); } })}
         scroll={{ x: 900 }}
         size="middle"
       />

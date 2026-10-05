@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { List, Typography, Input, Avatar } from 'antd';
 import { MailOutlined, UserOutlined } from '@ant-design/icons';
-import { colors, spacing, typography, zIndex } from '@/design-system';
+import { zIndex } from '@/config/layout';
 import type { INotification } from './../../../types/notification';
 import { useIsMobile } from './../../../hooks/useIsMobile';
 import NotificationDetail from './../../../components/NotificationDetail';
@@ -21,11 +21,11 @@ const NotificationInbox: React.FC<Props> = ({ data, selectedItem, onSelect, onSu
   const isMobile = useIsMobile();
 
   return (
-    <div style={{ flex: 1, minHeight: 0, height: isMobile ? 'auto' : '100%', overflow: isMobile ? 'auto' : 'hidden', background: colors.bg.container, display: 'flex', flexDirection: isMobile ? 'column' : 'row' }}>
+    <div style={{ flex: 1, minHeight: 0, height: isMobile ? 'auto' : '100%', overflow: isMobile ? 'auto' : 'hidden', background: 'var(--surface)', display: 'flex', flexDirection: isMobile ? 'column' : 'row' }}>
       {/* LEFT PANE - LIST */}
-      <div style={{ width: isMobile ? '100%' : listWidth, borderRight: isMobile ? 'none' : `1px solid ${colors.border.split}`, borderBottom: isMobile ? `1px solid ${colors.border.split}` : 'none', display: 'flex', flexDirection: 'column', height: isMobile ? '40vh' : '100%', flexShrink: 0 }}>
-        <div style={{ padding: spacing[4], borderBottom: `1px solid ${colors.border.split}`, background: colors.bg.subtle }}>
-          <Input placeholder="Tìm kiếm nhanh..." prefix={<MailOutlined style={{ color: colors.neutral[400] }} />} />
+      <div style={{ width: isMobile ? '100%' : listWidth, borderRight: isMobile ? 'none' : `1px solid var(--color-neutral-100)`, borderBottom: isMobile ? `1px solid var(--color-neutral-100)` : 'none', display: 'flex', flexDirection: 'column', height: isMobile ? '40vh' : '100%', flexShrink: 0 }}>
+        <div style={{ padding: 'var(--spacing-16)', borderBottom: `1px solid var(--color-neutral-100)`, background: 'var(--bg-subtle)' }}>
+          <Input placeholder="Tìm kiếm nhanh..." prefix={<MailOutlined style={{ color: 'var(--text-subtle)' }} />} />
         </div>
         <div style={{ flex: 1, overflowY: 'auto' }}>
           <List
@@ -38,20 +38,20 @@ const NotificationInbox: React.FC<Props> = ({ data, selectedItem, onSelect, onSu
                 <List.Item
                   onClick={() => onSelect(item)}
                   style={{
-                    padding: `${spacing[3]} ${spacing[4]}`,
+                    padding: `var(--spacing-12) var(--spacing-16)`,
                     cursor: 'pointer',
-                    background: isActive ? colors.primary[50] : (isUnread ? colors.bg.container : colors.bg.subtle),
-                    borderLeft: isActive ? `3px solid ${colors.primary[500]}` : '3px solid transparent',
-                    borderBottom: `1px solid ${colors.border.split}`
+                    background: isActive ? 'var(--primary-subtle)' : (isUnread ? 'var(--surface)' : 'var(--bg-subtle)'),
+                    borderLeft: isActive ? `3px solid var(--primary)` : '3px solid transparent',
+                    borderBottom: `1px solid var(--color-neutral-100)`
                   }}
                 >
                   <List.Item.Meta
                     avatar={
-                      <Avatar style={{ backgroundColor: isUnread ? colors.primary[500] : colors.neutral[400] }} icon={<UserOutlined />} />
+                      <Avatar style={{ backgroundColor: isUnread ? 'var(--primary)' : 'var(--text-subtle)' }} icon={<UserOutlined />} />
                     }
                     title={
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Text strong={isUnread} style={{ fontSize: 13, color: isUnread ? colors.text.primary : colors.neutral[600] }} ellipsis>
+                        <Text strong={isUnread} style={{ fontSize: 13, color: isUnread ? 'var(--text)' : 'var(--text-muted)' }} ellipsis>
                           {item.lastProcessor || 'Hệ thống'}
                         </Text>
                         <Text type="secondary" style={{ fontSize: 11 }}>{item.receivedAt.split(' ')[0]}</Text>
@@ -59,10 +59,10 @@ const NotificationInbox: React.FC<Props> = ({ data, selectedItem, onSelect, onSu
                     }
                     description={
                       <div>
-                        <Text strong={isUnread} style={{ display: 'block', fontSize: typography.fontSize.base, marginBottom: spacing[1], color: isUnread ? colors.text.primary : colors.neutral[700] }} ellipsis>
+                        <Text strong={isUnread} style={{ display: 'block', fontSize: '14px', marginBottom: 'var(--spacing-4)', color: isUnread ? 'var(--text)' : 'var(--color-neutral-700)' }} ellipsis>
                           {item.title}
                         </Text>
-                        <Paragraph ellipsis={{ rows: 1 }} style={{ margin: 0, fontSize: 13, color: colors.neutral[500] }}>
+                        <Paragraph ellipsis={{ rows: 1 }} style={{ margin: 0, fontSize: 13, color: 'var(--text-muted)' }}>
                           {item.content}
                         </Paragraph>
                       </div>
@@ -77,9 +77,9 @@ const NotificationInbox: React.FC<Props> = ({ data, selectedItem, onSelect, onSu
 
       {!isMobile && (
         <div
-          style={{ width: 5, cursor: 'col-resize', background: colors.border.split, transition: 'background 0.2s', zIndex: zIndex.raised, flexShrink: 0 }}
-          onMouseEnter={e => e.currentTarget.style.background = colors.primary[500]}
-          onMouseLeave={e => e.currentTarget.style.background = colors.border.split}
+          style={{ width: 5, cursor: 'col-resize', background: 'var(--color-neutral-100)', transition: 'background 0.2s', zIndex: zIndex.raised, flexShrink: 0 }}
+          onMouseEnter={e => e.currentTarget.style.background = 'var(--primary)'}
+          onMouseLeave={e => e.currentTarget.style.background = 'var(--color-neutral-100)'}
           onMouseDown={(e) => {
             e.preventDefault();
             const startX = e.clientX;
@@ -110,4 +110,3 @@ const NotificationInbox: React.FC<Props> = ({ data, selectedItem, onSelect, onSu
 };
 
 export default NotificationInbox;
-

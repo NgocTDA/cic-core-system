@@ -8,7 +8,6 @@ import {
     SaveOutlined, DownOutlined, LoadingOutlined,
 } from '@ant-design/icons';
 import ComponentShowcase from '../../ComponentShowcase';
-import { colors, typography, spacing } from '@/design-system';
 import useHeaderActions from '@/hooks/useHeaderActions';
 
 const { Text } = Typography;
@@ -44,7 +43,7 @@ const ButtonDemo: React.FC = () => {
                 'Confirm dialog trước khi thực hiện hành động xóa / phê duyệt / từ chối',
             ]}
             wide
-            demoBackground={colors.bg.subtle}
+            demoBackground={'var(--bg-subtle)'}
             code={`import { Button, Dropdown, Modal } from 'antd';
 
 // 1 Primary trong khu vực action
@@ -86,10 +85,10 @@ const exportItems = [
             {contextHolder}
 
             {/* Types */}
-            <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.secondary, textTransform: 'uppercase', letterSpacing: 1, display: 'block', marginBottom: spacing[3] }}>
+            <Text style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 1, display: 'block', marginBottom: 'var(--spacing-12)' }}>
                 Kiểu button
             </Text>
-            <Space wrap style={{ marginBottom: spacing[5] }}>
+            <Space wrap style={{ marginBottom: 'var(--spacing-20)' }}>
                 <Button type="primary">Primary</Button>
                 <Button type="default">Default</Button>
                 <Button type="dashed">Dashed</Button>
@@ -98,10 +97,10 @@ const exportItems = [
             </Space>
 
             {/* With icons */}
-            <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.secondary, textTransform: 'uppercase', letterSpacing: 1, display: 'block', marginBottom: spacing[3] }}>
+            <Text style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 1, display: 'block', marginBottom: 'var(--spacing-12)' }}>
                 Với icon
             </Text>
-            <Space wrap style={{ marginBottom: spacing[5] }}>
+            <Space wrap style={{ marginBottom: 'var(--spacing-20)' }}>
                 <Button type="primary" icon={<PlusOutlined />}>Thêm mới</Button>
                 <Button icon={<EditOutlined />}>Chỉnh sửa</Button>
                 <Button icon={<PrinterOutlined />} onClick={() => triggerLoading('print')}>In báo cáo</Button>
@@ -109,10 +108,10 @@ const exportItems = [
             </Space>
 
             {/* Loading states */}
-            <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.secondary, textTransform: 'uppercase', letterSpacing: 1, display: 'block', marginBottom: spacing[3] }}>
+            <Text style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 1, display: 'block', marginBottom: 'var(--spacing-12)' }}>
                 Loading state (click để xem)
             </Text>
-            <Space wrap style={{ marginBottom: spacing[5] }}>
+            <Space wrap style={{ marginBottom: 'var(--spacing-20)' }}>
                 <Button
                     type="primary"
                     loading={loadingMap['save']}
@@ -130,13 +129,13 @@ const exportItems = [
                 </Button>
             </Space>
 
-            <Divider style={{ margin: `${spacing[2]} 0` }} />
+            <Divider style={{ margin: `var(--spacing-8) 0` }} />
 
             {/* Danger + confirm */}
-            <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.secondary, textTransform: 'uppercase', letterSpacing: 1, display: 'block', marginBottom: spacing[3] }}>
+            <Text style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 1, display: 'block', marginBottom: 'var(--spacing-12)' }}>
                 Danger + Confirm dialog
             </Text>
-            <Space wrap style={{ marginBottom: spacing[5] }}>
+            <Space wrap style={{ marginBottom: 'var(--spacing-20)' }}>
                 <Button
                     danger
                     icon={<DeleteOutlined />}
@@ -163,13 +162,13 @@ const exportItems = [
                 </Button>
             </Space>
 
-            <Divider style={{ margin: `${spacing[2]} 0` }} />
+            <Divider style={{ margin: `var(--spacing-8) 0` }} />
 
             {/* Export Excel pattern */}
-            <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.secondary, textTransform: 'uppercase', letterSpacing: 1, display: 'block', marginBottom: spacing[3] }}>
+            <Text style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 1, display: 'block', marginBottom: 'var(--spacing-12)' }}>
                 Export Excel pattern (Ctrl+Shift+E)
             </Text>
-            <Space wrap style={{ marginBottom: spacing[5] }}>
+            <Space wrap style={{ marginBottom: 'var(--spacing-20)' }}>
                 <Dropdown menu={{ items: exportItems }}>
                     <Button icon={<DownloadOutlined />}>
                         Xuất Excel <DownOutlined />
@@ -180,10 +179,10 @@ const exportItems = [
                 </Button>
             </Space>
 
-            <Divider style={{ margin: `${spacing[2]} 0` }} />
+            <Divider style={{ margin: `var(--spacing-8) 0` }} />
 
             {/* Disabled */}
-            <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.secondary, textTransform: 'uppercase', letterSpacing: 1, display: 'block', marginBottom: spacing[3] }}>
+            <Text style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 1, display: 'block', marginBottom: 'var(--spacing-12)' }}>
                 Disabled state
             </Text>
             <Space wrap>

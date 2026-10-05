@@ -1,11 +1,12 @@
 'use client';
 
+import { SUBSYSTEM_COLORS } from '@/config/subsystems';
+
 import React, { useEffect, useState } from 'react';
 import { Alert, Descriptions, Empty, Radio, Space, Spin, Table, Tag, Typography } from 'antd';
 import { BranchesOutlined, FileTextOutlined } from '@ant-design/icons';
 import useHeaderActions from '@/hooks/useHeaderActions';
 import { PageLayout, SectionCard } from '@/components/ui';
-import { colors, radius, spacing } from '@/design-system';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { fetchOutlineMeta, fetchOutlineProfile } from '@/services/srsService';
 import type { OutlineMeta, OutlineProfileResponse, ProfileId } from '@/types/srs';
@@ -58,7 +59,7 @@ const SrsOutline: React.FC = () => {
                     message="Không đọc được đề cương"
                     description={
                         <>
-                            <Paragraph style={{ marginBottom: spacing[2] }}>{error}</Paragraph>
+                            <Paragraph style={{ marginBottom: 'var(--spacing-8)' }}>{error}</Paragraph>
                             <Text type="secondary" style={{ fontSize: 12 }}>
                                 Sinh lại bằng <Text code>python tools/export_outline_json.py</Text> trong repo
                                 srs, rồi chép kết quả vào <Text code>frontend/config/outline.json</Text>.
@@ -73,7 +74,7 @@ const SrsOutline: React.FC = () => {
     if (loading || !meta) {
         return (
             <PageLayout>
-                <div style={{ textAlign: 'center', padding: spacing[10] }}>
+                <div style={{ textAlign: 'center', padding: '40px' }}>
                     <Spin />
                 </div>
             </PageLayout>
@@ -91,17 +92,17 @@ const SrsOutline: React.FC = () => {
                 style={{
                     display: 'grid',
                     gridTemplateColumns: isMobile ? '1fr' : '340px 1fr',
-                    gap: spacing[4],
+                    gap: 'var(--spacing-16)',
                     alignItems: 'start',
                 }}
             >
                 {/* LEFT — chọn loại + metadata */}
-                <Space direction="vertical" size={parseInt(spacing[4], 10)} style={{ width: '100%' }}>
+                <Space direction="vertical" size={parseInt('var(--spacing-16)', 10)} style={{ width: '100%' }}>
                     <SectionCard title="Loại chức năng">
                         <Radio.Group
                             value={profileId}
                             onChange={(e) => setProfileId(e.target.value as ProfileId)}
-                            style={{ display: 'flex', flexDirection: 'column', gap: spacing[2] }}
+                            style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}
                         >
                             {meta.profiles.map((p) => (
                                 <Radio key={p.id} value={p.id} style={{ alignItems: 'flex-start' }}>
@@ -111,18 +112,18 @@ const SrsOutline: React.FC = () => {
                                         </Text>
                                         {p.requireDiagram && (
                                             <Tag
-                                                color={colors.subsystem.tools}
-                                                style={{ marginInlineStart: spacing[2] }}
+                                                color={SUBSYSTEM_COLORS.tools}
+                                                style={{ marginInlineStart: 'var(--spacing-8)' }}
                                             >
                                                 bắt buộc sơ đồ
                                             </Tag>
                                         )}
                                         {p.variantOf && (
-                                            <Tag style={{ marginInlineStart: spacing[2] }}>
+                                            <Tag style={{ marginInlineStart: 'var(--spacing-8)' }}>
                                                 biến thể của {p.variantOf}
                                             </Tag>
                                         )}
-                                        <div style={{ fontSize: 12, color: colors.text.secondary }}>{p.ten}</div>
+                                        <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>{p.ten}</div>
                                     </div>
                                 </Radio>
                             ))}
@@ -149,7 +150,7 @@ const SrsOutline: React.FC = () => {
                         <Alert
                             type="info"
                             showIcon
-                            style={{ marginTop: spacing[2] }}
+                            style={{ marginTop: 'var(--spacing-8)' }}
                             message="Sinh tự động"
                             description="Đề cương lấy từ srs/tools/outline.py. Không sửa outline.json bằng tay — CI của repo srs sẽ chặn nếu hai bên lệch."
                         />
@@ -198,22 +199,22 @@ const SrsOutline: React.FC = () => {
                     }
                 >
                     {!profile ? (
-                        <div style={{ textAlign: 'center', padding: spacing[8] }}>
+                        <div style={{ textAlign: 'center', padding: 'var(--spacing-32)' }}>
                             <Spin />
                         </div>
                     ) : (
-                        <div style={{ paddingTop: spacing[2] }}>
+                        <div style={{ paddingTop: 'var(--spacing-8)' }}>
                             {/* Tiêu đề trang Confluence = Heading 3 bên Word */}
                             <div
                                 style={{
-                                    background: colors.bg.subtle,
-                                    borderRadius: radius.md,
-                                    padding: spacing[3],
-                                    marginBottom: spacing[4],
+                                    background: 'var(--bg-subtle)',
+                                    borderRadius: 'var(--radius-md)',
+                                    padding: 'var(--spacing-12)',
+                                    marginBottom: 'var(--spacing-16)',
                                 }}
                             >
                                 <Space size="small">
-                                    <FileTextOutlined style={{ color: colors.subsystem.tools }} />
+                                    <FileTextOutlined style={{ color: SUBSYSTEM_COLORS.tools }} />
                                     <Text strong>{meta.title}</Text>
                                     <Text type="secondary" style={{ fontSize: 11 }}>
                                         Heading 3 · tiêu đề trang Confluence
@@ -234,27 +235,27 @@ const SrsOutline: React.FC = () => {
                             {/* Khối Tính năng — lặp n lần, nên khoanh vùng cho rõ */}
                             <div
                                 style={{
-                                    border: `1px dashed ${colors.subsystem.tools}`,
-                                    borderRadius: radius.lg,
-                                    padding: spacing[4],
-                                    marginBottom: spacing[4],
+                                    border: `1px dashed ${SUBSYSTEM_COLORS.tools}`,
+                                    borderRadius: 'var(--radius-lg)',
+                                    padding: 'var(--spacing-16)',
+                                    marginBottom: 'var(--spacing-16)',
                                 }}
                             >
-                                <div style={{ marginBottom: spacing[2] }}>
+                                <div style={{ marginBottom: 'var(--spacing-8)' }}>
                                     <Space size="small" wrap>
-                                        <BranchesOutlined style={{ color: colors.subsystem.tools }} />
+                                        <BranchesOutlined style={{ color: SUBSYSTEM_COLORS.tools }} />
                                         <Text strong style={{ fontSize: 14 }}>
                                             {meta.featureTitle}
                                         </Text>
                                         <Text type="secondary" style={{ fontSize: 11 }}>
                                             Heading 4
                                         </Text>
-                                        <Tag color={colors.subsystem.tools}>lặp cho mỗi tính năng</Tag>
+                                        <Tag color={SUBSYSTEM_COLORS.tools}>lặp cho mỗi tính năng</Tag>
                                     </Space>
                                 </div>
                                 <Text
                                     type="secondary"
-                                    style={{ fontSize: 12, display: 'block', marginBottom: spacing[3] }}
+                                    style={{ fontSize: 12, display: 'block', marginBottom: 'var(--spacing-12)' }}
                                 >
                                     {meta.featureNote}
                                 </Text>
@@ -282,14 +283,14 @@ const SrsOutline: React.FC = () => {
 
                             {data?.guidance?.length ? (
                                 <SectionCard title="Quy ước bắt buộc">
-                                    <ul style={{ paddingInlineStart: spacing[5], margin: 0 }}>
+                                    <ul style={{ paddingInlineStart: 'var(--spacing-20)', margin: 0 }}>
                                         {data.guidance.map((g, i) => (
                                             <li
                                                 key={i}
                                                 style={{
                                                     fontSize: 12,
-                                                    color: colors.text.secondary,
-                                                    marginBottom: spacing[1],
+                                                    color: 'var(--text-muted)',
+                                                    marginBottom: 'var(--spacing-4)',
                                                     lineHeight: 1.6,
                                                 }}
                                             >

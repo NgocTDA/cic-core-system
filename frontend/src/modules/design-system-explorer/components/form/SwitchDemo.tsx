@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Form, Switch, Typography, Space, Row, Col, Divider } from 'antd';
 import ComponentShowcase from '../../ComponentShowcase';
-import { colors, typography, spacing } from '@/design-system';
+import { typography, spacing } from '@/modules/design-system-explorer/tokens';
 import useHeaderActions from '@/hooks/useHeaderActions';
 
 const { Text } = Typography;
@@ -61,64 +61,64 @@ const handleChange = async (checked: boolean) => {
                 <Row gutter={[16, 16]}>
                     {/* Basic with loading */}
                     <Col span={24}>
-                        <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.secondary, display: 'block', marginBottom: spacing[3] }}>
+                        <Text style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block', marginBottom: 'var(--spacing-12)' }}>
                             Với loading state (click để xem hiệu ứng ~1.5s)
                         </Text>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: spacing[3] }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-12)' }}>
                             <Switch
                                 checked={val1}
                                 onChange={handleToggleWithLoading}
                                 loading={loading1}
                             />
-                            <Text style={{ color: val1 ? colors.success.base : colors.text.secondary, fontWeight: typography.fontWeight.medium }}>
+                            <Text style={{ color: val1 ? 'var(--success)' : 'var(--text-muted)', fontWeight: typography.fontWeight.medium }}>
                                 {val1 ? 'Bật' : 'Tắt'}
                             </Text>
                         </div>
                     </Col>
 
-                    <Divider style={{ margin: `${spacing[2]} 0` }} />
+                    <Divider style={{ margin: `var(--spacing-8) 0` }} />
 
                     {/* checkedChildren / unCheckedChildren */}
                     <Col span={24}>
-                        <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.secondary, display: 'block', marginBottom: spacing[3] }}>
+                        <Text style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block', marginBottom: 'var(--spacing-12)' }}>
                             Với checkedChildren / unCheckedChildren
                         </Text>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: spacing[3] }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-12)' }}>
                             <Switch
                                 checked={val2}
                                 checkedChildren="Bật"
                                 unCheckedChildren="Tắt"
                                 onChange={setVal2}
                             />
-                            <Text style={{ color: colors.text.secondary }}>
+                            <Text style={{ color: 'var(--text-muted)' }}>
                                 Giá trị: <code style={{ fontFamily: typography.fontFamily.mono }}>{String(val2)}</code>
                             </Text>
                         </div>
                     </Col>
 
-                    <Divider style={{ margin: `${spacing[2]} 0` }} />
+                    <Divider style={{ margin: `var(--spacing-8) 0` }} />
 
                     {/* In Form */}
                     <Col span={24}>
-                        <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.secondary, display: 'block', marginBottom: spacing[3] }}>
+                        <Text style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block', marginBottom: 'var(--spacing-12)' }}>
                             Trong Form
                         </Text>
-                        <Space direction="vertical" style={{ width: '100%', gap: spacing[3] }}>
+                        <Space direction="vertical" style={{ width: '100%', gap: 'var(--spacing-12)' }}>
                             {[
                                 { name: 'isActive',    label: 'Trạng thái hoạt động',       defaultChecked: true  },
                                 { name: 'allowEmail',  label: 'Nhận thông báo qua email',    defaultChecked: false },
                                 { name: 'isPublic',    label: 'Hiển thị công khai',          defaultChecked: true  },
                                 { name: 'isDisabled',  label: 'Bị vô hiệu hóa (disabled)',   defaultChecked: true  },
                             ].map((item, i) => (
-                                <div key={item.name} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: `${spacing[2]} ${spacing[3]}`, background: colors.bg.subtle, borderRadius: 6 }}>
-                                    <Text style={{ fontSize: typography.fontSize.sm }}>{item.label}</Text>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: spacing[2] }}>
+                                <div key={item.name} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: `var(--spacing-8) var(--spacing-12)`, background: 'var(--bg-subtle)', borderRadius: 6 }}>
+                                    <Text style={{ fontSize: '12px' }}>{item.label}</Text>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-8)' }}>
                                         <Switch
                                             defaultChecked={item.defaultChecked}
                                             disabled={item.name === 'isDisabled'}
                                             size="small"
                                         />
-                                        <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.tertiary, minWidth: 24 }}>
+                                        <Text style={{ fontSize: '11px', color: 'var(--text-subtle)', minWidth: 24 }}>
                                             {item.defaultChecked ? 'Bật' : 'Tắt'}
                                         </Text>
                                     </div>

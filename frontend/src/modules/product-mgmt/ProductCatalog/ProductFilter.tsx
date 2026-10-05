@@ -38,7 +38,7 @@ const ProductFilter: React.FC<ProductFilterProps> = ({ loading, onSearch, onRese
   };
 
   return (
-    <FilterBar onSearch={handleSearch} onReset={handleReset} loading={loading}>
+    <FilterBar inCard onSearch={handleSearch} onReset={handleReset} loading={loading}>
       <FilterCol>
         <Input
           placeholder="Mã hoặc tên sản phẩm"

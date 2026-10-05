@@ -5,7 +5,7 @@ import { Upload, Typography, Progress, Space, Tag, Button, Alert, message } from
 import { InboxOutlined, DownloadOutlined, FilePdfOutlined, FileExcelOutlined, FileWordOutlined, DeleteOutlined } from '@ant-design/icons';
 import type { UploadFile, UploadProps } from 'antd';
 import ComponentShowcase from '../../ComponentShowcase';
-import { colors, typography, spacing, radius } from '@/design-system';
+import { colors, spacing, radius } from '@/modules/design-system-explorer/tokens';
 import useHeaderActions from '@/hooks/useHeaderActions';
 
 const { Dragger } = Upload;
@@ -21,9 +21,9 @@ interface MockFile {
 }
 
 const FILE_ICON: Record<string, React.ReactNode> = {
-    'application/pdf':                                                    <FilePdfOutlined style={{ color: colors.error.base }} />,
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': <FileExcelOutlined style={{ color: colors.success.base }} />,
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': <FileWordOutlined style={{ color: colors.info.base }} />,
+    'application/pdf':                                                    <FilePdfOutlined style={{ color: 'var(--error)' }} />,
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': <FileExcelOutlined style={{ color: 'var(--success)' }} />,
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': <FileWordOutlined style={{ color: 'var(--info)' }} />,
 };
 
 const ACCEPTED = '.pdf,.doc,.docx,.xls,.xlsx';
@@ -139,12 +139,12 @@ const { Dragger } = Upload;
             {contextHolder}
 
             {/* Sample file download link */}
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: spacing[3] }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 'var(--spacing-12)' }}>
                 <Button
                     type="link"
                     icon={<DownloadOutlined />}
                     size="small"
-                    style={{ color: colors.primary[500] }}
+                    style={{ color: 'var(--primary)' }}
                 >
                     Tải file mẫu
                 </Button>
@@ -156,44 +156,44 @@ const { Dragger } = Upload;
                 beforeUpload={validateAndAdd}
                 multiple
                 showUploadList={false}
-                style={{ marginBottom: spacing[4] }}
+                style={{ marginBottom: 'var(--spacing-16)' }}
             >
-                <p style={{ fontSize: 32, color: colors.subsystem.design, margin: `0 0 ${spacing[2]}` }}>
+                <p style={{ fontSize: 32, color: colors.subsystem.design, margin: `0 0 var(--spacing-8)` }}>
                     <InboxOutlined />
                 </p>
-                <p style={{ fontSize: typography.fontSize.base, color: colors.text.primary, margin: `0 0 ${spacing[1]}` }}>
+                <p style={{ fontSize: '14px', color: 'var(--text)', margin: `0 0 var(--spacing-4)` }}>
                     Kéo thả hoặc click để tải lên
                 </p>
-                <p style={{ fontSize: typography.fontSize.sm, color: colors.text.secondary, margin: 0 }}>
+                <p style={{ fontSize: '12px', color: 'var(--text-muted)', margin: 0 }}>
                     PDF, Word (.doc, .docx), Excel (.xls, .xlsx) — Tối đa {MAX_SIZE_MB}MB/file
                 </p>
             </Dragger>
 
             {/* File list */}
             {fileList.length > 0 && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: spacing[2] }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}>
                     {fileList.map((f) => (
                         <div
                             key={f.uid}
                             style={{
-                                padding: `${spacing[2]} ${spacing[3]}`,
-                                background: colors.bg.subtle,
-                                borderRadius: radius.md,
-                                border: `1px solid ${f.status === 'error' ? colors.error.base + '50' : colors.border.split}`,
+                                padding: `var(--spacing-8) var(--spacing-12)`,
+                                background: 'var(--bg-subtle)',
+                                borderRadius: 'var(--radius-md)',
+                                border: `1px solid ${f.status === 'error' ? 'var(--error)' + '50' : 'var(--color-neutral-100)'}`,
                             }}
                         >
-                            <div style={{ display: 'flex', alignItems: 'center', gap: spacing[2], marginBottom: f.status === 'uploading' ? spacing[2] : 0 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-8)', marginBottom: f.status === 'uploading' ? 'var(--spacing-8)' : 0 }}>
                                 <span style={{ flexShrink: 0 }}>{FILE_ICON[f.type] ?? <FilePdfOutlined />}</span>
                                 <div style={{ flex: 1, minWidth: 0 }}>
-                                    <Text ellipsis style={{ fontSize: typography.fontSize.sm, display: 'block' }}>{f.name}</Text>
-                                    <Text style={{ fontSize: 11, color: colors.text.tertiary }}>{formatSize(f.size)}</Text>
+                                    <Text ellipsis style={{ fontSize: '12px', display: 'block' }}>{f.name}</Text>
+                                    <Text style={{ fontSize: 11, color: 'var(--text-subtle)' }}>{formatSize(f.size)}</Text>
                                 </div>
                                 {f.status === 'done' && (
                                     <Tag color="success" style={{ fontSize: 11 }}>Xong</Tag>
                                 )}
                                 <button
                                     onClick={() => removeFile(f.uid)}
-                                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: colors.error.base, padding: 2 }}
+                                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--error)', padding: 2 }}
                                 >
                                     <DeleteOutlined />
                                 </button>
@@ -202,7 +202,7 @@ const { Dragger } = Upload;
                                 <Progress
                                     percent={f.progress}
                                     size="small"
-                                    strokeColor={colors.primary[500]}
+                                    strokeColor={'var(--primary)'}
                                     showInfo={false}
                                 />
                             )}
@@ -216,7 +216,7 @@ const { Dragger } = Upload;
                     type="info"
                     message="Thả file vào vùng trên để xem upload demo (file không thật sự được tải lên)"
                     showIcon
-                    style={{ fontSize: typography.fontSize.xs }}
+                    style={{ fontSize: '11px' }}
                 />
             )}
         </ComponentShowcase>

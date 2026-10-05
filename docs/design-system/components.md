@@ -65,9 +65,10 @@ const { RangePicker } = DatePicker;
 | `onSearch` | `() => void` | — | Handler Tìm kiếm button |
 | `onReset` | `() => void` | — | Handler Reset button (ẩn nếu không truyền) |
 | `loading` | `boolean` | `false` | Loading state cho Search button |
-| `inCard` | `boolean` | `false` | Wrap trong `Card` với shadow xs |
+| `inCard` | `boolean` | `false` | Dùng context banner; `variant="card"` để dùng Card |
 | `extra` | `ReactNode` | — | Slot thêm button trước Search (hiếm dùng) |
-| `showAddFilter` | `boolean` | `true` | Hiển thị nút "Thêm bộ lọc". Đặt `false` khi filter đơn giản không cần filter nâng cao. |
+| `showAddFilter` | `boolean` | `true` | Cho phép hiện nút khi có `onAddFilter`; ẩn nếu không có callback. |
+| `onAddFilter` | `() => void` | — | Mở UI cấu hình ẩn/hiện trường do page quản lý. |
 
 **FilterCol Props:**
 
@@ -384,3 +385,5 @@ import { MetricSummaryBar } from '@/components/ui';
 | `style` | `CSSProperties` | — | Custom inline style |
 
 
+
+Audit: timestamp thiếu/không hợp lệ và IP thiếu hiển thị `—`; không tự sinh thông tin audit.

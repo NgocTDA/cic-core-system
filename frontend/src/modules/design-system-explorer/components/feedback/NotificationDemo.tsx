@@ -7,7 +7,6 @@ import {
     WarningOutlined, BellOutlined,
 } from '@ant-design/icons';
 import ComponentShowcase from '../../ComponentShowcase';
-import { colors, typography, spacing } from '@/design-system';
 import useHeaderActions from '@/hooks/useHeaderActions';
 
 const { Text } = Typography;
@@ -23,22 +22,22 @@ const NotificationDemo: React.FC = () => {
             success: {
                 message: 'Thao tác thành công',
                 description: 'Bản ghi đã được lưu và gửi duyệt thành công.',
-                icon: <CheckCircleOutlined style={{ color: colors.success.base }} />,
+                icon: <CheckCircleOutlined style={{ color: 'var(--success)' }} />,
             },
             error: {
                 message: 'Thao tác thất bại',
                 description: 'Không thể lưu bản ghi. Vui lòng kiểm tra lại thông tin.',
-                icon: <CloseCircleOutlined style={{ color: colors.error.base }} />,
+                icon: <CloseCircleOutlined style={{ color: 'var(--error)' }} />,
             },
             warning: {
                 message: 'Cảnh báo',
                 description: 'Phiên đăng nhập sắp hết hạn. Vui lòng lưu công việc.',
-                icon: <WarningOutlined style={{ color: colors.warning.base }} />,
+                icon: <WarningOutlined style={{ color: 'var(--warning)' }} />,
             },
             info: {
                 message: 'Thông báo hệ thống',
                 description: 'Hệ thống sẽ bảo trì lúc 23:00 hôm nay.',
-                icon: <InfoCircleOutlined style={{ color: colors.info.base }} />,
+                icon: <InfoCircleOutlined style={{ color: 'var(--info)' }} />,
             },
         };
         notifApi[type](configs[type]);
@@ -78,26 +77,26 @@ msgApi.warning('Dữ liệu chưa đầy đủ');`}
             {msgContext}
 
             {/* Notification */}
-            <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.secondary, textTransform: 'uppercase', letterSpacing: 1, display: 'block', marginBottom: spacing[3] }}>
+            <Text style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 1, display: 'block', marginBottom: 'var(--spacing-12)' }}>
                 notification.useNotification() — có mô tả chi tiết
             </Text>
-            <Space wrap style={{ marginBottom: spacing[5] }}>
+            <Space wrap style={{ marginBottom: 'var(--spacing-20)' }}>
                 {(['success', 'error', 'warning', 'info'] as const).map((type) => (
                     <Button
                         key={type}
                         onClick={() => showNotif(type)}
                         style={{
                             borderColor: {
-                                success: colors.success.base,
-                                error:   colors.error.base,
-                                warning: colors.warning.base,
-                                info:    colors.info.base,
+                                success: 'var(--success)',
+                                error:   'var(--error)',
+                                warning: 'var(--warning)',
+                                info:    'var(--info)',
                             }[type],
                             color: {
-                                success: colors.success.dark,
-                                error:   colors.error.dark,
-                                warning: colors.warning.dark,
-                                info:    colors.info.dark,
+                                success: 'var(--success-ink)',
+                                error:   'var(--error-ink)',
+                                warning: 'var(--warning-ink)',
+                                info:    'var(--info-ink)',
                             }[type],
                         }}
                     >
@@ -106,24 +105,24 @@ msgApi.warning('Dữ liệu chưa đầy đủ');`}
                 ))}
             </Space>
 
-            <Divider style={{ margin: `${spacing[2]} 0` }} />
+            <Divider style={{ margin: `var(--spacing-8) 0` }} />
 
             {/* Message */}
-            <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.secondary, textTransform: 'uppercase', letterSpacing: 1, display: 'block', marginBottom: spacing[3] }}>
+            <Text style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 1, display: 'block', marginBottom: 'var(--spacing-12)' }}>
                 message.useMessage() — toast ngắn gọn
             </Text>
             <Space wrap>
                 <Button size="small" onClick={() => messageApi.success('Lưu thành công')}>
-                    <CheckCircleOutlined style={{ color: colors.success.base }} /> success
+                    <CheckCircleOutlined style={{ color: 'var(--success)' }} /> success
                 </Button>
                 <Button size="small" onClick={() => messageApi.error('Không thể kết nối server')}>
-                    <CloseCircleOutlined style={{ color: colors.error.base }} /> error
+                    <CloseCircleOutlined style={{ color: 'var(--error)' }} /> error
                 </Button>
                 <Button size="small" onClick={() => messageApi.warning('Dữ liệu chưa đầy đủ')}>
-                    <WarningOutlined style={{ color: colors.warning.base }} /> warning
+                    <WarningOutlined style={{ color: 'var(--warning)' }} /> warning
                 </Button>
                 <Button size="small" onClick={() => messageApi.info('Hệ thống đang xử lý...')}>
-                    <InfoCircleOutlined style={{ color: colors.info.base }} /> info
+                    <InfoCircleOutlined style={{ color: 'var(--info)' }} /> info
                 </Button>
                 <Button size="small" onClick={() => messageApi.loading('Đang tải dữ liệu...', 2)}>
                     loading (2s)

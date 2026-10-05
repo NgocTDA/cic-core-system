@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Typography, Tag, Row, Col, Collapse } from 'antd';
 import { CodeOutlined, CopyOutlined, CheckOutlined } from '@ant-design/icons';
 import { PageLayout, SectionCard } from '@/components/ui';
-import { colors, typography, spacing, radius } from '@/design-system';
+import { colors, typography, spacing, radius } from '@/modules/design-system-explorer/tokens';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -18,13 +18,13 @@ export type GroupKey =
     | 'tokens';
 
 export const GROUP_CONFIG: Record<GroupKey, { label: string; color: string }> = {
-    'layout':       { label: 'Layout & Structure',    color: colors.info.base },
-    'data-display': { label: 'Hiển thị dữ liệu',      color: colors.success.base },
-    'form':         { label: 'Form & Nhập liệu',       color: colors.subsystem.kkn },
-    'button':       { label: 'Button',                 color: colors.subsystem.ops },
-    'feedback':     { label: 'Feedback & Overlay',     color: colors.warning.dark },
-    'dashboard':    { label: 'Dashboard Components',   color: colors.subsystem.analytics },
-    'tokens':       { label: 'Design Tokens',          color: colors.subsystem.governance },
+    'layout':       { label: 'Layout & Structure',    color: 'var(--info)' },
+    'data-display': { label: 'Hiển thị dữ liệu',      color: 'var(--success)' },
+    'form':         { label: 'Form & Nhập liệu',       color: 'var(--chart-5-amber)' },
+    'button':       { label: 'Button',                 color: 'var(--chart-4-indigo)' },
+    'feedback':     { label: 'Feedback & Overlay',     color: 'var(--warning-ink)' },
+    'dashboard':    { label: 'Dashboard Components',   color: 'var(--chart-8-rose)' },
+    'tokens':       { label: 'Design Tokens',          color: 'var(--color-info-500)' },
 };
 
 interface ComponentShowcaseProps {
@@ -71,28 +71,28 @@ const ComponentShowcase: React.FC<ComponentShowcaseProps> = ({
     return (
         <PageLayout>
             {/* ─── Header ─────────────────────────────────────────── */}
-            <div style={{ marginBottom: spacing[5] }}>
+            <div style={{ marginBottom: 'var(--spacing-20)' }}>
                 <Tag
                     style={{
                         background: gc.color + '18',
                         color: gc.color,
                         border: `1px solid ${gc.color}50`,
                         borderRadius: radius.full,
-                        marginBottom: spacing[3],
-                        fontSize: typography.fontSize.xs,
+                        marginBottom: 'var(--spacing-12)',
+                        fontSize: '11px',
                         fontWeight: typography.fontWeight.medium,
                     }}
                 >
                     {gc.label}
                 </Tag>
-                <Title level={2} style={{ margin: 0, color: colors.text.primary, lineHeight: 1.2 }}>
+                <Title level={2} style={{ margin: 0, color: 'var(--text)', lineHeight: 1.2 }}>
                     {name}
                 </Title>
                 <Paragraph
                     style={{
-                        color: colors.text.secondary,
-                        fontSize: typography.fontSize.base,
-                        margin: `${spacing[2]} 0 0`,
+                        color: 'var(--text-muted)',
+                        fontSize: '14px',
+                        margin: `var(--spacing-8) 0 0`,
                     }}
                 >
                     {description}
@@ -103,24 +103,24 @@ const ComponentShowcase: React.FC<ComponentShowcaseProps> = ({
             <Row gutter={[20, 20]}>
                 {/* Left: behaviors + controls */}
                 <Col xs={24} lg={leftSpan}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: spacing[4] }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-16)' }}>
                         <SectionCard title="Behaviors">
                             <ul
                                 style={{
                                     margin: 0,
-                                    paddingLeft: spacing[5],
+                                    paddingLeft: 'var(--spacing-20)',
                                     display: 'flex',
                                     flexDirection: 'column',
-                                    gap: spacing[2],
-                                    paddingTop: spacing[2],
+                                    gap: 'var(--spacing-8)',
+                                    paddingTop: 'var(--spacing-8)',
                                 }}
                             >
                                 {behaviors.map((b, i) => (
                                     <li
                                         key={i}
                                         style={{
-                                            color: colors.text.secondary,
-                                            fontSize: typography.fontSize.sm,
+                                            color: 'var(--text-muted)',
+                                            fontSize: '12px',
                                             lineHeight: typography.lineHeight.relaxed,
                                         }}
                                     >
@@ -132,7 +132,7 @@ const ComponentShowcase: React.FC<ComponentShowcaseProps> = ({
 
                         {controls && (
                             <SectionCard title="Props / Controls">
-                                <div style={{ paddingTop: spacing[2] }}>{controls}</div>
+                                <div style={{ paddingTop: 'var(--spacing-8)' }}>{controls}</div>
                             </SectionCard>
                         )}
                     </div>
@@ -145,10 +145,10 @@ const ComponentShowcase: React.FC<ComponentShowcaseProps> = ({
                         extra={
                             <Tag
                                 style={{
-                                    background: colors.success.light,
-                                    color: colors.success.dark,
-                                    border: `1px solid ${colors.success.base}40`,
-                                    fontSize: typography.fontSize.xs,
+                                    background: 'var(--success-subtle)',
+                                    color: 'var(--success-ink)',
+                                    border: `1px solid var(--success)40`,
+                                    fontSize: '11px',
                                     cursor: 'default',
                                 }}
                             >
@@ -159,12 +159,12 @@ const ComponentShowcase: React.FC<ComponentShowcaseProps> = ({
                     >
                         <div
                             style={{
-                                background: demoBackground ?? colors.bg.subtle,
-                                borderRadius: radius.md,
-                                padding: spacing[6],
-                                border: `1px dashed ${colors.border.base}`,
+                                background: demoBackground ?? 'var(--bg-subtle)',
+                                borderRadius: 'var(--radius-md)',
+                                padding: 'var(--spacing-24)',
+                                border: `1px dashed var(--border)`,
                                 minHeight: demoMinHeight,
-                                marginTop: spacing[3],
+                                marginTop: 'var(--spacing-12)',
                             }}
                         >
                             {children}
@@ -175,14 +175,14 @@ const ComponentShowcase: React.FC<ComponentShowcaseProps> = ({
 
             {/* ─── Code snippet ────────────────────────────────────── */}
             <Collapse
-                style={{ marginTop: spacing[5] }}
+                style={{ marginTop: 'var(--spacing-20)' }}
                 items={[
                     {
                         key: 'code',
                         label: (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: spacing[2] }}>
-                                <CodeOutlined style={{ color: colors.text.secondary }} />
-                                <Text style={{ color: colors.text.secondary, fontSize: typography.fontSize.sm }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-8)' }}>
+                                <CodeOutlined style={{ color: 'var(--text-muted)' }} />
+                                <Text style={{ color: 'var(--text-muted)', fontSize: '12px' }}>
                                     Code snippet
                                 </Text>
                             </div>
@@ -193,9 +193,9 @@ const ComponentShowcase: React.FC<ComponentShowcaseProps> = ({
                                     style={{
                                         background: '#1e2030',
                                         color: '#cdd6f4',
-                                        padding: spacing[5],
-                                        borderRadius: radius.md,
-                                        fontSize: typography.fontSize.sm,
+                                        padding: 'var(--spacing-20)',
+                                        borderRadius: 'var(--radius-md)',
+                                        fontSize: '12px',
                                         fontFamily: typography.fontFamily.mono,
                                         overflowX: 'auto',
                                         margin: 0,
@@ -209,18 +209,18 @@ const ComponentShowcase: React.FC<ComponentShowcaseProps> = ({
                                     onClick={handleCopy}
                                     style={{
                                         position: 'absolute',
-                                        top: spacing[3],
-                                        right: spacing[3],
-                                        background: colors.neutral[700],
+                                        top: 'var(--spacing-12)',
+                                        right: 'var(--spacing-12)',
+                                        background: 'var(--color-neutral-700)',
                                         border: 'none',
-                                        borderRadius: radius.sm,
-                                        padding: `${spacing[1]} ${spacing[3]}`,
+                                        borderRadius: 'var(--radius-sm)',
+                                        padding: `var(--spacing-4) var(--spacing-12)`,
                                         cursor: 'pointer',
-                                        color: copied ? colors.success.base : colors.neutral[300],
-                                        fontSize: typography.fontSize.xs,
+                                        color: copied ? 'var(--success)' : 'var(--color-neutral-300)',
+                                        fontSize: '11px',
                                         display: 'flex',
                                         alignItems: 'center',
-                                        gap: spacing[1],
+                                        gap: 'var(--spacing-4)',
                                         transition: 'all 150ms ease',
                                     }}
                                 >

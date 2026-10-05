@@ -1,5 +1,4 @@
 import React from 'react';
-import { colors, radius } from '../../design-system';
 
 // ─── StatusSummaryBar ─────────────────────────────────────────
 // Row of colored summary badge-buttons shown above a data table,
@@ -18,10 +17,10 @@ import { colors, radius } from '../../design-system';
 type SummaryColor = 'error' | 'warning' | 'info' | 'success';
 
 const PALETTE: Record<SummaryColor, { bg: string; border: string; text: string }> = {
-  error:   { bg: colors.error.base,   border: colors.error.dark,   text: '#fff' },
-  warning: { bg: colors.warning.base, border: colors.warning.dark, text: '#fff' },
-  info:    { bg: colors.info.base,    border: colors.info.dark,    text: '#fff' },
-  success: { bg: colors.success.base, border: colors.success.dark, text: '#fff' },
+  error:   { bg: 'var(--error)',   border: 'var(--error-ink)',   text: '#fff' },
+  warning: { bg: 'var(--warning)', border: 'var(--warning-ink)', text: '#fff' },
+  info:    { bg: 'var(--info)',    border: 'var(--info-ink)',    text: '#fff' },
+  success: { bg: 'var(--success)', border: 'var(--success-ink)', text: '#fff' },
 };
 
 export interface SummaryItem {
@@ -68,7 +67,7 @@ const StatusSummaryBar: React.FC<StatusSummaryBarProps> = ({
               gap: 6,
               padding: '4px 14px',
               height: 32,
-              borderRadius: radius.md,
+              borderRadius: 'var(--radius-md)',
               border: `1px solid ${p.border}`,
               backgroundColor: p.bg,
               color: p.text,

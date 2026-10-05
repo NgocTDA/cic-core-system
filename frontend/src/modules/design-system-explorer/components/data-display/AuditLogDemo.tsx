@@ -5,7 +5,6 @@ import { Table, Collapse, Tag, Tooltip, Typography, Space, Spin, Button } from '
 import { ReloadOutlined } from '@ant-design/icons';
 import ComponentShowcase from '../../ComponentShowcase';
 import { CodeText } from '@/components/ui';
-import { colors, typography, spacing, radius } from '@/design-system';
 import useHeaderActions from '@/hooks/useHeaderActions';
 
 const { Text } = Typography;
@@ -32,9 +31,9 @@ interface AuditRow {
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const ACTION_STYLE: Record<string, { color: string; bg: string; label: string }> = {
-    CREATE: { color: colors.success.base, bg: colors.success.light, label: 'Thêm mới' },
-    UPDATE: { color: colors.warning.base, bg: colors.warning.light, label: 'Cập nhật' },
-    DELETE: { color: colors.error.base,   bg: colors.error.light,   label: 'Xóa'      },
+    CREATE: { color: 'var(--success)', bg: 'var(--success-subtle)', label: 'Thêm mới' },
+    UPDATE: { color: 'var(--warning)', bg: 'var(--warning-subtle)', label: 'Cập nhật' },
+    DELETE: { color: 'var(--error)',   bg: 'var(--error-subtle)',   label: 'Xóa'      },
 };
 
 // Sorted newest first
@@ -179,7 +178,7 @@ const USER_FILTERS = Array.from(new Set(MOCK_DATA.map(r => r.nguoiCapNhat)))
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 const TruncatedCell: React.FC<{ text: string }> = ({ text }) => {
-    if (!text) return <span style={{ color: colors.text.tertiary }}>—</span>;
+    if (!text) return <span style={{ color: 'var(--text-subtle)' }}>—</span>;
     return (
         <Tooltip title={<span style={{ whiteSpace: 'pre-line' }}>{text}</span>} placement="topLeft">
             <div style={{
@@ -198,7 +197,7 @@ const TruncatedCell: React.FC<{ text: string }> = ({ text }) => {
 };
 
 const renderChanges = (changes: FieldChange[]) => {
-    if (!changes.length) return <span style={{ color: colors.text.tertiary }}>—</span>;
+    if (!changes.length) return <span style={{ color: 'var(--text-subtle)' }}>—</span>;
     const text = changes.map(c => `${c.field}: ${c.value}`).join('\n');
     return <TruncatedCell text={text} />;
 };
@@ -275,7 +274,7 @@ const AuditLogDemo: React.FC = () => {
                     >
                         Đặt lại (về 8 bản ghi)
                     </Button>
-                    <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.tertiary }}>
+                    <Text style={{ fontSize: '11px', color: 'var(--text-subtle)' }}>
                         Reset scroll về đầu, ẩn lại các bản ghi đã tải thêm.
                     </Text>
                 </Space>
@@ -328,22 +327,22 @@ useEffect(() => {
                 expandIconPosition="start"
                 defaultActiveKey={['audit']}
                 style={{
-                    background: colors.bg.container,
-                    border: `1px solid ${colors.border.split}`,
-                    borderRadius: radius.lg,
+                    background: 'var(--surface)',
+                    border: `1px solid var(--color-neutral-100)`,
+                    borderRadius: 'var(--radius-lg)',
                 }}
                 items={[{
                     key: 'audit',
                     label: (
                         <Space size={8}>
-                            <Text strong style={{ fontSize: typography.fontSize.sm, color: colors.text.primary }}>
+                            <Text strong style={{ fontSize: '12px', color: 'var(--text)' }}>
                                 Lịch sử thay đổi
                             </Text>
                             <Tag style={{
-                                background: colors.primary[50],
-                                color: colors.primary[500],
+                                background: 'var(--primary-subtle)',
+                                color: 'var(--primary)',
                                 border: 'none',
-                                fontSize: typography.fontSize.xs,
+                                fontSize: '11px',
                                 lineHeight: '18px',
                                 margin: 0,
                             }}>
@@ -351,7 +350,7 @@ useEffect(() => {
                             </Tag>
                         </Space>
                     ),
-                    style: { background: colors.bg.subtle },
+                    style: { background: 'var(--bg-subtle)' },
                     styles: { body: { padding: 0 } },
                     children: (
                         <>
@@ -393,7 +392,7 @@ useEffect(() => {
                                                 return (
                                                     <Tag style={{
                                                         color: s.color, background: s.bg, border: 'none',
-                                                        fontSize: typography.fontSize.xs, margin: 0,
+                                                        fontSize: '11px', margin: 0,
                                                     }}>
                                                         {s.label}
                                                     </Tag>
@@ -415,7 +414,7 @@ useEffect(() => {
                                             width: 120, align: 'center',
                                             render: (v: string) => v
                                                 ? <CodeText>{v}</CodeText>
-                                                : <span style={{ color: colors.text.tertiary }}>—</span>,
+                                                : <span style={{ color: 'var(--text-subtle)' }}>—</span>,
                                         },
                                         {
                                             title: 'Mô tả', dataIndex: 'moTa', key: 'moTa',
@@ -429,27 +428,27 @@ useEffect(() => {
                             {/* Load-more indicator */}
                             <div style={{
                                 textAlign: 'center',
-                                padding: `${spacing[2]} 0`,
-                                borderTop: `1px solid ${colors.border.split}`,
+                                padding: `var(--spacing-8) 0`,
+                                borderTop: `1px solid var(--color-neutral-100)`,
                                 minHeight: 32,
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                gap: spacing[2],
+                                gap: 'var(--spacing-8)',
                             }}>
                                 {loadingMore ? (
                                     <>
                                         <Spin size="small" />
-                                        <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.secondary }}>
+                                        <Text style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
                                             Đang tải thêm…
                                         </Text>
                                     </>
                                 ) : !hasMore ? (
-                                    <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.tertiary }}>
+                                    <Text style={{ fontSize: '11px', color: 'var(--text-subtle)' }}>
                                         Đã hiển thị toàn bộ {MOCK_DATA.length} lịch sử
                                     </Text>
                                 ) : (
-                                    <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.tertiary }}>
+                                    <Text style={{ fontSize: '11px', color: 'var(--text-subtle)' }}>
                                         Đang hiển thị {displayCount}/{MOCK_DATA.length} — cuộn xuống để tải thêm
                                     </Text>
                                 )}

@@ -5,7 +5,7 @@ import { Table, Input, Select, Popover, Button, Checkbox, Divider, Typography, S
 import { SettingOutlined, HolderOutlined, ReloadOutlined, FilterOutlined } from '@ant-design/icons';
 import ComponentShowcase from '../../ComponentShowcase';
 import { FilterBar, FilterCol, SectionCard, StatusTag, tablePagination } from '@/components/ui';
-import { colors, typography, spacing, radius } from '@/design-system';
+import { typography, spacing, radius } from '@/modules/design-system-explorer/tokens';
 import useHeaderActions from '@/hooks/useHeaderActions';
 
 const { Text } = Typography;
@@ -175,8 +175,8 @@ const ColumnSettingsDemo: React.FC = () => {
                         draggable: true,
                         style: {
                             cursor: 'grab',
-                            backgroundColor: headerDragOver === k ? colors.primary[50]  : undefined,
-                            borderLeft:      headerDragOver === k ? `2px dashed ${colors.primary[400]}` : undefined,
+                            backgroundColor: headerDragOver === k ? 'var(--primary-subtle)'  : undefined,
+                            borderLeft:      headerDragOver === k ? `2px dashed var(--color-primary-400)` : undefined,
                             transition: 'background-color 0.15s',
                         },
                         onDragStart: (e: React.DragEvent) => { e.dataTransfer.setData('text/plain', k); },
@@ -197,7 +197,7 @@ const ColumnSettingsDemo: React.FC = () => {
 
     const addFilterContent = (
         <div style={{ width: 220 }}>
-            <Text style={{ fontSize: typography.fontSize.sm, fontWeight: typography.fontWeight.semibold, display: 'block', marginBottom: spacing[3] }}>
+            <Text style={{ fontSize: '12px', fontWeight: typography.fontWeight.semibold, display: 'block', marginBottom: 'var(--spacing-12)' }}>
                 Chọn trường tìm kiếm
             </Text>
             {FILTER_FIELDS.map(field => (
@@ -214,10 +214,10 @@ const ColumnSettingsDemo: React.FC = () => {
                             }
                         }}
                     >
-                        <Text style={{ fontSize: typography.fontSize.sm }}>
+                        <Text style={{ fontSize: '12px' }}>
                             {field.label}
                             {field.mandatory && (
-                                <Text style={{ color: colors.text.tertiary, fontSize: 10, marginLeft: 4 }}>(mặc định)</Text>
+                                <Text style={{ color: 'var(--text-subtle)', fontSize: 10, marginLeft: 4 }}>(mặc định)</Text>
                             )}
                         </Text>
                     </Checkbox>
@@ -235,7 +235,7 @@ const ColumnSettingsDemo: React.FC = () => {
 
     const settingsContent = (
         <div style={{ width: 280 }}>
-            <Text style={{ fontSize: typography.fontSize.sm, fontWeight: typography.fontWeight.semibold, display: 'block', marginBottom: spacing[3] }}>
+            <Text style={{ fontSize: '12px', fontWeight: typography.fontWeight.semibold, display: 'block', marginBottom: 'var(--spacing-12)' }}>
                 Cài đặt hiển thị
             </Text>
             <Input
@@ -244,9 +244,9 @@ const ColumnSettingsDemo: React.FC = () => {
                 value={colSearch}
                 onChange={e => setColSearch(e.target.value)}
                 allowClear
-                style={{ marginBottom: spacing[2] }}
+                style={{ marginBottom: 'var(--spacing-8)' }}
             />
-            <Divider style={{ margin: `${spacing[2]} 0` }} />
+            <Divider style={{ margin: `var(--spacing-8) 0` }} />
             <div style={{ maxHeight: 280, overflowY: 'auto' }}>
                 {filteredOptions.map(opt => {
                     const isOver = dragOver === opt.key;
@@ -264,17 +264,17 @@ const ColumnSettingsDemo: React.FC = () => {
                             }}
                             onDragEnd={() => { setDragOver(null); dragKey.current = null; }}
                             style={{
-                                display: 'flex', alignItems: 'center', gap: spacing[2],
-                                padding: '5px 8px', borderRadius: radius.sm,
+                                display: 'flex', alignItems: 'center', gap: 'var(--spacing-8)',
+                                padding: '5px 8px', borderRadius: 'var(--radius-sm)',
                                 cursor:  opt.disabled ? 'default' : 'grab',
                                 opacity: opt.disabled ? 0.6 : 1,
-                                borderLeft:  isOver ? `2px dashed ${colors.primary[400]}` : '2px solid transparent',
-                                background:  isOver ? colors.primary[50] : 'transparent',
+                                borderLeft:  isOver ? `2px dashed var(--color-primary-400)` : '2px solid transparent',
+                                background:  isOver ? 'var(--primary-subtle)' : 'transparent',
                                 transition: 'background 0.15s, border-color 0.15s',
                             }}
                         >
                             {!opt.disabled
-                                ? <HolderOutlined style={{ color: colors.text.tertiary, fontSize: 13, flexShrink: 0 }} />
+                                ? <HolderOutlined style={{ color: 'var(--text-subtle)', fontSize: 13, flexShrink: 0 }} />
                                 : <span style={{ width: 13, flexShrink: 0 }} />
                             }
                             <Checkbox
@@ -282,15 +282,15 @@ const ColumnSettingsDemo: React.FC = () => {
                                 disabled={opt.disabled}
                                 onChange={e => toggleCol(opt.key, e.target.checked)}
                             >
-                                <Text style={{ fontSize: typography.fontSize.sm }}>{opt.label}</Text>
+                                <Text style={{ fontSize: '12px' }}>{opt.label}</Text>
                             </Checkbox>
                         </div>
                     );
                 })}
             </div>
-            <Divider style={{ margin: `${spacing[2]} 0` }} />
+            <Divider style={{ margin: `var(--spacing-8) 0` }} />
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.secondary }}>
+                <Text style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
                     Đã chọn {visibleCols.length}/{COLUMN_OPTIONS.length}
                 </Text>
                 <Space size={8}>
@@ -387,7 +387,7 @@ const ColumnSettingsDemo: React.FC = () => {
                     <Button size="small" icon={<ReloadOutlined />} onClick={handleResetAll} style={{ width: '100%' }}>
                         Đặt lại tất cả
                     </Button>
-                    <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.tertiary }}>
+                    <Text style={{ fontSize: '11px', color: 'var(--text-subtle)' }}>
                         Khôi phục cột, visibility, bộ lọc về mặc định.
                     </Text>
                 </Space>
@@ -400,7 +400,7 @@ const [activeFilterFields, setActiveFilterFields] = useState(['tenTep', 'loaiFil
 // Drag header reorder — injected via onHeaderCell
 onHeaderCell: () => ({
   draggable: true,
-  style: { cursor: 'grab', backgroundColor: headerDragOver === k ? colors.primary[50] : undefined },
+  style: { cursor: 'grab', backgroundColor: headerDragOver === k ? 'var(--primary-subtle)' : undefined },
   onDragStart: (e) => e.dataTransfer.setData('text/plain', colKey),
   onDragOver:  (e) => { e.preventDefault(); setHeaderDragOver(colKey); },
   onDrop:      (e) => { handleReorder(e.dataTransfer.getData('text/plain'), colKey); setHeaderDragOver(null); },

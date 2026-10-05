@@ -39,6 +39,9 @@ interface ProductListProps {
 
 const ProductList: React.FC<ProductListProps> = ({ data, loading, onDelete, onToggleStatus }) => {
   const router = useRouter();
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [pageSize, setPageSize] = React.useState(20);
+  React.useEffect(() => { setCurrentPage(1); }, [data]);
 
   const columns: TableProps<IProduct>['columns'] = [
     {
@@ -46,7 +49,7 @@ const ProductList: React.FC<ProductListProps> = ({ data, loading, onDelete, onTo
       key: 'stt',
       width: 60,
       align: 'center',
-      render: (_, __, index) => index + 1,
+      render: (_, __, index) => (currentPage - 1) * pageSize + index + 1,
     },
     {
       title: 'Mã SP',
@@ -123,7 +126,7 @@ const ProductList: React.FC<ProductListProps> = ({ data, loading, onDelete, onTo
     {
       title: 'Thao tác',
       key: 'action',
-      width: 80,
+      width: 75,
       align: 'center',
       fixed: 'right',
       render: (_, record) => (
@@ -169,11 +172,11 @@ const ProductList: React.FC<ProductListProps> = ({ data, loading, onDelete, onTo
         rowKey="id"
         size="middle"
         loading={loading}
-        pagination={tablePagination()}
+        pagination={tablePagination({ current: currentPage, pageSize, total: data.length, showQuickJumper: false, onChange: (page, size) => { setCurrentPage(page); setPageSize(size); } })}
         scroll={{ x: 1500, y: 'calc(100vh - 400px)' }}
         onRow={(record) => ({
-          onDoubleClick: () => router.push(`/product-mgmt/catalog/products/${record.id}`),
-          style: { cursor: 'default' },
+          onClick: () => router.push(`/product-mgmt/catalog/products/${record.id}`),
+          style: { cursor: 'pointer' },
         })}
       />
     </SectionCard>

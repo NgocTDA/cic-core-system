@@ -1,7 +1,6 @@
 import React from 'react';
 import { Space, Button, Tooltip, Card } from 'antd';
 import { SearchOutlined, FilterOutlined, ReloadOutlined } from '@ant-design/icons';
-import { colors, shadows, radius } from '../../design-system';
 
 // ─── FilterCol ───────────────────────────────────────────────
 // Responsive wrapper for a single filter input inside FilterBar.
@@ -56,6 +55,7 @@ interface FilterBarProps {
   note?: React.ReactNode;
   extra?: React.ReactNode;
   showAddFilter?: boolean;
+  onAddFilter?: () => void;
   style?: React.CSSProperties;
 }
 
@@ -70,6 +70,7 @@ const FilterBar: React.FC<FilterBarProps> = ({
   note,
   extra,
   showAddFilter = true,
+  onAddFilter,
   style,
 }) => {
   // Mặc định inCard sẽ sử dụng phong cách Context Banner (#edf3ed) thanh lịch, gọn gàng
@@ -89,11 +90,12 @@ const FilterBar: React.FC<FilterBarProps> = ({
       <div style={{ marginLeft: 'auto', flexShrink: 0 }}>
         <Space>
           {extra}
-          {showAddFilter && (
+          {showAddFilter && onAddFilter && (
             <Tooltip title="Thêm điều kiện lọc nâng cao">
               <Button
                 icon={<FilterOutlined />}
-                style={isContext ? { background: '#ffffff', borderColor: '#9fb3a9' } : undefined}
+                onClick={onAddFilter}
+                style={isContext ? { background: 'var(--surface)', borderColor: 'var(--border-input)' } : undefined}
               >
                 Thêm bộ lọc
               </Button>
@@ -104,7 +106,7 @@ const FilterBar: React.FC<FilterBarProps> = ({
               <Button
                 icon={<ReloadOutlined />}
                 onClick={onReset}
-                style={isContext ? { background: '#ffffff', borderColor: '#9fb3a9' } : undefined}
+                style={isContext ? { background: 'var(--surface)', borderColor: 'var(--border-input)' } : undefined}
               />
             </Tooltip>
           )}
@@ -125,9 +127,9 @@ const FilterBar: React.FC<FilterBarProps> = ({
     return (
       <div
         style={{
-          background: colors.bg.context,
-          border: `1px solid ${colors.border.base}`,
-          borderRadius: radius.md,
+          background: 'var(--surface-sunken)',
+          border: `1px solid var(--border)`,
+          borderRadius: 'var(--radius-md)',
           padding: '14px 20px',
           marginBottom: 16,
           display: 'flex',
@@ -141,7 +143,7 @@ const FilterBar: React.FC<FilterBarProps> = ({
             style={{
               fontWeight: 600,
               fontSize: 13,
-              color: colors.text.primary,
+              color: 'var(--text)',
             }}
           >
             {title}
@@ -153,7 +155,7 @@ const FilterBar: React.FC<FilterBarProps> = ({
             style={{
               fontSize: 12,
               lineHeight: 1.5,
-              color: colors.text.secondary,
+              color: 'var(--text-muted)',
             }}
           >
             {note}
@@ -168,10 +170,10 @@ const FilterBar: React.FC<FilterBarProps> = ({
       <Card
         style={{
           marginBottom: 16,
-          borderRadius: radius.lg,
-          boxShadow: shadows.xs,
-          border: `1px solid ${colors.border.base}`,
-          background: colors.bg.container,
+          borderRadius: 'var(--radius-lg)',
+          boxShadow: 'var(--elevation-1)',
+          border: `1px solid var(--border)`,
+          background: 'var(--surface)',
           ...style,
         }}
       >

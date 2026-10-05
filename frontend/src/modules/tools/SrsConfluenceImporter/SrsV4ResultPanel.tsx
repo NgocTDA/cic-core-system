@@ -1,5 +1,7 @@
 'use client';
 
+import { SUBSYSTEM_COLORS } from '@/config/subsystems';
+
 import React, { useState } from 'react';
 import { Tabs, Table, Tag, Button, Space, Typography, Card, Alert, Tooltip, Collapse, message } from 'antd';
 import {
@@ -13,7 +15,6 @@ import {
     SafetyCertificateOutlined,
     QuestionCircleOutlined,
 } from '@ant-design/icons';
-import { colors, spacing } from '@/design-system';
 import { tablePagination } from '@/components/ui';
 import type { SrsV4DocData, SrsV4Feature } from '@/types/srsV4';
 import { buildSrsV4Markdown } from './buildSrsV4Markdown';
@@ -122,7 +123,7 @@ export const SrsV4ResultPanel: React.FC<SrsV4ResultPanelProps> = ({
             <Card
                 key={feat.maFeat || index}
                 title={<Space><Tag color="geekblue">{feat.maFeat}</Tag> <Text strong>{feat.tenFeat}</Text></Space>}
-                style={{ marginBottom: spacing[3] }}
+                style={{ marginBottom: 'var(--spacing-12)' }}
             >
                 <Paragraph>{feat.moTaYeuCau}</Paragraph>
 
@@ -165,7 +166,7 @@ export const SrsV4ResultPanel: React.FC<SrsV4ResultPanelProps> = ({
         <Card
             title={
                 <Space>
-                    <FileTextOutlined style={{ color: colors.subsystem.tools }} />
+                    <FileTextOutlined style={{ color: SUBSYSTEM_COLORS.tools }} />
                     <span>Đặc tả SRS v4.0 · <Text code>{gen.maChucNang}</Text> {gen.tenChucNang}</span>
                     <Tag color="volcano">{data.profile}</Tag>
                 </Space>
@@ -198,16 +199,16 @@ export const SrsV4ResultPanel: React.FC<SrsV4ResultPanelProps> = ({
                         key: 'general',
                         label: '1. Tổng quan Chức năng (FUNC)',
                         children: (
-                            <Space direction="vertical" size={parseInt(spacing[4], 10)} style={{ width: '100%' }}>
+                            <Space direction="vertical" size={parseInt('var(--spacing-16)', 10)} style={{ width: '100%' }}>
                                 {/* General Info Grid */}
                                 <Card size="small" title="Mô tả chung">
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: spacing[2] }}>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-8)' }}>
                                         <div><Text type="secondary">Mã chức năng:</Text> <Text strong code>{gen.maChucNang}</Text></div>
                                         <div><Text type="secondary">Nhóm chức năng:</Text> <Text strong code>{gen.nhomChucNang}</Text></div>
                                         <div><Text type="secondary">Tác nhân chính:</Text> <Tag color="blue">{gen.tacNhanChinh}</Tag></div>
                                         <div><Text type="secondary">Vị trí chức năng:</Text> <Text>{gen.viTriChucNang}</Text></div>
                                     </div>
-                                    <div style={{ marginTop: spacing[2] }}>
+                                    <div style={{ marginTop: 'var(--spacing-8)' }}>
                                         <Text type="secondary">Mô tả chức năng:</Text>
                                         <Paragraph style={{ marginBottom: 0 }}>{gen.moTa}</Paragraph>
                                     </div>
@@ -245,7 +246,7 @@ export const SrsV4ResultPanel: React.FC<SrsV4ResultPanelProps> = ({
 
                                 <Card size="small" title="Vấn đề còn mở">
                                     {(data.openQuestions || []).map((q, i) => (
-                                        <Alert key={i} type="info" message={q.topic} description={q.content} style={{ marginBottom: spacing[2] }} />
+                                        <Alert key={i} type="info" message={q.topic} description={q.content} style={{ marginBottom: 'var(--spacing-8)' }} />
                                     ))}
                                 </Card>
                             </Space>
@@ -255,7 +256,7 @@ export const SrsV4ResultPanel: React.FC<SrsV4ResultPanelProps> = ({
                         key: 'markdown',
                         label: '4. Xem trước Markdown',
                         children: (
-                            <div style={{ background: '#1e1e1e', color: '#d4d4d4', padding: spacing[3], borderRadius: 6, maxHeight: 500, overflow: 'auto', fontFamily: 'monospace', fontSize: 12 }}>
+                            <div style={{ background: '#1e1e1e', color: '#d4d4d4', padding: 'var(--spacing-12)', borderRadius: 6, maxHeight: 500, overflow: 'auto', fontFamily: 'monospace', fontSize: 12 }}>
                                 <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>{markdown}</pre>
                             </div>
                         ),

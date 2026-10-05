@@ -1,9 +1,10 @@
 'use client';
 
+import { SUBSYSTEM_COLORS } from '@/config/subsystems';
+
 import React from 'react';
 import { Button, Input, Select, Space, Tag, Modal, Form, message, Tooltip } from 'antd';
 import { KeyOutlined, CheckCircleFilled, CloudDownloadOutlined, SearchOutlined, SettingOutlined } from '@ant-design/icons';
-import { colors, spacing } from '@/design-system';
 import type { SrsV4Profile } from '@/types/srsV4';
 import type { ProviderInfo } from '../UIDocGenerator/types';
 
@@ -88,20 +89,20 @@ export const MetadataHeaderBar: React.FC<MetadataHeaderBarProps> = ({
             style={{
                 display: 'flex',
                 flexDirection: 'column',
-                gap: spacing[3],
-                background: colors.bg.container,
-                padding: spacing[3],
+                gap: 'var(--spacing-12)',
+                background: 'var(--surface)',
+                padding: 'var(--spacing-12)',
                 borderRadius: 8,
-                border: `1px solid ${colors.border.subtle}`,
+                border: `1px solid var(--border)`,
             }}
         >
             {/* Top Bar: Compact Settings */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: spacing[2] }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 'var(--spacing-8)' }}>
                 <Space wrap>
                     {/* PAT Status */}
                     {pat ? (
                         <Space wrap>
-                            <Tag icon={<CheckCircleFilled />} color={colors.success.base}>
+                            <Tag icon={<CheckCircleFilled />} color={'var(--success)'}>
                                 PAT Confluence{fullname ? ` · ${fullname}` : ''}
                             </Tag>
                             <Button size="small" icon={<KeyOutlined />} onClick={onOpenPatModal}>
@@ -130,7 +131,7 @@ export const MetadataHeaderBar: React.FC<MetadataHeaderBarProps> = ({
 
                 {/* Profile Select */}
                 <Space wrap>
-                    <span style={{ fontSize: 12, fontWeight: 500, color: colors.text.secondary }}>Loại đặc tả (Profile):</span>
+                    <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-muted)' }}>Loại đặc tả (Profile):</span>
                     <Select
                         size="small"
                         style={{ width: 160 }}
@@ -148,7 +149,7 @@ export const MetadataHeaderBar: React.FC<MetadataHeaderBarProps> = ({
             </div>
 
             {/* Middle Row: Confluence Fetch Input */}
-            <div style={{ display: 'flex', gap: spacing[2] }}>
+            <div style={{ display: 'flex', gap: 'var(--spacing-8)' }}>
                 <Input
                     value={link}
                     onChange={(e) => onChangeLink(e.target.value)}
@@ -165,13 +166,13 @@ export const MetadataHeaderBar: React.FC<MetadataHeaderBarProps> = ({
                 style={{
                     display: 'grid',
                     gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
-                    gap: spacing[2],
-                    paddingTop: spacing[2],
-                    borderTop: `1px dashed ${colors.border.subtle}`,
+                    gap: 'var(--spacing-8)',
+                    paddingTop: 'var(--spacing-8)',
+                    borderTop: `1px dashed var(--border)`,
                 }}
             >
                 <div>
-                    <div style={{ fontSize: 11, color: colors.text.secondary, marginBottom: 2 }}>Phân hệ</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 2 }}>Phân hệ</div>
                     <Select
                         size="small"
                         style={{ width: '100%' }}
@@ -182,7 +183,7 @@ export const MetadataHeaderBar: React.FC<MetadataHeaderBarProps> = ({
                 </div>
 
                 <div>
-                    <div style={{ fontSize: 11, color: colors.text.secondary, marginBottom: 2 }}>Mã Chức năng (FUNC)</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 2 }}>Mã Chức năng (FUNC)</div>
                     <Input
                         size="small"
                         value={maChucNang}
@@ -192,7 +193,7 @@ export const MetadataHeaderBar: React.FC<MetadataHeaderBarProps> = ({
                 </div>
 
                 <div>
-                    <div style={{ fontSize: 11, color: colors.text.secondary, marginBottom: 2 }}>Tên Chức năng</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 2 }}>Tên Chức năng</div>
                     <Input
                         size="small"
                         value={tenChucNang}
@@ -202,7 +203,7 @@ export const MetadataHeaderBar: React.FC<MetadataHeaderBarProps> = ({
                 </div>
 
                 <div>
-                    <div style={{ fontSize: 11, color: colors.text.secondary, marginBottom: 2 }}>Nhóm Chức năng (GRP)</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 2 }}>Nhóm Chức năng (GRP)</div>
                     <Input
                         size="small"
                         value={nhomChucNang}
@@ -212,7 +213,7 @@ export const MetadataHeaderBar: React.FC<MetadataHeaderBarProps> = ({
                 </div>
 
                 <div>
-                    <div style={{ fontSize: 11, color: colors.text.secondary, marginBottom: 2 }}>Mã Use Cases</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 2 }}>Mã Use Cases</div>
                     <Input
                         size="small"
                         value={useCases}
@@ -223,14 +224,14 @@ export const MetadataHeaderBar: React.FC<MetadataHeaderBarProps> = ({
             </div>
 
             {/* Run AI Button */}
-            <div style={{ textAlign: 'right', marginTop: spacing[1] }}>
+            <div style={{ textAlign: 'right', marginTop: 'var(--spacing-4)' }}>
                 <Button
                     type="primary"
                     size="large"
                     disabled={!hasSource}
                     loading={generating}
                     onClick={onGenerate}
-                    style={{ background: colors.subsystem.tools, borderColor: colors.subsystem.tools }}
+                    style={{ background: SUBSYSTEM_COLORS.tools, borderColor: SUBSYSTEM_COLORS.tools }}
                 >
                     ⚡ Phân tích & Sinh SRS v4.0 theo Mã đã chốt
                 </Button>

@@ -20,33 +20,30 @@ export interface MatchResult {
     useCases?: string[];
 }
 
-export async function fetchRegistryItems<T = Record<string, string>>(
-    registry: RegistryKey,
-    query?: string,
-): Promise<T[]> {
-    try {
-        const q = query ? `&q=${encodeURIComponent(query)}` : '';
-        const res = await fetch(`/api/srs/registries?registry=${registry}${q}`);
-        if (!res.ok) return [];
-        const data = await res.json();
-        return (data.items as T[]) || [];
-    } catch {
-        return [];
-    }
+export interface RegistrySnapshot {
+    headers: string[];
+    items: Record<string, string>[];
+    rowIds: string[];
+    revision: string;
 }
-
-export async function saveRegistryItems(
-    registry: RegistryKey,
-    items: Record<string, string>[],
-): Promise<{ success: boolean; message?: string; error?: string }> {
-    const res = await fetch('/api/srs/registries', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ registry, items }),
-    });
-    return res.json();
+async function readResponse(res: Response): Promise<RegistrySnapshot> {
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Không tải được sổ đăng ký.');
+    return data;
 }
-
+export async function fetchRegistry(registry: RegistryKey, query?: string, signal?: AbortSignal): Promise<RegistrySnapshot> {
+    const q = query ? `&q=${encodeURIComponent(query)}` : '';
+    return readResponse(await fetch(`/api/srs/registries?registry=${registry}${q}`, { signal, cache: 'no-store' }));
+}
+export async function fetchRegistryItems<T = Record<string, string>>(registry: RegistryKey, query?: string): Promise<T[]> {
+    return (await fetchRegistry(registry, query)).items as T[];
+}
+export async function mutateRegistryItem(registry: RegistryKey, revision: string, action: 'add' | 'update' | 'delete', rowId?: string, values?: Record<string, string>): Promise<RegistrySnapshot> {
+    return readResponse(await fetch('/api/srs/registries', {
+        method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ registry, revision, action, rowId, values }),
+    }));
+}
 /**
  * Hàm tìm kiếm & gợi ý mã thông minh từ Tiêu đề trang Confluence (Page Title)
  * Đọc từ manifest.csv & groups.csv & usecases.csv

@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { Row, Col, Switch, Space, Typography, Divider } from 'antd';
 import ComponentShowcase from '../../ComponentShowcase';
 import { StatusTag, STATUS_CONFIG, StatusKey } from '@/components/ui';
-import { colors, typography, spacing } from '@/design-system';
 import useHeaderActions from '@/hooks/useHeaderActions';
 
 const { Text } = Typography;
@@ -32,7 +31,7 @@ const StatusTagDemo: React.FC = () => {
             controls={
                 <Space direction="vertical" style={{ width: '100%' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Text style={{ fontSize: typography.fontSize.sm }}>bordered</Text>
+                        <Text style={{ fontSize: '12px' }}>bordered</Text>
                         <Switch checked={bordered} onChange={setBordered} size="small" />
                     </div>
                 </Space>
@@ -55,16 +54,16 @@ const StatusTagDemo: React.FC = () => {
         >
             <div>
                 {/* All statuses */}
-                <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.secondary, textTransform: 'uppercase', letterSpacing: 1, display: 'block', marginBottom: spacing[3] }}>
+                <Text style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 1, display: 'block', marginBottom: 'var(--spacing-12)' }}>
                     Tất cả trạng thái ({ALL_STATUSES.length})
                 </Text>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: spacing[2], marginBottom: spacing[5] }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-8)', marginBottom: 'var(--spacing-20)' }}>
                     {ALL_STATUSES.map((s) => (
                         <StatusTag key={s} status={s} bordered={bordered} />
                     ))}
                 </div>
 
-                <Divider style={{ margin: `${spacing[3]} 0` }} />
+                <Divider style={{ margin: `var(--spacing-12) 0` }} />
 
                 {/* Grouped by semantic */}
                 <Row gutter={[16, 16]}>
@@ -76,10 +75,10 @@ const StatusTagDemo: React.FC = () => {
                         { group: 'Data quality', statuses: ['VALID', 'INVALID', 'ERROR', 'REVIEWING', 'CLOSED'] as StatusKey[] },
                     ].map((grp) => (
                         <Col key={grp.group} xs={24} sm={12}>
-                            <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.tertiary, display: 'block', marginBottom: spacing[2] }}>
+                            <Text style={{ fontSize: '11px', color: 'var(--text-subtle)', display: 'block', marginBottom: 'var(--spacing-8)' }}>
                                 {grp.group}
                             </Text>
-                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: spacing[2] }}>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-8)' }}>
                                 {grp.statuses.map((s) => (
                                     <StatusTag key={s} status={s} bordered={bordered} minWidth={90} />
                                 ))}
@@ -88,10 +87,10 @@ const StatusTagDemo: React.FC = () => {
                     ))}
                 </Row>
 
-                <Divider style={{ margin: `${spacing[3]} 0` }} />
+                <Divider style={{ margin: `var(--spacing-12) 0` }} />
 
                 {/* Custom label */}
-                <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.secondary, display: 'block', marginBottom: spacing[2] }}>
+                <Text style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block', marginBottom: 'var(--spacing-8)' }}>
                     Override label
                 </Text>
                 <Space wrap>

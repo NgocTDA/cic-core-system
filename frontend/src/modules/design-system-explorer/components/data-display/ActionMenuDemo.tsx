@@ -5,7 +5,6 @@ import { Space, Switch, Typography, message, Table, Tag } from 'antd';
 import { EyeOutlined, EditOutlined, DeleteOutlined, StopOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import ComponentShowcase from '../../ComponentShowcase';
 import { ActionMenu, StatusTag, tablePagination } from '@/components/ui';
-import { colors, typography, spacing } from '@/design-system';
 import useHeaderActions from '@/hooks/useHeaderActions';
 
 const { Text } = Typography;
@@ -107,13 +106,13 @@ const ActionMenuDemo: React.FC = () => {
             ]}
             wide
             controls={
-                <Space direction="vertical" style={{ width: '100%', gap: spacing[3] }}>
+                <Space direction="vertical" style={{ width: '100%', gap: 'var(--spacing-12)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Text style={{ fontSize: typography.fontSize.sm }}>Confirm dialog</Text>
+                        <Text style={{ fontSize: '12px' }}>Confirm dialog</Text>
                         <Switch checked={showConfirm} onChange={setShowConfirm} size="small" />
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Text style={{ fontSize: typography.fontSize.sm }}>Disabled khi RUNNING</Text>
+                        <Text style={{ fontSize: '12px' }}>Disabled khi RUNNING</Text>
                         <Switch checked={showDisabled} onChange={setShowDisabled} size="small" />
                     </div>
                 </Space>

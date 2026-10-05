@@ -11,7 +11,6 @@ import {
   ExportExcelDropdown,
   type IDisplayColumnOption,
 } from '@/components/ui';
-import { colors, radius, spacing, typography } from '@/design-system';
 import { useJobManagement } from './useJobManagement';
 import { useRole, hasPermission } from '@/context/RoleContext';
 import { mockJobs } from './mockData';
@@ -19,6 +18,8 @@ import JobFilter from './JobFilter';
 import JobList from './JobList';
 import JobDetailModal from './JobDetailModal';
 import JobHistoryModal from './modals/JobHistoryModal';
+import ForestEvaluationDrawer from './components/ForestEvaluationDrawer';
+import { BarChartOutlined } from '@ant-design/icons';
 import type { IJob } from './types';
 
 const { Text } = Typography;
@@ -125,16 +126,16 @@ const RunConfirmModal: React.FC<RunConfirmModalProps> = ({
         {singleTarget && (
           <div
             style={{
-              background: colors.bg.subtle,
+              background: 'var(--bg-subtle)',
               padding: '10px 14px',
-              borderRadius: radius.md,
-              border: `1px solid ${colors.border.base}`,
+              borderRadius: 'var(--radius-md)',
+              border: `1px solid var(--border)`,
               marginBottom: 16,
             }}
           >
             <div>
               <Text type="secondary">Mã Job: </Text>
-              <Text style={{ fontFamily: typography.fontFamily.mono, fontWeight: 'bold', color: colors.text.primary }}>
+              <Text style={{ fontFamily: 'var(--font-mono, monospace)', fontWeight: 'bold', color: 'var(--text)' }}>
                 {singleTarget.code}
               </Text>
             </div>
@@ -161,15 +162,15 @@ const RunConfirmModal: React.FC<RunConfirmModalProps> = ({
               if (paramError) setParamError(null);
             }}
             style={{
-              fontFamily: typography.fontFamily.mono,
-              fontSize: typography.fontSize.sm,
-              backgroundColor: !canManageParam ? colors.bg.context : undefined,
-              borderColor: paramError ? colors.error.base : undefined,
+              fontFamily: 'var(--font-mono, monospace)',
+              fontSize: '12px',
+              backgroundColor: !canManageParam ? 'var(--surface-sunken)' : undefined,
+              borderColor: paramError ? 'var(--error)' : undefined,
             }}
           />
           {/* M6-05: Lỗi inline ERR_002 */}
           {paramError && (
-            <div style={{ color: colors.error.base, marginTop: 4, fontSize: 12 }}>
+            <div style={{ color: 'var(--error)', marginTop: 4, fontSize: 12 }}>
               {paramError}
             </div>
           )}
@@ -182,6 +183,7 @@ const RunConfirmModal: React.FC<RunConfirmModalProps> = ({
 const JobManagement: React.FC = () => {
   const router = useRouter();
   const { currentRole } = useRole();
+  const [evalDrawerOpen, setEvalDrawerOpen] = useState(false);
   const [detailJobId, setDetailJobId] = useState<string | null>(null);
   const [historyJob, setHistoryJob] = useState<IJob | null>(null);
   const [visibleColumns, setVisibleColumns] = useState<string[]>(DEFAULT_VISIBLE_KEYS);
@@ -273,7 +275,7 @@ const JobManagement: React.FC = () => {
                 <ul style={{ marginTop: 6, paddingLeft: 20 }}>
                   {rejected.map((r) => (
                     <li key={r.job.id} style={{ marginBottom: 4 }}>
-                      <Text strong style={{ fontFamily: typography.fontFamily.mono }}>{r.job.code}</Text>: {r.reason}
+                      <Text strong style={{ fontFamily: 'var(--font-mono, monospace)' }}>{r.job.code}</Text>: {r.reason}
                     </li>
                   ))}
                 </ul>
@@ -338,6 +340,12 @@ const JobManagement: React.FC = () => {
           />
         ),
       },
+      {
+        key: 'forest_report',
+        label: 'Báo cáo Forest DS',
+        icon: <BarChartOutlined />,
+        onClick: () => setEvalDrawerOpen(true),
+      },
     ];
 
     const isViewer = currentRole === 'ROLE-CBNV' || currentRole === 'VIEWER';
@@ -390,6 +398,12 @@ const JobManagement: React.FC = () => {
         onDelete={deleteJob}
         onToggleStatus={handleToggleStatus}
         onViewHistory={setHistoryJob}
+      />
+
+      {/* Drawer Báo cáo Đánh giá sự phù hợp NTDA Forest */}
+      <ForestEvaluationDrawer
+        open={evalDrawerOpen}
+        onClose={() => setEvalDrawerOpen(false)}
       />
 
       {/* Modal Xem chi tiết Job */}

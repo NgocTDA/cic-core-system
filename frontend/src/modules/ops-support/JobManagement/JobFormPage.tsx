@@ -32,7 +32,6 @@ import {
 } from '@ant-design/icons';
 import { PageLayout } from '@/components/ui';
 import useHeaderActions from '@/hooks/useHeaderActions';
-import { colors, spacing, radius, typography } from '@/design-system';
 import { useRole, hasPermission } from '@/context/RoleContext';
 import { mockJobs } from './mockData';
 import type {
@@ -284,7 +283,7 @@ const JobFormContent: React.FC = () => {
       key: 'eventLabel',
       width: 180,
       render: (text: string) => (
-        <Text strong style={{ fontSize: typography.fontSize.sm }}>
+        <Text strong style={{ fontSize: '12px' }}>
           {text}
         </Text>
       ),
@@ -292,7 +291,7 @@ const JobFormContent: React.FC = () => {
     {
       title: (
         <Space size={4}>
-          <MessageOutlined style={{ color: colors.subsystem.kkn }} />
+          <MessageOutlined style={{ color: 'var(--chart-5-amber)' }} />
           <span>SMS</span>
         </Space>
       ),
@@ -313,7 +312,7 @@ const JobFormContent: React.FC = () => {
     {
       title: (
         <Space size={4}>
-          <DesktopOutlined style={{ color: colors.primary[500] }} />
+          <DesktopOutlined style={{ color: 'var(--primary)' }} />
           <span>Push (Web)</span>
         </Space>
       ),
@@ -334,7 +333,7 @@ const JobFormContent: React.FC = () => {
     {
       title: (
         <Space size={4}>
-          <MailOutlined style={{ color: colors.success.base }} />
+          <MailOutlined style={{ color: 'var(--success)' }} />
           <span>Email</span>
         </Space>
       ),
@@ -355,7 +354,7 @@ const JobFormContent: React.FC = () => {
     {
       title: (
         <Space size={4}>
-          <UserOutlined style={{ color: colors.primary[600] }} />
+          <UserOutlined style={{ color: 'var(--primary-hover)' }} />
           <span>Người dùng / Email nhận riêng</span>
         </Space>
       ),
@@ -392,8 +391,8 @@ const JobFormContent: React.FC = () => {
     <PageLayout>
       <Card
         style={{
-          borderRadius: radius.lg,
-          border: `1px solid ${colors.border.split}`,
+          borderRadius: 'var(--radius-lg)',
+          border: `1px solid var(--color-neutral-100)`,
           boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
         }}
       >
@@ -401,13 +400,13 @@ const JobFormContent: React.FC = () => {
           form={form}
           layout="vertical"
           autoComplete="off"
-          style={{ display: 'flex', flexDirection: 'column', gap: spacing[6] }}
+          style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-24)' }}
         >
           {/* KHỐI 1: Thông tin chung */}
-          <div style={{ borderBottom: `1px solid ${colors.border.split}`, paddingBottom: spacing[5] }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: spacing[2], marginBottom: spacing[4] }}>
-              <CodeOutlined style={{ color: colors.primary[500], fontSize: 20 }} />
-              <Text strong style={{ fontSize: typography.fontSize.base, textTransform: 'uppercase', color: colors.text.primary }}>
+          <div style={{ borderBottom: `1px solid var(--color-neutral-100)`, paddingBottom: 'var(--spacing-20)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-8)', marginBottom: 'var(--spacing-16)' }}>
+              <CodeOutlined style={{ color: 'var(--primary)', fontSize: 20 }} />
+              <Text strong style={{ fontSize: '14px', textTransform: 'uppercase', color: 'var(--text)' }}>
                 Thông tin chung
               </Text>
             </div>
@@ -417,7 +416,7 @@ const JobFormContent: React.FC = () => {
               <Col xs={24} sm={12} md={6}>
                 <Form.Item
                   name="code"
-                  label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Mã Job</Text>}
+                  label={<Text style={{ fontSize: '12px', fontWeight: 600 }}>Mã Job</Text>}
                   rules={[
                     { required: true, message: 'Mã Job không được để trống.' },
                     {
@@ -431,7 +430,7 @@ const JobFormContent: React.FC = () => {
                     maxLength={20}
                     placeholder="VD: BATCH_SETTLEMENT"
                     disabled={isEditMode}
-                    style={{ fontFamily: typography.fontFamily.mono }}
+                    style={{ fontFamily: 'var(--font-mono, monospace)' }}
                     onChange={(e) => {
                       const formatted = e.target.value.toUpperCase().replace(/[^A-Z0-9_-]/g, '');
                       form.setFieldsValue({ code: formatted });
@@ -443,7 +442,7 @@ const JobFormContent: React.FC = () => {
               <Col xs={24} sm={12} md={6}>
                 <Form.Item
                   name="name"
-                  label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Tên Job</Text>}
+                  label={<Text style={{ fontSize: '12px', fontWeight: 600 }}>Tên Job</Text>}
                   rules={[
                     { required: true, message: 'Tên Job không được để trống.' },
                     { max: 100, message: 'Tên Job không được vượt quá 100 ký tự.' },
@@ -456,7 +455,7 @@ const JobFormContent: React.FC = () => {
               <Col xs={24} sm={12} md={6}>
                 <Form.Item
                   name="category"
-                  label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Loại Job</Text>}
+                  label={<Text style={{ fontSize: '12px', fontWeight: 600 }}>Loại Job</Text>}
                   rules={[{ required: true, message: 'Loại Job không được để trống.' }]}
                 >
                   <Select
@@ -478,10 +477,10 @@ const JobFormContent: React.FC = () => {
               <Col xs={24} sm={12} md={6}>
                 <Form.Item
                   name="serviceCode"
-                  label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Mã dịch vụ</Text>}
+                  label={<Text style={{ fontSize: '12px', fontWeight: 600 }}>Mã dịch vụ</Text>}
                   rules={[{ required: true, message: 'Mã dịch vụ không được để trống.' }]}
                 >
-                  <Input maxLength={50} placeholder="VD: SVC_CIC_CORE_SYNC" style={{ fontFamily: typography.fontFamily.mono }} />
+                  <Input maxLength={50} placeholder="VD: SVC_CIC_CORE_SYNC" style={{ fontFamily: 'var(--font-mono, monospace)' }} />
                 </Form.Item>
               </Col>
             </Row>
@@ -491,7 +490,7 @@ const JobFormContent: React.FC = () => {
               <Col xs={24}>
                 <Form.Item
                   name="description"
-                  label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Mô tả Job</Text>}
+                  label={<Text style={{ fontSize: '12px', fontWeight: 600 }}>Mô tả Job</Text>}
                   rules={[{ max: 1000, message: 'Mô tả không được vượt quá 1000 ký tự.' }]}
                 >
                   <Input.TextArea
@@ -509,7 +508,7 @@ const JobFormContent: React.FC = () => {
               <Col xs={24}>
                 <Form.Item
                   name="params"
-                  label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Tham số bổ sung (YAML/JSON, Tối đa 1500 ký tự)</Text>}
+                  label={<Text style={{ fontSize: '12px', fontWeight: 600 }}>Tham số bổ sung (YAML/JSON, Tối đa 1500 ký tự)</Text>}
                   rules={[{ max: 1500, message: 'Tham số bổ sung không được vượt quá 1500 ký tự.' }]}
                 >
                   <Input.TextArea
@@ -519,12 +518,12 @@ const JobFormContent: React.FC = () => {
                     showCount
                     placeholder="# Cấu hình tham số dạng YAML hoặc JSON&#10;sourceApi: 'https://api.internal/v1'&#10;batchSize: 500"
                     style={{
-                      fontFamily: typography.fontFamily.mono,
-                      fontSize: typography.fontSize.sm,
-                      backgroundColor: !canManageParam ? colors.bg.context : colors.bg.subtle,
-                      color: colors.text.primary,
-                      border: `1px solid ${colors.border.base}`,
-                      borderRadius: radius.md,
+                      fontFamily: 'var(--font-mono, monospace)',
+                      fontSize: '12px',
+                      backgroundColor: !canManageParam ? 'var(--surface-sunken)' : 'var(--bg-subtle)',
+                      color: 'var(--text)',
+                      border: `1px solid var(--border)`,
+                      borderRadius: 'var(--radius-md)',
                     }}
                   />
                 </Form.Item>
@@ -533,84 +532,70 @@ const JobFormContent: React.FC = () => {
           </div>
 
           {/* KHỐI 2: Cấu hình Lập lịch & Điều phối & Xử lý lỗi */}
-          <div style={{ borderBottom: `1px solid ${colors.border.split}`, paddingBottom: spacing[5] }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: spacing[2], marginBottom: spacing[4] }}>
-              <CalendarOutlined style={{ color: colors.primary[500], fontSize: 20 }} />
-              <Text strong style={{ fontSize: typography.fontSize.base, textTransform: 'uppercase', color: colors.text.primary }}>
+          <div style={{ borderBottom: `1px solid var(--color-neutral-100)`, paddingBottom: 'var(--spacing-20)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-8)', marginBottom: 'var(--spacing-16)' }}>
+              <CalendarOutlined style={{ color: 'var(--primary)', fontSize: 20 }} />
+              <Text strong style={{ fontSize: '14px', textTransform: 'uppercase', color: 'var(--text)' }}>
                 Lập lịch và xử lý lỗi
               </Text>
             </div>
 
-            {/* HÀNG 1: Điều kiện kích hoạt (Radio - M3-01 / M4-01) | SLA | Chờ ban đầu | Chờ tối đa */}
+            {/* --- HÀNG 1: CHỈ CHỨA CÁC NÚT SEGMENTED CONTROL --- */}
             <Row gutter={[16, 16]}>
-              <Col xs={24} sm={24} md={12}>
+              {/* 1. Điều kiện kích hoạt */}
+              <Col xs={24} sm={12} md={8}>
                 <Form.Item
                   name="triggerType"
-                  label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Điều kiện kích hoạt</Text>}
+                  label={<Text style={{ fontSize: '12px', fontWeight: 600 }}>Điều kiện kích hoạt</Text>}
                   rules={[{ required: true, message: 'Điều kiện kích hoạt không được để trống.' }]}
                 >
-                  <Radio.Group>
-                    <Radio value="SCHEDULER">Bộ lập lịch (Scheduler)</Radio>
-                    <Radio value="EVENT">Theo sự kiện (Event-driven)</Radio>
-                    <Radio value="MANUAL">Thủ công (Manual)</Radio>
+                  <Radio.Group optionType="button" buttonStyle="solid" style={{ display: 'flex', width: '100%' }}>
+                    <Radio.Button value="SCHEDULER" style={{ flex: 1, textAlign: 'center' }}>Bộ lập lịch</Radio.Button>
+                    <Radio.Button value="EVENT" style={{ flex: 1, textAlign: 'center' }}>Sự kiện</Radio.Button>
+                    <Radio.Button value="MANUAL" style={{ flex: 1, textAlign: 'center' }}>Thủ công</Radio.Button>
                   </Radio.Group>
                 </Form.Item>
               </Col>
 
-              <Col xs={12} sm={8} md={4}>
+              {/* 2. Chạy song song */}
+              <Col xs={24} sm={12} md={8}>
                 <Form.Item
-                  name="slaTimeout"
-                  label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>SLA dự kiến (s)</Text>}
-                  rules={[{ type: 'number', min: 1, message: 'SLA dự kiến phải từ 1 giây.' }]}
+                  name="concurrent"
+                  label={<Text style={{ fontSize: '12px', fontWeight: 600 }}>Chạy song song</Text>}
+                  rules={[{ required: true, message: 'Chạy song song không được để trống.' }]}
                 >
-                  <InputNumber min={1} precision={0} style={{ width: '100%' }} suffix="s" />
+                  <Radio.Group optionType="button" buttonStyle="solid" style={{ display: 'flex', width: '100%' }}>
+                    <Radio.Button value={true} style={{ flex: 1, textAlign: 'center' }}>Khóa</Radio.Button>
+                    <Radio.Button value={false} style={{ flex: 1, textAlign: 'center' }}>Cho phép</Radio.Button>
+                  </Radio.Group>
                 </Form.Item>
               </Col>
 
-              <Col xs={12} sm={8} md={4}>
-                <Form.Item
-                  name="retryInterval"
-                  label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Chờ ban đầu (giây)</Text>}
-                  rules={[
-                    ({ getFieldValue }) => ({
-                      validator(_, value) {
-                        const retries = getFieldValue('maxRetries');
-                        if (retries > 0 && (value === undefined || value === null || value === '')) {
-                          return Promise.reject(new Error('Chờ ban đầu (giây) không được để trống khi số lần thử lại > 0.'));
-                        }
-                        if (value !== undefined && value !== null && (value < 1 || value > 86400)) {
-                          return Promise.reject(new Error('Chờ ban đầu (giây) phải từ 1 đến 86400 giây.'));
-                        }
-                        return Promise.resolve();
-                      },
-                    }),
-                  ]}
-                >
-                  <InputNumber min={1} max={86400} precision={0} style={{ width: '100%' }} suffix="s" />
-                </Form.Item>
-              </Col>
-
-              <Col xs={12} sm={8} md={4}>
-                <Form.Item
-                  name="timeout"
-                  label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Chờ tối đa (giây)</Text>}
-                  rules={[
-                    { required: true, message: 'Chờ tối đa (giây) không được để trống.' },
-                    { type: 'number', min: 1, max: 86400, message: 'Chờ tối đa (giây) phải từ 1 đến 86400 giây.' },
-                  ]}
-                >
-                  <InputNumber min={1} max={86400} precision={0} style={{ width: '100%' }} suffix="s" />
-                </Form.Item>
-              </Col>
+              {/* 3. Xử lý khi bỏ lỡ (chỉ hiện khi SCHEDULER) */}
+              {watchTriggerType === 'SCHEDULER' && (
+                <Col xs={24} sm={12} md={8}>
+                  <Form.Item
+                    name="misfire"
+                    label={<Text style={{ fontSize: '12px', fontWeight: 600 }}>Xử lý khi bỏ lỡ lượt chạy</Text>}
+                    rules={[{ required: true, message: 'Xử lý khi bỏ lỡ lượt chạy không được để trống.' }]}
+                  >
+                    <Radio.Group optionType="button" buttonStyle="solid" style={{ display: 'flex', width: '100%' }}>
+                      <Radio.Button value="FIRE_NOW" style={{ flex: 1, textAlign: 'center' }}>Chạy bù ngay</Radio.Button>
+                      <Radio.Button value="DO_NOTHING" style={{ flex: 1, textAlign: 'center' }}>Bỏ qua</Radio.Button>
+                    </Radio.Group>
+                  </Form.Item>
+                </Col>
+              )}
             </Row>
 
-            {/* HÀNG 2: Biểu thức Cron (hoặc Tên sự kiện nếu EVENT) | Số lần thử lại tối đa | Chạy song song (Radio) | Xử lý khi bỏ lỡ (Radio) */}
-            <Row gutter={[16, 16]} style={{ marginTop: spacing[3] }}>
+            {/* --- HÀNG 2 VÀ 3: CHỨA CÁC Ô NHẬP LIỆU (Tự dồn hàng) --- */}
+            <Row gutter={[16, 16]} style={{ marginTop: 'var(--spacing-16)' }}>
+              {/* 4. Biểu thức Cron (chỉ hiện khi SCHEDULER) */}
               {watchTriggerType === 'SCHEDULER' && (
-                <Col xs={24} sm={12} md={6}>
+                <Col xs={24} sm={12} md={8}>
                   <Form.Item
                     name="cron"
-                    label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Biểu thức Cron (6 trường)</Text>}
+                    label={<Text style={{ fontSize: '12px', fontWeight: 600 }}>Biểu thức Cron (6 trường)</Text>}
                     rules={[
                       { required: true, message: 'Biểu thức Cron không được để trống.' },
                       {
@@ -627,92 +612,115 @@ const JobFormContent: React.FC = () => {
                     extra={
                       <div style={{ marginTop: 4 }}>
                         <Text type="secondary" style={{ fontSize: 12, display: 'block' }}>
-                          Diễn giải: <Text strong style={{ color: colors.primary[600] }}>{getCronDescription(watchCron || '0 0 1 * * ?')}</Text>
+                          Diễn giải: <Text strong style={{ color: 'var(--primary-hover)' }}>{getCronDescription(watchCron || '0 0 1 * * ?')}</Text>
                         </Text>
                       </div>
                     }
                   >
                     <Input
                       placeholder="0 0 1 * * ?"
-                      style={{ fontFamily: typography.fontFamily.mono, fontWeight: 'bold' }}
+                      style={{ fontFamily: 'var(--font-mono, monospace)', fontWeight: 'bold' }}
                     />
                   </Form.Item>
                 </Col>
               )}
 
+              {/* 5. Tên sự kiện (chỉ hiện khi EVENT) */}
               {watchTriggerType === 'EVENT' && (
-                <Col xs={24} sm={12} md={6}>
+                <Col xs={24} sm={12} md={8}>
                   <Form.Item
                     name="eventName"
-                    label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Tên sự kiện kích hoạt</Text>}
+                    label={<Text style={{ fontSize: '12px', fontWeight: 600 }}>Tên sự kiện kích hoạt</Text>}
                     rules={[
                       { required: true, message: 'Tên sự kiện kích hoạt không được để trống.' },
                       { max: 255, message: 'Tên sự kiện kích hoạt không vượt quá 255 ký tự.' },
-                      { pattern: /^[A-Za-z0-9_-]+$/, message: 'Tên sự kiện kích hoạt không hợp lệ (không chứa dấu cách và ký tự đặc biệt).' },
+                      { pattern: /^[A-Za-z0-9_-]+$/, message: 'Tên sự kiện kích hoạt không hợp lệ.' },
                     ]}
                   >
-                    <Input placeholder="VD: EVT_CUSTOMER_DATA_IMPORTED" style={{ fontFamily: typography.fontFamily.mono }} />
+                    <Input placeholder="VD: EVT_CUSTOMER_DATA_IMPORTED" style={{ fontFamily: 'var(--font-mono, monospace)' }} />
                   </Form.Item>
                 </Col>
               )}
 
-              <Col xs={24} sm={12} md={6}>
+              {/* 6. SLA dự kiến */}
+              <Col xs={12} sm={8} md={4}>
+                <Form.Item
+                  name="slaTimeout"
+                  label={<Text style={{ fontSize: '12px', fontWeight: 600 }}>SLA dự kiến (s)</Text>}
+                  rules={[{ type: 'number', min: 1, message: 'SLA dự kiến phải từ 1 giây.' }]}
+                >
+                  <InputNumber min={1} precision={0} style={{ width: '100%' }} suffix="s" />
+                </Form.Item>
+              </Col>
+
+              {/* 7. Chờ tối đa */}
+              <Col xs={12} sm={8} md={4}>
+                <Form.Item
+                  name="timeout"
+                  label={<Text style={{ fontSize: '12px', fontWeight: 600 }}>Chờ tối đa (giây)</Text>}
+                  rules={[
+                    { required: true, message: 'Chờ tối đa (giây) không được để trống.' },
+                    { type: 'number', min: 1, max: 86400, message: 'Chờ tối đa (giây) phải từ 1 đến 86400 giây.' },
+                  ]}
+                >
+                  <InputNumber min={1} max={86400} precision={0} style={{ width: '100%' }} suffix="s" />
+                </Form.Item>
+              </Col>
+
+              {/* 8. Số lần thử lại tối đa */}
+              <Col xs={12} sm={8} md={4}>
                 <Form.Item
                   name="maxRetries"
-                  label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Số lần thử lại tối đa</Text>}
+                  label={<Text style={{ fontSize: '12px', fontWeight: 600 }}>Thử lại tối đa</Text>}
                   rules={[
-                    { required: true, message: 'Số lần thử lại tối đa không được để trống.' },
-                    { type: 'number', min: 0, max: 10, message: 'Số lần thử lại tối đa phải từ 0 đến 10 lần.' },
+                    { required: true, message: 'Số lần thử lại không được để trống.' },
+                    { type: 'number', min: 0, max: 10, message: 'Thử lại phải từ 0 đến 10 lần.' },
                   ]}
                 >
                   <InputNumber min={0} max={10} precision={0} style={{ width: '100%' }} placeholder="VD: 3" suffix="lần" />
                 </Form.Item>
               </Col>
 
-              <Col xs={24} sm={12} md={6}>
+              {/* 9. Chờ ban đầu (giữa các lần thử lại) */}
+              <Col xs={12} sm={8} md={4}>
                 <Form.Item
-                  name="concurrent"
-                  label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Chạy song song</Text>}
-                  rules={[{ required: true, message: 'Chạy song song không được để trống.' }]}
+                  name="retryInterval"
+                  label={<Text style={{ fontSize: '12px', fontWeight: 600 }}>Chờ ban đầu (giây)</Text>}
+                  rules={[
+                    ({ getFieldValue }) => ({
+                      validator(_, value) {
+                        const retries = getFieldValue('maxRetries');
+                        if (retries > 0 && (value === undefined || value === null || value === '')) {
+                          return Promise.reject(new Error('Chờ ban đầu không được để trống khi số lần thử lại > 0.'));
+                        }
+                        if (value !== undefined && value !== null && (value < 1 || value > 86400)) {
+                          return Promise.reject(new Error('Chờ ban đầu phải từ 1 đến 86400 giây.'));
+                        }
+                        return Promise.resolve();
+                      },
+                    }),
+                  ]}
                 >
-                  <Radio.Group>
-                    <Radio value={true}>Khóa chạy song song</Radio>
-                    <Radio value={false}>Cho phép chạy song song</Radio>
-                  </Radio.Group>
+                  <InputNumber min={1} max={86400} precision={0} style={{ width: '100%' }} suffix="s" />
                 </Form.Item>
               </Col>
 
-              {watchTriggerType === 'SCHEDULER' && (
-                <Col xs={24} sm={12} md={6}>
-                  <Form.Item
-                    name="misfire"
-                    label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Xử lý khi bỏ lỡ lượt chạy</Text>}
-                    rules={[{ required: true, message: 'Xử lý khi bỏ lỡ lượt chạy không được để trống.' }]}
-                  >
-                    <Radio.Group>
-                      <Radio value="FIRE_NOW">Chạy bù ngay khi đủ điều kiện</Radio>
-                      <Radio value="DO_NOTHING">Bỏ qua lượt lỡ, chờ lịch tiếp theo</Radio>
-                    </Radio.Group>
-                  </Form.Item>
-                </Col>
-              )}
-            </Row>
-
-            {/* HÀNG 3: Retention (M3-04, M3-05: Mặc định 3650 và bắt buộc) */}
-            <Row gutter={[16, 16]} style={{ marginTop: spacing[3] }}>
-              <Col xs={12} sm={6} md={6}>
+              {/* 10. Lưu log thành công */}
+              <Col xs={12} sm={8} md={4}>
                 <Form.Item
                   name="retentionSuccess"
-                  label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Lưu log thành công (ngày)</Text>}
+                  label={<Text style={{ fontSize: '12px', fontWeight: 600 }}>Lưu log TC (ngày)</Text>}
                   rules={[{ required: true, message: 'Lưu log thành công không được để trống.' }]}
                 >
                   <InputNumber min={0} precision={0} style={{ width: '100%' }} suffix="ngày" />
                 </Form.Item>
               </Col>
-              <Col xs={12} sm={6} md={6}>
+
+              {/* 11. Lưu log lỗi */}
+              <Col xs={12} sm={8} md={4}>
                 <Form.Item
                   name="retentionError"
-                  label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Lưu log lỗi (ngày)</Text>}
+                  label={<Text style={{ fontSize: '12px', fontWeight: 600 }}>Lưu log lỗi (ngày)</Text>}
                   rules={[{ required: true, message: 'Lưu log lỗi không được để trống.' }]}
                 >
                   <InputNumber min={0} precision={0} style={{ width: '100%' }} suffix="ngày" />
@@ -724,12 +732,12 @@ const JobFormContent: React.FC = () => {
           {/* KHỐI 3: Cấu hình phụ thuộc - M3-08, M3-09, M3-13, M3-15 */}
           <div
             style={{
-              borderBottom: `1px solid ${colors.border.split}`,
-              paddingBottom: spacing[5],
-              padding: hasCircularError ? spacing[3] : 0,
-              border: hasCircularError ? `1px solid ${colors.error.base}` : undefined,
-              borderRadius: hasCircularError ? radius.md : undefined,
-              backgroundColor: hasCircularError ? colors.error.light : undefined,
+              borderBottom: `1px solid var(--color-neutral-100)`,
+              paddingBottom: 'var(--spacing-20)',
+              padding: hasCircularError ? 'var(--spacing-12)' : 0,
+              border: hasCircularError ? `1px solid var(--error)` : undefined,
+              borderRadius: hasCircularError ? 'var(--radius-md)' : undefined,
+              backgroundColor: hasCircularError ? 'var(--error-subtle)' : undefined,
             }}
           >
             <Form.List name="dependencies">
@@ -737,10 +745,10 @@ const JobFormContent: React.FC = () => {
                 const isLimitReached = fields.length >= 10;
                 return (
                   <>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: spacing[4] }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: spacing[2] }}>
-                        <CodeOutlined style={{ color: colors.primary[500], fontSize: 20 }} />
-                        <Text strong style={{ fontSize: typography.fontSize.base, textTransform: 'uppercase', color: colors.text.primary }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--spacing-16)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-8)' }}>
+                        <CodeOutlined style={{ color: 'var(--primary)', fontSize: 20 }} />
+                        <Text strong style={{ fontSize: '14px', textTransform: 'uppercase', color: 'var(--text)' }}>
                           Cấu hình phụ thuộc
                         </Text>
                       </div>
@@ -766,7 +774,7 @@ const JobFormContent: React.FC = () => {
                     </div>
 
                     {hasCircularError && (
-                      <div style={{ marginBottom: spacing[3], color: colors.error.base, fontWeight: 500 }}>
+                      <div style={{ marginBottom: 'var(--spacing-12)', color: 'var(--error)', fontWeight: 500 }}>
                         ⚠️ Phát hiện phụ thuộc vòng tròn giữa các job. Vui lòng kiểm tra lại quan hệ phụ thuộc.
                       </div>
                     )}
@@ -842,19 +850,19 @@ const JobFormContent: React.FC = () => {
 
           {/* KHỐI 4: Thiết lập Cảnh báo Sự cố - M3-07, M3-10 */}
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: spacing[2], marginBottom: spacing[4] }}>
-              <BellOutlined style={{ color: colors.primary[500], fontSize: 20 }} />
-              <Text strong style={{ fontSize: typography.fontSize.base, textTransform: 'uppercase', color: colors.text.primary }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-8)', marginBottom: 'var(--spacing-16)' }}>
+              <BellOutlined style={{ color: 'var(--primary)', fontSize: 20 }} />
+              <Text strong style={{ fontSize: '14px', textTransform: 'uppercase', color: 'var(--text)' }}>
                 Thiết lập cảnh báo sự cố
               </Text>
             </div>
 
             <div>
-              <Row gutter={[16, 16]} style={{ marginBottom: spacing[3] }}>
+              <Row gutter={[16, 16]} style={{ marginBottom: 'var(--spacing-12)' }}>
                 <Col xs={24}>
                   <Form.Item
                     name="notifyEmails"
-                    label={<Text style={{ fontSize: typography.fontSize.sm, fontWeight: 600 }}>Email nhận cảnh báo chung (Phân cách bằng dấu phẩy, dấu chấm phẩy, Enter hoặc xuống dòng)</Text>}
+                    label={<Text style={{ fontSize: '12px', fontWeight: 600 }}>Email nhận cảnh báo chung (Phân cách bằng dấu phẩy, dấu chấm phẩy, Enter hoặc xuống dòng)</Text>}
                   >
                     <Select
                       mode="tags"
@@ -866,7 +874,7 @@ const JobFormContent: React.FC = () => {
                 </Col>
               </Row>
 
-              <Text strong style={{ fontSize: typography.fontSize.sm, display: 'block', marginBottom: spacing[2] }}>
+              <Text strong style={{ fontSize: '12px', display: 'block', marginBottom: 'var(--spacing-8)' }}>
                 Cấu hình thông báo
               </Text>
 
@@ -887,10 +895,10 @@ const JobFormContent: React.FC = () => {
             style={{
               display: 'flex',
               justifyContent: 'center',
-              gap: spacing[3],
-              marginTop: spacing[4],
-              paddingTop: spacing[4],
-              borderTop: `1px solid ${colors.border.split}`,
+              gap: 'var(--spacing-12)',
+              marginTop: 'var(--spacing-16)',
+              paddingTop: 'var(--spacing-16)',
+              borderTop: `1px solid var(--color-neutral-100)`,
             }}
           >
             <Button

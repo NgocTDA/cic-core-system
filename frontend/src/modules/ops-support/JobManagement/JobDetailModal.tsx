@@ -26,7 +26,6 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import { ChangeHistoryCollapse, StatusTag } from '@/components/ui';
-import { colors, spacing, radius, typography } from '@/design-system';
 import { useRole, hasPermission } from '@/context/RoleContext';
 import type { IJob } from './types';
 import { mockChangeHistoryData, mockJobs } from './mockData';
@@ -96,8 +95,8 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
       content: (
         <div>
           <p style={{ marginBottom: 12 }}>Bạn có chắc chắn muốn kích hoạt chạy job không?</p>
-          <div style={{ background: colors.bg.subtle, padding: '10px 14px', borderRadius: radius.md, border: `1px solid ${colors.border.base}` }}>
-            <div><Text type="secondary">Mã Job: </Text><Text code strong style={{ color: colors.text.primary }}>{job.code}</Text></div>
+          <div style={{ background: 'var(--bg-subtle)', padding: '10px 14px', borderRadius: 'var(--radius-md)', border: `1px solid var(--border)` }}>
+            <div><Text type="secondary">Mã Job: </Text><Text code strong style={{ color: 'var(--text)' }}>{job.code}</Text></div>
             <div><Text type="secondary">Tên Job: </Text><Text strong>{job.name}</Text></div>
           </div>
           <div style={{ marginTop: 16 }}>
@@ -160,7 +159,7 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
       key: 'eventLabel',
       width: 180,
       render: (text: string) => (
-        <Text strong style={{ fontSize: typography.fontSize.sm }}>
+        <Text strong style={{ fontSize: '12px' }}>
           {text}
         </Text>
       ),
@@ -168,7 +167,7 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
     {
       title: (
         <Space size={4}>
-          <MessageOutlined style={{ color: colors.subsystem.kkn }} />
+          <MessageOutlined style={{ color: 'var(--chart-5-amber)' }} />
           <span>SMS</span>
         </Space>
       ),
@@ -181,7 +180,7 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
     {
       title: (
         <Space size={4}>
-          <DesktopOutlined style={{ color: colors.primary[500] }} />
+          <DesktopOutlined style={{ color: 'var(--primary)' }} />
           <span>Push (Web)</span>
         </Space>
       ),
@@ -194,7 +193,7 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
     {
       title: (
         <Space size={4}>
-          <MailOutlined style={{ color: colors.success.base }} />
+          <MailOutlined style={{ color: 'var(--success)' }} />
           <span>Email</span>
         </Space>
       ),
@@ -207,7 +206,7 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
     {
       title: (
         <Space size={4}>
-          <UserOutlined style={{ color: colors.primary[600] }} />
+          <UserOutlined style={{ color: 'var(--primary-hover)' }} />
           <span>Người dùng / Email nhận riêng</span>
         </Space>
       ),
@@ -223,7 +222,7 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
             ))}
           </Space>
         ) : (
-          <Text type="secondary" style={{ fontSize: typography.fontSize.xs }}>
+          <Text type="secondary" style={{ fontSize: '11px' }}>
             Chưa cấu hình
           </Text>
         ),
@@ -261,10 +260,10 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
               display: 'flex',
               justifyContent: 'flex-end',
               alignItems: 'center',
-              gap: spacing[3],
-              marginBottom: spacing[4],
-              paddingBottom: spacing[3],
-              borderBottom: `1px solid ${colors.border.split}`,
+              gap: 'var(--spacing-12)',
+              marginBottom: 'var(--spacing-16)',
+              paddingBottom: 'var(--spacing-12)',
+              borderBottom: `1px solid var(--color-neutral-100)`,
             }}
           >
             <StatusTag status={job.status} />
@@ -280,12 +279,12 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
             )}
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: spacing[5] }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-20)' }}>
             {/* KHỐI 1: Thông tin chung */}
-            <div style={{ borderBottom: `1px solid ${colors.border.split}`, paddingBottom: spacing[4] }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: spacing[2], marginBottom: spacing[3] }}>
-                <CodeOutlined style={{ color: colors.primary[500], fontSize: 18 }} />
-                <Text strong style={{ fontSize: typography.fontSize.base, textTransform: 'uppercase', color: colors.text.primary }}>
+            <div style={{ borderBottom: `1px solid var(--color-neutral-100)`, paddingBottom: 'var(--spacing-16)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-8)', marginBottom: 'var(--spacing-12)' }}>
+                <CodeOutlined style={{ color: 'var(--primary)', fontSize: 18 }} />
+                <Text strong style={{ fontSize: '14px', textTransform: 'uppercase', color: 'var(--text)' }}>
                   Thông tin chung
                 </Text>
               </div>
@@ -294,10 +293,10 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
               <Row gutter={[16, 16]}>
                 <Col xs={24} sm={12} md={6}>
                   <div>
-                    <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                    <Text type="secondary" style={{ fontSize: '12px', fontWeight: 500, display: 'block', marginBottom: 4 }}>
                       Mã Job
                     </Text>
-                    <Text code strong style={{ fontSize: typography.fontSize.base, color: colors.text.primary }}>
+                    <Text code strong style={{ fontSize: '14px', color: 'var(--text)' }}>
                       {job.code}
                     </Text>
                   </div>
@@ -305,10 +304,10 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
 
                 <Col xs={24} sm={12} md={6}>
                   <div>
-                    <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                    <Text type="secondary" style={{ fontSize: '12px', fontWeight: 500, display: 'block', marginBottom: 4 }}>
                       Tên Job
                     </Text>
-                    <Text strong style={{ fontSize: typography.fontSize.base }}>
+                    <Text strong style={{ fontSize: '14px' }}>
                       {job.name}
                     </Text>
                   </div>
@@ -316,10 +315,10 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
 
                 <Col xs={24} sm={12} md={6}>
                   <div>
-                    <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                    <Text type="secondary" style={{ fontSize: '12px', fontWeight: 500, display: 'block', marginBottom: 4 }}>
                       Loại Job
                     </Text>
-                    <Text strong style={{ fontSize: typography.fontSize.base }}>
+                    <Text strong style={{ fontSize: '14px' }}>
                       {categoryMap[job.category] || job.category}
                     </Text>
                   </div>
@@ -327,10 +326,10 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
 
                 <Col xs={24} sm={12} md={6}>
                   <div>
-                    <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                    <Text type="secondary" style={{ fontSize: '12px', fontWeight: 500, display: 'block', marginBottom: 4 }}>
                       Mã dịch vụ
                     </Text>
-                    <Text code strong style={{ fontSize: typography.fontSize.base, color: colors.text.primary }}>
+                    <Text code strong style={{ fontSize: '14px', color: 'var(--text)' }}>
                       {job.serviceCode || 'SVC_CIC_CORE_SYNC'}
                     </Text>
                   </div>
@@ -338,13 +337,13 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
               </Row>
 
               {/* Hàng 2: Mô tả Job */}
-              <Row gutter={[16, 16]} style={{ marginTop: spacing[3] }}>
+              <Row gutter={[16, 16]} style={{ marginTop: 'var(--spacing-12)' }}>
                 <Col xs={24}>
                   <div>
-                    <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                    <Text type="secondary" style={{ fontSize: '12px', fontWeight: 500, display: 'block', marginBottom: 4 }}>
                       Mô tả Job
                     </Text>
-                    <Text style={{ fontSize: typography.fontSize.base, color: colors.text.primary }}>
+                    <Text style={{ fontSize: '14px', color: 'var(--text)' }}>
                       {job.description || 'Không có mô tả'}
                     </Text>
                   </div>
@@ -352,21 +351,21 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
               </Row>
 
               {/* Hàng 3: Tham số bổ sung */}
-              <Row gutter={[16, 16]} style={{ marginTop: spacing[3] }}>
+              <Row gutter={[16, 16]} style={{ marginTop: 'var(--spacing-12)' }}>
                 <Col xs={24}>
                   <div>
-                    <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                    <Text type="secondary" style={{ fontSize: '12px', fontWeight: 500, display: 'block', marginBottom: 4 }}>
                       Tham số bổ sung (YAML/JSON)
                     </Text>
                     <pre
                       style={{
-                        fontFamily: typography.fontFamily.mono,
-                        fontSize: typography.fontSize.sm,
-                        backgroundColor: colors.bg.subtle,
-                        color: colors.text.primary,
-                        border: `1px solid ${colors.border.base}`,
-                        borderRadius: radius.md,
-                        padding: spacing[3],
+                        fontFamily: 'var(--font-mono, monospace)',
+                        fontSize: '12px',
+                        backgroundColor: 'var(--bg-subtle)',
+                        color: 'var(--text)',
+                        border: `1px solid var(--border)`,
+                        borderRadius: 'var(--radius-md)',
+                        padding: 'var(--spacing-12)',
                         margin: 0,
                         maxHeight: 180,
                         overflowY: 'auto',
@@ -380,165 +379,159 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
             </div>
 
             {/* KHỐI 2: Cấu hình Lập lịch & Xử lý lỗi */}
-            <div style={{ borderBottom: `1px solid ${colors.border.split}`, paddingBottom: spacing[4] }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: spacing[2], marginBottom: spacing[3] }}>
-                <CalendarOutlined style={{ color: colors.primary[500], fontSize: 18 }} />
-                <Text strong style={{ fontSize: typography.fontSize.base, textTransform: 'uppercase', color: colors.text.primary }}>
+            <div style={{ borderBottom: `1px solid var(--color-neutral-100)`, paddingBottom: 'var(--spacing-16)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-8)', marginBottom: 'var(--spacing-12)' }}>
+                <CalendarOutlined style={{ color: 'var(--primary)', fontSize: 18 }} />
+                <Text strong style={{ fontSize: '14px', textTransform: 'uppercase', color: 'var(--text)' }}>
                   Lập lịch và xử lý lỗi
                 </Text>
               </div>
 
-              {/* HÀNG 1: Điều kiện kích hoạt | Tên sự kiện (nếu EVENT) | SLA dự kiến | Chờ ban đầu */}
+              {/* --- HÀNG 1: CÁC THÔNG TIN ĐIỀU KHIỂN CHÍNH --- */}
               <Row gutter={[16, 16]}>
-                <Col xs={24} sm={12} md={6}>
+                <Col xs={24} sm={12} md={8}>
                   <div>
-                    <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                    <Text type="secondary" style={{ fontSize: '12px', fontWeight: 500, display: 'block', marginBottom: 4 }}>
                       Điều kiện kích hoạt
                     </Text>
-                    <Text strong style={{ fontSize: typography.fontSize.base }}>
+                    <Text strong style={{ fontSize: '14px' }}>
                       {triggerTypeMap[job.triggerType || 'SCHEDULER'] || 'Bộ lập lịch (Scheduler)'}
                     </Text>
                   </div>
                 </Col>
 
-                {job.triggerType === 'EVENT' ? (
-                  <Col xs={24} sm={12} md={6}>
+                <Col xs={24} sm={12} md={8}>
+                  <div>
+                    <Text type="secondary" style={{ fontSize: '12px', fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                      Chạy song song
+                    </Text>
+                    <Text strong style={{ fontSize: '14px' }}>
+                      {job.concurrent ? 'Khóa' : 'Cho phép'}
+                    </Text>
+                  </div>
+                </Col>
+
+                {(!job.triggerType || job.triggerType === 'SCHEDULER') && (
+                  <Col xs={24} sm={12} md={8}>
                     <div>
-                      <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
-                        Tên sự kiện kích hoạt
+                      <Text type="secondary" style={{ fontSize: '12px', fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                        Xử lý khi bỏ lỡ lượt chạy
                       </Text>
-                      <Text strong style={{ fontSize: typography.fontSize.base, fontFamily: typography.fontFamily.mono }}>
-                        {job.eventName || 'EVT_CUSTOMER_DATA_IMPORTED'}
-                      </Text>
-                    </div>
-                  </Col>
-                ) : (
-                  <Col xs={12} sm={6} md={6}>
-                    <div>
-                      <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
-                        SLA dự kiến (giây)
-                      </Text>
-                      <Text strong style={{ fontSize: typography.fontSize.base }}>
-                        {job.slaTimeout ? `${job.slaTimeout}s` : 'Chưa cấu hình'}
+                      <Text strong style={{ fontSize: '14px' }}>
+                        {misfireMap[job.misfire || 'FIRE_NOW']}
                       </Text>
                     </div>
                   </Col>
                 )}
-
-                <Col xs={12} sm={6} md={6}>
-                  <div>
-                    <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
-                      {job.triggerType === 'EVENT' ? 'SLA dự kiến (giây)' : 'Chờ ban đầu (giây)'}
-                    </Text>
-                    <Text strong style={{ fontSize: typography.fontSize.base }}>
-                      {job.triggerType === 'EVENT'
-                        ? (job.slaTimeout ? `${job.slaTimeout}s` : 'Chưa cấu hình')
-                        : `${job.retryInterval ?? 60}s`}
-                    </Text>
-                  </div>
-                </Col>
-
-                <Col xs={12} sm={6} md={6}>
-                  <div>
-                    <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
-                      {job.triggerType === 'EVENT' ? 'Chờ ban đầu (giây)' : 'Chờ tối đa (giây)'}
-                    </Text>
-                    <Text strong style={{ fontSize: typography.fontSize.base }}>
-                      {job.triggerType === 'EVENT'
-                        ? `${job.retryInterval ?? 60}s`
-                        : `${job.timeout || 300}s`}
-                    </Text>
-                  </div>
-                </Col>
               </Row>
 
-              {/* HÀNG 2: Biểu thức Cron | Số lần thử lại tối đa | Chạy song song | Xử lý khi bỏ lỡ lượt chạy */}
-              <Row gutter={[16, 16]} style={{ marginTop: spacing[3] }}>
-                <Col xs={24} sm={12} md={6}>
+              {/* --- HÀNG 2 VÀ 3: CÁC THÔNG SỐ CẤU HÌNH --- */}
+              <Row gutter={[16, 16]} style={{ marginTop: 'var(--spacing-16)' }}>
+                {job.triggerType === 'EVENT' ? (
+                  <Col xs={24} sm={12} md={8}>
+                    <div>
+                      <Text type="secondary" style={{ fontSize: '12px', fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                        Tên sự kiện kích hoạt
+                      </Text>
+                      <Text strong style={{ fontSize: '14px', fontFamily: 'var(--font-mono, monospace)' }}>
+                        {job.eventName || 'EVT_CUSTOMER_DATA_IMPORTED'}
+                      </Text>
+                    </div>
+                  </Col>
+                ) : (job.triggerType === 'SCHEDULER' || !job.triggerType) ? (
+                  <Col xs={24} sm={12} md={8}>
+                    <div>
+                      <Text type="secondary" style={{ fontSize: '12px', fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                        Biểu thức Cron
+                      </Text>
+                      {(job.cron || job.schedule?.expression) ? (
+                        <>
+                          <code
+                            style={{
+                              background: 'var(--color-neutral-100)',
+                              padding: '4px 10px',
+                              borderRadius: 'var(--radius-md)',
+                              fontFamily: 'var(--font-mono, monospace)',
+                              fontWeight: 'bold',
+                              fontSize: '14px',
+                              color: 'var(--text)',
+                            }}
+                          >
+                            {job.cron || job.schedule?.expression}
+                          </code>
+                          <Text type="secondary" style={{ fontSize: '11px', display: 'block', marginTop: 4, color: 'var(--primary-hover)' }}>
+                            Diễn giải: {getCronDescription(job.cron || job.schedule?.expression || '')}
+                          </Text>
+                        </>
+                      ) : (
+                        <Text strong style={{ fontSize: '14px' }}>-</Text>
+                      )}
+                    </div>
+                  </Col>
+                ) : null}
+
+                <Col xs={12} sm={8} md={4}>
                   <div>
-                    <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
-                      Biểu thức Cron
+                    <Text type="secondary" style={{ fontSize: '12px', fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                      SLA dự kiến (s)
                     </Text>
-                    {(!job.triggerType || job.triggerType === 'SCHEDULER') && (job.cron || job.schedule?.expression) ? (
-                      <>
-                        <code
-                          style={{
-                            background: colors.neutral[100],
-                            padding: '4px 10px',
-                            borderRadius: radius.md,
-                            fontFamily: typography.fontFamily.mono,
-                            fontWeight: 'bold',
-                            fontSize: typography.fontSize.base,
-                            color: colors.text.primary,
-                          }}
-                        >
-                          {job.cron || job.schedule?.expression}
-                        </code>
-                        <Text type="secondary" style={{ fontSize: typography.fontSize.xs, display: 'block', marginTop: 4, color: colors.primary[600] }}>
-                          Diễn giải: {getCronDescription(job.cron || job.schedule?.expression || '')}
-                        </Text>
-                      </>
-                    ) : (
-                      <Text strong style={{ fontSize: typography.fontSize.base }}>-</Text>
-                    )}
+                    <Text strong style={{ fontSize: '14px' }}>
+                      {job.slaTimeout ? `${job.slaTimeout}s` : 'Chưa cấu hình'}
+                    </Text>
                   </div>
                 </Col>
 
-                <Col xs={24} sm={12} md={6}>
+                <Col xs={12} sm={8} md={4}>
                   <div>
-                    <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
-                      Số lần thử lại tối đa
+                    <Text type="secondary" style={{ fontSize: '12px', fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                      Chờ tối đa (giây)
                     </Text>
-                    <Text strong style={{ fontSize: typography.fontSize.base }}>
+                    <Text strong style={{ fontSize: '14px' }}>
+                      {job.timeout ? `${job.timeout}s` : '300s'}
+                    </Text>
+                  </div>
+                </Col>
+
+                <Col xs={12} sm={8} md={4}>
+                  <div>
+                    <Text type="secondary" style={{ fontSize: '12px', fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                      Thử lại tối đa
+                    </Text>
+                    <Text strong style={{ fontSize: '14px' }}>
                       {job.maxRetries ?? job.retryPolicy?.maxRetries ?? 3} lần
                     </Text>
                   </div>
                 </Col>
 
-                <Col xs={24} sm={12} md={6}>
+                <Col xs={12} sm={8} md={4}>
                   <div>
-                    <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
-                      Chạy song song
+                    <Text type="secondary" style={{ fontSize: '12px', fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                      Chờ ban đầu (giây)
                     </Text>
-                    <Text strong style={{ fontSize: typography.fontSize.base }}>
-                      {job.concurrent ? 'Khóa chạy song song' : 'Cho phép chạy song song'}
+                    <Text strong style={{ fontSize: '14px' }}>
+                      {job.retryInterval ?? 60}s
                     </Text>
                   </div>
                 </Col>
 
-                <Col xs={24} sm={12} md={6}>
+                <Col xs={12} sm={8} md={4}>
                   <div>
-                    <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
-                      Xử lý khi bỏ lỡ lượt chạy
+                    <Text type="secondary" style={{ fontSize: '12px', fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                      Lưu log TC (ngày)
                     </Text>
-                    <Text strong style={{ fontSize: typography.fontSize.base }}>
-                      {(!job.triggerType || job.triggerType === 'SCHEDULER')
-                        ? misfireMap[job.misfire || 'FIRE_NOW']
-                        : '-'}
+                    <Text strong style={{ fontSize: '14px' }}>
+                      {job.retentionSuccess === 0 ? 'Không lưu' : `${job.retentionSuccess ?? 3650} ngày`}
                     </Text>
                   </div>
                 </Col>
-              </Row>
 
-              {/* HÀNG 3: Retention */}
-              <Row gutter={[16, 16]} style={{ marginTop: spacing[4] }}>
-                <Col xs={12} sm={6} md={6}>
+                <Col xs={12} sm={8} md={4}>
                   <div>
-                    <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
-                      Lưu log thành công
+                    <Text type="secondary" style={{ fontSize: '12px', fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                      Lưu log lỗi (ngày)
                     </Text>
-                    <Text strong style={{ fontSize: typography.fontSize.base }}>
-                      {job.retentionSuccess === 0 ? 'Xóa sau khi lượt chạy kết thúc' : `${job.retentionSuccess ?? 3650} ngày`}
-                    </Text>
-                  </div>
-                </Col>
-                <Col xs={12} sm={6} md={6}>
-                  <div>
-                    <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
-                      Lưu log lỗi
-                    </Text>
-                    <Text strong style={{ fontSize: typography.fontSize.base }}>
-                      {job.retentionError === 0 ? 'Xóa sau khi lượt chạy kết thúc' : `${job.retentionError ?? 3650} ngày`}
+                    <Text strong style={{ fontSize: '14px' }}>
+                      {job.retentionError === 0 ? 'Không lưu' : `${job.retentionError ?? 3650} ngày`}
                     </Text>
                   </div>
                 </Col>
@@ -546,10 +539,10 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
             </div>
 
             {/* KHỐI 3: Cấu hình phụ thuộc */}
-            <div style={{ borderBottom: `1px solid ${colors.border.split}`, paddingBottom: spacing[5] }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: spacing[2], marginBottom: spacing[4] }}>
-                <CodeOutlined style={{ color: colors.primary[500], fontSize: 20 }} />
-                <Text strong style={{ fontSize: typography.fontSize.base, textTransform: 'uppercase', color: colors.text.primary }}>
+            <div style={{ borderBottom: `1px solid var(--color-neutral-100)`, paddingBottom: 'var(--spacing-20)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-8)', marginBottom: 'var(--spacing-16)' }}>
+                <CodeOutlined style={{ color: 'var(--primary)', fontSize: 20 }} />
+                <Text strong style={{ fontSize: '14px', textTransform: 'uppercase', color: 'var(--text)' }}>
                   Cấu hình phụ thuộc
                 </Text>
               </div>
@@ -567,7 +560,7 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
                       width: 220,
                       render: (id) => {
                         const depJob = mockJobs.find((j) => j.id === id);
-                        return <Text strong style={{ color: colors.text.primary, fontFamily: typography.fontFamily.mono }}>{depJob?.code || id}</Text>;
+                        return <Text strong style={{ color: 'var(--text)', fontFamily: 'var(--font-mono, monospace)' }}>{depJob?.code || id}</Text>;
                       }
                     },
                     {
@@ -597,16 +590,16 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
 
             {/* KHỐI 4: Thiết lập Cảnh báo Sự cố */}
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: spacing[2], marginBottom: spacing[3] }}>
-                <BellOutlined style={{ color: colors.primary[500], fontSize: 18 }} />
-                <Text strong style={{ fontSize: typography.fontSize.base, textTransform: 'uppercase', color: colors.text.primary }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-8)', marginBottom: 'var(--spacing-12)' }}>
+                <BellOutlined style={{ color: 'var(--primary)', fontSize: 18 }} />
+                <Text strong style={{ fontSize: '14px', textTransform: 'uppercase', color: 'var(--text)' }}>
                   Thiết lập cảnh báo sự cố
                 </Text>
               </div>
 
               <div>
-                <div style={{ marginBottom: spacing[3] }}>
-                  <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 6 }}>
+                <div style={{ marginBottom: 'var(--spacing-12)' }}>
+                  <Text type="secondary" style={{ fontSize: '12px', fontWeight: 500, display: 'block', marginBottom: 6 }}>
                     Email nhận cảnh báo chung
                   </Text>
                   <Space wrap size={[6, 6]}>
@@ -618,7 +611,7 @@ const JobDetailModal: React.FC<JobDetailModalProps> = ({
                   </Space>
                 </div>
 
-                <Text strong style={{ fontSize: typography.fontSize.sm, display: 'block', marginBottom: spacing[2] }}>
+                <Text strong style={{ fontSize: '12px', display: 'block', marginBottom: 'var(--spacing-8)' }}>
                   Cấu hình thông báo
                 </Text>
 

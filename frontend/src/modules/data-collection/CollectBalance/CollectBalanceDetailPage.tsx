@@ -15,7 +15,6 @@ import {
   UnlockOutlined,
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
-import { colors, radius, shadows } from '@/design-system';
 import { PageLayout } from '@/components/ui';
 import useHeaderActions from '@/hooks/useHeaderActions';
 import { useCollectBalance } from './useCollectBalance';
@@ -33,13 +32,13 @@ interface Props {
 
 // Nhãn + màu cho từng loại hành động trong lịch sử xử lý
 const ACTION_META: Record<ProcessingAction, { label: string; color: string; icon: React.ReactNode }> = {
-  RECEIVED: { label: 'Tiếp nhận vào hàng đợi', color: colors.info.base, icon: <InboxOutlined /> },
-  EDITED: { label: 'Chỉnh sửa số liệu', color: colors.warning.dark, icon: <EditOutlined /> },
-  REVIEW_STARTED: { label: 'Bắt đầu kiểm tra (khóa chỉnh sửa)', color: colors.info.dark, icon: <AuditOutlined /> },
-  REVIEW_REOPENED: { label: 'Mở lại để chỉnh sửa', color: colors.warning.dark, icon: <UnlockOutlined /> },
-  ACCEPTED: { label: 'Đã tiếp nhận báo cáo', color: colors.success.dark, icon: <CheckCircleOutlined /> },
-  REVISION_REQUESTED: { label: 'Yêu cầu TCTD sửa lại', color: colors.error.base, icon: <CloseCircleOutlined /> },
-  REJECTED: { label: 'Từ chối báo cáo', color: colors.error.base, icon: <CloseCircleOutlined /> },
+  RECEIVED: { label: 'Tiếp nhận vào hàng đợi', color: 'var(--info)', icon: <InboxOutlined /> },
+  EDITED: { label: 'Chỉnh sửa số liệu', color: 'var(--warning-ink)', icon: <EditOutlined /> },
+  REVIEW_STARTED: { label: 'Bắt đầu kiểm tra (khóa chỉnh sửa)', color: 'var(--info-ink)', icon: <AuditOutlined /> },
+  REVIEW_REOPENED: { label: 'Mở lại để chỉnh sửa', color: 'var(--warning-ink)', icon: <UnlockOutlined /> },
+  ACCEPTED: { label: 'Đã tiếp nhận báo cáo', color: 'var(--success-ink)', icon: <CheckCircleOutlined /> },
+  REVISION_REQUESTED: { label: 'Yêu cầu TCTD sửa lại', color: 'var(--error)', icon: <CloseCircleOutlined /> },
+  REJECTED: { label: 'Từ chối báo cáo', color: 'var(--error)', icon: <CloseCircleOutlined /> },
 };
 
 export const CollectBalanceDetailPage: React.FC<Props> = ({ id }) => {
@@ -156,7 +155,7 @@ export const CollectBalanceDetailPage: React.FC<Props> = ({ id }) => {
             message="Báo cáo đã được tiếp nhận. Chức năng chỉnh sửa đã bị khóa."
             type="success"
             showIcon
-            style={{ borderRadius: radius.md }}
+            style={{ borderRadius: 'var(--radius-md)' }}
           />
         )}
         {report.trangThai === 'DANG_KIEM_TRA' && (
@@ -164,18 +163,18 @@ export const CollectBalanceDetailPage: React.FC<Props> = ({ id }) => {
             message="Báo cáo đang trong quá trình kiểm tra nên đã khóa chỉnh sửa. Bấm “Mở lại để sửa” nếu cần điều chỉnh số liệu."
             type="info"
             showIcon
-            style={{ borderRadius: radius.md }}
+            style={{ borderRadius: 'var(--radius-md)' }}
           />
         )}
 
         <div style={{
           background: '#ffffff',
-          borderRadius: radius.lg,
-          border: `1px solid ${colors.border.split}`,
+          borderRadius: 'var(--radius-lg)',
+          border: `1px solid var(--color-neutral-100)`,
           padding: '20px',
-          boxShadow: shadows.sm
+          boxShadow: 'var(--elevation-1)'
         }}>
-          <div style={{ fontWeight: 700, fontSize: 14, color: colors.primary[700], marginBottom: 16 }}>
+          <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--primary-dark, #184c37)', marginBottom: 16 }}>
             KHỐI THÔNG TIN CHUNG
           </div>
           <div style={{
@@ -217,10 +216,10 @@ export const CollectBalanceDetailPage: React.FC<Props> = ({ id }) => {
 
         <div style={{
           background: '#ffffff',
-          borderRadius: radius.lg,
-          border: `1px solid ${colors.border.split}`,
+          borderRadius: 'var(--radius-lg)',
+          border: `1px solid var(--color-neutral-100)`,
           padding: '20px',
-          boxShadow: shadows.sm
+          boxShadow: 'var(--elevation-1)'
         }}>
           <div style={{
             display: 'flex',
@@ -228,7 +227,7 @@ export const CollectBalanceDetailPage: React.FC<Props> = ({ id }) => {
             alignItems: 'center',
             marginBottom: 16
           }}>
-            <div style={{ fontWeight: 700, fontSize: 14, color: colors.primary[700] }}>
+            <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--primary-dark, #184c37)' }}>
               KHỐI CHI TIẾT THÔNG TIN CÂN ĐỐI
             </div>
             {editedCount > 0 && (
@@ -258,10 +257,10 @@ export const CollectBalanceDetailPage: React.FC<Props> = ({ id }) => {
         {history.length > 0 && (
           <div style={{
             background: '#ffffff',
-            borderRadius: radius.lg,
-            border: `1px solid ${colors.border.split}`,
+            borderRadius: 'var(--radius-lg)',
+            border: `1px solid var(--color-neutral-100)`,
             padding: '20px',
-            boxShadow: shadows.sm
+            boxShadow: 'var(--elevation-1)'
           }}>
             <div style={{
               display: 'flex',
@@ -269,7 +268,7 @@ export const CollectBalanceDetailPage: React.FC<Props> = ({ id }) => {
               gap: 8,
               fontWeight: 700,
               fontSize: 14,
-              color: colors.primary[700],
+              color: 'var(--primary-dark, #184c37)',
               marginBottom: 16
             }}>
               <HistoryOutlined /> LỊCH SỬ XỬ LÝ
@@ -282,14 +281,14 @@ export const CollectBalanceDetailPage: React.FC<Props> = ({ id }) => {
                   dot: meta.icon,
                   children: (
                     <div>
-                      <div style={{ fontWeight: 600, color: colors.text.primary }}>
+                      <div style={{ fontWeight: 600, color: 'var(--text)' }}>
                         {meta.label}
                       </div>
-                      <div style={{ fontSize: 12, color: colors.text.secondary }}>
+                      <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
                         {entry.timestamp} · {entry.actor}
                       </div>
                       {entry.reason && (
-                        <div style={{ fontSize: 13, color: colors.error.base, marginTop: 4 }}>
+                        <div style={{ fontSize: 13, color: 'var(--error)', marginTop: 4 }}>
                           Lý do: {entry.reason}
                         </div>
                       )}
@@ -309,7 +308,7 @@ export const CollectBalanceDetailPage: React.FC<Props> = ({ id }) => {
         }}>
           <Button
             onClick={() => router.push('/data-collection/collect/balance')}
-            style={{ minWidth: 120, height: 40, borderRadius: radius.md }}
+            style={{ minWidth: 120, height: 40, borderRadius: 'var(--radius-md)' }}
           >
             Trở về danh sách
           </Button>
@@ -321,7 +320,7 @@ export const CollectBalanceDetailPage: React.FC<Props> = ({ id }) => {
                 icon={<SaveOutlined />}
                 onClick={handleSave}
                 loading={isSubmitting}
-                style={{ minWidth: 120, height: 40, borderRadius: radius.md }}
+                style={{ minWidth: 120, height: 40, borderRadius: 'var(--radius-md)' }}
               >
                 Lưu nháp
               </Button>
@@ -330,7 +329,7 @@ export const CollectBalanceDetailPage: React.FC<Props> = ({ id }) => {
                 icon={<AuditOutlined />}
                 onClick={handleStartReview}
                 loading={isSubmitting}
-                style={{ minWidth: 120, height: 40, borderRadius: radius.md }}
+                style={{ minWidth: 120, height: 40, borderRadius: 'var(--radius-md)' }}
               >
                 Bắt đầu kiểm tra
               </Button>
@@ -344,7 +343,7 @@ export const CollectBalanceDetailPage: React.FC<Props> = ({ id }) => {
                 icon={<UnlockOutlined />}
                 onClick={handleReopenReview}
                 loading={isSubmitting}
-                style={{ minWidth: 120, height: 40, borderRadius: radius.md }}
+                style={{ minWidth: 120, height: 40, borderRadius: 'var(--radius-md)' }}
               >
                 Mở lại để sửa
               </Button>
@@ -353,7 +352,7 @@ export const CollectBalanceDetailPage: React.FC<Props> = ({ id }) => {
                 icon={<CloseCircleOutlined />}
                 onClick={() => setRejectModalVisible(true)}
                 loading={isSubmitting}
-                style={{ minWidth: 120, height: 40, borderRadius: radius.md }}
+                style={{ minWidth: 120, height: 40, borderRadius: 'var(--radius-md)' }}
               >
                 Yêu cầu sửa
               </Button>
@@ -362,7 +361,7 @@ export const CollectBalanceDetailPage: React.FC<Props> = ({ id }) => {
                 icon={<CheckCircleOutlined />}
                 onClick={handleAccept}
                 loading={isSubmitting}
-                style={{ minWidth: 120, height: 40, borderRadius: radius.md }}
+                style={{ minWidth: 120, height: 40, borderRadius: 'var(--radius-md)' }}
               >
                 Tiếp nhận
               </Button>

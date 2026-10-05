@@ -4,7 +4,6 @@ import React from 'react';
 import { Space, Typography, Table } from 'antd';
 import ComponentShowcase from '../../ComponentShowcase';
 import { CodeText, tablePagination } from '@/components/ui';
-import { colors, typography, spacing } from '@/design-system';
 import useHeaderActions from '@/hooks/useHeaderActions';
 
 const { Text } = Typography;
@@ -47,13 +46,13 @@ const CodeTextDemo: React.FC = () => {
 // Trong table cell
 { title: 'Tên biến', render: (v) => <CodeText>{v}</CodeText> }`}
         >
-            <div style={{ display: 'flex', flexDirection: 'column', gap: spacing[5] }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-20)' }}>
                 {/* Inline usage */}
                 <div>
-                    <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.tertiary, display: 'block', marginBottom: spacing[2] }}>
+                    <Text style={{ fontSize: '11px', color: 'var(--text-subtle)', display: 'block', marginBottom: 'var(--spacing-8)' }}>
                         Dùng inline trong văn bản
                     </Text>
-                    <Text style={{ color: colors.text.primary, lineHeight: 1.8 }}>
+                    <Text style={{ color: 'var(--text)', lineHeight: 1.8 }}>
                         Biến <CodeText>{'{{ho_ten_kh}}'}</CodeText> lưu họ tên khách hàng.
                         Sử dụng kết hợp với <CodeText>{'{{ma_cic}}'}</CodeText> để tra cứu thông tin tín dụng.
                         Kiểu dữ liệu trả về là <CodeText>STRING</CodeText>.
@@ -62,7 +61,7 @@ const CodeTextDemo: React.FC = () => {
 
                 {/* In table */}
                 <div>
-                    <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.tertiary, display: 'block', marginBottom: spacing[2] }}>
+                    <Text style={{ fontSize: '11px', color: 'var(--text-subtle)', display: 'block', marginBottom: 'var(--spacing-8)' }}>
                         Dùng trong table cell
                     </Text>
                     <Table

@@ -7,18 +7,18 @@
 // ─── COLOR ──────────────────────────────────────────────────
 
 export const colors = {
-    // Brand primary (Ant Design compatible)
+    // Brand primary — NTDA Forest (Pine Green)
     primary: {
-        50:  '#e6f4ff',
-        100: '#bae0ff',
-        200: '#91caff',
-        300: '#69b1ff',
-        400: '#4096ff',
-        500: '#1677ff', // default
-        600: '#0958d9',
-        700: '#003eb3',
-        800: '#002c8c',
-        900: '#001d66',
+        50:  '#ecf9f3',
+        100: '#d9f0e5',
+        200: '#bde4d1',
+        300: '#9dd5bb',
+        400: '#77c0a0',
+        500: '#2c795b', // NTDA Forest Pine Green (main brand)
+        600: '#195b43',
+        700: '#144b36',
+        800: '#0e241e',
+        900: '#081a15',
     },
 
     // ─── Subsystem accent colors ─────────────────────────────
@@ -45,26 +45,26 @@ export const colors = {
 
     // ─── Semantic ─────────────────────────────────────────────
     success: {
-        light: '#f6ffed',
-        base:  '#52c41a',
-        dark:  '#389e0d',
+        light: '#eefae9',
+        base:  '#4b8b18',
+        dark:  '#3a7401',
     },
     warning: {
-        light: '#fffbe6',
-        base:  '#faad14',
-        dark:  '#d48806',
+        light: '#fef4e8',
+        base:  '#976204',
+        dark:  '#744a02',
     },
     error: {
         light: '#fff2f0',
-        base:  '#ff4d4f',
-        dark:  '#cf1322',
+        base:  '#db2326',
+        dark:  '#c2181d',
     },
     info: {
-        light: '#e6f4ff',
-        base:  '#1677ff',
-        dark:  '#0958d9',
+        light: '#eaf8ff',
+        base:  '#1383ac',
+        dark:  '#077398',
     },
-    processing: '#1677ff',
+    processing: '#2c795b',
 
     // ─── Status / Tag tokens (Organic pastel palette) ─────────
     statusTag: {
@@ -84,9 +84,9 @@ export const colors = {
             border: '#f2bab0',
         },
         processing: {
-            bg:     '#e6f4ff',
-            text:   '#0958d9',
-            border: '#bae0ff',
+            bg:     '#ecf9f3',
+            text:   '#144b36',
+            border: '#9dd5bb',
         },
         neutral: {
             bg:     '#eaf0ed',
@@ -225,7 +225,8 @@ export const radius = {
     none: '0px',
     xs:   '2px',
     sm:   '4px',
-    md:   '6px',   // Ant Design default
+    button: '4px',
+    md:   '4px',   // Forest control default 4px
     lg:   '8px',
     xl:   '12px',
     '2xl':'16px',
@@ -237,7 +238,8 @@ export const radiusNumber = {
     none: 0,
     xs:   2,
     sm:   4,
-    md:   6,
+    button: 4,
+    md:   4,       // Forest control default 4px
     lg:   8,
     xl:   12,
     '2xl': 16,

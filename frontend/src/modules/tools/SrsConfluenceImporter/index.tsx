@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import { Modal, Input, Form, message, Alert, Spin } from 'antd';
 import useHeaderActions from '@/hooks/useHeaderActions';
 import { PageLayout } from '@/components/ui';
-import { spacing } from '@/design-system';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import {
     fetchConfluencePage,
@@ -191,7 +190,7 @@ const SrsConfluenceImporter: React.FC = () => {
 
     return (
         <PageLayout>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: spacing[4] }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-16)' }}>
                 {/* Header & Metadata Control Bar */}
                 <MetadataHeaderBar
                     pat={pat}
@@ -224,7 +223,7 @@ const SrsConfluenceImporter: React.FC = () => {
 
                 {/* Loading state */}
                 {generating && (
-                    <div style={{ textAlign: 'center', padding: spacing[8] }}>
+                    <div style={{ textAlign: 'center', padding: 'var(--spacing-32)' }}>
                         <Spin size="large" tip="AI đang phân tích tài liệu và cấu trúc hóa theo mẫu SRS v4.0..." />
                     </div>
                 )}

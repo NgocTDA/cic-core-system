@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import { message } from 'antd';
 import useHeaderActions from '@/hooks/useHeaderActions';
 import { PageLayout, SectionCard } from '@/components/ui';
-import { spacing } from '@/design-system';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { generateDoc, fetchPromptLabel } from '@/services/aiService';
 import DocForm from './DocForm';
@@ -71,7 +70,7 @@ const UIDocGenerator: React.FC = () => {
                 style={{
                     display: 'grid',
                     gridTemplateColumns: isMobile ? '1fr' : '380px 1fr',
-                    gap: spacing[4],
+                    gap: 'var(--spacing-16)',
                     alignItems: 'start',
                 }}
             >

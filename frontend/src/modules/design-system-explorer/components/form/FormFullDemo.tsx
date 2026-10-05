@@ -7,7 +7,6 @@ import {
 } from 'antd';
 import { SaveOutlined, CloseOutlined, InboxOutlined } from '@ant-design/icons';
 import ComponentShowcase from '../../ComponentShowcase';
-import { colors, typography, spacing } from '@/design-system';
 import useHeaderActions from '@/hooks/useHeaderActions';
 
 const { Text } = Typography;
@@ -88,7 +87,7 @@ const FormFullDemo: React.FC = () => {
                         <Col xs={24} md={12}>
                             <Form.Item
                                 name="code"
-                                label={<><Text>Mã TCTD</Text> <Text style={{ color: colors.error.base }}>*</Text></>}
+                                label={<><Text>Mã TCTD</Text> <Text style={{ color: 'var(--error)' }}>*</Text></>}
                                 rules={[{ required: true, message: 'Vui lòng nhập mã TCTD' }]}
                             >
                                 <Input
@@ -101,7 +100,7 @@ const FormFullDemo: React.FC = () => {
                         <Col xs={24} md={12}>
                             <Form.Item
                                 name="name"
-                                label={<><Text>Tên tổ chức</Text> <Text style={{ color: colors.error.base }}>*</Text></>}
+                                label={<><Text>Tên tổ chức</Text> <Text style={{ color: 'var(--error)' }}>*</Text></>}
                                 rules={[{ required: true, message: 'Vui lòng nhập tên' }]}
                             >
                                 <Input
@@ -115,7 +114,7 @@ const FormFullDemo: React.FC = () => {
                         <Col xs={24} md={12}>
                             <Form.Item
                                 name="type"
-                                label={<><Text>Loại hình</Text> <Text style={{ color: colors.error.base }}>*</Text></>}
+                                label={<><Text>Loại hình</Text> <Text style={{ color: 'var(--error)' }}>*</Text></>}
                                 rules={[{ required: true, message: 'Vui lòng chọn loại hình' }]}
                             >
                                 <Select
@@ -131,7 +130,7 @@ const FormFullDemo: React.FC = () => {
                         <Col xs={24} md={12}>
                             <Form.Item
                                 name="effectiveDate"
-                                label={<><Text>Ngày hiệu lực</Text> <Text style={{ color: colors.error.base }}>*</Text></>}
+                                label={<><Text>Ngày hiệu lực</Text> <Text style={{ color: 'var(--error)' }}>*</Text></>}
                                 rules={[{ required: true, message: 'Vui lòng chọn ngày' }]}
                             >
                                 <DatePicker format={DATE_FORMAT} placeholder={DATE_FORMAT} style={{ width: '100%' }} />
@@ -174,11 +173,11 @@ const FormFullDemo: React.FC = () => {
 
                         <Col xs={24} md={12}>
                             <Form.Item name="isActive" label="Trạng thái" valuePropName="checked" initialValue={true}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: spacing[2] }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-8)' }}>
                                     <Form.Item name="isActive" valuePropName="checked" noStyle initialValue={true}>
                                         <Switch />
                                     </Form.Item>
-                                    <Text style={{ fontSize: typography.fontSize.sm }}>Hoạt động</Text>
+                                    <Text style={{ fontSize: '12px' }}>Hoạt động</Text>
                                 </div>
                             </Form.Item>
                         </Col>
@@ -186,14 +185,14 @@ const FormFullDemo: React.FC = () => {
                         <Col xs={24} md={12}>
                             <Form.Item
                                 name="permission"
-                                label={<><Text>Quyền truy cập</Text> <Text style={{ color: colors.error.base }}>*</Text></>}
+                                label={<><Text>Quyền truy cập</Text> <Text style={{ color: 'var(--error)' }}>*</Text></>}
                                 rules={[{ required: true, message: 'Vui lòng chọn ít nhất 1 quyền' }]}
                             >
                                 <Checkbox.Group options={['Xem', 'Thêm', 'Sửa', 'Xóa', 'Duyệt']} />
                             </Form.Item>
                         </Col>
 
-                        <Divider style={{ margin: `${spacing[2]} 0` }} />
+                        <Divider style={{ margin: `var(--spacing-8) 0` }} />
 
                         <Col xs={24}>
                             <Form.Item style={{ marginBottom: 0 }}>

@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import { Form, InputNumber, Typography, Space, Row, Col, Tooltip } from 'antd';
 import ComponentShowcase from '../../ComponentShowcase';
-import { colors, typography, spacing } from '@/design-system';
 import useHeaderActions from '@/hooks/useHeaderActions';
 
 const { Text } = Typography;
@@ -59,7 +58,7 @@ const InputNumberDemo: React.FC = () => {
                     <Col span={24}>
                         <Form.Item
                             name="amount"
-                            label={<><Text>Số tiền (VNĐ)</Text> <Text style={{ color: colors.error.base }}>*</Text></>}
+                            label={<><Text>Số tiền (VNĐ)</Text> <Text style={{ color: 'var(--error)' }}>*</Text></>}
                             rules={[
                                 { required: true, message: 'Vui lòng nhập số tiền' },
                                 { type: 'number', min: 0, message: 'Số tiền phải ≥ 0' },
@@ -117,14 +116,14 @@ const InputNumberDemo: React.FC = () => {
                 {/* Tooltip demo for decimal */}
                 <div
                     style={{
-                        padding: spacing[4],
-                        background: colors.bg.subtle,
+                        padding: 'var(--spacing-16)',
+                        background: 'var(--bg-subtle)',
                         borderRadius: 6,
-                        border: `1px solid ${colors.border.split}`,
-                        marginTop: spacing[2],
+                        border: `1px solid var(--color-neutral-100)`,
+                        marginTop: 'var(--spacing-8)',
                     }}
                 >
-                    <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.secondary, display: 'block', marginBottom: spacing[2] }}>
+                    <Text style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block', marginBottom: 'var(--spacing-8)' }}>
                         Hover để xem giá trị thập phân đầy đủ
                     </Text>
                     <Space wrap>
@@ -135,12 +134,12 @@ const InputNumberDemo: React.FC = () => {
                             >
                                 <div
                                     style={{
-                                        padding: `${spacing[1]} ${spacing[3]}`,
-                                        background: colors.bg.container,
-                                        border: `1px solid ${colors.border.base}`,
+                                        padding: `var(--spacing-4) var(--spacing-12)`,
+                                        background: 'var(--surface)',
+                                        border: `1px solid var(--border)`,
                                         borderRadius: 4,
                                         fontVariantNumeric: 'tabular-nums',
-                                        fontSize: typography.fontSize.sm,
+                                        fontSize: '12px',
                                         cursor: 'default',
                                         textAlign: 'right',
                                     }}

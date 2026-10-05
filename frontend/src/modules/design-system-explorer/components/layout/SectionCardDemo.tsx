@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Button, Switch, Space, Typography, Table } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { PageLayout, SectionCard, StatusTag, tablePagination } from '@/components/ui';
-import { colors, typography, spacing, radius } from '@/design-system';
+import { typography, spacing, radius } from '@/modules/design-system-explorer/tokens';
 import ComponentShowcase from '../../ComponentShowcase';
 import useHeaderActions from '@/hooks/useHeaderActions';
 
@@ -56,14 +56,14 @@ const SectionCardDemo: React.FC = () => {
                         { label: 'noPadding', value: noPadding, set: setNoPadding },
                     ].map(({ label, value, set }) => (
                         <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <Text style={{ fontSize: typography.fontSize.sm }}>{label}</Text>
+                            <Text style={{ fontSize: '12px' }}>{label}</Text>
                             <Switch checked={value} onChange={set} size="small" />
                         </div>
                     ))}
                 </Space>
             }
         >
-            <div style={{ display: 'flex', flexDirection: 'column', gap: spacing[5] }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-20)' }}>
                 {/* Live demo */}
                 <SectionCard
                     title="Danh sách hồ sơ tín dụng"
@@ -88,8 +88,8 @@ const SectionCardDemo: React.FC = () => {
                 </SectionCard>
 
                 {/* Props table */}
-                <div style={{ background: colors.bg.subtle, borderRadius: radius.lg, padding: spacing[4] }}>
-                    <Text style={{ fontSize: typography.fontSize.sm, fontWeight: typography.fontWeight.semibold, display: 'block', marginBottom: spacing[2] }}>Props</Text>
+                <div style={{ background: 'var(--bg-subtle)', borderRadius: 'var(--radius-lg)', padding: 'var(--spacing-16)' }}>
+                    <Text style={{ fontSize: '12px', fontWeight: typography.fontWeight.semibold, display: 'block', marginBottom: 'var(--spacing-8)' }}>Props</Text>
                     {[
                         { prop: 'title?', type: 'string', desc: 'Tiêu đề card header' },
                         { prop: 'count?', type: 'number | string', desc: 'Badge số lượng bên cạnh title' },
@@ -98,10 +98,10 @@ const SectionCardDemo: React.FC = () => {
                         { prop: 'noPadding?', type: 'boolean', desc: 'Bỏ body padding' },
                         { prop: 'style?', type: 'CSSProperties', desc: 'CSS override (marginTop, height…)' },
                     ].map(({ prop, type, desc }) => (
-                        <div key={prop} style={{ display: 'flex', gap: spacing[3], alignItems: 'baseline', marginBottom: spacing[1] }}>
-                            <code style={{ fontSize: 11, fontFamily: typography.fontFamily.mono, color: colors.primary[500], minWidth: 110 }}>{prop}</code>
-                            <code style={{ fontSize: 11, fontFamily: typography.fontFamily.mono, color: colors.text.tertiary, minWidth: 120 }}>{type}</code>
-                            <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.secondary }}>{desc}</Text>
+                        <div key={prop} style={{ display: 'flex', gap: 'var(--spacing-12)', alignItems: 'baseline', marginBottom: 'var(--spacing-4)' }}>
+                            <code style={{ fontSize: 11, fontFamily: typography.fontFamily.mono, color: 'var(--primary)', minWidth: 110 }}>{prop}</code>
+                            <code style={{ fontSize: 11, fontFamily: typography.fontFamily.mono, color: 'var(--text-subtle)', minWidth: 120 }}>{type}</code>
+                            <Text style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{desc}</Text>
                         </div>
                     ))}
                 </div>

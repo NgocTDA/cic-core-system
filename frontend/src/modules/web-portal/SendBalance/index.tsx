@@ -30,7 +30,7 @@ import {
   PlusOutlined,
   HolderOutlined
 } from '@ant-design/icons';
-import { colors, radius, shadows } from '@/design-system';
+import { SUBSYSTEM_COLORS } from '@/config/subsystems';
 import {
   PageLayout,
   FilterBar,
@@ -332,7 +332,7 @@ const SendBalanceModule: React.FC = () => {
     if (!ruleCode) {
       return (
         <Tooltip title="Chỉ tiêu không có giá trị đối với nghiệp vụ của loại tệp này">
-          <StopOutlined style={{ color: colors.text.tertiary, fontSize: 14 }} />
+          <StopOutlined style={{ color: 'var(--text-subtle)', fontSize: 14 }} />
         </Tooltip>
       );
     }
@@ -375,7 +375,7 @@ const SendBalanceModule: React.FC = () => {
         dataIndex: 'nghiepVu',
         key: 'nghiepVu',
         width: 150,
-        render: (text: string) => <span style={{ fontWeight: 650, color: colors.primary[700] }}>{text}</span>,
+        render: (text: string) => <span style={{ fontWeight: 650, color: 'var(--primary-dark, #184c37)' }}>{text}</span>,
         filters: Array.from(new Set(rows.map(item => item.nghiepVu).filter((val): val is string => !!val))).sort().map(val => ({ text: val, value: val })),
         onFilter: (value: any, record: ReconciliationDetailRow) => record.nghiepVu === value,
       }
@@ -422,7 +422,7 @@ const SendBalanceModule: React.FC = () => {
           val ? (
             <span style={{
               fontWeight: 700,
-              color: val === 'VND' ? colors.success.dark : val === 'USD' ? colors.primary[600] : '#d4b106'
+              color: val === 'VND' ? 'var(--success-ink)' : val === 'USD' ? 'var(--primary-hover)' : '#d4b106'
             }}>{val}</span>
           ) : <span style={{ color: '#bfbfbf' }}>-</span>
         ),
@@ -513,53 +513,53 @@ const SendBalanceModule: React.FC = () => {
     stats.push({
       label: 'Tổng số dòng nghiệp vụ',
       value: String(rows.length),
-      color: colors.primary[600]
+      color: 'var(--primary-hover)'
     });
 
     if (loaiFile === 'D35') {
       stats.push({
         label: 'Tổng số tiền giải ngân',
         value: formatSum(sumField('phatSinhGiaiNgan')),
-        color: colors.success.dark
+        color: 'var(--success-ink)'
       });
       stats.push({
         label: 'Tổng số tiền trả nợ',
         value: formatSum(sumField('phatSinhTraNo')),
-        color: colors.error.base
+        color: 'var(--error)'
       });
     } else if (loaiFile === 'D36') {
       stats.push({
         label: 'Dự phòng phải trích',
         value: formatSum(sumField('duPhongPhaiTrich')),
-        color: colors.warning.dark
+        color: 'var(--warning-ink)'
       });
       stats.push({
         label: 'Dự phòng đã trích',
         value: formatSum(sumField('duPhongDaTrich')),
-        color: colors.success.dark
+        color: 'var(--success-ink)'
       });
     } else if (loaiFile === 'D40') {
       stats.push({
         label: 'Giá trị tài sản bảo đảm',
         value: formatSum(sumField('tongGiaTriBaoDam')),
-        color: colors.success.dark
+        color: 'var(--success-ink)'
       });
       stats.push({
         label: 'Giá trị bảo đảm khoản vay',
         value: formatSum(sumField('giaTriBaoDamKhoanVay')),
-        color: colors.primary[600]
+        color: 'var(--primary-hover)'
       });
     } else if (loaiFile === 'D60') {
       stats.push({
         label: 'Doanh số giảm nợ',
         value: formatSum(sumField('doanhSoGiamNo')),
-        color: colors.error.base
+        color: 'var(--error)'
       });
     } else {
       stats.push({
         label: 'Tổng dư nợ đối soát',
         value: formatSum(sumField('duNo')),
-        color: colors.success.dark
+        color: 'var(--success-ink)'
       });
     }
 
@@ -621,7 +621,7 @@ const SendBalanceModule: React.FC = () => {
                   handleViewDetail(record);
                 }}
               >
-                <CodeText muted style={{ fontSize: '11.5px', fontWeight: 500, color: colors.primary[500] }}>
+                <CodeText muted style={{ fontSize: '11.5px', fontWeight: 500, color: 'var(--primary)' }}>
                   {val}
                 </CodeText>
               </span>
@@ -644,7 +644,7 @@ const SendBalanceModule: React.FC = () => {
             onChange={(val) => handleCellEdit(record.key, 'maDauMoi', val)}
             type="text"
             record={record}
-            renderDisplay={(val) => <span style={{ color: colors.text.primary, fontWeight: 600 }}>{val}</span>}
+            renderDisplay={(val) => <span style={{ color: 'var(--text)', fontWeight: 600 }}>{val}</span>}
           />
         );
       }
@@ -663,7 +663,7 @@ const SendBalanceModule: React.FC = () => {
             onChange={(val) => handleCellEdit(record.key, 'ngayBaoCao', val)}
             type="text"
             record={record}
-            renderDisplay={(val) => <span style={{ color: colors.text.secondary }}>{val}</span>}
+            renderDisplay={(val) => <span style={{ color: 'var(--text-muted)' }}>{val}</span>}
           />
         );
       }
@@ -682,7 +682,7 @@ const SendBalanceModule: React.FC = () => {
             onChange={(val) => handleCellEdit(record.key, 'loaiFile', val)}
             type="text"
             record={record}
-            renderDisplay={(val) => <strong style={{ color: colors.text.primary }}>{val}</strong>}
+            renderDisplay={(val) => <strong style={{ color: 'var(--text)' }}>{val}</strong>}
           />
         );
       }
@@ -693,14 +693,14 @@ const SendBalanceModule: React.FC = () => {
       key: 'nghiepVu',
       width: 140,
       render: (text: string, record: ReconciliationDetailRow) => {
-        if (record.isParent) return <span style={{ color: colors.text.tertiary, fontStyle: 'italic' }}>-</span>;
+        if (record.isParent) return <span style={{ color: 'var(--text-subtle)', fontStyle: 'italic' }}>-</span>;
         return (
           <EditableCell
             value={text}
             onChange={(val) => handleCellEdit(record.key, 'nghiepVu', val)}
             type="text"
             record={record}
-            renderDisplay={(val) => <span style={{ fontWeight: 650, color: colors.primary[700] }}>{val}</span>}
+            renderDisplay={(val) => <span style={{ fontWeight: 650, color: 'var(--primary-dark, #184c37)' }}>{val}</span>}
           />
         );
       }
@@ -732,7 +732,7 @@ const SendBalanceModule: React.FC = () => {
         if (!record.maTienTeRule) {
           return (
             <Tooltip title="Chỉ tiêu không có giá trị đối với nghiệp vụ của loại tệp này">
-              <StopOutlined style={{ color: colors.text.tertiary, fontSize: 14 }} />
+              <StopOutlined style={{ color: 'var(--text-subtle)', fontSize: 14 }} />
             </Tooltip>
           );
         }
@@ -753,7 +753,7 @@ const SendBalanceModule: React.FC = () => {
                 <Tooltip title={record.maTienTeRule || null}>
                   <span style={{
                     fontWeight: 700,
-                    color: currentVal === 'VND' ? colors.success.dark : currentVal === 'USD' ? colors.primary[600] : '#d4b106',
+                    color: currentVal === 'VND' ? 'var(--success-ink)' : currentVal === 'USD' ? 'var(--primary-hover)' : '#d4b106',
                     borderBottom: record.maTienTeRule ? '1px dashed #fa8c16' : 'none',
                     cursor: record.maTienTeRule ? 'help' : 'default'
                   }}>
@@ -895,7 +895,7 @@ const SendBalanceModule: React.FC = () => {
           menuItems.push({
             key: 'edit',
             label: 'Chỉnh sửa',
-            icon: <PlusOutlined style={{ color: colors.primary[600] }} />,
+            icon: <PlusOutlined style={{ color: 'var(--primary-hover)' }} />,
             onClick: () => {
               router.push(`/web-portal/send-balance/new?key=${record.parentKey}`);
             }
@@ -907,7 +907,7 @@ const SendBalanceModule: React.FC = () => {
           menuItems.push({
             key: 'revoke',
             label: 'Thu hồi',
-            icon: <UndoOutlined style={{ color: colors.warning.dark }} />,
+            icon: <UndoOutlined style={{ color: 'var(--warning-ink)' }} />,
             onClick: () => {
               const parentReport = data.find(item => item.key === record.parentKey);
               if (parentReport) handleRevoke(parentReport);
@@ -920,7 +920,7 @@ const SendBalanceModule: React.FC = () => {
           menuItems.push({
             key: 'delete',
             label: 'Xóa',
-            icon: <DeleteOutlined style={{ color: colors.error.base }} />,
+            icon: <DeleteOutlined style={{ color: 'var(--error)' }} />,
             danger: true,
             onClick: () => {
               const parentReport = data.find(item => item.key === record.parentKey);
@@ -950,7 +950,7 @@ const SendBalanceModule: React.FC = () => {
 
     return (
       <div style={{ width: 280, padding: '8px 4px 4px' }}>
-        <div style={{ fontWeight: 700, fontSize: 15, color: colors.text.primary, marginBottom: 10, paddingLeft: 8 }}>
+        <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--text)', marginBottom: 10, paddingLeft: 8 }}>
           Cài đặt hiển thị
         </div>
 
@@ -958,12 +958,12 @@ const SendBalanceModule: React.FC = () => {
         <div style={{ padding: '0 8px 10px' }}>
           <Input
             placeholder="Tìm kiếm trường thông tin"
-            prefix={<SearchOutlined style={{ color: colors.text.tertiary }} />}
+            prefix={<SearchOutlined style={{ color: 'var(--text-subtle)' }} />}
             value={columnSearchTerm}
             onChange={e => setColumnSearchTerm(e.target.value)}
             allowClear
             size="small"
-            style={{ borderRadius: radius.md }}
+            style={{ borderRadius: 'var(--radius-md)' }}
           />
         </div>
 
@@ -1008,7 +1008,7 @@ const SendBalanceModule: React.FC = () => {
                   display: 'flex',
                   alignItems: 'center',
                   padding: '6px 8px',
-                  borderRadius: radius.sm,
+                  borderRadius: 'var(--radius-sm)',
                   cursor: isFixed ? 'default' : 'grab',
                   transition: 'background-color 0.2s',
                 }}
@@ -1016,7 +1016,7 @@ const SendBalanceModule: React.FC = () => {
               >
                 {/* Drag handle */}
                 {!isFixed ? (
-                  <HolderOutlined style={{ color: colors.text.tertiary, marginRight: 8, cursor: 'grab' }} />
+                  <HolderOutlined style={{ color: 'var(--text-subtle)', marginRight: 8, cursor: 'grab' }} />
                 ) : (
                   <div style={{ width: 22 }} /> // spacing to align
                 )}
@@ -1034,13 +1034,13 @@ const SendBalanceModule: React.FC = () => {
                     }
                   }}
                 >
-                  <span style={{ fontSize: 13, color: colors.text.primary }}>{opt.label}</span>
+                  <span style={{ fontSize: 13, color: 'var(--text)' }}>{opt.label}</span>
                 </Checkbox>
               </div>
             );
           })}
           {filteredConfigureColumns.length === 0 && (
-            <div style={{ textAlign: 'center', padding: '16px 0', color: colors.text.tertiary, fontSize: 13 }}>
+            <div style={{ textAlign: 'center', padding: '16px 0', color: 'var(--text-subtle)', fontSize: 13 }}>
               Không tìm thấy trường thông tin
             </div>
           )}
@@ -1050,14 +1050,14 @@ const SendBalanceModule: React.FC = () => {
 
         {/* Footer */}
         <div style={{ padding: '0 8px 4px' }}>
-          <div style={{ fontSize: 12, color: colors.text.secondary, marginBottom: 8, paddingLeft: 4 }}>
+          <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 8, paddingLeft: 4 }}>
             Đã chọn {selectedCount}/{totalCount}
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Button
               type="link"
               size="small"
-              style={{ padding: 0, fontSize: 13, fontWeight: 600, color: colors.primary[600] }}
+              style={{ padding: 0, fontSize: 13, fontWeight: 600, color: 'var(--primary-hover)' }}
               onClick={() => {
                 const mandatoryKeys = columnOptions.filter(opt => opt.disabled).map(opt => opt.key);
                 setVisibleColumns(mandatoryKeys);
@@ -1068,7 +1068,7 @@ const SendBalanceModule: React.FC = () => {
             <Button
               type="link"
               size="small"
-              style={{ padding: 0, fontSize: 13, fontWeight: 600, color: colors.primary[600] }}
+              style={{ padding: 0, fontSize: 13, fontWeight: 600, color: 'var(--primary-hover)' }}
               onClick={() => {
                 setVisibleColumns(columnOptions.map(opt => opt.key));
               }}
@@ -1169,7 +1169,7 @@ const SendBalanceModule: React.FC = () => {
               <Button
                 type="primary"
                 icon={<CloudUploadOutlined />}
-                style={{ background: colors.subsystem.portal, borderColor: colors.subsystem.portal }}
+                style={{ background: SUBSYSTEM_COLORS.portal, borderColor: SUBSYSTEM_COLORS.portal }}
                 onClick={() => {
                   router.push('/web-portal/send-balance/new');
                 }}
@@ -1185,7 +1185,7 @@ const SendBalanceModule: React.FC = () => {
               </Popover>
               <Button
                 icon={<FileExcelOutlined />}
-                style={{ color: colors.success.dark, borderColor: colors.success.dark }}
+                style={{ color: 'var(--success-ink)', borderColor: 'var(--success-ink)' }}
                 onClick={() => message.success('Xuất Excel thành công!')}
               >
                 Xuất Excel
@@ -1290,9 +1290,9 @@ const SendBalanceModule: React.FC = () => {
               onClick={() => setDetailModalVisible(false)}
               style={{
                 minWidth: 100,
-                borderRadius: radius.md,
-                background: colors.subsystem.portal,
-                borderColor: colors.subsystem.portal
+                borderRadius: 'var(--radius-md)',
+                background: SUBSYSTEM_COLORS.portal,
+                borderColor: SUBSYSTEM_COLORS.portal
               }}
             >
               Đóng
@@ -1316,8 +1316,8 @@ const SendBalanceModule: React.FC = () => {
               {/* Thanh metadata của tệp */}
               <div style={{
                 background: '#f8fafc',
-                border: `1px solid ${colors.border.split}`,
-                borderRadius: radius.md,
+                border: `1px solid var(--color-neutral-100)`,
+                borderRadius: 'var(--radius-md)',
                 padding: '14px 20px',
                 marginBottom: 16,
                 display: 'flex',
@@ -1332,22 +1332,22 @@ const SendBalanceModule: React.FC = () => {
                   gap: 16
                 }}>
                   <div>
-                    <Text style={{ fontSize: 13, color: colors.text.secondary }}>Tên tệp báo cáo nguồn: </Text>
-                    <strong style={{ fontFamily: 'monospace', color: colors.primary[700] }}>{selectedReport.tenTep}</strong>
+                    <Text style={{ fontSize: 13, color: 'var(--text-muted)' }}>Tên tệp báo cáo nguồn: </Text>
+                    <strong style={{ fontFamily: 'monospace', color: 'var(--primary-dark, #184c37)' }}>{selectedReport.tenTep}</strong>
                   </div>
                   <div>
-                    <Text style={{ fontSize: 13, color: colors.text.secondary }}>Kỳ báo cáo: </Text>
+                    <Text style={{ fontSize: 13, color: 'var(--text-muted)' }}>Kỳ báo cáo: </Text>
                     <strong>{selectedReport.ngayBaoCao}</strong>
                   </div>
                 </div>
-                <div style={{ borderTop: `1px dashed ${colors.border.split}`, paddingTop: 8 }}>
-                  <Text style={{ fontSize: 13, color: colors.text.secondary }}>Đơn vị gửi: </Text>
+                <div style={{ borderTop: `1px dashed var(--color-neutral-100)`, paddingTop: 8 }}>
+                  <Text style={{ fontSize: 13, color: 'var(--text-muted)' }}>Đơn vị gửi: </Text>
                   <strong>{getFormattedDonViGui(selectedReport.maDauMoi)}</strong>
                 </div>
               </div>
 
               {/* Bảng chi tiết số liệu cân đối */}
-              <div style={{ fontWeight: 700, fontSize: 14, color: colors.text.primary, marginBottom: 12 }}>
+              <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--text)', marginBottom: 12 }}>
                 BẢNG CHI TIẾT SỐ LIỆU CÂN ĐỐI
               </div>
               <Table

@@ -5,7 +5,7 @@ import { Table, Switch, Space, Typography, Tag, Skeleton, Tooltip, Empty, Checkb
 import type { ColumnsType } from 'antd/es/table';
 import ComponentShowcase from '../../ComponentShowcase';
 import { StatusTag, ActionMenu, tablePagination, SectionCard, StatusSummaryBar } from '@/components/ui';
-import { colors, typography, spacing } from '@/design-system';
+import { colors, spacing } from '@/modules/design-system-explorer/tokens';
 import useHeaderActions from '@/hooks/useHeaderActions';
 
 const { Text } = Typography;
@@ -74,7 +74,7 @@ const TableDemo: React.FC = () => {
             width: 130,
             render: (v: string, row: JobRow) => (
                 <Tooltip title={row.createdByFull} mouseEnterDelay={0.3}>
-                    <Text style={{ fontSize: typography.fontSize.sm, cursor: 'default' }}>{v}</Text>
+                    <Text style={{ fontSize: '12px', cursor: 'default' }}>{v}</Text>
                 </Tooltip>
             ),
         },
@@ -86,7 +86,7 @@ const TableDemo: React.FC = () => {
             align: 'center',
             render: (v: string) => (
                 <Tooltip title={`${v} 08:30:00`} mouseEnterDelay={0.3}>
-                    <Text style={{ fontSize: typography.fontSize.sm, cursor: 'default' }}>{v}</Text>
+                    <Text style={{ fontSize: '12px', cursor: 'default' }}>{v}</Text>
                 </Tooltip>
             ),
         },
@@ -149,14 +149,14 @@ const TableDemo: React.FC = () => {
             wide
             demoMinHeight={400}
             controls={
-                <Space direction="vertical" style={{ width: '100%', gap: spacing[3] }}>
+                <Space direction="vertical" style={{ width: '100%', gap: 'var(--spacing-12)' }}>
                     {[
                         { label: 'Loading state',    checked: loading,     onChange: setLoading },
                         { label: 'Empty data',       checked: empty,       onChange: setEmpty },
                         { label: 'StatusSummaryBar', checked: showSummary, onChange: setShowSummary },
                     ].map((ctrl) => (
                         <div key={ctrl.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <Text style={{ fontSize: typography.fontSize.sm }}>{ctrl.label}</Text>
+                            <Text style={{ fontSize: '12px' }}>{ctrl.label}</Text>
                             <Switch checked={ctrl.checked} onChange={ctrl.onChange} size="small" />
                         </div>
                     ))}
@@ -198,22 +198,22 @@ const columns: ColumnsType<T> = [
                 {selected.length > 0 && (
                     <div
                         style={{
-                            background: colors.primary[50],
+                            background: 'var(--primary-subtle)',
                             border: `1px solid ${colors.primary[200]}`,
                             borderRadius: 6,
-                            padding: `${spacing[2]} ${spacing[4]}`,
-                            marginBottom: spacing[3],
+                            padding: `var(--spacing-8) var(--spacing-16)`,
+                            marginBottom: 'var(--spacing-12)',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'space-between',
                         }}
                     >
-                        <Text style={{ color: colors.primary[600], fontSize: typography.fontSize.sm }}>
+                        <Text style={{ color: 'var(--primary-hover)', fontSize: '12px' }}>
                             Đã chọn <strong>{selected.length}</strong> bản ghi
                         </Text>
                         <Space>
-                            <Tag style={{ cursor: 'pointer', color: colors.error.base }}>Xóa đã chọn</Tag>
-                            <Tag style={{ cursor: 'pointer', color: colors.text.secondary }} onClick={() => setSelected([])}>Bỏ chọn</Tag>
+                            <Tag style={{ cursor: 'pointer', color: 'var(--error)' }}>Xóa đã chọn</Tag>
+                            <Tag style={{ cursor: 'pointer', color: 'var(--text-muted)' }} onClick={() => setSelected([])}>Bỏ chọn</Tag>
                         </Space>
                     </div>
                 )}

@@ -11,7 +11,6 @@ import {
 import { useRouter, useParams } from 'next/navigation';
 import dayjs from 'dayjs';
 import { PageLayout } from '@/components/ui';
-import { colors, spacing } from '@/design-system';
 import useHeaderActions from '@/hooks/useHeaderActions';
 import { useProductCatalog } from './useProductCatalog';
 import {
@@ -40,10 +39,10 @@ const SectionDivider: React.FC<{ title: string }> = ({ title }) => (
     orientation="left"
     orientationMargin={0}
     style={{
-      marginTop: spacing[5],
-      marginBottom: spacing[3],
-      color: colors.subsystem.product,
-      borderColor: `${colors.subsystem.product}40`,
+      marginTop: 'var(--spacing-20)',
+      marginBottom: 'var(--spacing-12)',
+      color: 'var(--primary)',
+      borderColor: `var(--primary)40`,
       fontWeight: 600,
       fontSize: 13,
     }}
@@ -143,7 +142,7 @@ const TabInfoAndIO: React.FC = () => (
     </Form.Item>
 
     {/* 3 cột giới hạn bản ghi */}
-    <Divider dashed style={{ margin: `${spacing[1]} 0 ${spacing[3]}` }}>
+    <Divider dashed style={{ margin: `var(--spacing-4) 0 var(--spacing-12)` }}>
       Giới hạn số bản ghi / yêu cầu
     </Divider>
     <Row gutter={[16, 0]}>
@@ -438,8 +437,8 @@ const ProductFormPageInner: React.FC<ProductFormPageProps> = ({ mode }) => {
     <PageLayout>
       <Card
         variant="borderless"
-        style={{ borderTop: `3px solid ${colors.subsystem.product}`, overflowX: 'hidden' }}
-        styles={{ body: { padding: `${spacing[4]} ${spacing[6]} ${spacing[6]}` } }}
+        style={{ borderTop: `3px solid var(--primary)`, overflowX: 'hidden' }}
+        styles={{ body: { padding: `var(--spacing-16) var(--spacing-24) var(--spacing-24)` } }}
       >
         <Form form={form} layout="vertical" requiredMark="optional">
           <Tabs

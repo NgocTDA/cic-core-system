@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { Select, Input, Popover, Checkbox, Button, Tooltip, Typography } from 'antd';
 import { FilterOutlined } from '@ant-design/icons';
 import { FilterBar, FilterCol } from '@/components/ui';
-import { colors } from '@/design-system';
 import { useJobManagement } from './useJobManagement';
 
 const { Text } = Typography;
@@ -97,7 +96,12 @@ const JobFilter: React.FC = () => {
           <Tooltip title="Thêm hoặc bớt các ô tìm kiếm trên thanh bộ lọc">
             <Button
               icon={<FilterOutlined />}
-              style={{ background: colors.bg.container, borderColor: colors.border.base, color: colors.text.primary }}
+              style={{
+                background: 'var(--surface)',
+                borderColor: 'var(--border)',
+                color: 'var(--text)',
+                borderRadius: 'var(--radius-control)',
+              }}
             >
               Thêm bộ lọc
             </Button>

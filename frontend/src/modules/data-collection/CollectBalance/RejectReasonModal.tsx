@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Input, Button } from 'antd';
 import { CloseCircleOutlined } from '@ant-design/icons';
-import { colors, radius } from '@/design-system';
 
 const { TextArea } = Input;
 
@@ -38,7 +37,7 @@ export const RejectReasonModal: React.FC<RejectReasonModalProps> = ({
       destroyOnHidden
       footer={
         <div style={{ display: 'flex', justifyContent: 'center', gap: 12 }}>
-          <Button onClick={onCancel} style={{ minWidth: 100, borderRadius: radius.md }}>
+          <Button onClick={onCancel} style={{ minWidth: 100, borderRadius: 'var(--radius-md)' }}>
             Hủy
           </Button>
           <Button
@@ -48,7 +47,7 @@ export const RejectReasonModal: React.FC<RejectReasonModalProps> = ({
             disabled={!trimmed}
             loading={loading}
             onClick={() => onConfirm(trimmed)}
-            style={{ minWidth: 100, borderRadius: radius.md }}
+            style={{ minWidth: 100, borderRadius: 'var(--radius-md)' }}
           >
             Xác nhận yêu cầu sửa
           </Button>
@@ -57,12 +56,12 @@ export const RejectReasonModal: React.FC<RejectReasonModalProps> = ({
     >
       <div style={{ paddingTop: 8 }}>
         {tenTep && (
-          <div style={{ marginBottom: 12, fontSize: 13, color: colors.text.secondary }}>
-            Báo cáo <strong style={{ fontFamily: 'monospace', color: colors.primary[700] }}>{tenTep}</strong> sẽ được trả lại TCTD để chỉnh sửa.
+          <div style={{ marginBottom: 12, fontSize: 13, color: 'var(--text-muted)' }}>
+            Báo cáo <strong style={{ fontFamily: 'monospace', color: 'var(--primary-dark, #184c37)' }}>{tenTep}</strong> sẽ được trả lại TCTD để chỉnh sửa.
           </div>
         )}
         <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6 }}>
-          Lý do yêu cầu sửa <span style={{ color: colors.error.base }}>*</span>
+          Lý do yêu cầu sửa <span style={{ color: 'var(--error)' }}>*</span>
         </div>
         <TextArea
           value={reason}

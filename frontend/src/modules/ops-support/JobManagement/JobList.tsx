@@ -12,7 +12,6 @@ import {
   PoweroffOutlined,
 } from '@ant-design/icons';
 import { ActionMenu, CodeText, StatusTag, tablePagination, SectionCard } from '@/components/ui';
-import { colors, typography, spacing, radius } from '@/design-system';
 import { useRole, hasPermission } from '@/context/RoleContext';
 import type { IJob } from './types';
 import { getCronDescription } from './cronUtils';
@@ -133,9 +132,9 @@ const JobList: React.FC<Props> = ({
       content: (
         <div>
           <p style={{ marginBottom: 12 }}>Bạn có chắc chắn muốn xóa Job không? Dữ liệu sau khi xóa sẽ không thể phục hồi.</p>
-          <div style={{ background: colors.bg.subtle, padding: `${spacing[2]} ${spacing[3]}`, borderRadius: radius.md, border: `1px solid ${colors.neutral[300]}` }}>
-            <div><span style={{ color: colors.text.secondary }}>Mã Job: </span><span style={{ fontFamily: typography.fontFamily.mono, fontWeight: 'bold', color: colors.text.primary }}>{record.code}</span></div>
-            <div><span style={{ color: colors.text.secondary }}>Tên Job: </span><span style={{ fontWeight: 'bold' }}>{record.name}</span></div>
+          <div style={{ background: 'var(--bg-subtle)', padding: `var(--spacing-8) var(--spacing-12)`, borderRadius: 'var(--radius-md)', border: `1px solid var(--color-neutral-300)` }}>
+            <div><span style={{ color: 'var(--text-muted)' }}>Mã Job: </span><span style={{ fontFamily: 'var(--font-mono, monospace)', fontWeight: 'bold', color: 'var(--text)' }}>{record.code}</span></div>
+            <div><span style={{ color: 'var(--text-muted)' }}>Tên Job: </span><span style={{ fontWeight: 'bold' }}>{record.name}</span></div>
           </div>
         </div>
       ),
@@ -171,7 +170,7 @@ const JobList: React.FC<Props> = ({
       key: 'code',
       width: 240,
       render: (code) => (
-        <CodeText style={{ color: colors.text.primary, whiteSpace: 'nowrap' }}>{code}</CodeText>
+        <CodeText style={{ color: 'var(--primary)', whiteSpace: 'nowrap', fontWeight: 600 }}>{code}</CodeText>
       ),
     },
     {
@@ -237,13 +236,14 @@ const JobList: React.FC<Props> = ({
           <Tooltip title={`Diễn giải: ${description}`} mouseEnterDelay={0.15}>
             <span
               style={{
-                fontFamily: typography.fontFamily.mono,
-                fontWeight: typography.fontWeight.medium,
-                fontSize: typography.fontSize.sm,
-                color: colors.text.primary,
-                background: colors.neutral[100],
+                fontFamily: 'var(--font-mono, monospace)',
+                fontWeight: 500,
+                fontSize: '12px',
+                color: 'var(--text)',
+                background: 'var(--color-neutral-100)',
+                border: `1px solid var(--border)`,
                 padding: '2px 8px',
-                borderRadius: 4,
+                borderRadius: 'var(--radius-sm)',
                 cursor: 'pointer',
                 display: 'inline-block',
               }}
@@ -396,7 +396,7 @@ const JobList: React.FC<Props> = ({
             setPageSize(size);
           },
         })}
-        scroll={{ x: 1430, y: 'calc(100vh - 350px)' }}
+        scroll={{ x: 1430, y: 'calc(100vh - 310px)' }}
         size="middle"
         rowSelection={rowSelection}
         onRow={(record) => ({

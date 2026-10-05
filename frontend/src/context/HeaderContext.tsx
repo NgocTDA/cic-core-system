@@ -9,6 +9,7 @@ export interface HeaderAction {
   ghost?: boolean;
   danger?: boolean;
   hidden?: boolean;
+  style?: React.CSSProperties;
   render?: () => React.ReactNode;
 }
 

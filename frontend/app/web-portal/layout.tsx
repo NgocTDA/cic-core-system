@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import PortalHeader from '@/layouts/PortalHeader';
 import PortalMenu from '@/layouts/PortalMenu';
-import { colors } from '@/design-system';
 
 interface PortalLayoutProps {
   children: React.ReactNode;
@@ -19,7 +18,7 @@ export default function PortalLayout({ children }: PortalLayoutProps) {
       height: '100vh',
       width: '100vw',
       overflow: 'hidden',
-      background: colors.bg.page
+      background: 'var(--bg)'
     }}>
       {/* KHỐI 1: HEADER (Portal Header) */}
       <PortalHeader currentLang={lang} onLangChange={setLang} />

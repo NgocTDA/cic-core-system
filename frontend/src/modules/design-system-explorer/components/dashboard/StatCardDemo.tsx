@@ -8,7 +8,7 @@ import {
     WarningOutlined, DollarOutlined,
 } from '@ant-design/icons';
 import ComponentShowcase from '../../ComponentShowcase';
-import { colors, typography, spacing, radius, shadows } from '@/design-system';
+import { colors, typography, spacing, radius } from '@/modules/design-system-explorer/tokens';
 import useHeaderActions from '@/hooks/useHeaderActions';
 
 const { Text } = Typography;
@@ -26,7 +26,7 @@ interface StatCardProps {
 
 const StatCard: React.FC<StatCardProps> = ({ title, value, unit, icon, iconBg, trend, subtitle, color }) => {
     const trendColor = trend
-        ? trend.value > 0 ? colors.success.base : trend.value < 0 ? colors.error.base : colors.text.secondary
+        ? trend.value > 0 ? 'var(--success)' : trend.value < 0 ? 'var(--error)' : 'var(--text-muted)'
         : undefined;
     const TrendIcon = trend
         ? trend.value > 0 ? ArrowUpOutlined : trend.value < 0 ? ArrowDownOutlined : MinusOutlined
@@ -35,21 +35,21 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, unit, icon, iconBg, t
     return (
         <Card
             bordered={false}
-            style={{ borderRadius: radius.lg, boxShadow: shadows.card, height: '100%' }}
-            styles={{ body: { padding: spacing[5] } }}
+            style={{ borderRadius: 'var(--radius-lg)', boxShadow: 'var(--elevation-1)', height: '100%' }}
+            styles={{ body: { padding: 'var(--spacing-20)' } }}
         >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: spacing[3] }}>
-                <Text style={{ fontSize: typography.fontSize.sm, color: colors.text.secondary, lineHeight: 1.4 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'var(--spacing-12)' }}>
+                <Text style={{ fontSize: '12px', color: 'var(--text-muted)', lineHeight: 1.4 }}>
                     {title}
                 </Text>
                 {icon && (
                     <div
                         style={{
-                            width: 40, height: 40, borderRadius: radius.lg,
-                            background: (iconBg ?? colors.primary[50]),
+                            width: 40, height: 40, borderRadius: 'var(--radius-lg)',
+                            background: (iconBg ?? 'var(--primary-subtle)'),
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             flexShrink: 0, fontSize: 20,
-                            color: color ?? colors.primary[500],
+                            color: color ?? 'var(--primary)',
                         }}
                     >
                         {icon}
@@ -57,12 +57,12 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, unit, icon, iconBg, t
                 )}
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: spacing[2], marginBottom: trend || subtitle ? spacing[2] : 0 }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 'var(--spacing-8)', marginBottom: trend || subtitle ? 'var(--spacing-8)' : 0 }}>
                 <Text
                     style={{
                         fontSize: typography.fontSize['2xl'],
                         fontWeight: typography.fontWeight.bold,
-                        color: color ?? colors.text.primary,
+                        color: color ?? 'var(--text)',
                         lineHeight: 1.1,
                         fontVariantNumeric: 'tabular-nums',
                     }}
@@ -70,18 +70,18 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, unit, icon, iconBg, t
                     {typeof value === 'number' ? value.toLocaleString('vi-VN') : value}
                 </Text>
                 {unit && (
-                    <Text style={{ fontSize: typography.fontSize.sm, color: colors.text.secondary }}>{unit}</Text>
+                    <Text style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{unit}</Text>
                 )}
             </div>
 
             {(trend || subtitle) && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: spacing[2] }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-8)' }}>
                     {trend && TrendIcon && (
-                        <span style={{ color: trendColor, fontSize: typography.fontSize.sm, fontWeight: typography.fontWeight.medium }}>
+                        <span style={{ color: trendColor, fontSize: '12px', fontWeight: typography.fontWeight.medium }}>
                             <TrendIcon /> {Math.abs(trend.value)}%
                         </span>
                     )}
-                    <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.tertiary }}>
+                    <Text style={{ fontSize: '11px', color: 'var(--text-subtle)' }}>
                         {trend?.label ?? subtitle}
                     </Text>
                 </div>
@@ -126,8 +126,8 @@ interface StatCardProps {
       title="Tổng TCTD đang kết nối"
       value={1234}
       icon={<TeamOutlined />}
-      iconBg={colors.primary[50]}
-      color={colors.primary[500]}
+      iconBg={'var(--primary-subtle)'}
+      color={'var(--primary)'}
       trend={{ value: 5.2, label: 'so với tháng trước' }}
     />
   </Col>
@@ -140,8 +140,8 @@ interface StatCardProps {
                         title="Tổng TCTD kết nối"
                         value={1284}
                         icon={<TeamOutlined />}
-                        iconBg={colors.primary[50]}
-                        color={colors.primary[500]}
+                        iconBg={'var(--primary-subtle)'}
+                        color={'var(--primary)'}
                         trend={{ value: 5.2, label: 'so với tháng trước' }}
                     />
                 </Col>
@@ -151,8 +151,8 @@ interface StatCardProps {
                         value={18452}
                         unit="hồ sơ"
                         icon={<FileTextOutlined />}
-                        iconBg={colors.subsystem.collection + '20'}
-                        color={colors.subsystem.collection}
+                        iconBg={'var(--chart-6-sky)' + '20'}
+                        color={'var(--chart-6-sky)'}
                         trend={{ value: 12.1, label: 'so với hôm qua' }}
                     />
                 </Col>
@@ -162,8 +162,8 @@ interface StatCardProps {
                         value="0.82"
                         unit="%"
                         icon={<WarningOutlined />}
-                        iconBg={colors.warning.light}
-                        color={colors.warning.dark}
+                        iconBg={'var(--warning-subtle)'}
+                        color={'var(--warning-ink)'}
                         trend={{ value: -0.3, label: 'cải thiện so với tuần trước' }}
                     />
                 </Col>
@@ -173,23 +173,23 @@ interface StatCardProps {
                         value={9876543}
                         unit="SP"
                         icon={<CheckCircleOutlined />}
-                        iconBg={colors.success.light}
-                        color={colors.success.dark}
+                        iconBg={'var(--success-subtle)'}
+                        color={'var(--success-ink)'}
                         trend={{ value: 8.4, label: 'so với tháng trước' }}
                     />
                 </Col>
             </Row>
 
             {/* Variants */}
-            <Row gutter={[16, 16]} style={{ marginTop: spacing[4] }}>
+            <Row gutter={[16, 16]} style={{ marginTop: 'var(--spacing-16)' }}>
                 <Col xs={24} sm={12} xl={8}>
                     <StatCard
                         title="Dư nợ tổng hợp"
                         value="2.45"
                         unit="nghìn tỷ VNĐ"
                         icon={<DollarOutlined />}
-                        iconBg={colors.subsystem.product + '20'}
-                        color={colors.subsystem.product}
+                        iconBg={'var(--primary)' + '20'}
+                        color={'var(--primary)'}
                         subtitle="Tính đến cuối tháng 3/2025"
                     />
                 </Col>
@@ -198,8 +198,8 @@ interface StatCardProps {
                         title="TCTD chưa nộp báo cáo"
                         value={23}
                         icon={<WarningOutlined />}
-                        iconBg={colors.error.light}
-                        color={colors.error.base}
+                        iconBg={'var(--error-subtle)'}
+                        color={'var(--error)'}
                         trend={{ value: 0, label: 'không thay đổi' }}
                     />
                 </Col>
@@ -209,8 +209,8 @@ interface StatCardProps {
                         value="99.98"
                         unit="%"
                         icon={<CheckCircleOutlined />}
-                        iconBg={colors.success.light}
-                        color={colors.success.dark}
+                        iconBg={'var(--success-subtle)'}
+                        color={'var(--success-ink)'}
                         subtitle="30 ngày gần nhất"
                     />
                 </Col>

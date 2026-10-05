@@ -12,7 +12,7 @@ import {
   GlobalOutlined,
   CompassOutlined
 } from '@ant-design/icons';
-import { colors, radius, shadows } from '@/design-system';
+import { SUBSYSTEM_COLORS } from '@/config/subsystems';
 import PageLayout from '@/components/ui/PageLayout';
 
 const { Title, Text, Paragraph } = Typography;
@@ -46,12 +46,12 @@ export default function SupportPage() {
     <PageLayout>
       {/* Banner Tiêu đề hỗ trợ */}
       <div style={{
-        background: `linear-gradient(135deg, ${colors.subsystem.portal} 0%, ${colors.primary[800]} 100%)`,
-        borderRadius: radius.xl,
+        background: `linear-gradient(135deg, ${SUBSYSTEM_COLORS.portal} 0%, #002766 100%)`,
+        borderRadius: 'var(--radius-lg)',
         padding: '32px 40px',
         color: '#ffffff',
         marginBottom: 24,
-        boxShadow: shadows.md,
+        boxShadow: 'var(--elevation-2)',
         position: 'relative',
         overflow: 'hidden'
       }}>
@@ -83,16 +83,16 @@ export default function SupportPage() {
         {/* Cột trái: Liên hệ & Tải mẫu */}
         <Col xs={24} lg={9}>
           <Space direction="vertical" size={20} style={{ width: '100%' }}>
-            
+
             {/* Thẻ Liên hệ trực tiếp */}
-            <Card 
-              title={<span style={{ fontWeight: 700, fontSize: 13, color: colors.text.secondary, textTransform: 'uppercase' }}>Thông tin liên hệ trực tiếp</span>}
+            <Card
+              title={<span style={{ fontWeight: 700, fontSize: 13, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Thông tin liên hệ trực tiếp</span>}
               bordered={false}
-              style={{ borderRadius: radius.lg, boxShadow: shadows.xs }}
+              style={{ borderRadius: 'var(--radius-md)', boxShadow: 'var(--elevation-1)' }}
             >
               <Space direction="vertical" size={16} style={{ width: '100%' }}>
                 <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-                  <PhoneOutlined style={{ color: colors.subsystem.portal, fontSize: 18, marginTop: 2 }} />
+                  <PhoneOutlined style={{ color: SUBSYSTEM_COLORS.portal, fontSize: 18, marginTop: 2 }} />
                   <div>
                     <Text type="secondary" style={{ fontSize: 11, display: 'block' }}>Tổng đài hỗ trợ kỹ thuật</Text>
                     <Text strong style={{ fontSize: 16, color: '#e53e3e' }}>1800 585891</Text>
@@ -100,18 +100,18 @@ export default function SupportPage() {
                 </div>
 
                 <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-                  <MailOutlined style={{ color: colors.subsystem.portal, fontSize: 18, marginTop: 2 }} />
+                  <MailOutlined style={{ color: SUBSYSTEM_COLORS.portal, fontSize: 18, marginTop: 2 }} />
                   <div>
                     <Text type="secondary" style={{ fontSize: 11, display: 'block' }}>Hộp thư điện tử hỗ trợ</Text>
-                    <Text strong style={{ color: colors.text.primary }}>support@cic.org.vn</Text>
+                    <Text strong style={{ color: 'var(--text)' }}>support@cic.org.vn</Text>
                   </div>
                 </div>
 
                 <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-                  <CompassOutlined style={{ color: colors.subsystem.portal, fontSize: 18, marginTop: 2 }} />
+                  <CompassOutlined style={{ color: SUBSYSTEM_COLORS.portal, fontSize: 18, marginTop: 2 }} />
                   <div>
                     <Text type="secondary" style={{ fontSize: 11, display: 'block' }}>Địa chỉ trụ sở chính</Text>
-                    <Text strong style={{ color: colors.text.primary, fontSize: 12 }}>
+                    <Text strong style={{ color: 'var(--text)', fontSize: 12 }}>
                       Tầng 5, Tòa nhà Ngân hàng Nhà nước, 25 Lý Thường Kiệt, Hoàn Kiếm, Hà Nội
                     </Text>
                   </div>
@@ -120,10 +120,10 @@ export default function SupportPage() {
 
               <Divider style={{ margin: '16px 0' }} />
 
-              <Button 
-                type="primary" 
-                icon={<MessageOutlined />} 
-                style={{ width: '100%', background: colors.subsystem.portal, borderColor: colors.subsystem.portal, height: 38 }}
+              <Button
+                type="primary"
+                icon={<MessageOutlined />}
+                style={{ width: '100%', background: SUBSYSTEM_COLORS.portal, borderColor: SUBSYSTEM_COLORS.portal, height: 38 }}
                 onClick={() => message.success('Đang kết nối hệ thống LiveChat hỗ trợ...')}
               >
                 Trò chuyện trực tuyến (LiveChat)
@@ -131,10 +131,10 @@ export default function SupportPage() {
             </Card>
 
             {/* Thẻ tải biểu mẫu chuẩn */}
-            <Card 
-              title={<span style={{ fontWeight: 700, fontSize: 13, color: colors.text.secondary, textTransform: 'uppercase' }}>Tải biểu mẫu và quy định chuẩn</span>}
+            <Card
+              title={<span style={{ fontWeight: 700, fontSize: 13, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Tải biểu mẫu và quy định chuẩn</span>}
               bordered={false}
-              style={{ borderRadius: radius.lg, boxShadow: shadows.xs }}
+              style={{ borderRadius: 'var(--radius-md)', boxShadow: 'var(--elevation-1)' }}
             >
               <Space direction="vertical" style={{ width: '100%' }} size={12}>
                 <div style={{
@@ -142,12 +142,12 @@ export default function SupportPage() {
                   justifyContent: 'space-between',
                   alignItems: 'center',
                   padding: '10px 14px',
-                  background: '#f8fafc',
-                  borderRadius: radius.md,
-                  border: `1px solid ${colors.border.split}`
+                  background: 'var(--bg-subtle)',
+                  borderRadius: 'var(--radius-sm)',
+                  border: '1px solid var(--border)'
                 }}>
                   <Space>
-                    <BookOutlined style={{ color: colors.subsystem.portal }} />
+                    <BookOutlined style={{ color: SUBSYSTEM_COLORS.portal }} />
                     <Text strong style={{ fontSize: 12 }}>Mẫu tệp JSON đối chiếu D40</Text>
                   </Space>
                   <Button type="text" shape="circle" icon={<DownloadOutlined />} onClick={() => message.success('Bắt đầu tải xuống tệp tin mẫu JSON D40')} />
@@ -158,12 +158,12 @@ export default function SupportPage() {
                   justifyContent: 'space-between',
                   alignItems: 'center',
                   padding: '10px 14px',
-                  background: '#f8fafc',
-                  borderRadius: radius.md,
-                  border: `1px solid ${colors.border.split}`
+                  background: 'var(--bg-subtle)',
+                  borderRadius: 'var(--radius-sm)',
+                  border: '1px solid var(--border)'
                 }}>
                   <Space>
-                    <BookOutlined style={{ color: colors.subsystem.portal }} />
+                    <BookOutlined style={{ color: SUBSYSTEM_COLORS.portal }} />
                     <Text strong style={{ fontSize: 12 }}>Quy chuẩn chỉ tiêu đối soát CIC</Text>
                   </Space>
                   <Button type="text" shape="circle" icon={<DownloadOutlined />} onClick={() => message.success('Bắt đầu tải xuống tài liệu Hướng dẫn Quy tắc đối soát')} />
@@ -176,30 +176,30 @@ export default function SupportPage() {
 
         {/* Cột phải: Accordion FAQs */}
         <Col xs={24} lg={15}>
-          <Card 
-            title={<span style={{ fontWeight: 700, fontSize: 13, color: colors.text.secondary, textTransform: 'uppercase' }}>Câu hỏi nghiệp vụ thường gặp (FAQs)</span>}
+          <Card
+            title={<span style={{ fontWeight: 700, fontSize: 13, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Câu hỏi nghiệp vụ thường gặp (FAQs)</span>}
             bordered={false}
-            style={{ borderRadius: radius.lg, boxShadow: shadows.xs, height: '100%' }}
+            style={{ borderRadius: 'var(--radius-md)', boxShadow: 'var(--elevation-1)', height: '100%' }}
           >
-            <Collapse 
-              accordion 
-              bordered={false} 
+            <Collapse
+              accordion
+              bordered={false}
               expandIconPosition="right"
               style={{ background: 'transparent' }}
             >
               {faqData.map(faq => (
-                <Panel 
-                  header={<Text strong style={{ fontSize: 13, color: colors.text.primary }}>{faq.question}</Text>} 
+                <Panel
+                  header={<Text strong style={{ fontSize: 13, color: 'var(--text)' }}>{faq.question}</Text>}
                   key={faq.key}
                   style={{
-                    background: '#f8fafc',
-                    borderRadius: radius.md,
+                    background: 'var(--bg-subtle)',
+                    borderRadius: 'var(--radius-sm)',
                     marginBottom: 12,
-                    border: `1px solid ${colors.border.split}`,
+                    border: '1px solid var(--border)',
                     overflow: 'hidden'
                   }}
                 >
-                  <Paragraph style={{ color: colors.text.secondary, fontSize: 12, lineHeight: 1.6, margin: 0 }}>
+                  <Paragraph style={{ color: 'var(--text-secondary)', fontSize: 12, lineHeight: 1.6, margin: 0 }}>
                     {faq.answer}
                   </Paragraph>
                 </Panel>

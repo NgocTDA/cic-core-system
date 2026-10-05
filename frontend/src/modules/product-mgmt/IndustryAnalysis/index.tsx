@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { App, message } from 'antd';
 import { PlusOutlined, SendOutlined, DownloadOutlined } from '@ant-design/icons';
 import {
@@ -82,10 +82,10 @@ const IndustryAnalysisPage: React.FC = () => {
   };
 
   // Bulk actions
-  const handleBulkSendApproval = () => {
+  const handleBulkSendApproval = useCallback(() => {
     message.success(`Đã gửi duyệt thành công ${selectedRowKeys.length} báo cáo`);
     setSelectedRowKeys([]);
-  };
+  }, [selectedRowKeys.length]);
 
   // Header actions setup (Thứ tự và phong cách chuẩn JobManagement)
   const headerActions = useMemo(() => {
@@ -130,7 +130,7 @@ const IndustryAnalysisPage: React.FC = () => {
     });
 
     return actions;
-  }, [visibleColumns, selectedRowKeys]);
+  }, [visibleColumns, selectedRowKeys, handleBulkSendApproval]);
 
   useHeaderActions(
     {

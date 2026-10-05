@@ -55,3 +55,6 @@ config/confluence-prompt.md
 *.njsproj
 *.sln
 *.sw?
+
+# Runtime registry data (back up outside Git)
+data/registries/

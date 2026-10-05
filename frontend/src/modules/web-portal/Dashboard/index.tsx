@@ -20,8 +20,6 @@ import {
 } from '@ant-design/icons';
 import Link from 'next/link';
 
-import { colors, radius, shadows, typography } from '@/design-system';
-
 const { Text, Title, Paragraph } = Typography;
 
 // ─── Credit Score Display (large animated number) ────────────────────────────
@@ -46,11 +44,11 @@ const CreditScoreDisplay: React.FC<{ score: number }> = ({ score }) => {
   }, [score]);
 
   const getScoreColor = (s: number) => {
-    if (s < 300) return colors.error.base;
+    if (s < 300) return 'var(--error)';
     if (s < 550) return '#fa8c16';
-    if (s < 700) return colors.warning.base;
-    if (s < 850) return colors.success.base;
-    return colors.success.dark;
+    if (s < 700) return 'var(--warning)';
+    if (s < 850) return 'var(--success)';
+    return 'var(--success-ink)';
   };
 
   const getScoreLabel = (s: number) => {
@@ -90,7 +88,7 @@ const CreditScoreDisplay: React.FC<{ score: number }> = ({ score }) => {
           fontWeight: 800,
           color: scoreColor,
           lineHeight: 1,
-          fontFamily: typography.fontFamily.sans,
+          fontFamily: 'var(--font-sans, inherit)',
           letterSpacing: '-2px',
         }}>
           {displayed}
@@ -110,8 +108,8 @@ const CreditScoreDisplay: React.FC<{ score: number }> = ({ score }) => {
       <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 4 }}>
         <div style={{
           height: 6,
-          borderRadius: radius.full,
-          background: colors.neutral[200],
+          borderRadius: 9999,
+          background: 'var(--color-neutral-200)',
           overflow: 'hidden',
           position: 'relative',
         }}>
@@ -121,18 +119,18 @@ const CreditScoreDisplay: React.FC<{ score: number }> = ({ score }) => {
             top: 0,
             height: '100%',
             width: `${(score / 1000) * 100}%`,
-            background: `linear-gradient(90deg, ${colors.error.base} 0%, ${colors.warning.base} 40%, ${colors.success.base} 100%)`,
-            borderRadius: radius.full,
+            background: `linear-gradient(90deg, var(--error) 0%, var(--warning) 40%, var(--success) 100%)`,
+            borderRadius: 9999,
             transition: 'width 1.4s cubic-bezier(0.4, 0, 0.2, 1)',
           }} />
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <span style={{ fontSize: 10, color: colors.text.tertiary }}>0</span>
-          <span style={{ fontSize: 10, color: colors.text.tertiary }}>1.000</span>
+          <span style={{ fontSize: 10, color: 'var(--text-subtle)' }}>0</span>
+          <span style={{ fontSize: 10, color: 'var(--text-subtle)' }}>1.000</span>
         </div>
       </div>
 
-      <span style={{ fontSize: 11, color: colors.text.secondary }}>
+      <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
         Ngày chấm điểm: 24/9/2025
       </span>
     </div>
@@ -145,20 +143,20 @@ const UspItem: React.FC<{ icon: React.ReactNode; title: string; desc: string }> 
     <div style={{
       width: 36,
       height: 36,
-      borderRadius: radius.md,
-      background: `${colors.primary[500]}14`,
+      borderRadius: 'var(--radius-md)',
+      background: `var(--primary)14`,
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      color: colors.primary[500],
+      color: 'var(--primary)',
       fontSize: 16,
       flexShrink: 0,
     }}>
       {icon}
     </div>
     <div>
-      <Text strong style={{ fontSize: 14, color: colors.text.primary, display: 'block' }}>{title}</Text>
-      <Text style={{ fontSize: 12, color: colors.text.secondary, lineHeight: 1.5 }}>{desc}</Text>
+      <Text strong style={{ fontSize: 14, color: 'var(--text)', display: 'block' }}>{title}</Text>
+      <Text style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.5 }}>{desc}</Text>
     </div>
   </div>
 );
@@ -174,10 +172,10 @@ interface ServiceCardProps {
 const ServiceCard: React.FC<ServiceCardProps> = ({ num, category, title, desc, bullets }) => (
   <div style={{
     background: '#ffffff',
-    borderRadius: radius.xl,
+    borderRadius: 'var(--radius-lg)',
     padding: '28px 24px',
-    boxShadow: shadows.sm,
-    border: `1px solid ${colors.border.split}`,
+    boxShadow: 'var(--elevation-1)',
+    border: `1px solid var(--color-neutral-100)`,
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
@@ -190,26 +188,26 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ num, category, title, desc, b
       <div style={{
         width: 36,
         height: 36,
-        borderRadius: radius.md,
-        background: colors.neutral[100],
+        borderRadius: 'var(--radius-md)',
+        background: 'var(--color-neutral-100)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         fontWeight: 800,
         fontSize: 13,
-        color: colors.text.secondary,
+        color: 'var(--text-muted)',
       }}>
         {num}
       </div>
-      <Tag color="blue" style={{ borderRadius: radius.full, fontWeight: 600, fontSize: 10, margin: 0 }}>
+      <Tag color="blue" style={{ borderRadius: 9999, fontWeight: 600, fontSize: 10, margin: 0 }}>
         {category}
       </Tag>
     </div>
-    <Title level={5} style={{ margin: 0, color: colors.text.primary, fontSize: 16 }}>{title}</Title>
-    <Text style={{ fontSize: 12, color: colors.text.secondary, lineHeight: 1.6, flex: 1 }}>{desc}</Text>
+    <Title level={5} style={{ margin: 0, color: 'var(--text)', fontSize: 16 }}>{title}</Title>
+    <Text style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.6, flex: 1 }}>{desc}</Text>
     <ul style={{ margin: 0, padding: '0 0 0 16px', display: 'flex', flexDirection: 'column', gap: 4 }}>
       {bullets.map((b, i) => (
-        <li key={i} style={{ fontSize: 12, color: colors.text.secondary }}>{b}</li>
+        <li key={i} style={{ fontSize: 12, color: 'var(--text-muted)' }}>{b}</li>
       ))}
     </ul>
   </div>
@@ -226,7 +224,7 @@ interface ActionBannerProps {
 const ActionBanner: React.FC<ActionBannerProps> = ({ tabs, activeTab, heading, stats, gradient }) => (
   <div style={{
     background: gradient,
-    borderRadius: radius['2xl'],
+    borderRadius: 'var(--radius-lg)',
     padding: '32px 28px',
     color: '#fff',
     height: '100%',
@@ -253,11 +251,11 @@ const ActionBanner: React.FC<ActionBannerProps> = ({ tabs, activeTab, heading, s
       {tabs.map(tab => (
         <div key={tab} style={{
           padding: '4px 14px',
-          borderRadius: radius.full,
+          borderRadius: 9999,
           fontSize: 12,
           fontWeight: 600,
           background: tab === activeTab ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.15)',
-          color: tab === activeTab ? colors.primary[700] : 'rgba(255,255,255,0.85)',
+          color: tab === activeTab ? '#184c37' : 'rgba(255,255,255,0.85)',
           cursor: 'pointer',
           display: 'flex',
           alignItems: 'center',
@@ -280,7 +278,7 @@ const ActionBanner: React.FC<ActionBannerProps> = ({ tabs, activeTab, heading, s
         <Col span={12} key={i}>
           <div style={{
             background: 'rgba(255,255,255,0.15)',
-            borderRadius: radius.lg,
+            borderRadius: 'var(--radius-lg)',
             padding: '12px 16px',
             backdropFilter: 'blur(4px)',
           }}>
@@ -307,7 +305,7 @@ const PortalDashboard: React.FC = () => {
           SECTION 1 — HERO BANNER
       ═══════════════════════════════════════════════════════════ */}
       <div style={{
-        background: `linear-gradient(135deg, ${colors.primary[50]} 0%, #eef4ff 50%, ${colors.primary[100]}60 100%)`,
+        background: `linear-gradient(135deg, var(--primary-subtle) 0%, #eef4ff 50%, ${'#d8fae5'}60 100%)`,
         padding: '60px 80px',
         position: 'relative',
         overflow: 'hidden',
@@ -315,11 +313,11 @@ const PortalDashboard: React.FC = () => {
         {/* Background decoration */}
         <div style={{
           position: 'absolute', top: -60, right: -60, width: 320, height: 320,
-          borderRadius: '50%', background: `${colors.primary[200]}30`, pointerEvents: 'none',
+          borderRadius: '50%', background: `${'#b6f0ce'}30`, pointerEvents: 'none',
         }} />
         <div style={{
           position: 'absolute', bottom: -40, left: -40, width: 200, height: 200,
-          borderRadius: '50%', background: `${colors.primary[300]}20`, pointerEvents: 'none',
+          borderRadius: '50%', background: `${'#7ce2aa'}20`, pointerEvents: 'none',
         }} />
 
         <Row gutter={[40, 40]} align="middle">
@@ -332,14 +330,14 @@ const PortalDashboard: React.FC = () => {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 6,
-                background: `${colors.primary[500]}15`,
-                border: `1px solid ${colors.primary[200]}`,
-                borderRadius: radius.full,
+                background: `var(--primary)15`,
+                border: `1px solid ${'#b6f0ce'}`,
+                borderRadius: 9999,
                 padding: '4px 14px',
                 width: 'fit-content',
               }}>
-                <div style={{ width: 6, height: 6, borderRadius: '50%', background: colors.primary[500] }} />
-                <span style={{ fontSize: 12, fontWeight: 700, color: colors.primary[600], letterSpacing: '0.04em' }}>
+                <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--primary)' }} />
+                <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--primary-hover)', letterSpacing: '0.04em' }}>
                   CỔNG ĐIỆN TỬ DÀNH CHO TỔ CHỨC TÍN DỤNG
                 </span>
               </div>
@@ -349,14 +347,14 @@ const PortalDashboard: React.FC = () => {
                   margin: '0 0 8px',
                   fontSize: 36,
                   fontWeight: 800,
-                  color: colors.text.primary,
+                  color: 'var(--text)',
                   lineHeight: 1.25,
-                  fontFamily: typography.fontFamily.sans,
+                  fontFamily: 'var(--font-sans, inherit)',
                 }}>
                   Trung tâm Thông tin tín dụng CIC:{' '}
-                  <span style={{ color: colors.primary[600] }}>Cầu nối Tín dụng Quốc gia</span>
+                  <span style={{ color: 'var(--primary-hover)' }}>Cầu nối Tín dụng Quốc gia</span>
                 </Title>
-                <Text style={{ fontSize: 15, color: colors.text.secondary, lineHeight: 1.6 }}>
+                <Text style={{ fontSize: 15, color: 'var(--text-muted)', lineHeight: 1.6 }}>
                   Cổng gửi và khai thác báo cáo tín dụng dành cho các Tổ chức Tín dụng thành viên CIC.
                 </Text>
               </div>
@@ -386,14 +384,14 @@ const PortalDashboard: React.FC = () => {
                     size="large"
                     icon={<LoginOutlined />}
                     style={{
-                      borderRadius: radius.full,
+                      borderRadius: 9999,
                       fontWeight: 700,
                       paddingInline: 32,
                       height: 46,
                       fontSize: 15,
-                      background: colors.primary[600],
-                      borderColor: colors.primary[600],
-                      boxShadow: `0 4px 14px ${colors.primary[500]}40`,
+                      background: 'var(--primary-hover)',
+                      borderColor: 'var(--primary-hover)',
+                      boxShadow: `0 4px 14px var(--primary)40`,
                     }}
                   >
                     Đăng nhập Portal
@@ -402,12 +400,12 @@ const PortalDashboard: React.FC = () => {
                 <Button
                   size="large"
                   style={{
-                    borderRadius: radius.full,
+                    borderRadius: 9999,
                     fontWeight: 600,
                     paddingInline: 24,
                     height: 46,
-                    borderColor: colors.primary[300],
-                    color: colors.primary[600],
+                    borderColor: '#7ce2aa',
+                    color: 'var(--primary-hover)',
                   }}
                 >
                   Tìm hiểu thêm
@@ -433,16 +431,16 @@ const PortalDashboard: React.FC = () => {
                 ].map((s, i) => (
                   <div key={i} style={{
                     background: '#ffffff',
-                    borderRadius: radius.xl,
+                    borderRadius: 'var(--radius-lg)',
                     padding: '14px 20px',
-                    boxShadow: shadows.md,
+                    boxShadow: 'var(--elevation-2)',
                     textAlign: 'center',
                     minWidth: 130,
                   }}>
-                    <Text strong style={{ fontSize: 20, color: colors.primary[600], display: 'block', fontWeight: 800 }}>
+                    <Text strong style={{ fontSize: 20, color: 'var(--primary-hover)', display: 'block', fontWeight: 800 }}>
                       {s.value}
                     </Text>
-                    <Text style={{ fontSize: 11, color: colors.text.secondary }}>{s.label}</Text>
+                    <Text style={{ fontSize: 11, color: 'var(--text-muted)' }}>{s.label}</Text>
                   </div>
                 ))}
               </div>
@@ -450,9 +448,9 @@ const PortalDashboard: React.FC = () => {
               {/* Credit Score Card */}
               <div style={{
                 background: '#ffffff',
-                borderRadius: radius['2xl'],
+                borderRadius: 'var(--radius-lg)',
                 padding: '24px 28px',
-                boxShadow: shadows.lg,
+                boxShadow: 'var(--elevation-3)',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -463,13 +461,13 @@ const PortalDashboard: React.FC = () => {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <div style={{
                     width: 8, height: 8, borderRadius: '50%',
-                    background: colors.success.base,
+                    background: 'var(--success)',
                   }} />
-                  <Text strong style={{ fontSize: 11, color: colors.primary[600], letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                  <Text strong style={{ fontSize: 11, color: 'var(--primary-hover)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
                     Đánh giá điểm tín dụng
                   </Text>
                 </div>
-                <Text style={{ fontSize: 11, color: colors.text.secondary, textAlign: 'center', lineHeight: 1.5 }}>
+                <Text style={{ fontSize: 11, color: 'var(--text-muted)', textAlign: 'center', lineHeight: 1.5 }}>
                   Điểm tín dụng của khách hàng cao hơn 65% tất cả khách hàng cá nhân được chấm điểm trong cơ sở dữ liệu CIC.
                 </Text>
                 <CreditScoreDisplay score={821} />
@@ -491,7 +489,7 @@ const PortalDashboard: React.FC = () => {
           <Text style={{
             fontSize: 11,
             fontWeight: 700,
-            color: colors.primary[500],
+            color: 'var(--primary)',
             letterSpacing: '0.12em',
             textTransform: 'uppercase',
             display: 'block',
@@ -499,11 +497,11 @@ const PortalDashboard: React.FC = () => {
           }}>
             DỊCH VỤ THÔNG TIN TÍN DỤNG CỦA CIC
           </Text>
-          <Title level={2} style={{ margin: '0 0 12px', fontWeight: 800, color: colors.text.primary, fontSize: 32 }}>
+          <Title level={2} style={{ margin: '0 0 12px', fontWeight: 800, color: 'var(--text)', fontSize: 32 }}>
             Minh bạch dữ liệu – Quyết định an toàn
           </Title>
           <Paragraph style={{
-            color: colors.text.secondary,
+            color: 'var(--text-muted)',
             fontSize: 14,
             maxWidth: 600,
             margin: '0 auto',
@@ -574,15 +572,15 @@ const PortalDashboard: React.FC = () => {
           <Button
             type="primary"
             size="large"
-            style={{ borderRadius: radius.full, fontWeight: 700, paddingInline: 28, height: 44 }}
+            style={{ borderRadius: 9999, fontWeight: 700, paddingInline: 28, height: 44 }}
           >
             Thông tin tín dụng
           </Button>
           <Button
             size="large"
             style={{
-              borderRadius: radius.full, fontWeight: 600, paddingInline: 24, height: 44,
-              borderColor: colors.primary[400], color: colors.primary[600],
+              borderRadius: 9999, fontWeight: 600, paddingInline: 24, height: 44,
+              borderColor: 'var(--color-primary-400)', color: 'var(--primary-hover)',
             }}
           >
             Xếp hạng tín dụng
@@ -604,7 +602,7 @@ const PortalDashboard: React.FC = () => {
                 { value: '+1.200 TCTD', label: 'Thành viên kết nối' },
                 { value: '100%', label: 'Hệ thống trực tuyến 24/7' },
               ]}
-              gradient={`linear-gradient(135deg, ${colors.primary[700]} 0%, ${colors.primary[900]} 100%)`}
+              gradient={`linear-gradient(135deg, ${'#184c37'} 0%, ${'#0f2f22'} 100%)`}
             />
           </Col>
           <Col xs={24} md={12}>
@@ -633,7 +631,7 @@ const PortalDashboard: React.FC = () => {
           <Text style={{
             fontSize: 11,
             fontWeight: 700,
-            color: colors.primary[500],
+            color: 'var(--primary)',
             letterSpacing: '0.12em',
             textTransform: 'uppercase',
             display: 'block',
@@ -641,10 +639,10 @@ const PortalDashboard: React.FC = () => {
           }}>
             ĐỐI TÁC CHIẾN LƯỢC
           </Text>
-          <Title level={2} style={{ margin: '0 0 12px', fontWeight: 800, color: colors.text.primary, fontSize: 28 }}>
+          <Title level={2} style={{ margin: '0 0 12px', fontWeight: 800, color: 'var(--text)', fontSize: 28 }}>
             Nền tảng tín dụng quốc gia được tin dùng
           </Title>
-          <Paragraph style={{ color: colors.text.secondary, fontSize: 14, margin: 0 }}>
+          <Paragraph style={{ color: 'var(--text-muted)', fontSize: 14, margin: 0 }}>
             Hệ thống CIC hiện kết nối đồng bộ với toàn bộ tổ chức tín dụng thuộc Ngân hàng Nhà nước.
           </Paragraph>
         </div>
@@ -659,13 +657,13 @@ const PortalDashboard: React.FC = () => {
           {partners.map(name => (
             <div key={name} style={{
               background: '#ffffff',
-              borderRadius: radius.lg,
+              borderRadius: 'var(--radius-lg)',
               padding: '12px 24px',
-              boxShadow: shadows.xs,
-              border: `1px solid ${colors.border.split}`,
+              boxShadow: 'var(--elevation-1)',
+              border: `1px solid var(--color-neutral-100)`,
               fontWeight: 600,
               fontSize: 14,
-              color: colors.text.primary,
+              color: 'var(--text)',
               cursor: 'default',
               transition: 'all 0.2s',
               whiteSpace: 'nowrap',
@@ -682,7 +680,7 @@ const PortalDashboard: React.FC = () => {
           SECTION 5 — APP DOWNLOAD BANNER
       ═══════════════════════════════════════════════════════════ */}
       <div style={{
-        background: `linear-gradient(90deg, ${colors.primary[800]} 0%, ${colors.primary[900]} 100%)`,
+        background: `linear-gradient(90deg, ${'#133e2d'} 0%, ${'#0f2f22'} 100%)`,
         padding: '24px 80px',
         display: 'flex',
         alignItems: 'center',
@@ -708,7 +706,7 @@ const PortalDashboard: React.FC = () => {
               size="large"
               icon={icon}
               style={{
-                borderRadius: radius.full,
+                borderRadius: 9999,
                 fontWeight: 700,
                 paddingInline: 20,
                 height: 40,
@@ -734,15 +732,15 @@ const PortalDashboard: React.FC = () => {
           {/* Left: brand description */}
           <Col xs={24} md={12}>
             <div style={{
-              background: colors.neutral[50],
-              borderRadius: radius['2xl'],
+              background: 'var(--color-neutral-50)',
+              borderRadius: 'var(--radius-lg)',
               padding: '36px 32px',
-              border: `1px solid ${colors.border.split}`,
+              border: `1px solid var(--color-neutral-100)`,
             }}>
-              <Title level={3} style={{ margin: '0 0 16px', fontWeight: 800, color: colors.text.primary, fontSize: 22 }}>
+              <Title level={3} style={{ margin: '0 0 16px', fontWeight: 800, color: 'var(--text)', fontSize: 22 }}>
                 CIC – Hơn cả một trung tâm thông tin
               </Title>
-              <Paragraph style={{ color: colors.text.secondary, fontSize: 14, lineHeight: 1.8, margin: 0 }}>
+              <Paragraph style={{ color: 'var(--text-muted)', fontSize: 14, lineHeight: 1.8, margin: 0 }}>
                 CIC là nền tảng thông tin tín dụng quốc gia, góp phần thúc đẩy tính minh bạch và an toàn cho thị trường tài chính Việt Nam. Với vai trò kết nối và cung cấp thông tin tín dụng, CIC hỗ trợ hiệu quả cho cả khách hàng vay và các tổ chức tín dụng trong quá trình tiếp cận và quản lý nguồn vốn.
               </Paragraph>
             </div>
@@ -756,21 +754,21 @@ const PortalDashboard: React.FC = () => {
                   title: 'Khách hàng cá nhân',
                   desc: 'Chủ động theo dõi báo cáo, cải thiện điểm tín dụng và nhận tư vấn phù hợp để tiếp cận các gói vay mong muốn.',
                   icon: <CheckCircleOutlined />,
-                  color: colors.success.base,
+                  color: 'var(--success)',
                 },
                 {
                   title: 'Tổ chức tín dụng',
                   desc: 'Tận dụng kho dữ liệu tập trung, công cụ cảnh báo sớm và chấm điểm tín dụng nhằm giảm thiểu rủi ro và tối ưu danh mục.',
                   icon: <ApartmentOutlined />,
-                  color: colors.primary[500],
+                  color: 'var(--primary)',
                 },
               ].map(card => (
                 <div key={card.title} style={{
                   background: '#ffffff',
-                  borderRadius: radius.xl,
+                  borderRadius: 'var(--radius-lg)',
                   padding: '20px 24px',
-                  border: `1px solid ${colors.border.split}`,
-                  boxShadow: shadows.xs,
+                  border: `1px solid var(--color-neutral-100)`,
+                  boxShadow: 'var(--elevation-1)',
                   display: 'flex',
                   gap: 16,
                   alignItems: 'flex-start',
@@ -781,7 +779,7 @@ const PortalDashboard: React.FC = () => {
                   <div style={{
                     width: 40,
                     height: 40,
-                    borderRadius: radius.lg,
+                    borderRadius: 'var(--radius-lg)',
                     background: `${card.color}12`,
                     display: 'flex',
                     alignItems: 'center',
@@ -793,14 +791,14 @@ const PortalDashboard: React.FC = () => {
                     {card.icon}
                   </div>
                   <div>
-                    <Text strong style={{ fontSize: 15, color: colors.text.primary, display: 'block', marginBottom: 4 }}>
+                    <Text strong style={{ fontSize: 15, color: 'var(--text)', display: 'block', marginBottom: 4 }}>
                       {card.title}
                     </Text>
-                    <Text style={{ fontSize: 13, color: colors.text.secondary, lineHeight: 1.6 }}>
+                    <Text style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.6 }}>
                       {card.desc}
                     </Text>
                   </div>
-                  <ArrowRightOutlined style={{ color: colors.text.tertiary, marginTop: 10, flexShrink: 0 }} className="brand-arrow" />
+                  <ArrowRightOutlined style={{ color: 'var(--text-subtle)', marginTop: 10, flexShrink: 0 }} className="brand-arrow" />
                 </div>
               ))}
             </Space>
@@ -822,7 +820,7 @@ const PortalDashboard: React.FC = () => {
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
               <div style={{
                 width: 44, height: 44, borderRadius: '50%',
-                background: `linear-gradient(135deg, ${colors.primary[400]}, ${colors.primary[600]})`,
+                background: `linear-gradient(135deg, var(--color-primary-400), var(--primary-hover))`,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontWeight: 800, fontSize: 15, color: '#fff', border: '2px solid rgba(255,255,255,0.3)',
               }}>
@@ -864,7 +862,7 @@ const PortalDashboard: React.FC = () => {
               ].map((item, i) => (
                 <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
                   <div style={{
-                    width: 32, height: 32, borderRadius: radius.md,
+                    width: 32, height: 32, borderRadius: 'var(--radius-md)',
                     background: 'rgba(255,255,255,0.1)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     color: 'rgba(255,255,255,0.8)', fontSize: 14, flexShrink: 0,
@@ -899,7 +897,7 @@ const PortalDashboard: React.FC = () => {
                 }}
                   className="footer-link"
                 >
-                  <span style={{ fontSize: 12, color: colors.primary[300] }}>{link.icon}</span>
+                  <span style={{ fontSize: 12, color: '#7ce2aa' }}>{link.icon}</span>
                   {link.label}
                 </Link>
               ))}
@@ -932,21 +930,21 @@ const PortalDashboard: React.FC = () => {
       {/* ─── Global styles ─── */}
       <style jsx global>{`
         .service-card:hover {
-          box-shadow: ${shadows.lg} !important;
-          border-color: ${colors.primary[200]} !important;
+          box-shadow: ${'var(--elevation-3)'} !important;
+          border-color: ${'#b6f0ce'} !important;
           transform: translateY(-2px);
         }
         .partner-pill:hover {
-          box-shadow: ${shadows.sm} !important;
-          border-color: ${colors.primary[200]} !important;
-          color: ${colors.primary[600]} !important;
+          box-shadow: var(--elevation-1) !important;
+          border-color: ${'#b6f0ce'} !important;
+          color: var(--primary-hover) !important;
         }
         .brand-value-card:hover {
-          box-shadow: ${shadows.md} !important;
-          border-color: ${colors.primary[200]} !important;
+          box-shadow: var(--elevation-2) !important;
+          border-color: ${'#b6f0ce'} !important;
         }
         .brand-value-card:hover .brand-arrow {
-          color: ${colors.primary[500]} !important;
+          color: var(--primary) !important;
           transform: translateX(4px);
         }
         .footer-link:hover {

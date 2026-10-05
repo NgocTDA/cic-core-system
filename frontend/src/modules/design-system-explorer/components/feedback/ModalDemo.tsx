@@ -5,7 +5,6 @@ import { Button, Modal, Form, Input, Select, Table, Typography, Space, Tag, Divi
 import { PlusOutlined, HistoryOutlined, EyeOutlined } from '@ant-design/icons';
 import ComponentShowcase from '../../ComponentShowcase';
 import { StatusTag } from '@/components/ui';
-import { colors, typography, spacing, radius } from '@/design-system';
 import useHeaderActions from '@/hooks/useHeaderActions';
 
 const { Text } = Typography;
@@ -117,10 +116,10 @@ const ModalDemo: React.FC = () => {
                 width={520}
             >
                 <Form form={form} layout="vertical" onFinish={() => setShowForm(false)}>
-                    <Form.Item name="code" label={<><Text>Mã TCTD</Text> <Text style={{ color: colors.error.base }}>*</Text></>} rules={[{ required: true }]}>
+                    <Form.Item name="code" label={<><Text>Mã TCTD</Text> <Text style={{ color: 'var(--error)' }}>*</Text></>} rules={[{ required: true }]}>
                         <Input placeholder="Mã TCTD" />
                     </Form.Item>
-                    <Form.Item name="name" label={<><Text>Tên tổ chức</Text> <Text style={{ color: colors.error.base }}>*</Text></>} rules={[{ required: true }]}>
+                    <Form.Item name="name" label={<><Text>Tên tổ chức</Text> <Text style={{ color: 'var(--error)' }}>*</Text></>} rules={[{ required: true }]}>
                         <Input placeholder="Tên tổ chức" />
                     </Form.Item>
                     <Form.Item name="type" label="Loại hình">
@@ -140,7 +139,7 @@ const ModalDemo: React.FC = () => {
                 footer={<Button onClick={() => setShowDetail(false)}>Đóng</Button>}
                 width={720}
             >
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: `${spacing[2]} ${spacing[6]}`, marginBottom: spacing[4] }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: `var(--spacing-8) var(--spacing-24)`, marginBottom: 'var(--spacing-16)' }}>
                     {[
                         { label: 'Mã job',         value: 'JOB-20250310-001' },
                         { label: 'Trạng thái',     value: <StatusTag status="ACTIVE" /> },
@@ -150,36 +149,36 @@ const ModalDemo: React.FC = () => {
                         { label: 'Lần chạy cuối',  value: '10/03/2025 00:00:05' },
                     ].map((item) => (
                         <div key={item.label}>
-                            <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.secondary }}>{item.label}</Text>
-                            <div style={{ fontSize: typography.fontSize.sm, color: colors.text.primary, marginTop: 2 }}>{item.value}</div>
+                            <Text style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{item.label}</Text>
+                            <div style={{ fontSize: '12px', color: 'var(--text)', marginTop: 2 }}>{item.value}</div>
                         </div>
                     ))}
                 </div>
 
-                <Divider style={{ margin: `${spacing[3]} 0` }} />
+                <Divider style={{ margin: `var(--spacing-12) 0` }} />
 
                 {/* Lịch sử thay đổi */}
                 <div>
                     <div
                         style={{
                             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                            padding: `${spacing[2]} ${spacing[3]}`,
-                            background: historyOpen ? colors.bg.subtle : 'transparent',
-                            borderRadius: historyOpen ? `${radius.md} ${radius.md} 0 0` : radius.md,
-                            border: `1px solid ${colors.border.split}`,
+                            padding: `var(--spacing-8) var(--spacing-12)`,
+                            background: historyOpen ? 'var(--bg-subtle)' : 'transparent',
+                            borderRadius: historyOpen ? `var(--'var(--radius-md)') var(--'var(--radius-md)') 0 0` : 'var(--radius-md)',
+                            border: `1px solid var(--color-neutral-100)`,
                             cursor: 'pointer',
                         }}
                         onClick={() => setHistoryOpen(!historyOpen)}
                     >
                         <Space>
-                            <HistoryOutlined style={{ color: colors.text.secondary }} />
-                            <Text style={{ fontSize: typography.fontSize.sm, color: colors.text.secondary }}>Lịch sử thay đổi</Text>
+                            <HistoryOutlined style={{ color: 'var(--text-muted)' }} />
+                            <Text style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Lịch sử thay đổi</Text>
                             <Tag style={{ fontSize: 11 }}>{HISTORY_DATA.length}</Tag>
                         </Space>
-                        <Text style={{ fontSize: 12, color: colors.text.tertiary }}>{historyOpen ? '▲' : '▼'}</Text>
+                        <Text style={{ fontSize: 12, color: 'var(--text-subtle)' }}>{historyOpen ? '▲' : '▼'}</Text>
                     </div>
                     {historyOpen && (
-                        <div style={{ border: `1px solid ${colors.border.split}`, borderTop: 'none', borderRadius: `0 0 ${radius.md} ${radius.md}`, overflow: 'hidden' }}>
+                        <div style={{ border: `1px solid var(--color-neutral-100)`, borderTop: 'none', borderRadius: `0 0 var(--'var(--radius-md)') var(--'var(--radius-md)')`, overflow: 'hidden' }}>
                             <Table
                                 dataSource={HISTORY_DATA}
                                 columns={historyColumns}
@@ -201,7 +200,7 @@ const ModalDemo: React.FC = () => {
                 open={showDrawer}
                 onClose={() => setShowDrawer(false)}
             >
-                <div style={{ display: 'flex', flexDirection: 'column', gap: spacing[4] }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-16)' }}>
                     {[
                         { label: 'Mã job',    value: 'JOB-20250310-001' },
                         { label: 'Tên',       value: 'Job tổng hợp KKN-M5' },
@@ -209,12 +208,12 @@ const ModalDemo: React.FC = () => {
                         { label: 'Lịch chạy', value: '00:00 hàng ngày' },
                     ].map((item) => (
                         <div key={item.label}>
-                            <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.secondary, display: 'block' }}>{item.label}</Text>
-                            <div style={{ fontSize: typography.fontSize.sm, marginTop: 2 }}>{item.value}</div>
+                            <Text style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block' }}>{item.label}</Text>
+                            <div style={{ fontSize: '12px', marginTop: 2 }}>{item.value}</div>
                         </div>
                     ))}
                     <Divider />
-                    <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.tertiary }}>
+                    <Text style={{ fontSize: '11px', color: 'var(--text-subtle)' }}>
                         Drawer thường dùng để xem nhanh mà không rời trang danh sách.
                     </Text>
                 </div>

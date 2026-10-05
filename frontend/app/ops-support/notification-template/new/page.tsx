@@ -1,9 +1,5 @@
-'use client';
-
-import dynamic from 'next/dynamic';
-
-const TemplateFormPage = dynamic(() => import('@/modules/kkn/NotificationTemplate/TemplateFormPage'), { ssr: false });
+import { redirect } from 'next/navigation';
 
 export default function NewTemplatePage() {
-    return <TemplateFormPage />;
+    redirect('/ops-support/notification-template/create');
 }

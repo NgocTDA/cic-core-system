@@ -11,7 +11,6 @@ import {
   DownloadOutlined,
   RollbackOutlined,
 } from '@ant-design/icons';
-import { colors } from '@/design-system';
 import { SectionCard, StatusTag, ActionMenu, tablePagination, type IDisplayColumnOption } from '@/components/ui';
 import type { IIndustryProduct } from './types';
 
@@ -90,7 +89,7 @@ const IndustryAnalysisList: React.FC<IndustryAnalysisListProps> = ({
       key: 'code',
       width: 140,
       render: (text) => (
-        <Text strong style={{ color: colors.primary[500], whiteSpace: 'nowrap' }}>
+        <Text strong style={{ color: 'var(--primary)', whiteSpace: 'nowrap' }}>
           {text}
         </Text>
       ),
@@ -128,7 +127,7 @@ const IndustryAnalysisList: React.FC<IndustryAnalysisListProps> = ({
       width: 120,
       align: 'center',
       render: (text) => (
-        <Text strong style={{ color: colors.neutral[700] }}>
+        <Text strong style={{ color: 'var(--color-neutral-700)' }}>
           {text}
         </Text>
       ),
@@ -159,7 +158,7 @@ const IndustryAnalysisList: React.FC<IndustryAnalysisListProps> = ({
       width: 140,
       render: (_, record) => (
         <Tooltip title={record.creatorFullName} placement="top">
-          <span style={{ cursor: 'pointer', color: colors.primary[500], fontWeight: 500, whiteSpace: 'nowrap' }}>
+          <span style={{ cursor: 'pointer', color: 'var(--primary)', fontWeight: 500, whiteSpace: 'nowrap' }}>
             {record.createdBy}
           </span>
         </Tooltip>
@@ -181,12 +180,12 @@ const IndustryAnalysisList: React.FC<IndustryAnalysisListProps> = ({
       render: (_, record) =>
         record.approvedBy ? (
           <Tooltip title={record.approverFullName} placement="top">
-            <span style={{ cursor: 'pointer', color: colors.success.base, fontWeight: 500, whiteSpace: 'nowrap' }}>
+            <span style={{ cursor: 'pointer', color: 'var(--success)', fontWeight: 500, whiteSpace: 'nowrap' }}>
               {record.approvedBy}
             </span>
           </Tooltip>
         ) : (
-          <span style={{ color: colors.text.disabled }}>—</span>
+          <span style={{ color: 'var(--text-subtle)' }}>—</span>
         ),
     },
     {
@@ -195,7 +194,7 @@ const IndustryAnalysisList: React.FC<IndustryAnalysisListProps> = ({
       key: 'approvedAt',
       width: 120,
       align: 'center',
-      render: (val) => val || <span style={{ color: colors.text.disabled }}>—</span>,
+      render: (val) => val || <span style={{ color: 'var(--text-subtle)' }}>—</span>,
     },
     {
       title: 'Thao tác',
@@ -237,7 +236,7 @@ const IndustryAnalysisList: React.FC<IndustryAnalysisListProps> = ({
         if (canApprove) {
           items.push({
             key: 'approve',
-            icon: <CheckCircleOutlined style={{ color: colors.success.base }} />,
+            icon: <CheckCircleOutlined style={{ color: 'var(--success)' }} />,
             label: 'Phê duyệt',
             onClick: (info) => {
               info?.domEvent?.stopPropagation();
@@ -249,7 +248,7 @@ const IndustryAnalysisList: React.FC<IndustryAnalysisListProps> = ({
         if (canReject) {
           items.push({
             key: 'reject',
-            icon: <CloseCircleOutlined style={{ color: colors.error.base }} />,
+            icon: <CloseCircleOutlined style={{ color: 'var(--error)' }} />,
             label: 'Từ chối duyệt',
             danger: true,
             onClick: (info) => {
@@ -279,7 +278,7 @@ const IndustryAnalysisList: React.FC<IndustryAnalysisListProps> = ({
             } as any,
             {
               key: 'recall',
-              icon: <RollbackOutlined style={{ color: colors.warning.base }} />,
+              icon: <RollbackOutlined style={{ color: 'var(--warning)' }} />,
               label: 'Thu hồi báo cáo',
               danger: true,
               onClick: (info) => {

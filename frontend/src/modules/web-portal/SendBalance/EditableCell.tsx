@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Input, Select, Tooltip } from 'antd';
-import { colors } from '@/design-system';
 import { ReconciliationDetailRow, canTctdEdit } from './types';
 
 interface EditableCellProps {
@@ -64,7 +63,7 @@ export const EditableCell: React.FC<EditableCellProps> = ({
               <span style={{
                 cursor: 'help',
                 borderBottom: '1px dashed #fa8c16',
-                color: colors.text.primary,
+                color: 'var(--text)',
                 fontWeight: 500,
                 paddingBottom: 2
               }}>

@@ -8,7 +8,7 @@ import {
 } from 'recharts';
 import ComponentShowcase from '../../ComponentShowcase';
 import { SectionCard } from '@/components/ui';
-import { colors, typography, spacing } from '@/design-system';
+import { colors, spacing } from '@/modules/design-system-explorer/tokens';
 import useHeaderActions from '@/hooks/useHeaderActions';
 
 const { Text } = Typography;
@@ -41,8 +41,8 @@ const AREA_DATA = [
 ];
 
 const TOOLTIP_STYLE = {
-    background: colors.bg.container,
-    border: `1px solid ${colors.border.base}`,
+    background: 'var(--surface)',
+    border: `1px solid var(--border)`,
     borderRadius: 6,
     fontSize: 12,
 };
@@ -71,55 +71,55 @@ const ChartLineDemo: React.FC = () => {
             controls={
                 <Space direction="vertical" style={{ width: '100%' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Text style={{ fontSize: typography.fontSize.sm }}>Hiển thị dot</Text>
+                        <Text style={{ fontSize: '12px' }}>Hiển thị dot</Text>
                         <Switch checked={showDots} onChange={setShowDots} size="small" />
                     </div>
                 </Space>
             }
             code={`import { LineChart, Line, AreaChart, Area, XAxis, YAxis,
   CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from 'recharts';
-import { colors } from '@/design-system';
+import { colors } from '@/modules/design-system-explorer/tokens';
 
 // Multi-series line chart
 <ResponsiveContainer width="100%" height={260}>
   <LineChart data={data} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
-    <CartesianGrid strokeDasharray="3 3" stroke={colors.border.split} />
-    <XAxis dataKey="month" tick={{ fontSize: 12, fill: colors.text.secondary }} />
-    <YAxis tick={{ fontSize: 12, fill: colors.text.secondary }} />
-    <Tooltip contentStyle={{ background: colors.bg.container, border: \`1px solid \${colors.border.base}\`, borderRadius: 6, fontSize: 12 }} />
+    <CartesianGrid strokeDasharray="3 3" stroke={'var(--color-neutral-100)'} />
+    <XAxis dataKey="month" tick={{ fontSize: 12, fill: 'var(--text-muted)' }} />
+    <YAxis tick={{ fontSize: 12, fill: 'var(--text-muted)' }} />
+    <Tooltip contentStyle={{ background: 'var(--surface)', border: \`1px solid \var(--border)\`, borderRadius: 6, fontSize: 12 }} />
     <Legend wrapperStyle={{ fontSize: 12 }} />
-    <Line type="monotone" dataKey="received"  name="Nhận về"  stroke={colors.subsystem.collection} strokeWidth={2} dot={showDots ? { r: 4 } : false} />
-    <Line type="monotone" dataKey="processed" name="Xử lý"    stroke={colors.subsystem.product}    strokeWidth={2} dot={showDots ? { r: 4 } : false} />
-    <Line type="monotone" dataKey="error"     name="Lỗi"      stroke={colors.error.base}           strokeWidth={2} dot={showDots ? { r: 4 } : false} />
+    <Line type="monotone" dataKey="received"  name="Nhận về"  stroke={'var(--chart-6-sky)'} strokeWidth={2} dot={showDots ? { r: 4 } : false} />
+    <Line type="monotone" dataKey="processed" name="Xử lý"    stroke={'var(--primary)'}    strokeWidth={2} dot={showDots ? { r: 4 } : false} />
+    <Line type="monotone" dataKey="error"     name="Lỗi"      stroke={'var(--error)'}           strokeWidth={2} dot={showDots ? { r: 4 } : false} />
   </LineChart>
 </ResponsiveContainer>
 
 // Target reference line (nét đứt)
-<Line type="monotone" dataKey="target" name="Mục tiêu" stroke={colors.error.base}
+<Line type="monotone" dataKey="target" name="Mục tiêu" stroke={'var(--error)'}
   strokeDasharray="5 5" dot={false} strokeWidth={1.5} />
 
 // Area chart với gradient
 <defs>
   <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="5%"  stopColor={colors.subsystem.collection} stopOpacity={0.15} />
-    <stop offset="95%" stopColor={colors.subsystem.collection} stopOpacity={0} />
+    <stop offset="5%"  stopColor={'var(--chart-6-sky)'} stopOpacity={0.15} />
+    <stop offset="95%" stopColor={'var(--chart-6-sky)'} stopOpacity={0} />
   </linearGradient>
 </defs>
-<Area type="monotone" dataKey="value" fill="url(#areaGrad)" stroke={colors.subsystem.collection} />`}
+<Area type="monotone" dataKey="value" fill="url(#areaGrad)" stroke={'var(--chart-6-sky)'} />`}
         >
-            <Space direction="vertical" style={{ width: '100%', gap: spacing[4] }}>
+            <Space direction="vertical" style={{ width: '100%', gap: 'var(--spacing-16)' }}>
                 {/* Multi-series line */}
                 <SectionCard title="Xu hướng thu thập & xử lý dữ liệu">
                     <ResponsiveContainer width="100%" height={240}>
                         <LineChart data={TREND_DATA} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke={colors.border.split} />
-                            <XAxis dataKey="month" tick={{ fontSize: 11, fill: colors.text.secondary }} />
-                            <YAxis tick={{ fontSize: 11, fill: colors.text.secondary }} />
+                            <CartesianGrid strokeDasharray="3 3" stroke={'var(--color-neutral-100)'} />
+                            <XAxis dataKey="month" tick={{ fontSize: 11, fill: 'var(--text-muted)' }} />
+                            <YAxis tick={{ fontSize: 11, fill: 'var(--text-muted)' }} />
                             <Tooltip contentStyle={TOOLTIP_STYLE} />
                             <Legend wrapperStyle={{ fontSize: 12 }} />
-                            <Line type="monotone" dataKey="received"  name="Nhận về"  stroke={colors.subsystem.collection} strokeWidth={2} dot={showDots ? { r: 4, fill: colors.subsystem.collection } : false} />
-                            <Line type="monotone" dataKey="processed" name="Đã xử lý" stroke={colors.subsystem.product}    strokeWidth={2} dot={showDots ? { r: 4, fill: colors.subsystem.product }    : false} />
-                            <Line type="monotone" dataKey="error"     name="Lỗi"      stroke={colors.error.base}           strokeWidth={2} dot={showDots ? { r: 4, fill: colors.error.base }           : false} />
+                            <Line type="monotone" dataKey="received"  name="Nhận về"  stroke={'var(--chart-6-sky)'} strokeWidth={2} dot={showDots ? { r: 4, fill: 'var(--chart-6-sky)' } : false} />
+                            <Line type="monotone" dataKey="processed" name="Đã xử lý" stroke={'var(--primary)'}    strokeWidth={2} dot={showDots ? { r: 4, fill: 'var(--primary)' }    : false} />
+                            <Line type="monotone" dataKey="error"     name="Lỗi"      stroke={'var(--error)'}           strokeWidth={2} dot={showDots ? { r: 4, fill: 'var(--error)' }           : false} />
                         </LineChart>
                     </ResponsiveContainer>
                 </SectionCard>
@@ -130,14 +130,14 @@ import { colors } from '@/design-system';
                         <SectionCard title="Tỷ lệ xử lý đúng hạn vs mục tiêu 95%">
                             <ResponsiveContainer width="100%" height={200}>
                                 <LineChart data={RATE_DATA} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
-                                    <CartesianGrid strokeDasharray="3 3" stroke={colors.border.split} />
-                                    <XAxis dataKey="month" tick={{ fontSize: 11, fill: colors.text.secondary }} />
-                                    <YAxis domain={[0.85, 1]} tickFormatter={(v) => `${(v * 100).toFixed(0)}%`} tick={{ fontSize: 11, fill: colors.text.secondary }} />
+                                    <CartesianGrid strokeDasharray="3 3" stroke={'var(--color-neutral-100)'} />
+                                    <XAxis dataKey="month" tick={{ fontSize: 11, fill: 'var(--text-muted)' }} />
+                                    <YAxis domain={[0.85, 1]} tickFormatter={(v) => `${(v * 100).toFixed(0)}%`} tick={{ fontSize: 11, fill: 'var(--text-muted)' }} />
                                     <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: number) => [`${(v * 100).toFixed(1)}%`, '']} />
                                     <Legend wrapperStyle={{ fontSize: 12 }} />
-                                    <ReferenceLine y={0.95} stroke={colors.error.base} strokeDasharray="4 4" label={{ value: '95%', position: 'right', fontSize: 10, fill: colors.error.base }} />
-                                    <Line type="monotone" dataKey="rate"   name="Thực tế"  stroke={colors.subsystem.collection} strokeWidth={2} dot={showDots ? { r: 4, fill: colors.subsystem.collection } : false} />
-                                    <Line type="monotone" dataKey="target" name="Mục tiêu" stroke={colors.error.base} strokeDasharray="5 5" dot={false} strokeWidth={1.5} />
+                                    <ReferenceLine y={0.95} stroke={'var(--error)'} strokeDasharray="4 4" label={{ value: '95%', position: 'right', fontSize: 10, fill: 'var(--error)' }} />
+                                    <Line type="monotone" dataKey="rate"   name="Thực tế"  stroke={'var(--chart-6-sky)'} strokeWidth={2} dot={showDots ? { r: 4, fill: 'var(--chart-6-sky)' } : false} />
+                                    <Line type="monotone" dataKey="target" name="Mục tiêu" stroke={'var(--error)'} strokeDasharray="5 5" dot={false} strokeWidth={1.5} />
                                 </LineChart>
                             </ResponsiveContainer>
                         </SectionCard>
@@ -150,22 +150,22 @@ import { colors } from '@/design-system';
                                 <AreaChart data={AREA_DATA} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
                                     <defs>
                                         <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%"  stopColor={colors.subsystem.collection} stopOpacity={0.15} />
-                                            <stop offset="95%" stopColor={colors.subsystem.collection} stopOpacity={0} />
+                                            <stop offset="5%"  stopColor={'var(--chart-6-sky)'} stopOpacity={0.15} />
+                                            <stop offset="95%" stopColor={'var(--chart-6-sky)'} stopOpacity={0} />
                                         </linearGradient>
                                     </defs>
-                                    <CartesianGrid strokeDasharray="3 3" stroke={colors.border.split} />
-                                    <XAxis dataKey="month" tick={{ fontSize: 11, fill: colors.text.secondary }} />
-                                    <YAxis tick={{ fontSize: 11, fill: colors.text.secondary }} />
+                                    <CartesianGrid strokeDasharray="3 3" stroke={'var(--color-neutral-100)'} />
+                                    <XAxis dataKey="month" tick={{ fontSize: 11, fill: 'var(--text-muted)' }} />
+                                    <YAxis tick={{ fontSize: 11, fill: 'var(--text-muted)' }} />
                                     <Tooltip contentStyle={TOOLTIP_STYLE} />
                                     <Area
                                         type="monotone"
                                         dataKey="value"
                                         name="Hồ sơ"
-                                        stroke={colors.subsystem.collection}
+                                        stroke={'var(--chart-6-sky)'}
                                         strokeWidth={2}
                                         fill="url(#areaGrad)"
-                                        dot={showDots ? { r: 4, fill: colors.subsystem.collection } : false}
+                                        dot={showDots ? { r: 4, fill: 'var(--chart-6-sky)' } : false}
                                     />
                                 </AreaChart>
                             </ResponsiveContainer>

@@ -42,7 +42,6 @@ import {
   ActionMenu,
   StatusSummaryBar,
 } from '@/components/ui';
-import { colors, radius } from '@/design-system';
 import { useCollectBalance } from './useCollectBalance';
 import { useReportReview } from './useReportReview';
 import { RejectReasonModal } from './RejectReasonModal';
@@ -335,7 +334,7 @@ export const CollectBalanceListPage: React.FC = () => {
             }}
             onClick={() => handleViewDetail(record)}
           >
-            <CodeText muted style={{ fontSize: '11.5px', fontWeight: 500, color: colors.primary[500] }}>
+            <CodeText muted style={{ fontSize: '11.5px', fontWeight: 500, color: 'var(--primary)' }}>
               {text}
             </CodeText>
           </span>
@@ -380,8 +379,8 @@ export const CollectBalanceListPage: React.FC = () => {
       key: 'nghiepVu',
       width: 150,
       render: (text: string, record: ReconciliationDetailRow) => {
-        if (record.isParent) return <span style={{ color: colors.text.tertiary, fontStyle: 'italic' }}>-</span>;
-        return <span style={{ fontWeight: 650, color: colors.primary[700] }}>{text}</span>;
+        if (record.isParent) return <span style={{ color: 'var(--text-subtle)', fontStyle: 'italic' }}>-</span>;
+        return <span style={{ fontWeight: 650, color: 'var(--primary-dark, #184c37)' }}>{text}</span>;
       }
     },
     {
@@ -418,7 +417,7 @@ export const CollectBalanceListPage: React.FC = () => {
         return (
           <span style={{
             fontWeight: 700,
-            color: val === 'VND' ? colors.success.dark : val === 'USD' ? colors.primary[600] : '#d4b106'
+            color: val === 'VND' ? 'var(--success-ink)' : val === 'USD' ? 'var(--primary-hover)' : '#d4b106'
           }}>{val}</span>
         );
       }
@@ -570,7 +569,7 @@ export const CollectBalanceListPage: React.FC = () => {
 
     return (
       <div style={{ width: 280, padding: '8px 4px 4px' }}>
-        <div style={{ fontWeight: 700, fontSize: 15, color: colors.text.primary, marginBottom: 10, paddingLeft: 8 }}>
+        <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--text)', marginBottom: 10, paddingLeft: 8 }}>
           Cài đặt hiển thị
         </div>
 
@@ -578,12 +577,12 @@ export const CollectBalanceListPage: React.FC = () => {
         <div style={{ padding: '0 8px 10px' }}>
           <Input
             placeholder="Tìm kiếm trường thông tin"
-            prefix={<SearchOutlined style={{ color: colors.text.tertiary }} />}
+            prefix={<SearchOutlined style={{ color: 'var(--text-subtle)' }} />}
             value={columnSearchTerm}
             onChange={e => setColumnSearchTerm(e.target.value)}
             allowClear
             size="small"
-            style={{ borderRadius: radius.md }}
+            style={{ borderRadius: 'var(--radius-md)' }}
           />
         </div>
 
@@ -628,7 +627,7 @@ export const CollectBalanceListPage: React.FC = () => {
                   display: 'flex',
                   alignItems: 'center',
                   padding: '6px 8px',
-                  borderRadius: radius.sm,
+                  borderRadius: 'var(--radius-sm)',
                   cursor: isFixed ? 'default' : 'grab',
                   transition: 'background-color 0.2s',
                 }}
@@ -636,7 +635,7 @@ export const CollectBalanceListPage: React.FC = () => {
               >
                 {/* Drag handle */}
                 {!isFixed ? (
-                  <HolderOutlined style={{ color: colors.text.tertiary, marginRight: 8, cursor: 'grab' }} />
+                  <HolderOutlined style={{ color: 'var(--text-subtle)', marginRight: 8, cursor: 'grab' }} />
                 ) : (
                   <div style={{ width: 22 }} /> // spacing to align
                 )}
@@ -654,13 +653,13 @@ export const CollectBalanceListPage: React.FC = () => {
                     }
                   }}
                 >
-                  <span style={{ fontSize: 13, color: colors.text.primary }}>{opt.label}</span>
+                  <span style={{ fontSize: 13, color: 'var(--text)' }}>{opt.label}</span>
                 </Checkbox>
               </div>
             );
           })}
           {filteredConfigureColumns.length === 0 && (
-            <div style={{ textAlign: 'center', padding: '16px 0', color: colors.text.tertiary, fontSize: 13 }}>
+            <div style={{ textAlign: 'center', padding: '16px 0', color: 'var(--text-subtle)', fontSize: 13 }}>
               Không tìm thấy trường thông tin
             </div>
           )}
@@ -670,14 +669,14 @@ export const CollectBalanceListPage: React.FC = () => {
 
         {/* Footer */}
         <div style={{ padding: '0 8px 4px' }}>
-          <div style={{ fontSize: 12, color: colors.text.secondary, marginBottom: 8, paddingLeft: 4 }}>
+          <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 8, paddingLeft: 4 }}>
             Đã chọn {selectedCount}/{totalCount}
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Button
               type="link"
               size="small"
-              style={{ padding: 0, fontSize: 13, fontWeight: 600, color: colors.primary[600] }}
+              style={{ padding: 0, fontSize: 13, fontWeight: 600, color: 'var(--primary-hover)' }}
               onClick={() => {
                 const mandatoryKeys = columnOptions.filter(opt => opt.disabled).map(opt => opt.key);
                 setVisibleColumns(mandatoryKeys);
@@ -688,7 +687,7 @@ export const CollectBalanceListPage: React.FC = () => {
             <Button
               type="link"
               size="small"
-              style={{ padding: 0, fontSize: 13, fontWeight: 600, color: colors.primary[600] }}
+              style={{ padding: 0, fontSize: 13, fontWeight: 600, color: 'var(--primary-hover)' }}
               onClick={() => {
                 setVisibleColumns(columnOptions.map(opt => opt.key));
               }}
@@ -929,7 +928,7 @@ export const CollectBalanceListPage: React.FC = () => {
             <Button
               key="close"
               onClick={() => setDetailModalVisible(false)}
-              style={{ minWidth: 100, borderRadius: radius.md }}
+              style={{ minWidth: 100, borderRadius: 'var(--radius-md)' }}
             >
               Đóng
             </Button>
@@ -942,7 +941,7 @@ export const CollectBalanceListPage: React.FC = () => {
                   icon={<SaveOutlined />}
                   onClick={handleSave}
                   loading={isSubmitting}
-                  style={{ minWidth: 100, borderRadius: radius.md }}
+                  style={{ minWidth: 100, borderRadius: 'var(--radius-md)' }}
                 >
                   Lưu
                 </Button>
@@ -952,7 +951,7 @@ export const CollectBalanceListPage: React.FC = () => {
                   icon={<AuditOutlined />}
                   onClick={handleStartReview}
                   loading={isSubmitting}
-                  style={{ minWidth: 100, borderRadius: radius.md }}
+                  style={{ minWidth: 100, borderRadius: 'var(--radius-md)' }}
                 >
                   Bắt đầu kiểm tra
                 </Button>
@@ -967,7 +966,7 @@ export const CollectBalanceListPage: React.FC = () => {
                   icon={<UnlockOutlined />}
                   onClick={handleReopenReview}
                   loading={isSubmitting}
-                  style={{ minWidth: 100, borderRadius: radius.md }}
+                  style={{ minWidth: 100, borderRadius: 'var(--radius-md)' }}
                 >
                   Mở lại để sửa
                 </Button>
@@ -977,7 +976,7 @@ export const CollectBalanceListPage: React.FC = () => {
                   icon={<CloseCircleOutlined />}
                   onClick={() => setRejectModalVisible(true)}
                   loading={isSubmitting}
-                  style={{ minWidth: 100, borderRadius: radius.md }}
+                  style={{ minWidth: 100, borderRadius: 'var(--radius-md)' }}
                 >
                   Yêu cầu sửa
                 </Button>
@@ -987,7 +986,7 @@ export const CollectBalanceListPage: React.FC = () => {
                   icon={<CheckCircleOutlined />}
                   onClick={handleAccept}
                   loading={isSubmitting}
-                  style={{ minWidth: 100, borderRadius: radius.md }}
+                  style={{ minWidth: 100, borderRadius: 'var(--radius-md)' }}
                 >
                   Tiếp nhận
                 </Button>
@@ -1012,7 +1011,7 @@ export const CollectBalanceListPage: React.FC = () => {
                 message="Báo cáo đã được tiếp nhận. Chức năng chỉnh sửa đã bị khóa."
                 type="success"
                 showIcon
-                style={{ borderRadius: radius.md, marginBottom: 16 }}
+                style={{ borderRadius: 'var(--radius-md)', marginBottom: 16 }}
               />
             )}
             {selectedReport.trangThai === 'DANG_KIEM_TRA' && (
@@ -1020,15 +1019,15 @@ export const CollectBalanceListPage: React.FC = () => {
                 message="Báo cáo đang trong quá trình kiểm tra nên đã khóa chỉnh sửa. Bấm “Mở lại để sửa” nếu cần điều chỉnh số liệu."
                 type="info"
                 showIcon
-                style={{ borderRadius: radius.md, marginBottom: 16 }}
+                style={{ borderRadius: 'var(--radius-md)', marginBottom: 16 }}
               />
             )}
 
             {/* Thanh metadata của tệp */}
             <div style={{
               background: '#f8fafc',
-              border: `1px solid ${colors.border.split}`,
-              borderRadius: radius.md,
+              border: `1px solid var(--color-neutral-100)`,
+              borderRadius: 'var(--radius-md)',
               padding: '14px 20px',
               marginBottom: 16,
               display: 'flex',
@@ -1043,16 +1042,16 @@ export const CollectBalanceListPage: React.FC = () => {
                 gap: 16
               }}>
                 <div>
-                  <span style={{ fontSize: 13, color: colors.text.secondary }}>Tên tệp báo cáo nguồn: </span>
-                  <strong style={{ fontFamily: 'monospace', color: colors.primary[700] }}>{selectedReport.tenTep}</strong>
+                  <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>Tên tệp báo cáo nguồn: </span>
+                  <strong style={{ fontFamily: 'monospace', color: 'var(--primary-dark, #184c37)' }}>{selectedReport.tenTep}</strong>
                 </div>
                 <div>
-                  <span style={{ fontSize: 13, color: colors.text.secondary }}>Kỳ báo cáo: </span>
+                  <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>Kỳ báo cáo: </span>
                   <strong>{selectedReport.ngayBaoCao}</strong>
                 </div>
               </div>
-              <div style={{ borderTop: `1px dashed ${colors.border.split}`, paddingTop: 8 }}>
-                <span style={{ fontSize: 13, color: colors.text.secondary }}>Đơn vị gửi: </span>
+              <div style={{ borderTop: `1px dashed var(--color-neutral-100)`, paddingTop: 8 }}>
+                <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>Đơn vị gửi: </span>
                 <strong>{selectedReport.maDauMoi} - {selectedReport.maDauMoi === '31358001' ? 'TPBank' : selectedReport.maDauMoi === '01201001' ? 'Vietcombank' : 'BIDV'}</strong>
               </div>
             </div>
@@ -1064,11 +1063,11 @@ export const CollectBalanceListPage: React.FC = () => {
               alignItems: 'center',
               marginBottom: 12
             }}>
-              <div style={{ fontWeight: 700, fontSize: 14, color: colors.text.primary }}>
+              <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--text)' }}>
                 BẢNG CHI TIẾT SỐ LIỆU CÂN ĐỐI
               </div>
               {editedCount > 0 && (
-                <span style={{ fontSize: 12, color: colors.warning.dark, fontWeight: 600 }}>
+                <span style={{ fontSize: 12, color: 'var(--warning-ink)', fontWeight: 600 }}>
                   Đã chỉnh sửa {editedCount} ô so với bản gốc
                 </span>
               )}

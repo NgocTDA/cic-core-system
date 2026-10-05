@@ -9,7 +9,7 @@ import { NextResponse } from 'next/server';
 import TurndownService from 'turndown';
 import { gfm } from 'turndown-plugin-gfm';
 import { loadConfluenceConfig, type ConfluenceConfig } from '../confluenceConfig';
-import { cfFetch, resolvePageId, MAX_IMAGE_BYTES } from '../confluenceClient';
+import { cfFetch, resolvePageId, cfFetchCollection, fetchImageAsDataUrl } from '../confluenceClient';
 
 export const runtime = 'nodejs';
 
@@ -45,11 +45,8 @@ async function fetchPageAttachments(
     targetPageId: string,
     existingImages: { name: string; dataUrl: string }[],
 ) {
-    const attRes = await cfFetch(cfg, token, `/rest/api/content/${targetPageId}/child/attachment?limit=100`);
-    if (!attRes.ok) return;
-
-    const att = await attRes.json();
-    const list: any[] = att?.results ?? [];
+    if (existingImages.length >= MAX_IMAGES) return;
+    const list = await cfFetchCollection(cfg, token, `/rest/api/content/${targetPageId}/child/attachment?limit=100`);
     for (const a of list) {
         if (existingImages.length >= MAX_IMAGES) break;
         const media: string = a?.extensions?.mediaType ?? a?.metadata?.mediaType ?? '';
@@ -59,15 +56,8 @@ async function fetchPageAttachments(
         const imgTitle: string = (a?.title ?? 'image').replace(/[^\w.-]/g, '_');
         if (existingImages.some((img) => img.name === imgTitle)) continue;
 
-        const dlRes = await cfFetch(cfg, token, download);
-        if (!dlRes.ok) continue;
-        const buf = Buffer.from(await dlRes.arrayBuffer());
-        if (buf.byteLength > MAX_IMAGE_BYTES) continue;
-
-        existingImages.push({
-            name: imgTitle,
-            dataUrl: `data:${media};base64,${buf.toString('base64')}`,
-        });
+        const image = await fetchImageAsDataUrl(cfg, token, download);
+        if (image.dataUrl) existingImages.push({ name: imgTitle, dataUrl: image.dataUrl });
     }
 }
 
@@ -80,6 +70,14 @@ export async function POST(req: Request) {
         body = await req.json();
     } catch {
         return err('Body không phải JSON hợp lệ.');
+    }
+
+    if (!body || typeof body !== 'object' ||
+        (body.token !== undefined && typeof body.token !== 'string') ||
+        (body.pageId !== undefined && (typeof body.pageId !== 'string' || !/^\d+$/.test(body.pageId))) ||
+        (body.url !== undefined && typeof body.url !== 'string') ||
+        (body.includeChildren !== undefined && typeof body.includeChildren !== 'boolean')) {
+        return err('Body Confluence không hợp lệ.');
     }
 
     const token = body.token?.trim() || cfg.token;
@@ -105,10 +103,8 @@ export async function POST(req: Request) {
         await fetchPageAttachments(cfg, token, pageId, images);
 
         // 2) Kiểm tra và kéo trang con (nếu có)
-        const childrenRes = await cfFetch(cfg, token, `/rest/api/content/${pageId}/child/page?limit=50&expand=body.view,title`);
-        if (childrenRes.ok) {
-            const childrenData = await childrenRes.json();
-            const childPages: any[] = childrenData?.results ?? [];
+        if (body.includeChildren !== false) {
+            const childPages = await cfFetchCollection(cfg, token, `/rest/api/content/${pageId}/child/page?limit=50&expand=body.view,title`);
 
             for (const child of childPages) {
                 const childId: string = child?.id;

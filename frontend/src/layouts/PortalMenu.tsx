@@ -5,7 +5,7 @@ import { Menu, ConfigProvider } from 'antd';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { SUB_SYSTEMS, MenuItem } from '../config/navigation';
-import { colors, radius } from '../design-system';
+import { SUBSYSTEM_COLORS } from '@/config/subsystems';
 
 const PortalMenu: React.FC = () => {
   const pathname = usePathname();
@@ -60,10 +60,10 @@ const PortalMenu: React.FC = () => {
       theme={{
         components: {
           Menu: {
-            horizontalItemSelectedColor: colors.subsystem.portal,
-            horizontalItemHoverColor: colors.subsystem.portal,
-            itemHoverColor: colors.subsystem.portal,
-            itemSelectedColor: colors.subsystem.portal,
+            horizontalItemSelectedColor: SUBSYSTEM_COLORS.portal,
+            horizontalItemHoverColor: SUBSYSTEM_COLORS.portal,
+            itemHoverColor: SUBSYSTEM_COLORS.portal,
+            itemSelectedColor: SUBSYSTEM_COLORS.portal,
             popupBg: '#ffffff',
           },
         },
@@ -71,7 +71,7 @@ const PortalMenu: React.FC = () => {
     >
       <nav style={{
         background: '#f8fafc',
-        borderBottom: `1px solid ${colors.border.split}`,
+        borderBottom: `1px solid var(--color-neutral-100)`,
         padding: '0 24px',
         boxShadow: '0 2px 4px rgba(0, 0, 0, 0.02)',
         position: 'relative',
@@ -94,15 +94,15 @@ const PortalMenu: React.FC = () => {
         {/* Custom CSS để tinh chỉnh giao diện menu đa cấp chuẩn Premium */}
         <style jsx global>{`
           .portal-submenu-popup .ant-menu-submenu-title {
-            border-radius: ${radius.md} !important;
+            border-radius: var(--radius-md) !important;
           }
           .portal-submenu-popup .ant-menu-item {
-            border-radius: ${radius.md} !important;
+            border-radius: var(--radius-md) !important;
             margin: 4px 0 !important;
           }
           .portal-submenu-popup .ant-menu-item-selected {
-            background-color: ${colors.primary[50]} !important;
-            color: ${colors.subsystem.portal} !important;
+            background-color: var(--primary-subtle) !important;
+            color: ${SUBSYSTEM_COLORS.portal} !important;
             font-weight: 600 !important;
           }
         `}</style>

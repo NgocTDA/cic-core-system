@@ -6,11 +6,11 @@ import {
   BellOutlined,
   QuestionCircleOutlined,
   PhoneOutlined,
-  UserOutlined,
   GlobalOutlined,
-  DownOutlined
+  DownOutlined,
+  UserOutlined,
 } from '@ant-design/icons';
-import { colors, shadows } from '../design-system';
+import { SUBSYSTEM_COLORS } from '@/config/subsystems';
 
 const { Text } = Typography;
 
@@ -51,8 +51,8 @@ const PortalHeader: React.FC<PortalHeaderProps> = ({ currentLang = 'VI', onLangC
       justifyContent: 'space-between',
       alignItems: 'center',
       height: 70,
-      borderBottom: `1px solid ${colors.border.split}`,
-      boxShadow: shadows.xs,
+      borderBottom: `1px solid var(--color-neutral-100)`,
+      boxShadow: 'var(--elevation-1)',
       position: 'relative',
       zIndex: 10,
       userSelect: 'none'
@@ -64,7 +64,7 @@ const PortalHeader: React.FC<PortalHeaderProps> = ({ currentLang = 'VI', onLangC
           width: 44,
           height: 44,
           borderRadius: '50%',
-          background: `linear-gradient(135deg, ${colors.primary[600]} 0%, ${colors.primary[800]} 100%)`,
+          background: 'linear-gradient(135deg, var(--primary-hover) 0%, var(--primary-pressed) 100%)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -89,7 +89,7 @@ const PortalHeader: React.FC<PortalHeaderProps> = ({ currentLang = 'VI', onLangC
             NGÂN HÀNG NHÀ NƯỚC VIỆT NAM
           </Text>
           <Text style={{
-            color: colors.subsystem.portal,
+            color: SUBSYSTEM_COLORS.portal,
             fontWeight: 700,
             fontSize: '14px',
             letterSpacing: '-0.01em'
@@ -111,10 +111,10 @@ const PortalHeader: React.FC<PortalHeaderProps> = ({ currentLang = 'VI', onLangC
             cursor: 'pointer',
             padding: '4px 8px',
             borderRadius: 4,
-            background: colors.neutral[100],
+            background: 'var(--color-neutral-100)',
             fontSize: 12,
             fontWeight: 600,
-            color: colors.text.secondary
+            color: 'var(--text-muted)'
           }}>
             <GlobalOutlined style={{ fontSize: 14 }} />
             <span>{currentLang}</span>
@@ -123,17 +123,17 @@ const PortalHeader: React.FC<PortalHeaderProps> = ({ currentLang = 'VI', onLangC
         </Dropdown>
 
         {/* Chuông thông báo */}
-        <Badge dot offset={[-2, 2]} color={colors.error.base}>
+        <Badge dot offset={[-2, 2]} color={'var(--error)'}>
           <div style={{
             width: 32,
             height: 32,
             borderRadius: '50%',
-            background: colors.neutral[50],
+            background: 'var(--color-neutral-50)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             cursor: 'pointer',
-            color: colors.text.secondary,
+            color: 'var(--text-muted)',
             transition: 'all 0.2s'
           }}
             className="header-icon-btn"
@@ -148,12 +148,12 @@ const PortalHeader: React.FC<PortalHeaderProps> = ({ currentLang = 'VI', onLangC
           width: 32,
           height: 32,
           borderRadius: '50%',
-          background: colors.neutral[50],
+          background: 'var(--color-neutral-50)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           cursor: 'pointer',
-          color: colors.text.secondary,
+          color: 'var(--text-muted)',
           transition: 'all 0.2s'
         }}
           className="header-icon-btn"
@@ -184,22 +184,22 @@ const PortalHeader: React.FC<PortalHeaderProps> = ({ currentLang = 'VI', onLangC
           <Space style={{ cursor: 'pointer', paddingLeft: 4 }} size={8}>
             <Avatar
               icon={<UserOutlined />}
-              style={{ backgroundColor: colors.subsystem.portal }}
+              style={{ backgroundColor: SUBSYSTEM_COLORS.portal }}
               size={36}
             />
             <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
-              <span style={{ fontWeight: 600, fontSize: 13, color: colors.text.primary }}>Nguyễn Văn A</span>
-              <span style={{ fontSize: 10, color: colors.text.secondary }}>Cán bộ gửi báo cáo</span>
+              <span style={{ fontWeight: 600, fontSize: 13, color: 'var(--text)' }}>Nguyễn Văn A</span>
+              <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>Cán bộ gửi báo cáo</span>
             </div>
-            <DownOutlined style={{ fontSize: 10, color: colors.text.secondary }} />
+            <DownOutlined style={{ fontSize: 10, color: 'var(--text-muted)' }} />
           </Space>
         </Dropdown>
       </Space>
 
       <style jsx global>{`
         .header-icon-btn:hover {
-          background-color: ${colors.neutral[200]} !important;
-          color: ${colors.text.primary} !important;
+          background-color: var(--color-neutral-200) !important;
+          color: var(--text) !important;
         }
       `}</style>
     </header>

@@ -142,7 +142,7 @@ const ListPage: React.FC = () => {
   return (
     <PageLayout>
       {/* 1. Filter Bar */}
-      <FilterBar onSearch={handleSearch} onReset={handleReset} loading={loading}>
+      <FilterBar inCard onSearch={handleSearch} onReset={handleReset} loading={loading}>
         <FilterCol>
           <Input placeholder="Tên tệp" allowClear />
         </FilterCol>
@@ -265,7 +265,6 @@ import { Card, Form, Input, Button, Space, Descriptions, Tag } from 'antd';
 import { SaveOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
 import { PageLayout, StatusTag } from '@/components/ui';
-import { colors, spacing } from '@/design-system';
 import useHeaderActions from '@/hooks/useHeaderActions';
 
 const DetailPage: React.FC = () => {
@@ -284,7 +283,7 @@ const DetailPage: React.FC = () => {
       <Card
         bordered={false}
         title="Thông tin hồ sơ"
-        style={{ marginBottom: spacing[4] }}
+        style={{ marginBottom: 'var(--spacing-16)' }}
       >
         <Descriptions column={2} bordered size="middle">
           <Descriptions.Item label="Mã hồ sơ">HS-2024-001</Descriptions.Item>
@@ -344,4 +343,4 @@ modules/<subsystem>/<FeatureName>/
 - [ ] Status column dùng `<StatusTag>` (không tự map màu)
 - [ ] Code/ID column dùng `<CodeText>` (không hardcode `fontFamily: 'monospace'`)
 - [ ] Pagination dùng `tablePagination()` (không tự viết `showTotal`)
-- [ ] Không hardcode màu — dùng `colors.*` từ `@/design-system`
+- [ ] Không hardcode màu — dùng Forest CSS variables (xem tokens.md)

@@ -1,23 +1,26 @@
 // ============================================================
 //  CIC Core System — Ant Design Theme Configuration
 //  Single source of truth for ConfigProvider theme.
-//  Used in ClientLayout.tsx.
+//  Powered by NTDA Forest Design System.
 // ============================================================
 
 import type { ThemeConfig } from 'antd';
-import { colors, typography, radiusNumber, size, zIndex } from './tokens';
+import { forestLight } from '@ntda/forest-design-system/antd';
+import { zIndex } from '@/config/layout';
 
 export const antdTheme: ThemeConfig = {
+    ...forestLight,
     token: {
+        ...forestLight.token,
         // ─── Brand ───────────────────────────────────────────
-        colorPrimary:         colors.primary[500],
-        colorSuccess:         colors.success.base,
-        colorWarning:         colors.warning.base,
-        colorError:           colors.error.base,
-        colorInfo:            colors.info.base,
+        colorPrimary:         '#2c795b', // Pine Green
+        colorSuccess:         '#4b8b18',
+        colorWarning:         '#976204',
+        colorError:           '#db2326',
+        colorInfo:            '#1383ac',
 
         // ─── Typography ───────────────────────────────────────
-        fontFamily:           typography.fontFamily.sans,
+        fontFamily:           "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
         fontSize:             14,
         fontSizeSM:           12,
         fontSizeLG:           16,
@@ -29,25 +32,25 @@ export const antdTheme: ThemeConfig = {
         fontSizeHeading5:     16,
 
         // ─── Layout & sizing ─────────────────────────────────
-        borderRadius:         radiusNumber.md,
-        borderRadiusSM:       radiusNumber.sm,
-        borderRadiusLG:       radiusNumber.lg,
-        borderRadiusXS:       radiusNumber.xs,
-        controlHeight:        size.md,      // 32
-        controlHeightSM:      size.sm,      // 24 (align AntD default)
-        controlHeightLG:      size.lg,      // 40
-        controlHeightXS:      size.xs,      // 24
+        borderRadius:         4,
+        borderRadiusSM:       4,
+        borderRadiusLG:       8,
+        borderRadiusXS:       2,
+        controlHeight:        32,
+        controlHeightSM:      24,
+        controlHeightLG:      40,
+        controlHeightXS:      24,
         zIndexPopupBase:      zIndex.modal,
 
         // ─── Colors ───────────────────────────────────────────
-        colorBgContainer:     colors.bg.container,
-        colorBgLayout:        colors.bg.page,
-        colorBorder:          colors.border.base,
-        colorBorderSecondary: colors.border.split,
-        colorText:            colors.text.primary,
-        colorTextSecondary:   colors.text.secondary,
-        colorTextTertiary:    colors.text.tertiary,
-        colorTextDisabled:    colors.text.disabled,
+        colorBgContainer:     '#ffffff',
+        colorBgLayout:        '#f7fbf9',           // Forest soft canvas
+        colorBorder:          '#e0eae5',           // Forest border
+        colorBorderSecondary: '#edf7f2',
+        colorText:            '#121916',           // Forest text primary
+        colorTextSecondary:   '#4c5551',           // Forest text muted
+        colorTextTertiary:    '#6d7672',           // Forest text subtle
+        colorTextDisabled:    '#9aa39f',
 
         // ─── Motion ──────────────────────────────────────────
         motionDurationFast:   '0.1s',
@@ -56,23 +59,22 @@ export const antdTheme: ThemeConfig = {
     },
 
     components: {
+        ...forestLight.components,
         // ─── Menu ────────────────────────────────────────────
-        // darkItemSelectedBg không set ở đây — được override động
-        // trong AppSidebar qua ConfigProvider theo activeSubSystem.color
         Menu: {
-            darkItemColor:         colors.sidebar.textSecond,
-            darkSubMenuItemBg:     colors.sidebar.bgDeep,
-            darkItemHoverBg:       colors.sidebar.hoverBg,
-            darkItemHoverColor:    colors.sidebar.selectedText,
-            darkItemSelectedBg:    colors.sidebar.selectedBg,
-            darkItemSelectedColor: colors.sidebar.selectedText,
+            darkItemColor:         '#8c9ba5',
+            darkSubMenuItemBg:     '#0f1f1a',
+            darkItemHoverBg:       'rgba(255, 255, 255, 0.08)',
+            darkItemHoverColor:    '#ffffff',
+            darkItemSelectedBg:    '#244338',
+            darkItemSelectedColor: '#ffffff',
         },
 
         // ─── Layout ──────────────────────────────────────────
         Layout: {
-            siderBg:               colors.sidebar.bg,
-            triggerBg:             colors.sidebar.bgDeep,
-            headerBg:              colors.bg.container,
+            siderBg:               '#132620',
+            triggerBg:             '#0f1f1a',
+            headerBg:              '#ffffff',
             headerHeight:          56,
             headerPadding:         '0 16px',
             footerPadding:         '12px 24px',
@@ -80,10 +82,10 @@ export const antdTheme: ThemeConfig = {
 
         // ─── Table ────────────────────────────────────────────
         Table: {
-            headerBg:              colors.neutral[50],
-            headerColor:           colors.text.secondary,
-            rowHoverBg:            colors.primary[50],
-            borderColor:           colors.border.split,
+            headerBg:              '#edf7f2', // Forest soft sage tint
+            headerColor:           '#4c5551',
+            rowHoverBg:            '#ecf9f3',
+            borderColor:           '#e0eae5',
         },
 
         // ─── Card ─────────────────────────────────────────────
@@ -96,18 +98,21 @@ export const antdTheme: ThemeConfig = {
             defaultShadow:         'none',
             primaryShadow:         'none',
             dangerShadow:          'none',
+            borderRadius:          4,
         },
 
         // ─── Input ────────────────────────────────────────────
         Input: {
-            activeShadow:          `0 0 0 2px ${colors.primary[50]}`,
-            errorActiveShadow:     `0 0 0 2px ${colors.error.light}`,
+            activeShadow:          '0 0 0 2px #ecf9f3',
+            errorActiveShadow:     '0 0 0 2px #fff2f0',
+            borderRadius:          4,
         },
 
         // ─── Select ───────────────────────────────────────────
         Select: {
-            optionSelectedBg:      colors.primary[50],
-            optionActiveBg:        colors.neutral[50],
+            optionSelectedBg:      '#ecf9f3',
+            optionActiveBg:        '#f7fbf9',
+            borderRadius:          4,
         },
 
         // ─── Drawer ───────────────────────────────────────────
@@ -118,11 +123,13 @@ export const antdTheme: ThemeConfig = {
         // ─── Modal ────────────────────────────────────────────
         Modal: {
             paddingContentHorizontalLG: 24,
+            borderRadiusLG:        12,
         },
 
         // ─── Tag ──────────────────────────────────────────────
         Tag: {
-            defaultBg:             colors.neutral[100],
+            defaultBg:             '#edf7f2',
+            borderRadiusSM:        4,
         },
 
         // ─── Badge ────────────────────────────────────────────
@@ -138,10 +145,10 @@ export const antdTheme: ThemeConfig = {
 
         // ─── Breadcrumb ───────────────────────────────────────
         Breadcrumb: {
-            separatorColor:        colors.neutral[400],
-            linkColor:             colors.text.secondary,
-            linkHoverColor:        colors.primary[500],
-            lastItemColor:         colors.text.primary,
+            separatorColor:        '#9aa39f',
+            linkColor:             '#4c5551',
+            linkHoverColor:        '#2c795b',
+            lastItemColor:         '#121916',
         },
 
         // ─── Statistic ────────────────────────────────────────
@@ -152,13 +159,14 @@ export const antdTheme: ThemeConfig = {
 
         // ─── Tabs ─────────────────────────────────────────────
         Tabs: {
-            inkBarColor:           colors.primary[500],
-            itemSelectedColor:     colors.primary[500],
+            inkBarColor:           '#2c795b',
+            itemSelectedColor:     '#2c795b',
+            itemHoverColor:        '#23634a',
         },
 
         // ─── Collapse ─────────────────────────────────────────
         Collapse: {
-            headerBg:              colors.neutral[50],
+            headerBg:              '#edf7f2',
         },
 
         // ─── Tooltip ──────────────────────────────────────────
@@ -173,12 +181,13 @@ export const antdTheme: ThemeConfig = {
 
         // ─── Divider ──────────────────────────────────────────
         Divider: {
-            colorSplit:            colors.border.split,
+            colorSplit:            '#e0eae5',
         },
 
         // ─── Alert ────────────────────────────────────────────
         Alert: {
             defaultPadding:        '8px 12px',
+            borderRadiusLG:        4,
         },
 
         // ─── Steps ────────────────────────────────────────────

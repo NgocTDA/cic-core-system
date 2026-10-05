@@ -2,12 +2,14 @@ import React from 'react';
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 import type { Metadata } from 'next';
 import ClientLayout from './ClientLayout';
+import '@ntda/forest-design-system/css';
+import '@ntda/forest-design-system/fonts.css';
 import './globals.css';
 import './global.scss';
 
 export const metadata: Metadata = {
     title: 'CIC Core System',
-    description: 'Project restructured with Next.js v14.2.35',
+    description: 'Internal Credit Information Management System — CIC',
 };
 
 export default function RootLayout({
@@ -16,7 +18,7 @@ export default function RootLayout({
     children: React.ReactNode;
 }) {
     return (
-        <html lang="en">
+        <html lang="vi" data-theme="light">
             <body>
                 <AntdRegistry>
                     <ClientLayout>

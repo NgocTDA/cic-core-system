@@ -8,23 +8,23 @@ import {
 } from 'recharts';
 import ComponentShowcase from '../../ComponentShowcase';
 import { SectionCard } from '@/components/ui';
-import { colors, typography, spacing } from '@/design-system';
+import { colors } from '@/modules/design-system-explorer/tokens';
 import useHeaderActions from '@/hooks/useHeaderActions';
 
 const { Text } = Typography;
 
 const PIE_DATA = [
-    { name: 'Ngân hàng TM',      value: 42, color: colors.subsystem.collection },
-    { name: 'Công ty tài chính', value: 28, color: colors.subsystem.product },
-    { name: 'Quỹ tín dụng ND',   value: 18, color: colors.subsystem.kkn },
+    { name: 'Ngân hàng TM',      value: 42, color: 'var(--chart-6-sky)' },
+    { name: 'Công ty tài chính', value: 28, color: 'var(--primary)' },
+    { name: 'Quỹ tín dụng ND',   value: 18, color: 'var(--chart-5-amber)' },
     { name: 'Tổ chức khác',      value: 12, color: colors.neutral[400] },
 ];
 
 const STATUS_PIE = [
-    { name: 'Hoạt động',  value: 210, color: colors.success.base },
-    { name: 'Chờ duyệt',  value: 80,  color: colors.warning.base },
+    { name: 'Hoạt động',  value: 210, color: 'var(--success)' },
+    { name: 'Chờ duyệt',  value: 80,  color: 'var(--warning)' },
     { name: 'Vô hiệu',    value: 40,  color: colors.neutral[400] },
-    { name: 'Lỗi',        value: 20,  color: colors.error.base },
+    { name: 'Lỗi',        value: 20,  color: 'var(--error)' },
 ];
 
 const LINE_DATA = [
@@ -80,8 +80,8 @@ const ChartPieDemo: React.FC = () => {
   <XAxis dataKey="month" />
   <YAxis yAxisId="left"  orientation="left"  />
   <YAxis yAxisId="right" orientation="right" tickFormatter={v => \`\${(v*100).toFixed(0)}%\`} />
-  <Bar     yAxisId="left"  dataKey="volume" fill={colors.subsystem.collection} />
-  <Line    yAxisId="right" dataKey="rate"   stroke={colors.error.base} dot={{ r: 4 }} />
+  <Bar     yAxisId="left"  dataKey="volume" fill={'var(--chart-6-sky)'} />
+  <Line    yAxisId="right" dataKey="rate"   stroke={'var(--error)'} dot={{ r: 4 }} />
 </ComposedChart>`}
         >
             <Row gutter={[16, 16]}>
@@ -102,7 +102,7 @@ const ChartPieDemo: React.FC = () => {
                                     ))}
                                 </Pie>
                                 <Tooltip
-                                    contentStyle={{ background: colors.bg.container, border: `1px solid ${colors.border.base}`, borderRadius: 6, fontSize: 12 }}
+                                    contentStyle={{ background: 'var(--surface)', border: `1px solid var(--border)`, borderRadius: 6, fontSize: 12 }}
                                     formatter={(v: number) => [`${v}%`, '']}
                                 />
                                 <Legend wrapperStyle={{ fontSize: 12 }} />
@@ -121,7 +121,7 @@ const ChartPieDemo: React.FC = () => {
                                         <Cell key={i} fill={entry.color} />
                                     ))}
                                 </Pie>
-                                <Tooltip contentStyle={{ background: colors.bg.container, border: `1px solid ${colors.border.base}`, borderRadius: 6, fontSize: 12 }} />
+                                <Tooltip contentStyle={{ background: 'var(--surface)', border: `1px solid var(--border)`, borderRadius: 6, fontSize: 12 }} />
                                 <Legend wrapperStyle={{ fontSize: 12 }} />
                             </PieChart>
                         </ResponsiveContainer>
@@ -133,13 +133,13 @@ const ChartPieDemo: React.FC = () => {
                     <SectionCard title="Tỷ lệ xử lý đúng hạn vs mục tiêu 95%">
                         <ResponsiveContainer width="100%" height={220}>
                             <LineChart data={LINE_DATA} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
-                                <CartesianGrid strokeDasharray="3 3" stroke={colors.border.split} />
-                                <XAxis dataKey="month" tick={{ fontSize: 11, fill: colors.text.secondary }} />
-                                <YAxis domain={[0.85, 1]} tickFormatter={(v) => `${(v * 100).toFixed(0)}%`} tick={{ fontSize: 11, fill: colors.text.secondary }} />
-                                <Tooltip contentStyle={{ background: colors.bg.container, border: `1px solid ${colors.border.base}`, borderRadius: 6, fontSize: 12 }} formatter={(v: number) => [`${(v * 100).toFixed(1)}%`, '']} />
+                                <CartesianGrid strokeDasharray="3 3" stroke={'var(--color-neutral-100)'} />
+                                <XAxis dataKey="month" tick={{ fontSize: 11, fill: 'var(--text-muted)' }} />
+                                <YAxis domain={[0.85, 1]} tickFormatter={(v) => `${(v * 100).toFixed(0)}%`} tick={{ fontSize: 11, fill: 'var(--text-muted)' }} />
+                                <Tooltip contentStyle={{ background: 'var(--surface)', border: `1px solid var(--border)`, borderRadius: 6, fontSize: 12 }} formatter={(v: number) => [`${(v * 100).toFixed(1)}%`, '']} />
                                 <Legend wrapperStyle={{ fontSize: 12 }} />
-                                <Line type="monotone" dataKey="rate"   name="Thực tế" stroke={colors.subsystem.collection} strokeWidth={2} dot={{ r: 4, fill: colors.subsystem.collection }} />
-                                <Line type="monotone" dataKey="target" name="Mục tiêu" stroke={colors.error.base} strokeDasharray="5 5" dot={false} strokeWidth={1.5} />
+                                <Line type="monotone" dataKey="rate"   name="Thực tế" stroke={'var(--chart-6-sky)'} strokeWidth={2} dot={{ r: 4, fill: 'var(--chart-6-sky)' }} />
+                                <Line type="monotone" dataKey="target" name="Mục tiêu" stroke={'var(--error)'} strokeDasharray="5 5" dot={false} strokeWidth={1.5} />
                             </LineChart>
                         </ResponsiveContainer>
                     </SectionCard>
@@ -150,17 +150,17 @@ const ChartPieDemo: React.FC = () => {
                     <SectionCard title="Khối lượng + Tỷ lệ xử lý (Dual Axis)">
                         <ResponsiveContainer width="100%" height={220}>
                             <ComposedChart data={DUAL_DATA} margin={{ top: 8, right: 32, left: 0, bottom: 0 }}>
-                                <CartesianGrid strokeDasharray="3 3" stroke={colors.border.split} />
-                                <XAxis dataKey="month" tick={{ fontSize: 11, fill: colors.text.secondary }} />
-                                <YAxis yAxisId="left" orientation="left" tick={{ fontSize: 11, fill: colors.text.secondary }} />
-                                <YAxis yAxisId="right" orientation="right" domain={[0.85, 1]} tickFormatter={(v) => `${(v * 100).toFixed(0)}%`} tick={{ fontSize: 11, fill: colors.text.secondary }} />
+                                <CartesianGrid strokeDasharray="3 3" stroke={'var(--color-neutral-100)'} />
+                                <XAxis dataKey="month" tick={{ fontSize: 11, fill: 'var(--text-muted)' }} />
+                                <YAxis yAxisId="left" orientation="left" tick={{ fontSize: 11, fill: 'var(--text-muted)' }} />
+                                <YAxis yAxisId="right" orientation="right" domain={[0.85, 1]} tickFormatter={(v) => `${(v * 100).toFixed(0)}%`} tick={{ fontSize: 11, fill: 'var(--text-muted)' }} />
                                 <Tooltip
-                                    contentStyle={{ background: colors.bg.container, border: `1px solid ${colors.border.base}`, borderRadius: 6, fontSize: 12 }}
+                                    contentStyle={{ background: 'var(--surface)', border: `1px solid var(--border)`, borderRadius: 6, fontSize: 12 }}
                                     formatter={(v: number, name: string) => name === 'Tỷ lệ' ? [`${(v * 100).toFixed(1)}%`, name] : [v.toLocaleString('vi-VN'), name]}
                                 />
                                 <Legend wrapperStyle={{ fontSize: 12 }} />
-                                <Bar yAxisId="left" dataKey="volume" name="Khối lượng" fill={colors.subsystem.collection + '80'} radius={[3, 3, 0, 0]} />
-                                <Line yAxisId="right" type="monotone" dataKey="rate" name="Tỷ lệ" stroke={colors.error.base} strokeWidth={2} dot={{ r: 3, fill: colors.error.base }} />
+                                <Bar yAxisId="left" dataKey="volume" name="Khối lượng" fill={'var(--chart-6-sky)' + '80'} radius={[3, 3, 0, 0]} />
+                                <Line yAxisId="right" type="monotone" dataKey="rate" name="Tỷ lệ" stroke={'var(--error)'} strokeWidth={2} dot={{ r: 3, fill: 'var(--error)' }} />
                             </ComposedChart>
                         </ResponsiveContainer>
                     </SectionCard>

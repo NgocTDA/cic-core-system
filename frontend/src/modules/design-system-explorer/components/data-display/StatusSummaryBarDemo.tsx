@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { Typography, Row, Col, InputNumber } from 'antd';
 import ComponentShowcase from '../../ComponentShowcase';
 import { StatusSummaryBar, SummaryItem } from '@/components/ui';
-import { colors, typography, spacing } from '@/design-system';
 import useHeaderActions from '@/hooks/useHeaderActions';
 
 const { Text } = Typography;
@@ -47,7 +46,7 @@ const StatusSummaryBarDemo: React.FC = () => {
                     ].map((item) => (
                         <Col span={24} key={item.label}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.secondary }}>{item.label}</Text>
+                                <Text style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{item.label}</Text>
                                 <InputNumber
                                     size="small"
                                     min={0}

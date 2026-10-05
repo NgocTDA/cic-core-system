@@ -1,8 +1,40 @@
 import React from 'react';
 import { Tag } from 'antd';
-import { colors } from '@/design-system';
 
-export type StatusRole = keyof typeof colors.statusTag;
+export type StatusRole = 'active' | 'warning' | 'error' | 'processing' | 'neutral' | 'notice';
+
+export const STATUS_PALETTES: Record<StatusRole, { bg: string; text: string; border: string }> = {
+  active: {
+    bg: 'var(--success-subtle, #eefae9)',
+    text: 'var(--success-ink, #3a7401)',
+    border: '#c3e4cc',
+  },
+  warning: {
+    bg: 'var(--warning-subtle, #fef4e8)',
+    text: 'var(--warning-ink, #976204)',
+    border: '#f3d4a8',
+  },
+  error: {
+    bg: 'var(--error-subtle, #fff2f0)',
+    text: 'var(--error-ink, #c2181d)',
+    border: '#f2bab0',
+  },
+  processing: {
+    bg: 'var(--primary-subtle, #ecf9f3)',
+    text: 'var(--primary-ink, #2c795b)',
+    border: '#9dd5bb',
+  },
+  neutral: {
+    bg: 'var(--surface-sunken, #edf7f2)',
+    text: 'var(--text-muted, #4c5551)',
+    border: '#d0dfd8',
+  },
+  notice: {
+    bg: 'var(--accent-subtle, #f4f9dc)',
+    text: 'var(--accent-ink, #606800)',
+    border: '#e5c879',
+  },
+};
 
 // ─── STATUS_CONFIG ────────────────────────────────────────────
 // Predefined color + label mapping for common status values
@@ -66,7 +98,7 @@ const StatusTag: React.FC<StatusTagProps> = ({
     label: status,
   };
 
-  const palette = colors.statusTag[config.role] ?? colors.statusTag.neutral;
+  const palette = STATUS_PALETTES[config.role] ?? STATUS_PALETTES.neutral;
 
   return (
     <Tag

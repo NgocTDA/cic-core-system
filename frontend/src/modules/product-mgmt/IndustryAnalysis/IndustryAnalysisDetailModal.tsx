@@ -11,7 +11,6 @@ import {
   CheckCircleOutlined,
   SendOutlined,
 } from '@ant-design/icons';
-import { colors, spacing, typography, radius } from '@/design-system';
 import { StatusTag, ChangeHistoryCollapse } from '@/components/ui';
 import type { IIndustryProduct } from './types';
 
@@ -45,8 +44,8 @@ const IndustryAnalysisDetailModal: React.FC<IndustryAnalysisDetailModalProps> = 
       centered
       destroyOnClose
       footer={
-        <div style={{ display: 'flex', justifyContent: 'center', padding: `${spacing[2]} 0` }}>
-          <Button onClick={onClose} style={{ minWidth: 100, borderRadius: radius.md }}>
+        <div style={{ display: 'flex', justifyContent: 'center', padding: `var(--spacing-8) 0` }}>
+          <Button onClick={onClose} style={{ minWidth: 100, borderRadius: 'var(--radius-md)' }}>
             Đóng
           </Button>
         </div>
@@ -59,10 +58,10 @@ const IndustryAnalysisDetailModal: React.FC<IndustryAnalysisDetailModalProps> = 
             display: 'flex',
             justifyContent: 'flex-end',
             alignItems: 'center',
-            gap: spacing[3],
-            marginBottom: spacing[4],
-            paddingBottom: spacing[3],
-            borderBottom: `1px solid ${colors.border.split}`,
+            gap: 'var(--spacing-12)',
+            marginBottom: 'var(--spacing-16)',
+            paddingBottom: 'var(--spacing-12)',
+            borderBottom: `1px solid var(--color-neutral-100)`,
           }}
         >
           <StatusTag status={product.status} style={{ fontSize: 13, padding: '4px 12px', margin: 0 }} />
@@ -103,12 +102,12 @@ const IndustryAnalysisDetailModal: React.FC<IndustryAnalysisDetailModalProps> = 
           )}
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: spacing[5] }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-20)' }}>
           {/* KHỐI 1: Thông tin chung */}
-          <div style={{ borderBottom: `1px solid ${colors.border.split}`, paddingBottom: spacing[4] }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: spacing[2], marginBottom: spacing[3] }}>
-              <FileTextOutlined style={{ color: colors.primary[500], fontSize: 18 }} />
-              <Text strong style={{ fontSize: typography.fontSize.base, textTransform: 'uppercase', color: colors.text.primary }}>
+          <div style={{ borderBottom: `1px solid var(--color-neutral-100)`, paddingBottom: 'var(--spacing-16)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-8)', marginBottom: 'var(--spacing-12)' }}>
+              <FileTextOutlined style={{ color: 'var(--primary)', fontSize: 18 }} />
+              <Text strong style={{ fontSize: '14px', textTransform: 'uppercase', color: 'var(--text)' }}>
                 Thông tin chung
               </Text>
             </div>
@@ -116,10 +115,10 @@ const IndustryAnalysisDetailModal: React.FC<IndustryAnalysisDetailModalProps> = 
             <Row gutter={[24, 16]}>
               <Col xs={24} sm={12} md={6}>
                 <div>
-                  <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                  <Text type="secondary" style={{ fontSize: '12px', fontWeight: 500, display: 'block', marginBottom: 4 }}>
                     Mã sản phẩm
                   </Text>
-                  <Text strong style={{ fontSize: typography.fontSize.base, color: colors.primary[500], whiteSpace: 'nowrap' }}>
+                  <Text strong style={{ fontSize: '14px', color: 'var(--primary)', whiteSpace: 'nowrap' }}>
                     {product.code}
                   </Text>
                 </div>
@@ -127,10 +126,10 @@ const IndustryAnalysisDetailModal: React.FC<IndustryAnalysisDetailModalProps> = 
 
               <Col xs={24} sm={12} md={12}>
                 <div>
-                  <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                  <Text type="secondary" style={{ fontSize: '12px', fontWeight: 500, display: 'block', marginBottom: 4 }}>
                     Tên sản phẩm báo cáo
                   </Text>
-                  <Text strong style={{ fontSize: typography.fontSize.base }}>
+                  <Text strong style={{ fontSize: '14px' }}>
                     {product.name}
                   </Text>
                 </div>
@@ -138,10 +137,10 @@ const IndustryAnalysisDetailModal: React.FC<IndustryAnalysisDetailModalProps> = 
 
               <Col xs={24} sm={12} md={6}>
                 <div>
-                  <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                  <Text type="secondary" style={{ fontSize: '12px', fontWeight: 500, display: 'block', marginBottom: 4 }}>
                     Năm tài chính
                   </Text>
-                  <Tag color="cyan" style={{ fontWeight: 600, fontSize: typography.fontSize.sm }}>
+                  <Tag color="cyan" style={{ fontWeight: 600, fontSize: '12px' }}>
                     {product.fiscalYear}
                   </Tag>
                 </div>
@@ -149,10 +148,10 @@ const IndustryAnalysisDetailModal: React.FC<IndustryAnalysisDetailModalProps> = 
 
               <Col xs={24} sm={12} md={6}>
                 <div>
-                  <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                  <Text type="secondary" style={{ fontSize: '12px', fontWeight: 500, display: 'block', marginBottom: 4 }}>
                     Mã ngành nghề
                   </Text>
-                  <Text strong style={{ fontSize: typography.fontSize.base, color: colors.neutral[800] }}>
+                  <Text strong style={{ fontSize: '14px', color: 'var(--text)' }}>
                     {product.industryCode}
                   </Text>
                 </div>
@@ -160,10 +159,10 @@ const IndustryAnalysisDetailModal: React.FC<IndustryAnalysisDetailModalProps> = 
 
               <Col xs={24} sm={12} md={18}>
                 <div>
-                  <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                  <Text type="secondary" style={{ fontSize: '12px', fontWeight: 500, display: 'block', marginBottom: 4 }}>
                     Tên ngành nghề
                   </Text>
-                  <Text strong style={{ fontSize: typography.fontSize.sm }}>
+                  <Text strong style={{ fontSize: '12px' }}>
                     {product.industryName}
                   </Text>
                 </div>
@@ -172,10 +171,10 @@ const IndustryAnalysisDetailModal: React.FC<IndustryAnalysisDetailModalProps> = 
           </div>
 
           {/* KHỐI 2: Dữ liệu khởi tạo & Phê duyệt */}
-          <div style={{ borderBottom: `1px solid ${colors.border.split}`, paddingBottom: spacing[4] }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: spacing[2], marginBottom: spacing[3] }}>
-              <BarChartOutlined style={{ color: colors.primary[500], fontSize: 18 }} />
-              <Text strong style={{ fontSize: typography.fontSize.base, textTransform: 'uppercase', color: colors.text.primary }}>
+          <div style={{ borderBottom: `1px solid var(--color-neutral-100)`, paddingBottom: 'var(--spacing-16)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-8)', marginBottom: 'var(--spacing-12)' }}>
+              <BarChartOutlined style={{ color: 'var(--primary)', fontSize: 18 }} />
+              <Text strong style={{ fontSize: '14px', textTransform: 'uppercase', color: 'var(--text)' }}>
                 Tiến trình & Phê duyệt
               </Text>
             </div>
@@ -183,10 +182,10 @@ const IndustryAnalysisDetailModal: React.FC<IndustryAnalysisDetailModalProps> = 
             <Row gutter={[24, 16]}>
               <Col xs={24} sm={12} md={6}>
                 <div>
-                  <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                  <Text type="secondary" style={{ fontSize: '12px', fontWeight: 500, display: 'block', marginBottom: 4 }}>
                     Ngày tạo lập
                   </Text>
-                  <Text strong style={{ fontSize: typography.fontSize.sm }}>
+                  <Text strong style={{ fontSize: '12px' }}>
                     {product.createdAt}
                   </Text>
                 </div>
@@ -194,12 +193,12 @@ const IndustryAnalysisDetailModal: React.FC<IndustryAnalysisDetailModalProps> = 
 
               <Col xs={24} sm={12} md={6}>
                 <div>
-                  <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                  <Text type="secondary" style={{ fontSize: '12px', fontWeight: 500, display: 'block', marginBottom: 4 }}>
                     Người tạo
                   </Text>
                   <Space size={6}>
-                    <UserOutlined style={{ color: colors.primary[500] }} />
-                    <Text strong style={{ fontSize: typography.fontSize.sm }}>
+                    <UserOutlined style={{ color: 'var(--primary)' }} />
+                    <Text strong style={{ fontSize: '12px' }}>
                       {product.createdBy} ({product.creatorFullName})
                     </Text>
                   </Space>
@@ -208,13 +207,13 @@ const IndustryAnalysisDetailModal: React.FC<IndustryAnalysisDetailModalProps> = 
 
               <Col xs={24} sm={12} md={6}>
                 <div>
-                  <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                  <Text type="secondary" style={{ fontSize: '12px', fontWeight: 500, display: 'block', marginBottom: 4 }}>
                     Người duyệt
                   </Text>
                   {product.approvedBy ? (
                     <Space size={6}>
-                      <UserOutlined style={{ color: colors.success.base }} />
-                      <Text strong style={{ fontSize: typography.fontSize.sm, color: colors.success.base }}>
+                      <UserOutlined style={{ color: 'var(--success)' }} />
+                      <Text strong style={{ fontSize: '12px', color: 'var(--success)' }}>
                         {product.approvedBy} ({product.approverFullName})
                       </Text>
                     </Space>
@@ -226,10 +225,10 @@ const IndustryAnalysisDetailModal: React.FC<IndustryAnalysisDetailModalProps> = 
 
               <Col xs={24} sm={12} md={6}>
                 <div>
-                  <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                  <Text type="secondary" style={{ fontSize: '12px', fontWeight: 500, display: 'block', marginBottom: 4 }}>
                     Ngày duyệt
                   </Text>
-                  <Text strong style={{ fontSize: typography.fontSize.sm }}>
+                  <Text strong style={{ fontSize: '12px' }}>
                     {product.approvedAt || '—'}
                   </Text>
                 </div>
@@ -238,21 +237,21 @@ const IndustryAnalysisDetailModal: React.FC<IndustryAnalysisDetailModalProps> = 
               {product.fileName && (
                 <Col xs={24}>
                   <div>
-                    <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                    <Text type="secondary" style={{ fontSize: '12px', fontWeight: 500, display: 'block', marginBottom: 4 }}>
                       Tệp báo cáo đính kèm
                     </Text>
                     <div
                       style={{
-                        background: colors.bg.subtle,
-                        padding: `${spacing[2]} ${spacing[3]}`,
-                        borderRadius: radius.md,
-                        border: `1px solid ${colors.border.base}`,
+                        background: 'var(--bg-subtle)',
+                        padding: `var(--spacing-8) var(--spacing-12)`,
+                        borderRadius: 'var(--radius-md)',
+                        border: `1px solid var(--border)`,
                         display: 'inline-flex',
                         alignItems: 'center',
-                        gap: spacing[3],
+                        gap: 'var(--spacing-12)',
                       }}
                     >
-                      <PaperClipOutlined style={{ color: colors.primary[500], fontSize: 16 }} />
+                      <PaperClipOutlined style={{ color: 'var(--primary)', fontSize: 16 }} />
                       <Button
                         type="link"
                         onClick={() => onDownload(product)}
@@ -261,7 +260,7 @@ const IndustryAnalysisDetailModal: React.FC<IndustryAnalysisDetailModalProps> = 
                         {product.fileName}
                       </Button>
                       {product.fileSize && (
-                        <Text type="secondary" style={{ fontSize: typography.fontSize.xs }}>
+                        <Text type="secondary" style={{ fontSize: '11px' }}>
                           ({product.fileSize})
                         </Text>
                       )}
@@ -273,17 +272,17 @@ const IndustryAnalysisDetailModal: React.FC<IndustryAnalysisDetailModalProps> = 
               {product.approvalNote && (
                 <Col xs={24}>
                   <div>
-                    <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                    <Text type="secondary" style={{ fontSize: '12px', fontWeight: 500, display: 'block', marginBottom: 4 }}>
                       Ý kiến phê duyệt
                     </Text>
                     <div
                       style={{
-                        background: colors.statusTag.active.bg,
-                        padding: `${spacing[2]} ${spacing[3]}`,
-                        borderRadius: radius.md,
-                        border: `1px solid ${colors.statusTag.active.border}`,
-                        color: colors.statusTag.active.text,
-                        fontSize: typography.fontSize.sm,
+                        background: 'var(--success-subtle)',
+                        padding: `var(--spacing-8) var(--spacing-12)`,
+                        borderRadius: 'var(--radius-md)',
+                        border: '1px solid var(--border)',
+                        color: 'var(--success-ink)',
+                        fontSize: '12px',
                       }}
                     >
                       {product.approvalNote}
@@ -295,17 +294,17 @@ const IndustryAnalysisDetailModal: React.FC<IndustryAnalysisDetailModalProps> = 
               {product.rejectReason && (
                 <Col xs={24}>
                   <div>
-                    <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                    <Text type="secondary" style={{ fontSize: '12px', fontWeight: 500, display: 'block', marginBottom: 4 }}>
                       Lý do từ chối duyệt
                     </Text>
                     <div
                       style={{
-                        background: colors.statusTag.error.bg,
-                        padding: `${spacing[2]} ${spacing[3]}`,
-                        borderRadius: radius.md,
-                        border: `1px solid ${colors.statusTag.error.border}`,
-                        color: colors.statusTag.error.text,
-                        fontSize: typography.fontSize.sm,
+                        background: 'var(--error-subtle)',
+                        padding: `var(--spacing-8) var(--spacing-12)`,
+                        borderRadius: 'var(--radius-md)',
+                        border: '1px solid var(--border)',
+                        color: 'var(--error-ink)',
+                        fontSize: '12px',
                       }}
                     >
                       {product.rejectReason}
@@ -317,17 +316,17 @@ const IndustryAnalysisDetailModal: React.FC<IndustryAnalysisDetailModalProps> = 
               {product.recallReason && (
                 <Col xs={24}>
                   <div>
-                    <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                    <Text type="secondary" style={{ fontSize: '12px', fontWeight: 500, display: 'block', marginBottom: 4 }}>
                       Lý do thu hồi
                     </Text>
                     <div
                       style={{
-                        background: colors.statusTag.warning.bg,
-                        padding: `${spacing[2]} ${spacing[3]}`,
-                        borderRadius: radius.md,
-                        border: `1px solid ${colors.statusTag.warning.border}`,
-                        color: colors.statusTag.warning.text,
-                        fontSize: typography.fontSize.sm,
+                        background: 'var(--warning-subtle)',
+                        padding: `var(--spacing-8) var(--spacing-12)`,
+                        borderRadius: 'var(--radius-md)',
+                        border: '1px solid var(--border)',
+                        color: 'var(--warning-ink)',
+                        fontSize: '12px',
                       }}
                     >
                       {product.recallReason}
@@ -339,17 +338,17 @@ const IndustryAnalysisDetailModal: React.FC<IndustryAnalysisDetailModalProps> = 
               {product.notes && (
                 <Col xs={24}>
                   <div>
-                    <Text type="secondary" style={{ fontSize: typography.fontSize.sm, fontWeight: 500, display: 'block', marginBottom: 4 }}>
+                    <Text type="secondary" style={{ fontSize: '12px', fontWeight: 500, display: 'block', marginBottom: 4 }}>
                       Ghi chú mô tả
                     </Text>
                     <div
                       style={{
-                        background: colors.bg.subtle,
-                        padding: `${spacing[2]} ${spacing[3]}`,
-                        borderRadius: radius.md,
-                        border: `1px solid ${colors.border.base}`,
-                        color: colors.text.primary,
-                        fontSize: typography.fontSize.sm,
+                        background: 'var(--bg-subtle)',
+                        padding: `var(--spacing-8) var(--spacing-12)`,
+                        borderRadius: 'var(--radius-md)',
+                        border: `1px solid var(--border)`,
+                        color: 'var(--text)',
+                        fontSize: '12px',
                       }}
                     >
                       {product.notes}

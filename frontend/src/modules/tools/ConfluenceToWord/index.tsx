@@ -10,7 +10,6 @@ import {
 } from '@ant-design/icons';
 import useHeaderActions from '@/hooks/useHeaderActions';
 import { PageLayout, SectionCard } from '@/components/ui';
-import { spacing, colors } from '@/design-system';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { fetchConfluenceDocx, fetchCachedDocxBlob, validateConfluencePat } from '@/services/aiService';
 import DocxBlobPreview from './DocxBlobPreview';
@@ -122,7 +121,7 @@ const ConfluenceToWord: React.FC = () => {
                     display: 'grid',
                     gridTemplateColumns: isMobile ? '1fr' : '380px 1fr',
                     gridTemplateRows: '1fr',
-                    gap: spacing[4],
+                    gap: 'var(--spacing-16)',
                     flex: 1,
                     minHeight: 0,
                     alignItems: 'stretch',
@@ -130,12 +129,12 @@ const ConfluenceToWord: React.FC = () => {
             >
                 {/* LEFT — nguồn Confluence */}
                 <SectionCard title="Nguồn Confluence" style={{ alignSelf: 'start' }}>
-                    <Form layout="vertical" style={{ display: 'flex', flexDirection: 'column', gap: spacing[2] }}>
+                    <Form layout="vertical" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}>
                         {/* Trạng thái PAT cá nhân */}
-                        <Form.Item label="PAT Confluence (tài khoản của bạn)" style={{ marginBottom: spacing[2] }}>
+                        <Form.Item label="PAT Confluence (tài khoản của bạn)" style={{ marginBottom: 'var(--spacing-8)' }}>
                             {pat ? (
                                 <Space wrap>
-                                    <Tag icon={<CheckCircleFilled />} color={colors.success.base}>
+                                    <Tag icon={<CheckCircleFilled />} color={'var(--success)'}>
                                         Đã cấu hình{fullname ? ` · ${fullname}` : ''}
                                     </Tag>
                                     <Button size="small" icon={<KeyOutlined />} onClick={() => setPatOpen(true)}>
@@ -152,7 +151,7 @@ const ConfluenceToWord: React.FC = () => {
                             )}
                         </Form.Item>
 
-                        <Form.Item label="Link Confluence hoặc Page ID" style={{ marginBottom: spacing[3] }}>
+                        <Form.Item label="Link Confluence hoặc Page ID" style={{ marginBottom: 'var(--spacing-12)' }}>
                             <Input
                                 value={link}
                                 onChange={(e) => setLink(e.target.value)}
@@ -175,12 +174,12 @@ const ConfluenceToWord: React.FC = () => {
                         <Alert
                             type="info"
                             showIcon
-                            style={{ marginTop: spacing[2] }}
+                            style={{ marginTop: 'var(--spacing-8)' }}
                             message="Chuyển nguyên bản"
                             description="Giữ cấu trúc & ảnh đúng vị trí từ Confluence, không qua AI."
                         />
 
-                        <Text type="secondary" style={{ fontSize: 11, marginTop: spacing[1] }}>
+                        <Text type="secondary" style={{ fontSize: 11, marginTop: 'var(--spacing-4)' }}>
                             PAT lưu tại trình duyệt của bạn. Mỗi lần nhập link sẽ tạo bản Word mới.
                         </Text>
                     </Form>
@@ -189,9 +188,9 @@ const ConfluenceToWord: React.FC = () => {
                 {/* RIGHT — kết quả */}
                 <SectionCard title={title ? `Kết quả · ${title}` : 'Kết quả'} extra={resultActions} flex>
                     {generating && !blob ? (
-                        <div style={{ textAlign: 'center', padding: spacing[6] }}>
+                        <div style={{ textAlign: 'center', padding: 'var(--spacing-24)' }}>
                             <Spin />
-                            <div style={{ marginTop: spacing[2], color: colors.text.secondary, fontSize: 13 }}>
+                            <div style={{ marginTop: 'var(--spacing-8)', color: 'var(--text-muted)', fontSize: 13 }}>
                                 Đang kéo trang & dựng bản Word...
                             </div>
                         </div>
@@ -207,7 +206,7 @@ const ConfluenceToWord: React.FC = () => {
                 open={patOpen}
                 onCancel={() => setPatOpen(false)}
                 footer={
-                    <div style={{ display: 'flex', justifyContent: 'center', gap: spacing[2] }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: 'var(--spacing-8)' }}>
                         <Button onClick={() => setPatOpen(false)}>Huỷ</Button>
                         <Button type="primary" loading={validating} onClick={handleSavePat}>
                             Kiểm tra &amp; lưu
@@ -221,7 +220,7 @@ const ConfluenceToWord: React.FC = () => {
                     placeholder="Dán Personal Access Token"
                     onPressEnter={handleSavePat}
                 />
-                <Text type="secondary" style={{ fontSize: 12, display: 'block', marginTop: spacing[2] }}>
+                <Text type="secondary" style={{ fontSize: 12, display: 'block', marginTop: 'var(--spacing-8)' }}>
                     PAT lưu tại trình duyệt của bạn (localStorage). Confluence không cho xem lại PAT — nếu mất phải sinh token mới.
                     Tạo PAT: avatar → Settings → Personal Access Tokens.
                 </Text>

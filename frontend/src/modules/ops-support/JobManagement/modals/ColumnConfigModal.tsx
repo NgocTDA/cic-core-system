@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Checkbox, Row, Col, Button, Space, Typography, Divider } from 'antd';
 import { SettingOutlined, ReloadOutlined } from '@ant-design/icons';
-import { colors, spacing, radius, typography } from '@/design-system';
 
 const { Text } = Typography;
 
@@ -90,8 +89,8 @@ const ColumnConfigModal: React.FC<ColumnConfigModalProps> = ({
       }
     >
       <div style={{ padding: '8px 0' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing[3] }}>
-          <Text type="secondary" style={{ fontSize: typography.fontSize.sm }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-12)' }}>
+          <Text type="secondary" style={{ fontSize: '12px' }}>
             Chọn các cột muốn hiển thị trên danh sách ({selectedKeys.length}/{ALL_JOB_COLUMNS.length})
           </Text>
           <Button
@@ -116,9 +115,9 @@ const ColumnConfigModal: React.FC<ColumnConfigModalProps> = ({
                   onClick={() => handleToggle(col.key)}
                   style={{
                     padding: '8px 12px',
-                    borderRadius: radius.md,
-                    border: `1px solid ${checked ? colors.primary[500] : colors.border.base}`,
-                    backgroundColor: checked ? colors.primary[50] || '#e6f7ff' : colors.bg.container,
+                    borderRadius: 'var(--radius-md)',
+                    border: `1px solid ${checked ? 'var(--primary)' : 'var(--border)'}`,
+                    backgroundColor: checked ? 'var(--primary-subtle)' : 'var(--surface)',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
@@ -127,7 +126,7 @@ const ColumnConfigModal: React.FC<ColumnConfigModalProps> = ({
                   }}
                 >
                   <Checkbox checked={checked} onChange={() => handleToggle(col.key)} />
-                  <Text strong={checked} style={{ fontSize: typography.fontSize.sm, cursor: 'pointer' }}>
+                  <Text strong={checked} style={{ fontSize: '12px', cursor: 'pointer' }}>
                     {col.label}
                   </Text>
                 </div>

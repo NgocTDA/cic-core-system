@@ -2,7 +2,7 @@
 
 Cấu trúc menu thực tế của hệ thống được quản lý thông qua cấu hình tập trung tại `frontend/src/config/navigation.tsx`.
 
-Tài liệu này đồng bộ theo `SUB_SYSTEMS` và `DESIGN_SYSTEM_SUB` đang được push vào danh sách subsystem trong file cấu hình. Một số route trong menu có thể chưa có `page.tsx` tương ứng, nhưng vẫn được ghi nhận vì đây là menu đang cấu hình để render trong ứng dụng.
+Tài liệu này đồng bộ theo `SUB_SYSTEMS` và `DESIGN_SYSTEM_SUB` đang được push vào danh sách subsystem trong file cấu hình. Những đường dẫn menu chưa có trang nghiệp vụ riêng hiển thị thông báo “Chức năng này chưa được triển khai” qua route dự phòng. Route dự phòng chỉ chấp nhận đường dẫn khớp chính xác menu; URL không được cấu hình vẫn trả 404. Các trang nghiệp vụ đã triển khai được ưu tiên, và Web Portal giữ layout riêng.
 
 ## 1. Kênh kết nối (KKN)
 - **Dashboard**: Màn hình tổng quan (`/kkn-dashboard`)

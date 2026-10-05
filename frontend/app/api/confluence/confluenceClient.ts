@@ -28,12 +28,101 @@ export function parseUrl(url: string): { pageId?: string; space?: string; title?
     return {};
 }
 
-// Fetch tới Confluence: pathOrUrl tương đối (ghép baseUrl) hoặc tuyệt đối. Luôn kèm Bearer.
-export async function cfFetch(cfg: ConfluenceConfig, token: string, pathOrUrl: string): Promise<Response> {
-    const url = pathOrUrl.startsWith('http') ? pathOrUrl : `${cfg.baseUrl}${pathOrUrl}`;
-    return fetch(url, {
-        headers: { authorization: `Bearer ${token}`, accept: 'application/json' },
-    });
+// Only the administrator-configured origin is trusted, including private/internal hosts.
+// External images are deliberately rejected: they must not become an SSRF proxy.
+export function trustedUrl(cfg: ConfluenceConfig, input: string): URL {
+    const base = new URL(cfg.baseUrl);
+    const url = new URL(input, `${cfg.baseUrl.replace(/\/$/, '')}/`);
+    if (!['http:', 'https:'].includes(base.protocol) || url.origin !== base.origin ||
+        url.username || url.password || base.username || base.password) {
+        throw new Error('Confluence URL ngoài origin được cấu hình.');
+    }
+    return url;
+}
+
+// Confluence returns both context-relative and origin-relative links.
+function requestUrl(cfg: ConfluenceConfig, input: string): URL {
+    const base = new URL(cfg.baseUrl);
+    const context = base.pathname.replace(/\/$/, '');
+    if (input.startsWith('/') && !input.startsWith('//')) {
+        return trustedUrl(cfg, input === context || input.startsWith(`${context}/`)
+            ? new URL(input, base.origin).href : `${cfg.baseUrl.replace(/\/$/, '')}${input}`);
+    }
+    return trustedUrl(cfg, input);
+}
+
+export async function cfFetch(cfg: ConfluenceConfig, token: string, pathOrUrl: string,
+    maxBytes = 10 * 1024 * 1024): Promise<Response> {
+    // REST paths are relative to the configured context path (e.g. /confluence).
+    let url = requestUrl(cfg, pathOrUrl);
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 15_000);
+    try {
+        for (let redirects = 0; redirects <= 5; redirects++) {
+            const res = await fetch(url, {
+                headers: { authorization: `Bearer ${token}`, accept: 'application/json' },
+                redirect: 'manual', signal: controller.signal, cache: 'no-store',
+            });
+            if ([301, 302, 303, 307, 308].includes(res.status)) {
+                await res.body?.cancel();
+                const location = res.headers.get('location');
+                if (!location || redirects === 5) throw new Error('Confluence redirect limit exceeded.');
+                url = trustedUrl(cfg, new URL(location, url).href);
+                continue;
+            }
+            const declared = Number(res.headers.get('content-length'));
+            if (declared > maxBytes) {
+                await res.body?.cancel();
+                throw new Error('Confluence response exceeds byte limit.');
+            }
+            const chunks: Uint8Array[] = [];
+            let length = 0;
+            const reader = res.body?.getReader();
+            if (reader) {
+                try {
+                    while (true) {
+                        const { value, done } = await reader.read();
+                        if (done) break;
+                        length += value.byteLength;
+                        if (length > maxBytes) throw new Error('Confluence response exceeds byte limit.');
+                        chunks.push(value);
+                    }
+                } finally {
+                    await reader.cancel();
+                    reader.releaseLock();
+                }
+            }
+            return new Response([204, 205, 304].includes(res.status) ? null : Buffer.concat(chunks), {
+                status: res.status, statusText: res.statusText, headers: res.headers,
+            });
+        }
+        throw new Error('Confluence redirect limit exceeded.');
+    } finally {
+        clearTimeout(timer);
+    }
+}
+
+// Fail explicitly on loops/limits rather than silently returning incomplete data.
+export async function cfFetchCollection(cfg: ConfluenceConfig, token: string, path: string): Promise<any[]> {
+    const results: any[] = [];
+    const visited = new Set<string>();
+    let next: string | undefined = path;
+    for (let page = 0; next && page < 10; page++) {
+        if (visited.has(next)) throw new Error('Confluence pagination loop.');
+        visited.add(next);
+        const res = await cfFetch(cfg, token, next);
+        if (!res.ok) throw new Error(`Confluence collection HTTP ${res.status}.`);
+        const data = await res.json();
+        if (!Array.isArray(data.results)) throw new Error('Confluence collection invalid.');
+        results.push(...data.results);
+        if (results.length > 1000) throw new Error('Confluence collection exceeds 1000 items.');
+        // Resolve pagination against the current URL; do not duplicate context paths.
+        const current: URL = requestUrl(cfg, next);
+        const link = data._links?.next;
+        next = link ? (link.startsWith('/') ? requestUrl(cfg, link) : trustedUrl(cfg, new URL(link, current).href)).href : undefined;
+    }
+    if (next) throw new Error('Confluence collection exceeds 10 pages.');
+    return results;
 }
 
 export async function resolvePageId(
@@ -41,10 +130,13 @@ export async function resolvePageId(
     token: string,
     body: { url?: string; pageId?: string },
 ): Promise<string> {
-    if (body.pageId?.trim()) return body.pageId.trim();
+    if (body.pageId?.trim()) {
+        if (!/^\d+$/.test(body.pageId.trim())) throw new Error('pageId phải là số.');
+        return body.pageId.trim();
+    }
     if (!body.url?.trim()) throw new Error('Thiếu url hoặc pageId.');
     const parsed = parseUrl(body.url);
-    if (parsed.pageId) return parsed.pageId;
+    if (parsed.pageId && /^\d+$/.test(parsed.pageId)) return parsed.pageId;
     if (parsed.space && parsed.title) {
         const q = `/rest/api/content?spaceKey=${encodeURIComponent(parsed.space)}&title=${encodeURIComponent(parsed.title)}&limit=1`;
         const res = await cfFetch(cfg, token, q);
@@ -58,23 +150,14 @@ export async function resolvePageId(
 }
 
 // Tải 1 ảnh về dạng data:base64. src có thể tương đối (/download/...) hoặc tuyệt đối (ảnh ngoài).
-// Ảnh cùng host Confluence → kèm Bearer; ảnh ngoài → fetch trần. Lỗi/không phải ảnh/quá lớn → null.
+// Chỉ tải ảnh từ origin Confluence đã cấu hình. Lỗi/không phải ảnh/quá lớn → null.
 export async function fetchImageAsDataUrl(
     cfg: ConfluenceConfig,
     token: string,
     src: string,
 ): Promise<{ dataUrl: string | null; reason: string }> {
     try {
-        // Chuẩn hóa URL: loại bỏ trailing slash ở base, xử lý URL tương đối + protocol-relative.
-        const base = cfg.baseUrl.replace(/\/$/, '');
-        const proto = cfg.baseUrl.match(/^https?:/)?.[0] ?? 'http:';
-        const absolute = src.startsWith('http') ? src
-            : src.startsWith('//') ? `${proto}${src}`
-            : `${base}${src.startsWith('/') ? '' : '/'}${src}`;
-        const sameHost = absolute.startsWith(base);
-        const res = await fetch(absolute, {
-            headers: sameHost ? { authorization: `Bearer ${token}` } : {},
-        });
+        const res = await cfFetch(cfg, token, src, MAX_IMAGE_BYTES);
         if (!res.ok) return { dataUrl: null, reason: `HTTP ${res.status} ${res.statusText}` };
         const media = (res.headers.get('content-type') || '').split(';')[0].trim();
         if (!media.startsWith('image/')) return { dataUrl: null, reason: `content-type="${media}" (not image)` };

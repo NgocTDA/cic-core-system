@@ -19,7 +19,6 @@ import {
   DatabaseOutlined,
   InfoCircleOutlined
 } from '@ant-design/icons';
-import { colors, radius, spacing, typography } from '@/design-system';
 import type { IVariable } from './VariableTypes';
 
 const { TextArea } = Input;
@@ -72,19 +71,19 @@ const VariableForm: React.FC<VariableFormProps> = ({
           style={{
             display: 'flex',
             justifyContent: 'center',
-            gap: spacing[3],
+            gap: 'var(--spacing-12)',
             width: '100%',
-            paddingBottom: spacing[2],
+            paddingBottom: 'var(--spacing-8)',
           }}
         >
-          <Button key="cancel" onClick={onClose} style={{ minWidth: 100, borderRadius: radius.md }}>
+          <Button key="cancel" onClick={onClose} style={{ minWidth: 100, borderRadius: 'var(--radius-md)' }}>
             Hủy
           </Button>
           <Button
             key="save"
             type="default"
             onClick={() => message.info('Đã lưu bản nháp')}
-            style={{ minWidth: 120, borderRadius: radius.md }}
+            style={{ minWidth: 120, borderRadius: 'var(--radius-md)' }}
           >
             Lưu bản nháp
           </Button>
@@ -92,22 +91,22 @@ const VariableForm: React.FC<VariableFormProps> = ({
             key="submit"
             type="primary"
             onClick={handleSubmit}
-            style={{ minWidth: 150, borderRadius: radius.md }}
+            style={{ minWidth: 150, borderRadius: 'var(--radius-md)' }}
           >
             {editingVariable ? 'Cập nhật' : 'Tạo mới biến'}
           </Button>
         </div>
       )}
     >
-      <div style={{ maxHeight: 'calc(80vh - 120px)', overflowY: 'auto', padding: `0 ${spacing[3]}` }}>
-        <div style={{ paddingTop: spacing[2] }}>
+      <div style={{ maxHeight: 'calc(80vh - 120px)', overflowY: 'auto', padding: `0 var(--spacing-12)` }}>
+        <div style={{ paddingTop: 'var(--spacing-8)' }}>
           {isLocked && (
             <Alert
               message="Biến đang trong trạng thái sử dụng"
               description="Mã định danh và kiểu dữ liệu hiện tại không thể thay đổi do biến này đã được gán vào mẫu tin đang hoạt động."
               type="warning"
               showIcon
-              style={{ marginBottom: spacing[6], borderRadius: radius.md }}
+              style={{ marginBottom: 'var(--spacing-24)', borderRadius: 'var(--radius-md)' }}
             />
           )}
 
@@ -135,8 +134,8 @@ const VariableForm: React.FC<VariableFormProps> = ({
                   <Input
                     placeholder="VD: user_name, order_id"
                     disabled={isLocked}
-                    style={{ fontFamily: typography.fontFamily.mono }}
-                    prefix={isLocked ? <LockOutlined style={{ color: colors.text.tertiary }} /> : null}
+                    style={{ fontFamily: 'var(--font-mono, monospace)' }}
+                    prefix={isLocked ? <LockOutlined style={{ color: 'var(--text-subtle)' }} /> : null}
                   />
                 </Form.Item>
               </Col>

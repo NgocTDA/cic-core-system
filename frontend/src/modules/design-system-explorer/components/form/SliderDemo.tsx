@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Slider, InputNumber, Row, Col, Typography, Space, Tag } from 'antd';
 import ComponentShowcase from '../../ComponentShowcase';
-import { colors, typography, spacing } from '@/design-system';
+import { typography, spacing } from '@/modules/design-system-explorer/tokens';
 import useHeaderActions from '@/hooks/useHeaderActions';
 
 const { Text } = Typography;
@@ -20,9 +20,9 @@ const SliderDemo: React.FC = () => {
     const syncSlider = (v: number | null) => { if (v !== null) { setVal1(v); setInput(v); } };
 
     const getColor = (v: number) => {
-        if (v < 30)  return colors.error.base;
-        if (v < 60)  return colors.warning.base;
-        return colors.success.base;
+        if (v < 30)  return 'var(--error)';
+        if (v < 60)  return 'var(--warning)';
+        return 'var(--success)';
     };
 
     return (
@@ -57,10 +57,10 @@ const [value, setValue] = useState(60);
   tooltip={{ formatter: (v) => \`\${v}%\` }}
 />`}
         >
-            <div style={{ display: 'flex', flexDirection: 'column', gap: spacing[6], maxWidth: 560 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-24)', maxWidth: 560 }}>
                 {/* Basic + InputNumber sync */}
                 <div>
-                    <Text style={{ fontSize: typography.fontSize.sm, fontWeight: typography.fontWeight.medium, display: 'block', marginBottom: spacing[3] }}>
+                    <Text style={{ fontSize: '12px', fontWeight: typography.fontWeight.medium, display: 'block', marginBottom: 'var(--spacing-12)' }}>
                         Đồng bộ với InputNumber
                     </Text>
                     <Row align="middle" gutter={12}>
@@ -84,7 +84,7 @@ const [value, setValue] = useState(60);
                     </Row>
                     <Tag
                         style={{
-                            marginTop: spacing[1],
+                            marginTop: 'var(--spacing-4)',
                             background: getColor(val1) + '18',
                             color: getColor(val1),
                             border: `1px solid ${getColor(val1)}50`,
@@ -96,7 +96,7 @@ const [value, setValue] = useState(60);
 
                 {/* Range */}
                 <div>
-                    <Text style={{ fontSize: typography.fontSize.sm, fontWeight: typography.fontWeight.medium, display: 'block', marginBottom: spacing[3] }}>
+                    <Text style={{ fontSize: '12px', fontWeight: typography.fontWeight.medium, display: 'block', marginBottom: 'var(--spacing-12)' }}>
                         Range slider — Lọc phạm vi tín dụng
                     </Text>
                     <Slider
@@ -105,17 +105,17 @@ const [value, setValue] = useState(60);
                         value={val2}
                         onChange={(v) => setVal2(v as [number, number])}
                         tooltip={{ formatter: (v) => `${v}%` }}
-                        trackStyle={[{ backgroundColor: colors.primary[500] }]}
+                        trackStyle={[{ backgroundColor: 'var(--primary)' }]}
                         marks={{ 0: '0%', 50: '50%', 100: '100%' }}
                     />
-                    <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.secondary }}>
+                    <Text style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
                         Phạm vi: {val2[0]}% – {val2[1]}%
                     </Text>
                 </div>
 
                 {/* Score range */}
                 <div>
-                    <Text style={{ fontSize: typography.fontSize.sm, fontWeight: typography.fontWeight.medium, display: 'block', marginBottom: spacing[3] }}>
+                    <Text style={{ fontSize: '12px', fontWeight: typography.fontWeight.medium, display: 'block', marginBottom: 'var(--spacing-12)' }}>
                         Điểm tín dụng (0–900) với marks
                     </Text>
                     <Slider
@@ -126,14 +126,14 @@ const [value, setValue] = useState(60);
                         marks={{ 0: '0', 300: '300', 500: '500', 650: '650', 800: '800', 900: '900' }}
                         step={10}
                     />
-                    <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.secondary }}>
+                    <Text style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
                         Điểm: {val3}
                     </Text>
                 </div>
 
                 {/* Disabled */}
                 <div>
-                    <Text style={{ fontSize: typography.fontSize.sm, fontWeight: typography.fontWeight.medium, display: 'block', marginBottom: spacing[3] }}>
+                    <Text style={{ fontSize: '12px', fontWeight: typography.fontWeight.medium, display: 'block', marginBottom: 'var(--spacing-12)' }}>
                         Disabled (chỉ xem)
                     </Text>
                     <Slider min={0} max={100} value={72} disabled />

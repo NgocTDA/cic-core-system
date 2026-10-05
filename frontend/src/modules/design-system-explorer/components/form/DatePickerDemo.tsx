@@ -5,7 +5,6 @@ import { Form, DatePicker, Typography, Alert, Space } from 'antd';
 import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
 import ComponentShowcase from '../../ComponentShowcase';
-import { colors, typography, spacing } from '@/design-system';
 import useHeaderActions from '@/hooks/useHeaderActions';
 
 const { Text } = Typography;
@@ -68,7 +67,7 @@ const DATE_FORMAT = 'DD/MM/YYYY';
                 {/* Single date */}
                 <Form.Item
                     name="issueDate"
-                    label={<><Text>Ngày hiệu lực</Text> <Text style={{ color: colors.error.base }}>*</Text></>}
+                    label={<><Text>Ngày hiệu lực</Text> <Text style={{ color: 'var(--error)' }}>*</Text></>}
                     rules={[{ required: true, message: 'Vui lòng chọn ngày hiệu lực' }]}
                 >
                     <DatePicker
@@ -138,7 +137,7 @@ const DATE_FORMAT = 'DD/MM/YYYY';
                     message="Lưu ý"
                     description="Mặc định RangePicker tìm kiếm để trống. Nếu nghiệp vụ giới hạn N ngày, validate sau khi chọn đủ 2 ngày và hiện thông báo inline."
                     showIcon
-                    style={{ marginTop: spacing[2] }}
+                    style={{ marginTop: 'var(--spacing-8)' }}
                 />
             </Form>
         </ComponentShowcase>

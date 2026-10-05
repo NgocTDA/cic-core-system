@@ -4,6 +4,7 @@
 //  Trả { valid, fullname, username } để client lưu localStorage + fill [Tên BA].
 // ============================================================
 
+import { cfFetch } from '../confluenceClient';
 import { NextResponse } from 'next/server';
 import { loadConfluenceConfig } from '../confluenceConfig';
 
@@ -21,13 +22,12 @@ export async function POST(req: Request) {
     } catch {
         return NextResponse.json({ valid: false, error: 'Body không hợp lệ.' }, { status: 400 });
     }
+    if (typeof token !== 'string') return NextResponse.json({ valid: false, error: 'PAT không hợp lệ.' }, { status: 400 });
     token = token.trim();
     if (!token) return NextResponse.json({ valid: false, error: 'Thiếu PAT.' }, { status: 400 });
 
     try {
-        const res = await fetch(`${cfg.baseUrl}/rest/api/user/current`, {
-            headers: { authorization: `Bearer ${token}`, accept: 'application/json' },
-        });
+        const res = await cfFetch(cfg, token, '/rest/api/user/current');
         if (res.status === 401 || res.status === 403) {
             return NextResponse.json({ valid: false, error: 'PAT sai hoặc không có quyền.' });
         }

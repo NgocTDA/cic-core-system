@@ -12,4 +12,10 @@ services:
     # trừ khi đổi biến env thì cần restart.
     volumes:
       - ./frontend/config:/app/config:ro
+      - srs-registries:/app/data/registries
+    environment:
+      SRS_REGISTRY_DIR: /app/data/registries
     restart: unless-stopped
+
+volumes:
+  srs-registries:

@@ -1,15 +1,16 @@
 'use client';
 
+import { SUBSYSTEM_COLORS } from '@/config/subsystems';
+
 import React from 'react';
 import { Table, Tag, Typography } from 'antd';
 import { PictureOutlined } from '@ant-design/icons';
-import { colors, radius, spacing, typography } from '@/design-system';
 import type { OutlineSection, OutlineTable } from '@/types/srs';
 
 const { Text } = Typography;
 
 // Ô trống của mẫu — hiện dấu gạch mờ để phân biệt với ô có nội dung.
-const EMPTY_CELL = <Text style={{ color: colors.text.tertiary }}>—</Text>;
+const EMPTY_CELL = <Text style={{ color: 'var(--text-subtle)' }}>—</Text>;
 
 interface TablePreviewProps {
     table: OutlineTable;
@@ -35,9 +36,9 @@ const TablePreview: React.FC<TablePreviewProps> = ({ table, usable }) => {
         : Array.from({ length: rows }, (_, i) => ({ key: i }));
 
     return (
-        <div style={{ marginBottom: spacing[3] }}>
+        <div style={{ marginBottom: 'var(--spacing-12)' }}>
             {label && (
-                <Text strong style={{ fontSize: 12, display: 'block', marginBottom: spacing[1] }}>
+                <Text strong style={{ fontSize: 12, display: 'block', marginBottom: 'var(--spacing-4)' }}>
                     {label}
                 </Text>
             )}
@@ -68,10 +69,10 @@ const SectionView: React.FC<SectionViewProps> = ({ section, level, usable, diagr
     const isH4 = level === 'h4';
     // Phản chiếu thang độ của bản Word (README §6): H4 đậm, H5 nghiêng.
     const headingStyle: React.CSSProperties = {
-        fontSize: isH4 ? typography.fontSize.base : typography.fontSize.sm,
+        fontSize: isH4 ? '14px' : '12px',
         fontWeight: isH4 ? 600 : 400,
         fontStyle: isH4 ? 'normal' : 'italic',
-        color: isH4 ? colors.text.primary : colors.text.secondary,
+        color: isH4 ? 'var(--text)' : 'var(--text-muted)',
     };
 
     // note_md (hướng dẫn cho bản Confluence) ưu tiên hơn note của bản Word.
@@ -80,18 +81,18 @@ const SectionView: React.FC<SectionViewProps> = ({ section, level, usable, diagr
     return (
         <div
             style={{
-                marginBottom: spacing[4],
-                paddingLeft: isH4 ? 0 : spacing[3],
-                borderLeft: isH4 ? 'none' : `2px solid ${colors.border.split}`,
+                marginBottom: 'var(--spacing-16)',
+                paddingLeft: isH4 ? 0 : 'var(--spacing-12)',
+                borderLeft: isH4 ? 'none' : `2px solid var(--color-neutral-100)`,
             }}
         >
-            <div style={{ display: 'flex', alignItems: 'center', gap: spacing[2], marginBottom: spacing[1] }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-8)', marginBottom: 'var(--spacing-4)' }}>
                 <span style={headingStyle}>{section.name}</span>
                 <Text type="secondary" style={{ fontSize: 11 }}>
                     {isH4 ? 'Heading 4' : 'Heading 5'}
                 </Text>
                 {section.diagram && (
-                    <Tag icon={<PictureOutlined />} color={colors.subsystem.tools} style={{ marginInlineEnd: 0 }}>
+                    <Tag icon={<PictureOutlined />} color={SUBSYSTEM_COLORS.tools} style={{ marginInlineEnd: 0 }}>
                         Sơ đồ trình tự
                     </Tag>
                 )}
@@ -100,12 +101,12 @@ const SectionView: React.FC<SectionViewProps> = ({ section, level, usable, diagr
             {note && (
                 <div
                     style={{
-                        background: colors.bg.subtle,
-                        borderRadius: radius.md,
-                        padding: `${spacing[2]} ${spacing[3]}`,
-                        marginBottom: spacing[2],
+                        background: 'var(--bg-subtle)',
+                        borderRadius: 'var(--radius-md)',
+                        padding: `var(--spacing-8) var(--spacing-12)`,
+                        marginBottom: 'var(--spacing-8)',
                         fontSize: 12,
-                        color: colors.text.secondary,
+                        color: 'var(--text-muted)',
                         lineHeight: 1.6,
                     }}
                 >
@@ -116,7 +117,7 @@ const SectionView: React.FC<SectionViewProps> = ({ section, level, usable, diagr
             {section.diagram && (
                 <Text
                     code
-                    style={{ fontSize: 11, display: 'inline-block', marginBottom: spacing[2] }}
+                    style={{ fontSize: 11, display: 'inline-block', marginBottom: 'var(--spacing-8)' }}
                 >
                     {diagramMark}
                 </Text>

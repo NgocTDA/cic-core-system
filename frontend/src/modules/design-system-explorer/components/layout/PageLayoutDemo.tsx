@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Typography, Switch, Tag } from 'antd';
 import { PageLayout, SectionCard } from '@/components/ui';
-import { colors, typography, spacing, shadows, radius } from '@/design-system';
+import { colors, typography, spacing, radius } from '@/modules/design-system-explorer/tokens';
 import ComponentShowcase from '../../ComponentShowcase';
 import useHeaderActions from '@/hooks/useHeaderActions';
 
@@ -38,24 +38,24 @@ const PageLayoutDemo: React.FC = () => {
   {/* content */}
 </PageLayout>`}
         >
-            <div style={{ display: 'flex', flexDirection: 'column', gap: spacing[5] }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: spacing[3] }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-20)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-12)' }}>
                     <Switch checked={noPadding} onChange={setNoPadding} size="small" />
-                    <Text style={{ fontSize: typography.fontSize.sm }}>noPadding</Text>
+                    <Text style={{ fontSize: '12px' }}>noPadding</Text>
                 </div>
 
                 {/* Mock preview */}
                 <div style={{
-                    border: `2px dashed ${colors.border.base}`,
-                    borderRadius: radius.lg,
+                    border: `2px dashed var(--border)`,
+                    borderRadius: 'var(--radius-lg)',
                     overflow: 'hidden',
-                    background: colors.bg.page,
+                    background: 'var(--bg)',
                     position: 'relative',
                 }}>
                     <div style={{
                         background: colors.neutral[800],
-                        padding: `${spacing[2]} ${spacing[4]}`,
-                        fontSize: typography.fontSize.xs,
+                        padding: `var(--spacing-8) var(--spacing-16)`,
+                        fontSize: '11px',
                         color: '#fff',
                         fontFamily: typography.fontFamily.mono,
                     }}>
@@ -64,18 +64,18 @@ const PageLayoutDemo: React.FC = () => {
                     <div style={{ display: 'flex', minHeight: 200 }}>
                         <div style={{
                             width: 56,
-                            background: colors.neutral[900],
+                            background: 'var(--text)',
                             flexShrink: 0,
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
                         }}>
-                            <Text style={{ fontSize: 9, color: colors.text.tertiary, fontFamily: typography.fontFamily.mono, writingMode: 'vertical-rl' }}>Sidebar</Text>
+                            <Text style={{ fontSize: 9, color: 'var(--text-subtle)', fontFamily: typography.fontFamily.mono, writingMode: 'vertical-rl' }}>Sidebar</Text>
                         </div>
                         <div style={{
                             flex: 1,
                             padding: noPadding ? 0 : '16px 24px 24px',
-                            background: colors.bg.page,
+                            background: 'var(--bg)',
                             transition: 'padding 200ms',
                             position: 'relative',
                         }}>
@@ -107,12 +107,12 @@ const PageLayoutDemo: React.FC = () => {
                                 </>
                             )}
                             <div style={{
-                                background: colors.bg.container,
-                                borderRadius: radius.md,
-                                padding: spacing[3],
-                                border: `1px solid ${colors.border.base}`,
-                                fontSize: typography.fontSize.xs,
-                                color: colors.text.secondary,
+                                background: 'var(--surface)',
+                                borderRadius: 'var(--radius-md)',
+                                padding: 'var(--spacing-12)',
+                                border: `1px solid var(--border)`,
+                                fontSize: '11px',
+                                color: 'var(--text-muted)',
                                 fontFamily: typography.fontFamily.mono,
                             }}>
                                 &lt;PageLayout{noPadding ? ' noPadding' : ''}&gt; — content area
@@ -123,10 +123,10 @@ const PageLayoutDemo: React.FC = () => {
                         <div style={{
                             position: 'absolute',
                             top: 42,
-                            right: spacing[3],
+                            right: 'var(--spacing-12)',
                             display: 'flex',
                             flexDirection: 'column',
-                            gap: spacing[1],
+                            gap: 'var(--spacing-4)',
                         }}>
                             <Tag color="purple" style={{ fontSize: 10 }}>padding-top: 16px</Tag>
                             <Tag color="purple" style={{ fontSize: 10 }}>padding-x: 24px</Tag>
@@ -135,19 +135,19 @@ const PageLayoutDemo: React.FC = () => {
                     )}
                 </div>
 
-                <div style={{ background: colors.bg.subtle, borderRadius: radius.md, padding: spacing[4] }}>
-                    <Text style={{ fontSize: typography.fontSize.sm, fontWeight: typography.fontWeight.semibold, display: 'block', marginBottom: spacing[2] }}>
+                <div style={{ background: 'var(--bg-subtle)', borderRadius: 'var(--radius-md)', padding: 'var(--spacing-16)' }}>
+                    <Text style={{ fontSize: '12px', fontWeight: typography.fontWeight.semibold, display: 'block', marginBottom: 'var(--spacing-8)' }}>
                         Props
                     </Text>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: spacing[2] }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}>
                         {[
                             { prop: 'children', type: 'ReactNode', desc: 'Nội dung page' },
                             { prop: 'noPadding?', type: 'boolean', desc: 'Bỏ padding (full-bleed), mặc định false' },
                         ].map(({ prop, type, desc }) => (
-                            <div key={prop} style={{ display: 'flex', gap: spacing[3], alignItems: 'baseline' }}>
-                                <code style={{ fontSize: 11, fontFamily: typography.fontFamily.mono, color: colors.primary[500], minWidth: 100 }}>{prop}</code>
-                                <code style={{ fontSize: 11, fontFamily: typography.fontFamily.mono, color: colors.text.tertiary, minWidth: 80 }}>{type}</code>
-                                <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.secondary }}>{desc}</Text>
+                            <div key={prop} style={{ display: 'flex', gap: 'var(--spacing-12)', alignItems: 'baseline' }}>
+                                <code style={{ fontSize: 11, fontFamily: typography.fontFamily.mono, color: 'var(--primary)', minWidth: 100 }}>{prop}</code>
+                                <code style={{ fontSize: 11, fontFamily: typography.fontFamily.mono, color: 'var(--text-subtle)', minWidth: 80 }}>{type}</code>
+                                <Text style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{desc}</Text>
                             </div>
                         ))}
                     </div>

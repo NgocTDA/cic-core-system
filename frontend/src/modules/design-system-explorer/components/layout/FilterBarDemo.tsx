@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Input, Select, DatePicker, Typography, Tag, Switch } from 'antd';
 import { FilterBar, FilterCol, SectionCard, StatusTag } from '@/components/ui';
-import { colors, typography, spacing } from '@/design-system';
+import { typography, spacing } from '@/modules/design-system-explorer/tokens';
 import ComponentShowcase from '../../ComponentShowcase';
 import useHeaderActions from '@/hooks/useHeaderActions';
 
@@ -54,11 +54,11 @@ const FilterBarDemo: React.FC = () => {
   </FilterCol>
 </FilterBar>`}
         >
-            <div style={{ display: 'flex', flexDirection: 'column', gap: spacing[5] }}>
-                <div style={{ display: 'flex', gap: spacing[5], flexWrap: 'wrap' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: spacing[2] }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-20)' }}>
+                <div style={{ display: 'flex', gap: 'var(--spacing-20)', flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-8)' }}>
                         <Switch checked={inCard} onChange={setInCard} size="small" />
-                        <Text style={{ fontSize: typography.fontSize.sm }}>inCard</Text>
+                        <Text style={{ fontSize: '12px' }}>inCard</Text>
                     </div>
                 </div>
 
@@ -90,17 +90,17 @@ const FilterBarDemo: React.FC = () => {
                 </FilterBar>
 
                 {searched && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: spacing[2] }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-8)' }}>
                         <Tag color="success">Đã tìm kiếm</Tag>
-                        <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.tertiary }}>
+                        <Text style={{ fontSize: '11px', color: 'var(--text-subtle)' }}>
                             (onSearch callback được gọi)
                         </Text>
                     </div>
                 )}
 
                 {/* Props */}
-                <div style={{ background: colors.bg.subtle, borderRadius: 8, padding: spacing[4] }}>
-                    <Text style={{ fontSize: typography.fontSize.sm, fontWeight: typography.fontWeight.semibold, display: 'block', marginBottom: spacing[2] }}>
+                <div style={{ background: 'var(--bg-subtle)', borderRadius: 8, padding: 'var(--spacing-16)' }}>
+                    <Text style={{ fontSize: '12px', fontWeight: typography.fontWeight.semibold, display: 'block', marginBottom: 'var(--spacing-8)' }}>
                         FilterBar Props
                     </Text>
                     {[
@@ -110,10 +110,10 @@ const FilterBarDemo: React.FC = () => {
                         { prop: 'inCard?', type: 'boolean', desc: 'Bọc trong Ant Design Card với shadow' },
                         { prop: 'extra?', type: 'ReactNode', desc: 'Nút phụ bên cạnh Tìm kiếm (Export, v.v.)' },
                     ].map(({ prop, type, desc }) => (
-                        <div key={prop} style={{ display: 'flex', gap: spacing[3], alignItems: 'baseline', marginBottom: spacing[1] }}>
-                            <code style={{ fontSize: 11, fontFamily: typography.fontFamily.mono, color: colors.primary[500], minWidth: 100 }}>{prop}</code>
-                            <code style={{ fontSize: 11, fontFamily: typography.fontFamily.mono, color: colors.text.tertiary, minWidth: 120 }}>{type}</code>
-                            <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.secondary }}>{desc}</Text>
+                        <div key={prop} style={{ display: 'flex', gap: 'var(--spacing-12)', alignItems: 'baseline', marginBottom: 'var(--spacing-4)' }}>
+                            <code style={{ fontSize: 11, fontFamily: typography.fontFamily.mono, color: 'var(--primary)', minWidth: 100 }}>{prop}</code>
+                            <code style={{ fontSize: 11, fontFamily: typography.fontFamily.mono, color: 'var(--text-subtle)', minWidth: 120 }}>{type}</code>
+                            <Text style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{desc}</Text>
                         </div>
                     ))}
                 </div>

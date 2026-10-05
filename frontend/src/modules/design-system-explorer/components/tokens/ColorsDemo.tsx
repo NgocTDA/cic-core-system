@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Typography, Tooltip, message, Row, Col, Divider } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
 import { PageLayout, SectionCard } from '@/components/ui';
-import { colors, typography, spacing, radius } from '@/design-system';
+import { colors, typography, spacing, radius } from '@/modules/design-system-explorer/tokens';
 import useHeaderActions from '@/hooks/useHeaderActions';
 
 const { Text, Title } = Typography;
@@ -31,14 +31,14 @@ const Swatch: React.FC<SwatchProps> = ({ name, value, textColor = '#fff' }) => {
                     onClick={handleCopy}
                     style={{
                         background: value,
-                        borderRadius: radius.md,
-                        padding: `${spacing[3]} ${spacing[3]}`,
+                        borderRadius: 'var(--radius-md)',
+                        padding: `var(--spacing-12) var(--spacing-12)`,
                         cursor: 'pointer',
                         minHeight: 56,
                         display: 'flex',
                         flexDirection: 'column',
                         justifyContent: 'flex-end',
-                        border: value === '#ffffff' || value === '#fafafa' ? `1px solid ${colors.border.base}` : 'none',
+                        border: value === '#ffffff' || value === '#fafafa' ? `1px solid var(--border)` : 'none',
                         transition: 'transform 100ms',
                     }}
                     onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.03)')}
@@ -61,14 +61,14 @@ const ColorsDemo: React.FC = () => {
 
     return (
         <PageLayout>
-            <Title level={2} style={{ margin: `0 0 ${spacing[2]}` }}>Màu sắc</Title>
-            <Text style={{ color: colors.text.secondary, display: 'block', marginBottom: spacing[6] }}>
+            <Title level={2} style={{ margin: `0 0 var(--spacing-8)` }}>Màu sắc</Title>
+            <Text style={{ color: 'var(--text-muted)', display: 'block', marginBottom: 'var(--spacing-24)' }}>
                 Click vào màu để copy hex value. Import từ <code style={{ fontFamily: typography.fontFamily.mono }}>@/design-system</code>.
             </Text>
 
             {/* Subsystem colors */}
-            <SectionCard title="Màu Subsystem" style={{ marginBottom: spacing[5] }}>
-                <Row gutter={[8, 8]} style={{ paddingTop: spacing[3] }}>
+            <SectionCard title="Màu Subsystem" style={{ marginBottom: 'var(--spacing-20)' }}>
+                <Row gutter={[8, 8]} style={{ paddingTop: 'var(--spacing-12)' }}>
                     {Object.entries(colors.subsystem).map(([key, val]) => (
                         <Col xs={12} sm={8} md={6} lg={4} key={key}>
                             <Swatch name={`colors.subsystem.${key}`} value={val} />
@@ -78,8 +78,8 @@ const ColorsDemo: React.FC = () => {
             </SectionCard>
 
             {/* Primary */}
-            <SectionCard title="Primary (Brand)" style={{ marginBottom: spacing[5] }}>
-                <Row gutter={[8, 8]} style={{ paddingTop: spacing[3] }}>
+            <SectionCard title="Primary (Brand)" style={{ marginBottom: 'var(--spacing-20)' }}>
+                <Row gutter={[8, 8]} style={{ paddingTop: 'var(--spacing-12)' }}>
                     {Object.entries(colors.primary).map(([key, val]) => (
                         <Col xs={12} sm={8} md={6} lg={4} key={key}>
                             <Swatch name={`colors.primary[${key}]`} value={val} textColor={Number(key) >= 500 ? '#fff' : colors.neutral[800]} />
@@ -89,21 +89,21 @@ const ColorsDemo: React.FC = () => {
             </SectionCard>
 
             {/* Semantic */}
-            <SectionCard title="Semantic Colors" style={{ marginBottom: spacing[5] }}>
-                <Row gutter={[8, 8]} style={{ paddingTop: spacing[3] }}>
+            <SectionCard title="Semantic Colors" style={{ marginBottom: 'var(--spacing-20)' }}>
+                <Row gutter={[8, 8]} style={{ paddingTop: 'var(--spacing-12)' }}>
                     {[
-                        { name: 'colors.success.light', value: colors.success.light, text: colors.neutral[800] },
-                        { name: 'colors.success.base',  value: colors.success.base },
-                        { name: 'colors.success.dark',  value: colors.success.dark },
-                        { name: 'colors.warning.light', value: colors.warning.light, text: colors.neutral[800] },
-                        { name: 'colors.warning.base',  value: colors.warning.base },
-                        { name: 'colors.warning.dark',  value: colors.warning.dark },
-                        { name: 'colors.error.light',   value: colors.error.light, text: colors.neutral[800] },
-                        { name: 'colors.error.base',    value: colors.error.base },
-                        { name: 'colors.error.dark',    value: colors.error.dark },
-                        { name: 'colors.info.light',    value: colors.info.light, text: colors.neutral[800] },
-                        { name: 'colors.info.base',     value: colors.info.base },
-                        { name: 'colors.info.dark',     value: colors.info.dark },
+                        { name: 'colors.success.light', value: 'var(--success-subtle)', text: colors.neutral[800] },
+                        { name: 'colors.success.base',  value: 'var(--success)' },
+                        { name: 'colors.success.dark',  value: 'var(--success-ink)' },
+                        { name: 'colors.warning.light', value: 'var(--warning-subtle)', text: colors.neutral[800] },
+                        { name: 'colors.warning.base',  value: 'var(--warning)' },
+                        { name: 'colors.warning.dark',  value: 'var(--warning-ink)' },
+                        { name: 'colors.error.light',   value: 'var(--error-subtle)', text: colors.neutral[800] },
+                        { name: 'colors.error.base',    value: 'var(--error)' },
+                        { name: 'colors.error.dark',    value: 'var(--error-ink)' },
+                        { name: 'colors.info.light',    value: 'var(--info-subtle)', text: colors.neutral[800] },
+                        { name: 'colors.info.base',     value: 'var(--info)' },
+                        { name: 'colors.info.dark',     value: 'var(--info-ink)' },
                     ].map((s) => (
                         <Col xs={12} sm={8} md={6} key={s.name}>
                             <Swatch name={s.name} value={s.value} textColor={s.text} />
@@ -113,8 +113,8 @@ const ColorsDemo: React.FC = () => {
             </SectionCard>
 
             {/* Neutral */}
-            <SectionCard title="Neutral Scale" style={{ marginBottom: spacing[5] }}>
-                <Row gutter={[8, 8]} style={{ paddingTop: spacing[3] }}>
+            <SectionCard title="Neutral Scale" style={{ marginBottom: 'var(--spacing-20)' }}>
+                <Row gutter={[8, 8]} style={{ paddingTop: 'var(--spacing-12)' }}>
                     {Object.entries(colors.neutral).map(([key, val]) => (
                         <Col xs={12} sm={8} md={6} lg={4} key={key}>
                             <Swatch name={`colors.neutral[${key}]`} value={val} textColor={Number(key) >= 600 ? '#fff' : colors.neutral[800]} />
@@ -127,10 +127,10 @@ const ColorsDemo: React.FC = () => {
             <Row gutter={[16, 16]}>
                 <Col xs={24} md={8}>
                     <SectionCard title="Background">
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: spacing[2], paddingTop: spacing[3] }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)', paddingTop: 'var(--spacing-12)' }}>
                             {Object.entries(colors.bg).map(([key, val]) => (
                                 typeof val === 'string' && (
-                                    <Swatch key={key} name={`colors.bg.${key}`} value={val} textColor={colors.neutral[700]} />
+                                    <Swatch key={key} name={`colors.bg.${key}`} value={val} textColor={'var(--color-neutral-700)'} />
                                 )
                             ))}
                         </div>
@@ -138,11 +138,11 @@ const ColorsDemo: React.FC = () => {
                 </Col>
                 <Col xs={24} md={8}>
                     <SectionCard title="Text">
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: spacing[2], paddingTop: spacing[3] }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)', paddingTop: 'var(--spacing-12)' }}>
                             {Object.entries(colors.text).map(([key, val]) => (
-                                <div key={key} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: `${spacing[2]} ${spacing[3]}`, background: colors.bg.subtle, borderRadius: radius.sm }}>
+                                <div key={key} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: `var(--spacing-8) var(--spacing-12)`, background: 'var(--bg-subtle)', borderRadius: 'var(--radius-sm)' }}>
                                     <code style={{ fontSize: 11, fontFamily: typography.fontFamily.mono, color: val }}>colors.text.{key}</code>
-                                    <code style={{ fontSize: 11, fontFamily: typography.fontFamily.mono, color: colors.text.tertiary }}>{val}</code>
+                                    <code style={{ fontSize: 11, fontFamily: typography.fontFamily.mono, color: 'var(--text-subtle)' }}>{val}</code>
                                 </div>
                             ))}
                         </div>
@@ -150,10 +150,10 @@ const ColorsDemo: React.FC = () => {
                 </Col>
                 <Col xs={24} md={8}>
                     <SectionCard title="Border">
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: spacing[2], paddingTop: spacing[3] }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)', paddingTop: 'var(--spacing-12)' }}>
                             {Object.entries(colors.border).map(([key, val]) => (
-                                <div key={key} style={{ border: `2px solid ${val}`, padding: `${spacing[2]} ${spacing[3]}`, borderRadius: radius.sm, background: colors.bg.container }}>
-                                    <code style={{ fontSize: 11, fontFamily: typography.fontFamily.mono, color: colors.text.secondary }}>colors.border.{key} = {val}</code>
+                                <div key={key} style={{ border: `2px solid ${val}`, padding: `var(--spacing-8) var(--spacing-12)`, borderRadius: 'var(--radius-sm)', background: 'var(--surface)' }}>
+                                    <code style={{ fontSize: 11, fontFamily: typography.fontFamily.mono, color: 'var(--text-muted)' }}>colors.border.{key} = {val}</code>
                                 </div>
                             ))}
                         </div>

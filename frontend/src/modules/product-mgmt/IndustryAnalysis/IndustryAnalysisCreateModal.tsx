@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import { Modal, Form, Select, Input, Upload, Button, message, Space } from 'antd';
 import { UploadOutlined, PlusOutlined, SendOutlined } from '@ant-design/icons';
-import { colors, spacing, radius, typography } from '@/design-system';
 import {
   PRODUCT_CATALOG_OPTIONS,
   FISCAL_YEAR_OPTIONS,
@@ -74,14 +73,14 @@ const IndustryAnalysisCreateModal: React.FC<IndustryAnalysisCreateModalProps> = 
       centered
       destroyOnClose
       footer={
-        <div style={{ display: 'flex', justifyContent: 'center', gap: spacing[3], padding: `${spacing[2]} 0` }}>
-          <Button onClick={onClose} disabled={submitting} style={{ minWidth: 90, borderRadius: radius.md }}>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 'var(--spacing-12)', padding: `var(--spacing-8) 0` }}>
+          <Button onClick={onClose} disabled={submitting} style={{ minWidth: 90, borderRadius: 'var(--radius-md)' }}>
             Hủy
           </Button>
           <Button
             onClick={() => handleSubmit(false)}
             loading={submitting}
-            style={{ minWidth: 110, borderRadius: radius.md }}
+            style={{ minWidth: 110, borderRadius: 'var(--radius-md)' }}
           >
             Lưu dự thảo
           </Button>
@@ -90,7 +89,7 @@ const IndustryAnalysisCreateModal: React.FC<IndustryAnalysisCreateModalProps> = 
             icon={<SendOutlined />}
             onClick={() => handleSubmit(true)}
             loading={submitting}
-            style={{ minWidth: 140, borderRadius: radius.md }}
+            style={{ minWidth: 140, borderRadius: 'var(--radius-md)' }}
           >
             Lưu & Gửi duyệt
           </Button>
@@ -103,7 +102,7 @@ const IndustryAnalysisCreateModal: React.FC<IndustryAnalysisCreateModalProps> = 
         initialValues={{
           fiscalYear: 2025,
         }}
-        style={{ marginTop: spacing[3] }}
+        style={{ marginTop: 'var(--spacing-12)' }}
       >
         <Form.Item
           name="code"
@@ -130,7 +129,7 @@ const IndustryAnalysisCreateModal: React.FC<IndustryAnalysisCreateModalProps> = 
           <Input placeholder="Tên báo cáo phân tích ngành / trung bình ngành" />
         </Form.Item>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: spacing[4] }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-16)' }}>
           <Form.Item
             name="fiscalYear"
             label="Năm tài chính"

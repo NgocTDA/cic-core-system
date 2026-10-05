@@ -2,18 +2,18 @@
 
 import React from 'react';
 import { Empty } from 'antd';
-import { colors } from '@/design-system';
+import { TOOLS_COLORS } from '@/config/subsystems';
 import type { DocData } from './types';
 
 const C = {
-    navy: colors.toolsColors.primary,
-    blue: colors.toolsColors.secondary,
-    blueLt: colors.toolsColors.light,
-    blueXs: colors.toolsColors.xlight,
-    border: colors.border.base,
-    text: colors.text.primary,
-    muted: colors.text.secondary,
-    danger: colors.error.base,
+    navy: TOOLS_COLORS.primary,
+    blue: TOOLS_COLORS.secondary,
+    blueLt: TOOLS_COLORS.light,
+    blueXs: TOOLS_COLORS.xlight,
+    border: 'var(--border)',
+    text: 'var(--text)',
+    muted: 'var(--text-muted)',
+    danger: 'var(--error)',
 };
 
 const TD: React.CSSProperties = { border: `1px solid ${C.border}`, padding: '6px 10px', verticalAlign: 'top', fontSize: 12 };

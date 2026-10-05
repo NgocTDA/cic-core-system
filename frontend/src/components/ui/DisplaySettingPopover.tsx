@@ -7,7 +7,6 @@ import {
   SearchOutlined,
   HolderOutlined,
 } from '@ant-design/icons';
-import { colors, typography } from '@/design-system';
 
 const { Text } = Typography;
 
@@ -62,7 +61,7 @@ export const DisplaySettingPopover: React.FC<DisplaySettingPopoverProps> = ({
 
   const content = (
     <div style={{ width: 260, padding: '4px 0' }}>
-      <Text strong style={{ fontSize: typography.fontSize.base, display: 'block', marginBottom: 10, color: colors.text.primary }}>
+      <Text strong style={{ fontSize: '14px', display: 'block', marginBottom: 10, color: 'var(--text)' }}>
         Cài đặt hiển thị
       </Text>
 
@@ -95,7 +94,7 @@ export const DisplaySettingPopover: React.FC<DisplaySettingPopoverProps> = ({
               <Checkbox
                 checked={checked}
                 onChange={() => handleToggle(col.key)}
-                style={{ fontSize: typography.fontSize.sm }}
+                style={{ fontSize: '12px' }}
               >
                 {col.label}
               </Checkbox>
@@ -113,12 +112,12 @@ export const DisplaySettingPopover: React.FC<DisplaySettingPopoverProps> = ({
         Đã chọn {visibleKeys.length}/{columns.length}
       </Text>
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 6, borderTop: `1px solid ${colors.border.split}` }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 6, borderTop: `1px solid var(--color-neutral-100)` }}>
         <Button
           type="link"
           size="small"
           onClick={handleUncheckAll}
-          style={{ padding: 0, fontSize: 13, color: colors.primary[500] }}
+          style={{ padding: 0, fontSize: 13, color: 'var(--primary)' }}
         >
           Bỏ chọn
         </Button>
@@ -126,7 +125,7 @@ export const DisplaySettingPopover: React.FC<DisplaySettingPopoverProps> = ({
           type="link"
           size="small"
           onClick={handleSelectAll}
-          style={{ padding: 0, fontSize: 13, color: colors.primary[500] }}
+          style={{ padding: 0, fontSize: 13, color: 'var(--primary)' }}
         >
           Chọn tất cả
         </Button>
@@ -143,7 +142,7 @@ export const DisplaySettingPopover: React.FC<DisplaySettingPopoverProps> = ({
       onOpenChange={setOpen}
     >
       <Button
-        icon={<FilterOutlined style={{ color: colors.primary[500] }} />}
+        icon={<FilterOutlined style={{ color: 'var(--primary)' }} />}
         style={style}
       >
         {buttonText}

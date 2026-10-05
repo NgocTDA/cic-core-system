@@ -7,16 +7,16 @@ import { useSubSystem } from '../context/SubSystemContext';
 import { findMenuPathMatch, SHARED_MENU, MenuItem } from '../config/navigation';
 import SubSystemSwitcher from '../components/SubSystemSwitcher';
 import { useMenuBadges } from '../hooks/useMenuBadges';
-import { colors, typography, zIndex } from '../design-system';
+import { zIndex } from '@/config/layout';
 
 const { Sider } = Layout;
 const { Text } = Typography;
 
 const BADGE_COLOR: Record<string, string> = {
-  purple: colors.subsystem.ops,
-  teal:   colors.subsystem.governance,
-  orange: colors.subsystem.kkn,
-  gray:   colors.neutral[500],
+  purple: 'var(--chart-4-indigo)',
+  teal:   'var(--color-info-500)',
+  orange: 'var(--chart-5-amber)',
+  gray:   'var(--color-neutral-500, #6d7672)',
 };
 
 interface AppSidebarProps {
@@ -92,8 +92,8 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, onCollapse, isMobile
           label: !collapsed && (
             <Text
               style={{
-                color: colors.sidebar.textSecond,
-                fontSize: typography.fontSize.xs,
+                color: 'var(--color-secondary-300)',
+                fontSize: '11px',
                 padding: '8px 16px',
                 display: 'block',
                 textTransform: 'uppercase',
@@ -111,14 +111,14 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, onCollapse, isMobile
 
       const labelContent = (
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-          <span style={{ fontWeight: item.highlight ? typography.fontWeight.semibold : typography.fontWeight.regular }}>
+          <span style={{ fontWeight: item.highlight ? 600 : 400 }}>
             {item.label}
           </span>
           {hasBadge && !collapsed && (
             <Badge
               count={dynamicCount !== null ? dynamicCount : item.badge}
               style={{
-                backgroundColor: item.badgeColor ? (BADGE_COLOR[item.badgeColor] ?? colors.error.base) : colors.error.base,
+                backgroundColor: item.badgeColor ? (BADGE_COLOR[item.badgeColor] ?? 'var(--error)') : 'var(--error)',
                 fontSize: 10,
                 minWidth: 16,
                 height: 16,
@@ -163,7 +163,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, onCollapse, isMobile
       collapsible
       collapsed={collapsed}
       style={{
-        background: colors.sidebar.bg,
+        background: 'var(--color-ink-900)',
         height: '100vh',
         position: isMobile ? 'static' : 'sticky',
         top: 0,
@@ -177,13 +177,18 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, onCollapse, isMobile
           {/* ConfigProvider scoped — selected item theo phong cách Hướng A (Left Indicator Bar + Subtle Tint) */}
           <ConfigProvider
             theme={{
+              token: {
+                colorPrimary: activeSubSystem.color,
+              },
               components: {
                 Menu: {
-                  darkItemSelectedBg: colors.sidebar.selectedBg,
-                  darkItemSelectedColor: colors.text.inverse,
-                  darkItemHoverBg: colors.sidebar.hoverBg,
-                  darkItemHoverColor: colors.text.inverse,
-                  darkItemColor: colors.sidebar.textSecond,
+                  darkItemSelectedBg: `color-mix(in srgb, ${activeSubSystem.color} 15%, transparent)`,
+                  darkItemSelectedColor: 'var(--text-inverse)',
+                  darkItemHoverBg: 'var(--color-ink-800)',
+                  darkItemHoverColor: 'var(--text-inverse)',
+                  darkItemColor: 'var(--color-secondary-300)',
+                  darkSubMenuItemBg: 'transparent',
+                  darkItemBg: 'transparent',
                 },
               },
             }}
@@ -197,13 +202,13 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, onCollapse, isMobile
                 openKeys={openKeys}
                 onOpenChange={onOpenChange}
                 items={activeMenu}
-                style={{ background: colors.sidebar.bg, borderRight: 0 }}
+                style={{ background: 'var(--color-ink-900, #132620)', borderRight: 0 }}
               />
             </div>
             <style jsx global>{`
               .cic-sidebar-menu-wrapper .ant-menu-dark .ant-menu-item-selected {
                 position: relative;
-                background-color: ${colors.sidebar.selectedBg} !important;
+                background-color: color-mix(in srgb, ${activeSubSystem.color} 15%, transparent) !important;
                 font-weight: 600;
               }
               .cic-sidebar-menu-wrapper .ant-menu-dark .ant-menu-item-selected::before {
@@ -222,13 +227,19 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, onCollapse, isMobile
               .cic-sidebar-menu-wrapper .ant-menu-dark .ant-menu-item-selected a {
                 color: #ffffff !important;
               }
+              .cic-sidebar-menu-wrapper .ant-menu-dark .ant-menu-submenu-selected > .ant-menu-submenu-title {
+                color: ${activeSubSystem.color} !important;
+              }
+              .cic-sidebar-menu-wrapper .ant-menu-dark .ant-menu-submenu-selected > .ant-menu-submenu-title .ant-menu-submenu-arrow {
+                color: ${activeSubSystem.color} !important;
+              }
               .cic-sidebar-menu-wrapper .ant-menu-dark .ant-menu-item,
               .cic-sidebar-menu-wrapper .ant-menu-dark .ant-menu-submenu-title {
                 transition: background-color 150ms ease, color 150ms ease !important;
               }
               .cic-sidebar-menu-wrapper .ant-menu-dark .ant-menu-item:hover,
               .cic-sidebar-menu-wrapper .ant-menu-dark .ant-menu-submenu-title:hover {
-                background-color: ${colors.sidebar.hoverBg} !important;
+                background-color: var(--color-ink-800) !important;
                 color: #ffffff !important;
               }
             `}</style>
@@ -239,8 +250,8 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, onCollapse, isMobile
         <div
           style={{
             padding: collapsed ? '16px 8px' : '16px 24px',
-            borderTop: `1px solid ${colors.sidebar.divider}`,
-            background: colors.sidebar.bgDeep,
+            borderTop: '1px solid #244338',
+            background: 'var(--color-ink-950, #0f1f1a)',
             display: 'flex',
             flexDirection: collapsed ? 'column' : 'row',
             alignItems: 'center',
@@ -252,21 +263,21 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, onCollapse, isMobile
             <>
               <Button
                 type="text"
-                icon={<RightOutlined style={{ color: colors.sidebar.textSecond }} />}
+                icon={<RightOutlined style={{ color: 'var(--color-secondary-300)' }} />}
                 onClick={() => onCollapse(!collapsed)}
                 style={{ padding: 0, height: 'auto' }}
               />
-              <Text style={{ color: colors.sidebar.textSecond, fontSize: 10 }}>v1.1</Text>
+              <Text style={{ color: 'var(--color-secondary-300)', fontSize: 10 }}>v1.1</Text>
             </>
           ) : (
             <>
               <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <Text style={{ color: colors.sidebar.text, fontSize: 12 }}>CIC Core System</Text>
-                <Text style={{ color: colors.sidebar.textSecond, fontSize: 10 }}>Phiên bản 1.1.0-alpha</Text>
+                <Text style={{ color: 'var(--color-neutral-0)', fontSize: 12 }}>CIC Core System</Text>
+                <Text style={{ color: 'var(--color-secondary-300)', fontSize: 10 }}>Phiên bản 1.1.0-alpha</Text>
               </div>
               <Button
                 type="text"
-                icon={<LeftOutlined style={{ color: colors.sidebar.textSecond }} />}
+                icon={<LeftOutlined style={{ color: 'var(--color-secondary-300)' }} />}
                 onClick={() => onCollapse(!collapsed)}
                 style={{ padding: 0, height: 'auto' }}
               />

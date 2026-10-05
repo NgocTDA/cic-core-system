@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Form, Checkbox, Radio, Typography, Space, Divider, Alert, Row, Col } from 'antd';
 import type { CheckboxChangeEvent } from 'antd/es/checkbox';
 import ComponentShowcase from '../../ComponentShowcase';
-import { colors, typography, spacing } from '@/design-system';
+import { typography, spacing } from '@/modules/design-system-explorer/tokens';
 import useHeaderActions from '@/hooks/useHeaderActions';
 
 const { Text } = Typography;
@@ -71,31 +71,31 @@ const isIndet = checked.length > 0 && !isAll;
             <Row gutter={[24, 0]}>
                 <Col xs={24} md={12}>
                     {/* Checkbox with select-all + indeterminate */}
-                    <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.secondary, textTransform: 'uppercase', letterSpacing: 1, display: 'block', marginBottom: spacing[3] }}>
+                    <Text style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 1, display: 'block', marginBottom: 'var(--spacing-12)' }}>
                         Checkbox — Select All + Indeterminate
                     </Text>
                     <div
                         style={{
-                            padding: spacing[4],
-                            background: colors.bg.subtle,
+                            padding: 'var(--spacing-16)',
+                            background: 'var(--bg-subtle)',
                             borderRadius: 6,
-                            border: `1px solid ${colors.border.split}`,
-                            marginBottom: spacing[4],
+                            border: `1px solid var(--color-neutral-100)`,
+                            marginBottom: 'var(--spacing-16)',
                         }}
                     >
                         <Checkbox
                             indeterminate={isIndeterminate}
                             checked={isAllChecked}
                             onChange={handleSelectAll}
-                            style={{ fontWeight: typography.fontWeight.semibold, marginBottom: spacing[3] }}
+                            style={{ fontWeight: typography.fontWeight.semibold, marginBottom: 'var(--spacing-12)' }}
                         >
                             Chọn tất cả
                         </Checkbox>
-                        <Divider style={{ margin: `${spacing[2]} 0` }} />
+                        <Divider style={{ margin: `var(--spacing-8) 0` }} />
                         <Checkbox.Group
                             value={checkedList}
                             onChange={(vals) => setCheckedList(vals as string[])}
-                            style={{ display: 'flex', flexDirection: 'column', gap: spacing[2] }}
+                            style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}
                         >
                             {STATUSES.map((s) => (
                                 <Checkbox key={s} value={s}>
@@ -103,7 +103,7 @@ const isIndet = checked.length > 0 && !isAll;
                                 </Checkbox>
                             ))}
                         </Checkbox.Group>
-                        <div style={{ marginTop: spacing[3], fontSize: typography.fontSize.xs, color: colors.text.secondary }}>
+                        <div style={{ marginTop: 'var(--spacing-12)', fontSize: '11px', color: 'var(--text-muted)' }}>
                             Đã chọn: {checkedList.length}/{STATUSES.length}
                         </div>
                     </div>
@@ -113,40 +113,40 @@ const isIndet = checked.length > 0 && !isAll;
                         type="warning"
                         message="Nếu > 6 options thì dùng Select / Combobox thay Checkbox"
                         showIcon
-                        style={{ fontSize: typography.fontSize.xs }}
+                        style={{ fontSize: '11px' }}
                     />
                 </Col>
 
                 <Col xs={24} md={12}>
                     {/* Radio < 6 options */}
-                    <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.secondary, textTransform: 'uppercase', letterSpacing: 1, display: 'block', marginBottom: spacing[3] }}>
+                    <Text style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 1, display: 'block', marginBottom: 'var(--spacing-12)' }}>
                         Radio — {'<'} 6 options
                     </Text>
                     <div
                         style={{
-                            padding: spacing[4],
-                            background: colors.bg.subtle,
+                            padding: 'var(--spacing-16)',
+                            background: 'var(--bg-subtle)',
                             borderRadius: 6,
-                            border: `1px solid ${colors.border.split}`,
-                            marginBottom: spacing[4],
+                            border: `1px solid var(--color-neutral-100)`,
+                            marginBottom: 'var(--spacing-16)',
                         }}
                     >
-                        <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.tertiary, display: 'block', marginBottom: spacing[3] }}>
+                        <Text style={{ fontSize: '11px', color: 'var(--text-subtle)', display: 'block', marginBottom: 'var(--spacing-12)' }}>
                             Vai trò (3 options — dùng Radio)
                         </Text>
                         <Radio.Group
                             value={radioValue}
                             onChange={(e) => setRadioValue(e.target.value)}
-                            style={{ display: 'flex', flexDirection: 'column', gap: spacing[2] }}
+                            style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}
                         >
                             {ROLES.map((r) => (
                                 <Radio key={r} value={r}>{r}</Radio>
                             ))}
                         </Radio.Group>
 
-                        <Divider style={{ margin: `${spacing[3]} 0` }} />
+                        <Divider style={{ margin: `var(--spacing-12) 0` }} />
 
-                        <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.tertiary, display: 'block', marginBottom: spacing[3] }}>
+                        <Text style={{ fontSize: '11px', color: 'var(--text-subtle)', display: 'block', marginBottom: 'var(--spacing-12)' }}>
                             Radio Button Group (horizontal)
                         </Text>
                         <Radio.Group defaultValue="day" buttonStyle="solid" size="small">
@@ -160,7 +160,7 @@ const isIndet = checked.length > 0 && !isAll;
                         type="warning"
                         message="Nếu > 5 options thì dùng Dropdown thay Radio"
                         showIcon
-                        style={{ fontSize: typography.fontSize.xs }}
+                        style={{ fontSize: '11px' }}
                     />
                 </Col>
             </Row>

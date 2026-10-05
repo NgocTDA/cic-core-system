@@ -5,7 +5,6 @@ import { Select, DatePicker, Popover, Checkbox, Button, Tooltip, Typography } fr
 import { FilterOutlined } from '@ant-design/icons';
 import type { Dayjs } from 'dayjs';
 import { FilterBar, FilterCol } from '@/components/ui';
-import { colors, spacing, typography } from '@/design-system';
 import {
   PRODUCT_CATALOG_OPTIONS,
   FISCAL_YEAR_OPTIONS,
@@ -96,20 +95,20 @@ const IndustryAnalysisFilter: React.FC<IndustryAnalysisFilterProps> = ({
   };
 
   const popoverContent = (
-    <div style={{ width: 190, padding: `${spacing[1]} 0` }}>
+    <div style={{ width: 190, padding: `var(--spacing-4) 0` }}>
       <Text
         strong
         style={{
-          fontSize: typography.fontSize.sm,
+          fontSize: '12px',
           display: 'block',
-          marginBottom: spacing[2],
-          borderBottom: `1px solid ${colors.border.split}`,
-          paddingBottom: spacing[1],
+          marginBottom: 'var(--spacing-8)',
+          borderBottom: `1px solid var(--color-neutral-100)`,
+          paddingBottom: 'var(--spacing-4)',
         }}
       >
         Hiển thị các bộ lọc
       </Text>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: spacing[2] }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}>
         {FILTER_CONFIG_OPTIONS.map((opt) => (
           <Checkbox
             key={opt.key}

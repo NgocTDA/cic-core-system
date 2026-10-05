@@ -2,7 +2,6 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { Spin, Alert, Empty } from 'antd';
-import { spacing, colors } from '@/design-system';
 import { fetchDocxBlob } from '@/services/aiService';
 import type { DocData } from './types';
 
@@ -65,23 +64,23 @@ const WordPreview: React.FC<WordPreviewProps> = ({ doc, image, onRendered }) => 
     return (
         <div style={{ position: 'relative', minHeight: 200 }}>
             {loading && (
-                <div style={{ textAlign: 'center', padding: spacing[6] }}>
+                <div style={{ textAlign: 'center', padding: 'var(--spacing-24)' }}>
                     <Spin />
-                    <div style={{ marginTop: spacing[2], color: colors.text.secondary, fontSize: 13 }}>
+                    <div style={{ marginTop: 'var(--spacing-8)', color: 'var(--text-muted)', fontSize: 13 }}>
                         Đang dựng bản Word thật...
                     </div>
                 </div>
             )}
             {error && (
-                <Alert type="error" showIcon message="Lỗi xem trước Word" description={error} style={{ marginBottom: spacing[3] }} />
+                <Alert type="error" showIcon message="Lỗi xem trước Word" description={error} style={{ marginBottom: 'var(--spacing-12)' }} />
             )}
             {/* Container cho docx-preview; nền xám để thấy mép trang giống Word */}
             <div
                 ref={containerRef}
                 style={{
                     display: loading ? 'none' : 'block',
-                    background: colors.bg.page,
-                    padding: spacing[3],
+                    background: 'var(--bg)',
+                    padding: 'var(--spacing-12)',
                     borderRadius: 8,
                 }}
             />

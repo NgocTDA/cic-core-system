@@ -8,11 +8,11 @@ Hướng dẫn này giúp Claude Code hiểu codebase và làm việc nhất qu�
 
 **CIC Core System** là hệ thống quản lý thông tin tín dụng nội bộ. 6 subsystem nghiệp vụ cốt lõi:
 
-| ID | Tên | Màu (`colors.subsystem.*`) |
+| ID | Tên | Màu (`SUBSYSTEMS.*.theme.primaryColor`) |
 |---|---|---|
 | `kkn` | Kênh kết nối | `#f59e0b` (amber gold) |
 | `data-collection` | Thu thập & xử lý dữ liệu | `#38bdf8` (sky blue) |
-| `product-mgmt` | Quản lý & tạo lập sản phẩm | `#2a765b` (reqhub emerald) |
+| `product-mgmt` | Quản lý & tạo lập sản phẩm | `#2c795b` (Forest Pine) |
 | `ops-support` | Hỗ trợ vận hành | `#8b5cf6` (iris violet) |
 | `analytics-reporting` | Báo cáo thống kê | `#f43f5e` (rose coral) |
 | `data-governance` | Quản trị dữ liệu | `#14b8a6` (deep mint) |
@@ -54,9 +54,8 @@ frontend/src/
 │   └── navigation.tsx      # Menu items & subsystem definitions (nguồn của docs/menu.md)
 ├── context/                # React Contexts
 ├── design-system/
-│   ├── tokens.ts           # Single source of truth cho mọi visual value
 │   ├── theme.ts            # Ant Design ConfigProvider theme
-│   └── index.ts            # Barrel export
+│   └── index.ts            # Export antdTheme (Forest CSS nạp từ app/layout.tsx)
 ├── hooks/                  # Custom hooks
 ├── layouts/
 │   ├── AppHeader.tsx       # Sticky top bar
@@ -86,8 +85,8 @@ Mọi quyết định về visual, UI, layout, components và design tokens ph�
 
 ```tsx
 // ✅ ĐÚNG
-import { colors, spacing, shadows, typography } from '@/design-system';
-style={{ color: colors.primary[500], padding: spacing[4] }}
+import { antdTheme } from '@/design-system';
+style={{ color: 'var(--primary)', padding: 'var(--spacing-16)' }}
 
 // ❌ SAI
 style={{ color: '#1677ff', padding: '16px' }}
@@ -107,9 +106,9 @@ Xem API đầy đủ tại [docs/design-system/components.md](docs/design-system
 
 ```tsx
 // ✅ ĐÚNG
-import { colors } from '@/design-system';
-colors.subsystem.kkn     // '#fa8c16'
-colors.subsystem.ops     // '#722ed1'
+import { SUBSYSTEMS } from '@/config/subsystems';
+SUBSYSTEMS.kkn.theme.primaryColor     // '#f59e0b'
+SUBSYSTEMS.ops.theme.primaryColor     // '#8b5cf6'
 
 // ❌ SAI
 '#fa8c16'
@@ -166,15 +165,15 @@ Tất cả màn hình Xem chi tiết bắt buộc phải có **Bảng Lịch s�
 Mọi màn hình danh sách (List Page) phải tuân thủ nghiêm ngặt các quy chuẩn giao diện, kiểu chữ, định dạng dữ liệu và phân trang sau:
 
 - **Bộ tìm kiếm (`FilterBar`)**:
-  - Bắt buộc dùng `inCard` (hoặc `variant="context"`): nền màu Sage tint (`#edf3ed`), viền mờ nhạt `colors.border.base`, bo góc `radius.md` tạo cảm giác Context Banner nhất quán.
-  - Tích hợp nút/popover "Thêm bộ lọc" (`<Button icon={<FilterOutlined />} style={{ background: '#ffffff', borderColor: '#9fb3a9', color: '#18312a' }}>`) cho phép người dùng tùy biến ẩn/hiện các trường lọc.
+  - Bắt buộc dùng `inCard` (hoặc `variant="context"`): nền màu Sage tint (`#edf3ed`), viền mờ nhạt `var(--border)`, bo góc `var(--radius-md)` tạo cảm giác Context Banner nhất quán.
+  - Chỉ hiển thị nút "Thêm bộ lọc" khi có hành vi ẩn/hiện trường thật: truyền `onAddFilter` vào `FilterBar` hoặc dùng popover riêng qua `extra`. Không hiển thị nút không có tác dụng.
   - Thiết lập `minWidth` hợp lý cho từng `<FilterCol>` (130px - 220px) để các ô tìm kiếm trải đều, các nút *Tìm kiếm* (Primary) và *Đặt lại* (`ReloadOutlined`) luôn neo vững ở góc phải.
 - **Thẻ bảng dữ liệu (`SectionCard`)**:
   - Không lặp lại tiêu đề nếu Header trang đã có tên chức năng rõ ràng: Dùng `<SectionCard flex>`. Chỉ đặt `title` và `count` (`<SectionCard title="Tên danh sách" count={data.length} flex>`) khi trang có nhiều khối danh sách hoặc cần phân đoạn riêng biệt.
   - Chọn hàng loạt (`rowSelection`): Khi người dùng chọn các dòng dữ liệu, Header tự động hiển thị nút thao tác lô (vd: `Gửi duyệt (${selectedRowKeys.length})` hoặc `Chạy Job (${selectedRowKeys.length})`).
   - Tương tác click dòng: nhấp vào bất kỳ đâu trên dòng dữ liệu (`onRow -> onClick`) mở trực tiếp Modal chi tiết.
 - **Font chữ, style & Định dạng dữ liệu**:
-  - **Mã định danh (Mã Job, Mã SP, Mã hồ sơ)**: Dùng font sans-serif đậm màu xanh primary (`<Text strong style={{ color: colors.primary[500], whiteSpace: 'nowrap' }}>{code}</Text>`) hoặc `<CodeText>{code}</CodeText>`.
+  - **Mã định danh (Mã Job, Mã SP, Mã hồ sơ)**: Dùng font sans-serif đậm màu xanh primary (`<Text strong style={{ color: 'var(--primary)', whiteSpace: 'nowrap' }}>{code}</Text>`) hoặc `<CodeText>{code}</CodeText>`.
   - **Tên đối tượng**: Dùng `<Text strong>{name}</Text>`, bật `ellipsis: true` kèm `Tooltip` nếu văn bản dài.
   - **Người tạo / Người duyệt / Người cập nhật**:
     - Hiển thị trực tiếp `username`, **TUYỆT ĐỐI KHÔNG thêm ký tự `@` phía trước** (hiển thị `admin`, `nguyenvana`, KHÔNG DÙNG `@admin`, `@nguyenvana`).
@@ -222,9 +221,9 @@ modules/ops-support/JobManagement/
 
 ## Những điều KHÔNG làm
 
-- **Không** hardcode hex color bên ngoài `design-system/tokens.ts`
-- **Không** dùng `background: '#f5f5f5'` — phải dùng `colors.bg.page`
-- **Không** tạo `padding: '16px'` — phải dùng `spacing[4]`
+- **Không** hardcode hex color trong component; dùng Forest CSS variables, cấu hình subsystem và theme trung tâm
+- **Không** dùng `background: '#f5f5f5'` — phải dùng `var(--bg)`
+- **Không** tạo `padding: '16px'` — phải dùng `var(--spacing-16)`
 - **Không** tự tạo status tag riêng — dùng `<StatusTag status="ACTIVE" />`
 - **Không** tự tạo action dropdown riêng — dùng `<ActionMenu items={...} />`
 - **Không** viết pagination config thủ công — dùng `tablePagination()`
@@ -246,5 +245,5 @@ modules/ops-support/JobManagement/
 
 ## Khi thêm token mới
 
-Chỉ thêm vào `frontend/src/design-system/tokens.ts`. Không hardcode ở chỗ khác.
+Ưu tiên CSS variables của `@ntda/forest-design-system` (nạp tại `frontend/app/layout.tsx`). `@/design-system` chỉ export `antdTheme`; không import `colors`/`spacing` từ đó. Cấu hình số cho Ant Design ở `theme.ts`, layout/z-index ở `config/layout.ts`, màu subsystem ở `config/subsystems.ts`. Không khôi phục `tokens.ts` cũ. Với prop chỉ nhận số (vd `Space.size`), dùng giá trị từ theme hoặc CSS `gap` thay vì truyền CSS string.
 Sau đó cập nhật [docs/design-system/tokens.md](docs/design-system/tokens.md).

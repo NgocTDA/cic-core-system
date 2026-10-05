@@ -1,10 +1,11 @@
 'use client';
 
+import { SUBSYSTEM_COLORS } from '@/config/subsystems';
+
 import React from 'react';
 import { Form, Input, Button, Upload, Space, Typography, Alert, Tag } from 'antd';
 import type { UploadFile } from 'antd';
 import { InboxOutlined, ThunderboltOutlined, FileTextOutlined } from '@ant-design/icons';
-import { colors, spacing } from '@/design-system';
 import ProviderSelect from './ProviderSelect';
 import type { DocInput, ProviderInfo, UploadedImage } from './types';
 
@@ -47,7 +48,7 @@ const DocForm: React.FC<DocFormProps> = ({ input, onChange, providers, providerI
         <Alert
             type="error"
             showIcon
-            style={{ marginTop: spacing[1] }}
+            style={{ marginTop: 'var(--spacing-4)' }}
             message="Cấu hình provider sai"
             description={`type "${selected.type}" không hợp lệ — chỉ chấp nhận A (Anthropic), O (OpenAI) hoặc G (Gemini).`}
         />
@@ -55,15 +56,15 @@ const DocForm: React.FC<DocFormProps> = ({ input, onChange, providers, providerI
         <Alert
             type="warning"
             showIcon
-            style={{ marginTop: spacing[1] }}
+            style={{ marginTop: 'var(--spacing-4)' }}
             message="Provider chưa có API key"
             description="Liên hệ quản trị viên để thêm API key."
         />
     ) : null;
 
     return (
-        <Form layout="vertical" style={{ display: 'flex', flexDirection: 'column', gap: spacing[2] }}>
-            <Form.Item label="AI Provider" style={{ marginBottom: spacing[3] }}>
+        <Form layout="vertical" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}>
+            <Form.Item label="AI Provider" style={{ marginBottom: 'var(--spacing-12)' }}>
                 <ProviderSelect
                     providers={providers}
                     value={providerId}
@@ -75,15 +76,15 @@ const DocForm: React.FC<DocFormProps> = ({ input, onChange, providers, providerI
                 {promptLabel && (
                     <Tag
                         icon={<FileTextOutlined />}
-                        color={colors.subsystem.tools}
-                        style={{ marginTop: spacing[1] }}
+                        color={SUBSYSTEM_COLORS.tools}
+                        style={{ marginTop: 'var(--spacing-4)' }}
                     >
                         Prompt: {promptLabel}
                     </Tag>
                 )}
             </Form.Item>
 
-            <Form.Item label="Tên chức năng" required style={{ marginBottom: spacing[3] }}>
+            <Form.Item label="Tên chức năng" required style={{ marginBottom: 'var(--spacing-12)' }}>
                 <Input
                     value={input.funcName}
                     onChange={(e) => onChange({ funcName: e.target.value })}
@@ -91,7 +92,7 @@ const DocForm: React.FC<DocFormProps> = ({ input, onChange, providers, providerI
                 />
             </Form.Item>
 
-            <Form.Item label="Mã màn hình" style={{ marginBottom: spacing[3] }}>
+            <Form.Item label="Mã màn hình" style={{ marginBottom: 'var(--spacing-12)' }}>
                 <Input
                     value={input.screenCode}
                     onChange={(e) => onChange({ screenCode: e.target.value })}
@@ -99,7 +100,7 @@ const DocForm: React.FC<DocFormProps> = ({ input, onChange, providers, providerI
                 />
             </Form.Item>
 
-            <Form.Item label="Module / Hệ thống" style={{ marginBottom: spacing[3] }}>
+            <Form.Item label="Module / Hệ thống" style={{ marginBottom: 'var(--spacing-12)' }}>
                 <Input
                     value={input.module}
                     onChange={(e) => onChange({ module: e.target.value })}
@@ -107,7 +108,7 @@ const DocForm: React.FC<DocFormProps> = ({ input, onChange, providers, providerI
                 />
             </Form.Item>
 
-            <Form.Item label="Mô tả chức năng" style={{ marginBottom: spacing[3] }}>
+            <Form.Item label="Mô tả chức năng" style={{ marginBottom: 'var(--spacing-12)' }}>
                 <Input.TextArea
                     value={input.funcDesc}
                     onChange={(e) => onChange({ funcDesc: e.target.value })}
@@ -116,7 +117,7 @@ const DocForm: React.FC<DocFormProps> = ({ input, onChange, providers, providerI
                 />
             </Form.Item>
 
-            <Form.Item label="Mockup / Wireframe (tùy chọn)" style={{ marginBottom: spacing[3] }}>
+            <Form.Item label="Mockup / Wireframe (tùy chọn)" style={{ marginBottom: 'var(--spacing-12)' }}>
                 <Dragger
                     multiple
                     accept="image/*"
@@ -132,7 +133,7 @@ const DocForm: React.FC<DocFormProps> = ({ input, onChange, providers, providerI
                     listType="picture"
                 >
                     <p className="ant-upload-drag-icon">
-                        <InboxOutlined style={{ color: colors.subsystem.tools }} />
+                        <InboxOutlined style={{ color: SUBSYSTEM_COLORS.tools }} />
                     </p>
                     <p className="ant-upload-text">Kéo thả hoặc click để upload ảnh</p>
                     <p className="ant-upload-hint">PNG, JPG, WebP · AI sẽ phân tích trực tiếp ảnh mockup</p>

@@ -3,7 +3,7 @@ import React from 'react';
 import { Select, Typography, Space, Tooltip, Dropdown } from 'antd';
 import { useSubSystem } from '../context/SubSystemContext';
 import { SUB_SYSTEMS } from '../config/navigation';
-import { colors, typography, layout, radius, zIndex } from '../design-system';
+import { layout, zIndex } from '@/config/layout';
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -46,7 +46,7 @@ const SubSystemSwitcher: React.FC<SubSystemSwitcherProps> = ({ mode = 'light', c
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                borderBottom: isHeader ? `1px solid ${colors.sidebar.divider}` : 'none',
+                borderBottom: isHeader ? '1px solid rgba(255, 255, 255, 0.12)' : 'none',
             }}>
                 <Dropdown 
                     menu={collapsedMenuItems} 
@@ -58,11 +58,11 @@ const SubSystemSwitcher: React.FC<SubSystemSwitcherProps> = ({ mode = 'light', c
                         <div style={{
                             width: 40,
                             height: 40,
-                            borderRadius: radius.md,
+                            borderRadius: 'var(--radius-md)',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            background: isDark ? colors.sidebar.hoverBg : colors.neutral[100],
+                            background: isDark ? 'rgba(255, 255, 255, 0.08)' : 'var(--color-neutral-100)',
                             color: activeSubSystem.color,
                             cursor: 'pointer',
                             fontSize: 24,
@@ -83,7 +83,7 @@ const SubSystemSwitcher: React.FC<SubSystemSwitcherProps> = ({ mode = 'light', c
                 display: 'flex',
                 alignItems: 'center',
                 padding: '0 24px',
-                borderBottom: `1px solid ${colors.sidebar.divider}`,
+                borderBottom: '1px solid rgba(255, 255, 255, 0.12)',
                 background: 'rgba(0,0,0,0.12)',
             }}>
                 <Select
@@ -91,8 +91,8 @@ const SubSystemSwitcher: React.FC<SubSystemSwitcherProps> = ({ mode = 'light', c
                     onChange={setActiveSubSystem}
                     style={{
                         flex: 1,
-                        fontWeight: typography.fontWeight.bold,
-                        fontSize: typography.fontSize.md,
+                        fontWeight: 700,
+                        fontSize: '16px',
                     }}
                     variant="borderless"
                     className={SELECT_CLASS}
@@ -100,9 +100,9 @@ const SubSystemSwitcher: React.FC<SubSystemSwitcherProps> = ({ mode = 'light', c
                     styles={{
                         popup: {
                             root: {
-                                background: colors.sidebar.bgDeep,
-                                borderRadius: radius.md,
-                                border: `1px solid ${colors.sidebar.divider}`,
+                                background: 'var(--color-ink-950)',
+                                borderRadius: 'var(--radius-md)',
+                                border: '1px solid rgba(255, 255, 255, 0.12)',
                                 zIndex: zIndex.overlay,
                             },
                         },
@@ -116,10 +116,11 @@ const SubSystemSwitcher: React.FC<SubSystemSwitcherProps> = ({ mode = 'light', c
                                     fontSize: 18,
                                     display: 'flex',
                                     alignItems: 'center',
-                                }}>
+                                    }}
+                                >
                                     {sys.icon}
                                 </span>
-                                <span style={{ color: colors.sidebar.text }}>{sys.name}</span>
+                                <span style={{ color: 'var(--color-neutral-0)' }}>{sys.name}</span>
                             </Space>
                         </Option>
                     ))}
@@ -128,8 +129,8 @@ const SubSystemSwitcher: React.FC<SubSystemSwitcherProps> = ({ mode = 'light', c
                 {/* Scoped styles — chỉ ảnh hưởng đến dropdown của component này */}
                 <style jsx global>{`
                     .${SELECT_CLASS} .ant-select-selection-item {
-                        color: ${colors.text.inverse} !important;
-                        font-size: ${typography.fontSize.md} !important;
+                        color: var(--text-inverse) !important;
+                        font-size: 16px !important;
                         display: flex !important;
                         align-items: center !important;
                     }
@@ -137,23 +138,23 @@ const SubSystemSwitcher: React.FC<SubSystemSwitcherProps> = ({ mode = 'light', c
                         gap: 12px !important;
                     }
                     .${SELECT_CLASS} .ant-select-arrow {
-                        color: ${colors.sidebar.textSecond} !important;
+                        color: var(--color-secondary-300) !important;
                     }
                     .${POPUP_CLASS} {
-                        background-color: ${colors.sidebar.bgDeep} !important;
+                        background-color: var(--color-ink-950) !important;
                         padding: 4px !important;
                     }
                     .${POPUP_CLASS} .ant-select-item {
-                        color: ${colors.sidebar.text} !important;
-                        border-radius: ${radius.sm} !important;
+                        color: var(--color-neutral-0) !important;
+                        border-radius: var(--radius-sm) !important;
                         margin-bottom: 2px !important;
                     }
                     .${POPUP_CLASS} .ant-select-item-option-active {
-                        background-color: ${colors.sidebar.hoverBg} !important;
+                        background-color: rgba(255, 255, 255, 0.08) !important;
                     }
                     .${POPUP_CLASS} .ant-select-item-option-selected {
                         background-color: rgba(255, 255, 255, 0.14) !important;
-                        font-weight: ${typography.fontWeight.semibold} !important;
+                        font-weight: 600 !important;
                     }
                 `}</style>
             </div>
@@ -165,17 +166,17 @@ const SubSystemSwitcher: React.FC<SubSystemSwitcherProps> = ({ mode = 'light', c
         <div style={{
             display: 'flex',
             alignItems: 'center',
-            background: isDark ? colors.sidebar.hoverBg : colors.neutral[100],
+            background: isDark ? 'rgba(255, 255, 255, 0.08)' : 'var(--color-neutral-100)',
             padding: '4px 12px',
-            borderRadius: radius.md,
+            borderRadius: 'var(--radius-md)',
             border: isDark
-                ? `1px solid ${colors.sidebar.divider}`
-                : `1px solid ${colors.border.base}`,
+                ? '1px solid rgba(255, 255, 255, 0.12)'
+                : '1px solid var(--border)',
             margin: isDark ? '8px 16px' : '0',
         }}>
             <Space size="small" style={{ width: '100%' }}>
                 {!isDark && (
-                    <Text type="secondary" style={{ fontSize: typography.fontSize.sm, marginRight: 8 }}>
+                    <Text type="secondary" style={{ fontSize: '12px', marginRight: 8 }}>
                         Phân hệ:
                     </Text>
                 )}
@@ -184,16 +185,16 @@ const SubSystemSwitcher: React.FC<SubSystemSwitcherProps> = ({ mode = 'light', c
                     onChange={setActiveSubSystem}
                     style={{
                         width: isDark ? '100%' : 220,
-                        fontWeight: typography.fontWeight.semibold,
+                        fontWeight: 600,
                     }}
                     variant="borderless"
-                    styles={{ popup: { root: { borderRadius: radius.md } } }}
+                    styles={{ popup: { root: { borderRadius: 'var(--radius-md)' } } }}
                 >
                     {SUB_SYSTEMS.map(sys => (
                         <Option key={sys.id} value={sys.id}>
                             <Space>
                                 <span style={{ color: sys.color }}>{sys.icon}</span>
-                                <span style={{ color: isDark ? colors.sidebar.text : 'inherit' }}>
+                                <span style={{ color: isDark ? 'var(--color-neutral-0)' : 'inherit' }}>
                                     {sys.name}
                                 </span>
                             </Space>

@@ -9,7 +9,7 @@ import {
 } from '@ant-design/icons';
 import Link from 'next/link';
 import { PageLayout, SectionCard } from '@/components/ui';
-import { colors, typography, spacing, radius, shadows } from '@/design-system';
+import { colors, typography, spacing, radius, shadows } from '@/modules/design-system-explorer/tokens';
 import useHeaderActions from '@/hooks/useHeaderActions';
 import { GROUP_CONFIG } from './ComponentShowcase';
 
@@ -76,32 +76,32 @@ const GROUPS = [
 
 const KEY_RULES = [
     {
-        icon: <CheckCircleFilled style={{ color: colors.success.base }} />,
+        icon: <CheckCircleFilled style={{ color: 'var(--success)' }} />,
         title: 'Luôn dùng design tokens',
         desc: 'Không hardcode hex color hay padding value. Import từ @/design-system.',
     },
     {
-        icon: <CheckCircleFilled style={{ color: colors.success.base }} />,
+        icon: <CheckCircleFilled style={{ color: 'var(--success)' }} />,
         title: 'Shared UI components cho mọi page list',
         desc: 'Dùng PageLayout, FilterBar, SectionCard, StatusTag, ActionMenu, tablePagination.',
     },
     {
-        icon: <CheckCircleFilled style={{ color: colors.success.base }} />,
+        icon: <CheckCircleFilled style={{ color: 'var(--success)' }} />,
         title: 'Header actions qua hook',
         desc: 'useHeaderActions({ title, actions }) — không sửa AppHeader.tsx trực tiếp.',
     },
     {
-        icon: <InfoCircleFilled style={{ color: colors.info.base }} />,
+        icon: <InfoCircleFilled style={{ color: 'var(--info)' }} />,
         title: 'Ngày: DD/MM/YYYY, Số: dấu . nghìn / , thập phân',
         desc: 'Hover vào ngày hiển thị full datetime. Số thập phân mặc định 2 chữ số.',
     },
     {
-        icon: <InfoCircleFilled style={{ color: colors.info.base }} />,
+        icon: <InfoCircleFilled style={{ color: 'var(--info)' }} />,
         title: 'Căn lề: Text trái / Số phải / Ngày giữa',
         desc: 'Áp dụng cho cả header bảng và giá trị ô. STT và Thao tác cố định (sticky).',
     },
     {
-        icon: <InfoCircleFilled style={{ color: colors.info.base }} />,
+        icon: <InfoCircleFilled style={{ color: 'var(--info)' }} />,
         title: 'Validation: inline khi blur + submit',
         desc: 'Trường bắt buộc đánh dấu (*). Trim whitespace đầu/cuối tự động.',
     },
@@ -120,19 +120,19 @@ const DSELanding: React.FC = () => {
                     background: `linear-gradient(135deg, ${colors.subsystem.design}12 0%, ${colors.subsystem.design}06 100%)`,
                     border: `1px solid ${colors.subsystem.design}25`,
                     borderRadius: radius.xl,
-                    padding: `${spacing[8]} ${spacing[8]}`,
-                    marginBottom: spacing[6],
+                    padding: `var(--spacing-32) var(--spacing-32)`,
+                    marginBottom: 'var(--spacing-24)',
                 }}
             >
                 <Row align="middle" gutter={[24, 24]}>
                     <Col flex="auto">
-                        <div style={{ display: 'flex', alignItems: 'center', gap: spacing[3], marginBottom: spacing[3] }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-12)', marginBottom: 'var(--spacing-12)' }}>
                             <LayoutOutlined style={{ color: colors.subsystem.design, fontSize: 28 }} />
                             <Title level={1} style={{ margin: 0, color: colors.subsystem.design, fontSize: typography.fontSize['3xl'] }}>
                                 Design System Explorer
                             </Title>
                         </div>
-                        <Paragraph style={{ color: colors.text.secondary, margin: 0, maxWidth: 560, fontSize: typography.fontSize.base }}>
+                        <Paragraph style={{ color: 'var(--text-muted)', margin: 0, maxWidth: 560, fontSize: '14px' }}>
                             Thư viện component dùng chung cho toàn bộ CIC Core System.
                             Mỗi component được trình bày kèm mô tả, behaviors và demo trực tiếp.
                         </Paragraph>
@@ -141,14 +141,14 @@ const DSELanding: React.FC = () => {
                         <Row gutter={32}>
                             <Col>
                                 <Statistic
-                                    title={<Text style={{ color: colors.text.secondary, fontSize: typography.fontSize.sm }}>Tổng components</Text>}
+                                    title={<Text style={{ color: 'var(--text-muted)', fontSize: '12px' }}>Tổng components</Text>}
                                     value={totalComponents}
                                     valueStyle={{ color: colors.subsystem.design, fontSize: typography.fontSize['2xl'], fontWeight: typography.fontWeight.bold }}
                                 />
                             </Col>
                             <Col>
                                 <Statistic
-                                    title={<Text style={{ color: colors.text.secondary, fontSize: typography.fontSize.sm }}>Nhóm</Text>}
+                                    title={<Text style={{ color: 'var(--text-muted)', fontSize: '12px' }}>Nhóm</Text>}
                                     value={GROUPS.length}
                                     valueStyle={{ color: colors.subsystem.design, fontSize: typography.fontSize['2xl'], fontWeight: typography.fontWeight.bold }}
                                 />
@@ -163,20 +163,20 @@ const DSELanding: React.FC = () => {
                 <Card
                     hoverable
                     style={{
-                        marginBottom: spacing[6],
+                        marginBottom: 'var(--spacing-24)',
                         border: `1.5px solid ${colors.subsystem.design}40`,
-                        borderRadius: radius.lg,
-                        background: colors.bg.container,
-                        boxShadow: shadows.sm,
+                        borderRadius: 'var(--radius-lg)',
+                        background: 'var(--surface)',
+                        boxShadow: 'var(--elevation-1)',
                     }}
-                    styles={{ body: { padding: `${spacing[4]} ${spacing[6]}` } }}
+                    styles={{ body: { padding: `var(--spacing-16) var(--spacing-24)` } }}
                 >
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: spacing[4] }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-16)' }}>
                             <div
                                 style={{
                                     width: 44, height: 44,
-                                    borderRadius: radius.lg,
+                                    borderRadius: 'var(--radius-lg)',
                                     background: colors.subsystem.design + '18',
                                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                                     flexShrink: 0,
@@ -185,11 +185,11 @@ const DSELanding: React.FC = () => {
                                 <LayoutOutlined style={{ color: colors.subsystem.design, fontSize: 22 }} />
                             </div>
                             <div>
-                                <Text strong style={{ fontSize: typography.fontSize.md, color: colors.text.primary }}>
+                                <Text strong style={{ fontSize: '16px', color: 'var(--text)' }}>
                                     Layout hệ thống
                                 </Text>
                                 <div>
-                                    <Text style={{ color: colors.text.secondary, fontSize: typography.fontSize.sm }}>
+                                    <Text style={{ color: 'var(--text-muted)', fontSize: '12px' }}>
                                         Khám phá cấu trúc layout tổng thể — Header, Sidebar, Content Area, Breadcrumb — với annotations tương tác.
                                     </Text>
                                 </div>
@@ -201,8 +201,8 @@ const DSELanding: React.FC = () => {
             </Link>
 
             {/* ─── Component Groups ──────────────────────────────── */}
-            <SectionCard title={`Component Groups (${GROUPS.length} nhóm)`} style={{ marginBottom: spacing[6] }}>
-                <Row gutter={[16, 16]} style={{ paddingTop: spacing[3] }}>
+            <SectionCard title={`Component Groups (${GROUPS.length} nhóm)`} style={{ marginBottom: 'var(--spacing-24)' }}>
+                <Row gutter={[16, 16]} style={{ paddingTop: 'var(--spacing-12)' }}>
                     {GROUPS.map((g) => {
                         const gc = GROUP_CONFIG[g.key];
                         return (
@@ -211,18 +211,18 @@ const DSELanding: React.FC = () => {
                                     <Card
                                         hoverable
                                         style={{
-                                            borderRadius: radius.lg,
+                                            borderRadius: 'var(--radius-lg)',
                                             border: `1px solid ${gc.color}30`,
-                                            background: colors.bg.container,
+                                            background: 'var(--surface)',
                                             height: '100%',
                                         }}
-                                        styles={{ body: { padding: spacing[4] } }}
+                                        styles={{ body: { padding: 'var(--spacing-16)' } }}
                                     >
-                                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: spacing[3], marginBottom: spacing[3] }}>
+                                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--spacing-12)', marginBottom: 'var(--spacing-12)' }}>
                                             <div
                                                 style={{
                                                     width: 36, height: 36,
-                                                    borderRadius: radius.md,
+                                                    borderRadius: 'var(--radius-md)',
                                                     background: gc.color + '18',
                                                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                                                     flexShrink: 0,
@@ -234,7 +234,7 @@ const DSELanding: React.FC = () => {
                                             </div>
                                             <div style={{ flex: 1, minWidth: 0 }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                                    <Text strong style={{ color: colors.text.primary, fontSize: typography.fontSize.base }}>
+                                                    <Text strong style={{ color: 'var(--text)', fontSize: '14px' }}>
                                                         {gc.label}
                                                     </Text>
                                                     <Tag
@@ -242,7 +242,7 @@ const DSELanding: React.FC = () => {
                                                             background: gc.color + '15',
                                                             color: gc.color,
                                                             border: 'none',
-                                                            fontSize: typography.fontSize.xs,
+                                                            fontSize: '11px',
                                                             lineHeight: '18px',
                                                         }}
                                                     >
@@ -251,16 +251,16 @@ const DSELanding: React.FC = () => {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: spacing[1] }}>
+                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-4)' }}>
                                             {g.components.slice(0, 5).map((c) => (
                                                 <Tag
                                                     key={c}
                                                     style={{
                                                         fontSize: 11,
-                                                        background: colors.bg.subtle,
-                                                        color: colors.text.secondary,
-                                                        border: `1px solid ${colors.border.split}`,
-                                                        borderRadius: radius.sm,
+                                                        background: 'var(--bg-subtle)',
+                                                        color: 'var(--text-muted)',
+                                                        border: `1px solid var(--color-neutral-100)`,
+                                                        borderRadius: 'var(--radius-sm)',
                                                         margin: 0,
                                                         padding: '0 6px',
                                                     }}
@@ -269,7 +269,7 @@ const DSELanding: React.FC = () => {
                                                 </Tag>
                                             ))}
                                             {g.components.length > 5 && (
-                                                <Tag style={{ fontSize: 11, background: 'transparent', color: colors.text.tertiary, border: 'none', margin: 0 }}>
+                                                <Tag style={{ fontSize: 11, background: 'transparent', color: 'var(--text-subtle)', border: 'none', margin: 0 }}>
                                                     +{g.components.length - 5}
                                                 </Tag>
                                             )}
@@ -284,25 +284,25 @@ const DSELanding: React.FC = () => {
 
             {/* ─── Key rules ─────────────────────────────────────── */}
             <SectionCard title="Quy tắc quan trọng">
-                <Row gutter={[12, 12]} style={{ paddingTop: spacing[3] }}>
+                <Row gutter={[12, 12]} style={{ paddingTop: 'var(--spacing-12)' }}>
                     {KEY_RULES.map((r, i) => (
                         <Col xs={24} md={12} key={i}>
                             <div
                                 style={{
                                     display: 'flex',
-                                    gap: spacing[3],
-                                    padding: spacing[3],
-                                    background: colors.bg.subtle,
-                                    borderRadius: radius.md,
-                                    border: `1px solid ${colors.border.split}`,
+                                    gap: 'var(--spacing-12)',
+                                    padding: 'var(--spacing-12)',
+                                    background: 'var(--bg-subtle)',
+                                    borderRadius: 'var(--radius-md)',
+                                    border: `1px solid var(--color-neutral-100)`,
                                 }}
                             >
                                 <div style={{ flexShrink: 0, paddingTop: 2 }}>{r.icon}</div>
                                 <div>
-                                    <Text strong style={{ fontSize: typography.fontSize.sm, color: colors.text.primary, display: 'block' }}>
+                                    <Text strong style={{ fontSize: '12px', color: 'var(--text)', display: 'block' }}>
                                         {r.title}
                                     </Text>
-                                    <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.secondary }}>
+                                    <Text style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
                                         {r.desc}
                                     </Text>
                                 </div>

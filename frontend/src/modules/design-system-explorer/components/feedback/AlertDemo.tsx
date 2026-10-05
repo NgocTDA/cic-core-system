@@ -3,7 +3,6 @@
 import React from 'react';
 import { Alert, Space, Typography } from 'antd';
 import ComponentShowcase from '../../ComponentShowcase';
-import { colors, typography, spacing } from '@/design-system';
 import useHeaderActions from '@/hooks/useHeaderActions';
 
 const { Text } = Typography;
@@ -47,9 +46,9 @@ const AlertDemo: React.FC = () => {
 />`}
             demoMinHeight={480}
         >
-            <Space direction="vertical" style={{ width: '100%', gap: spacing[3] }}>
+            <Space direction="vertical" style={{ width: '100%', gap: 'var(--spacing-12)' }}>
                 {/* Basic 4 types */}
-                <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.secondary, textTransform: 'uppercase', letterSpacing: 1 }}>
+                <Text style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 1 }}>
                     4 types cơ bản
                 </Text>
                 <Alert type="success" message="Thao tác thành công — Bản ghi đã được lưu" showIcon />
@@ -58,7 +57,7 @@ const AlertDemo: React.FC = () => {
                 <Alert type="error"   message="Không thể kết nối server — Thử lại sau" showIcon />
 
                 {/* With description */}
-                <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.secondary, textTransform: 'uppercase', letterSpacing: 1, marginTop: spacing[2] }}>
+                <Text style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 1, marginTop: 'var(--spacing-8)' }}>
                     Với description + closable
                 </Text>
                 <Alert

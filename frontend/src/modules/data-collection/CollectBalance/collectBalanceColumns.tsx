@@ -1,6 +1,5 @@
 import React from 'react';
 import { Input, Select, Tooltip } from 'antd';
-import { colors, radius } from '@/design-system';
 import { BalanceReport, ReconciliationDetailRow } from './types';
 import { RAW_FILE_RULES } from '@/modules/web-portal/SendBalance/mockData';
 
@@ -56,8 +55,8 @@ export const buildEditTableColumns = ({
     !!editedFields[rowKey]?.includes(field);
 
   const editedStyle: React.CSSProperties = {
-    borderColor: colors.warning.base,
-    boxShadow: `0 0 0 2px ${colors.warning.base}33`,
+    borderColor: 'var(--warning)',
+    boxShadow: `0 0 0 2px var(--warning)33`,
   };
 
   const baseCols = [
@@ -97,7 +96,7 @@ export const buildEditTableColumns = ({
             </Select>
           );
         }
-        return <span style={{ fontWeight: 650, color: colors.primary[600] }}>{text}</span>;
+        return <span style={{ fontWeight: 650, color: 'var(--primary-hover)' }}>{text}</span>;
       },
     },
   ];
@@ -111,7 +110,7 @@ export const buildEditTableColumns = ({
   ) => ({
     title: (
       <Tooltip title={ruleCode} placement="top" arrow>
-        <span style={{ cursor: 'help', borderBottom: `1px dashed ${colors.warning.base}` }}>
+        <span style={{ cursor: 'help', borderBottom: `1px dashed var(--warning)` }}>
           {label}
         </span>
       </Tooltip>
@@ -129,7 +128,7 @@ export const buildEditTableColumns = ({
         style={{
           textAlign: 'right',
           width: '100%',
-          borderRadius: radius.sm,
+          borderRadius: 'var(--radius-sm)',
           ...(isEdited(record.key, field as string) ? editedStyle : {}),
         }}
         disabled={isReadOnly}

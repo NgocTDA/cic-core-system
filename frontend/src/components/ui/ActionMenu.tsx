@@ -21,15 +21,33 @@ interface ActionMenuProps {
 //     { key: 'delete', label: 'Xóa',           icon: <DeleteOutlined />, danger: true, onClick: fn },
 //   ]} />
 
-const ActionMenu: React.FC<ActionMenuProps> = ({ items, size }) => (
-  <Dropdown menu={{ items }} trigger={['click']}>
-    <Button
-      type="text"
-      icon={<MoreOutlined />}
-      size={size}
-      onClick={(e) => e.stopPropagation()}
-    />
-  </Dropdown>
-);
+const ActionMenu: React.FC<ActionMenuProps> = ({ items, size }) => {
+  // Intercept onClick to stop propagation in React's synthetic event tree
+  // which otherwise causes table row clicks (opening modals) to trigger simultaneously
+  const safeItems = items.map(item => {
+    if (item && 'onClick' in item && item.onClick) {
+      const origClick = item.onClick;
+      return {
+        ...item,
+        onClick: (info: any) => {
+          info.domEvent?.stopPropagation();
+          origClick(info);
+        }
+      };
+    }
+    return item;
+  });
+
+  return (
+    <Dropdown menu={{ items: safeItems }} trigger={['click']}>
+      <Button
+        type="text"
+        icon={<MoreOutlined />}
+        size={size}
+        onClick={(e) => e.stopPropagation()}
+      />
+    </Dropdown>
+  );
+};
 
 export default ActionMenu;

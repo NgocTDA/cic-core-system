@@ -10,7 +10,6 @@ import {
   DownOutlined,
   UpOutlined,
 } from '@ant-design/icons';
-import { colors, typography } from '@/design-system';
 
 const { Text } = Typography;
 
@@ -43,7 +42,7 @@ const ExpandableDescription: React.FC<{ item: IChangeHistoryItem }> = ({ item })
   const isLong = text.length > 60;
 
   return (
-    <div style={{ fontSize: typography.fontSize.xs }}>
+    <div style={{ fontSize: '11px' }}>
       <div>
         <span>
           {isLong && !expanded ? `${text.slice(0, 60)}...` : text}
@@ -69,7 +68,7 @@ const ExpandableDescription: React.FC<{ item: IChangeHistoryItem }> = ({ item })
             href={item.attachmentUrl}
             target="_blank"
             rel="noopener noreferrer"
-            style={{ color: colors.primary[500], display: 'inline-flex', alignItems: 'center', gap: 4 }}
+            style={{ color: 'var(--primary)', display: 'inline-flex', alignItems: 'center', gap: 4 }}
           >
             <PaperClipOutlined />
             <span>{item.attachmentName || 'Tệp đính kèm'}</span>
@@ -87,7 +86,7 @@ export const ChangeHistoryCollapse: React.FC<ChangeHistoryCollapseProps> = ({
 }) => {
   // Sort newest first & limit to 20 records
   const displayData = [...data]
-    .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+    .sort((a, b) => (Date.parse(b.timestamp) || 0) - (Date.parse(a.timestamp) || 0))
     .slice(0, 20);
 
   const columns: TableProps<IChangeHistoryItem>['columns'] = [
@@ -102,8 +101,10 @@ export const ChangeHistoryCollapse: React.FC<ChangeHistoryCollapseProps> = ({
       title: 'Thời gian',
       key: 'timestamp',
       width: 170,
+      align: 'center',
       render: (_, record) => {
-        const dateObj = new Date(record.timestamp || Date.now());
+        const dateObj = new Date(record.timestamp);
+        if (!record.timestamp || Number.isNaN(dateObj.getTime())) return <Text type="secondary">—</Text>;
         const dateStr =
           record.dateStr ||
           dateObj.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
@@ -113,7 +114,7 @@ export const ChangeHistoryCollapse: React.FC<ChangeHistoryCollapseProps> = ({
 
         return (
           <Tooltip title={fullStr} placement="top">
-            <span style={{ fontSize: typography.fontSize.xs }}>
+            <span style={{ fontSize: '11px' }}>
               {dateStr}
             </span>
           </Tooltip>
@@ -127,8 +128,8 @@ export const ChangeHistoryCollapse: React.FC<ChangeHistoryCollapseProps> = ({
       render: (_, record) => (
         <Tooltip title={record.updatedByFullName || record.updatedBy} placement="top">
           <Space size={4}>
-            <UserOutlined style={{ color: colors.primary[500], fontSize: 12 }} />
-            <Text style={{ fontSize: typography.fontSize.xs }}>{record.updatedBy}</Text>
+            <UserOutlined style={{ color: 'var(--primary)', fontSize: 12 }} />
+            <Text style={{ fontSize: '11px', whiteSpace: 'nowrap' }}>{record.updatedBy || '—'}</Text>
           </Space>
         </Tooltip>
       ),
@@ -139,7 +140,7 @@ export const ChangeHistoryCollapse: React.FC<ChangeHistoryCollapseProps> = ({
       key: 'action',
       width: 140,
       render: (action: string) => (
-        <Tag color="blue" style={{ margin: 0, fontSize: typography.fontSize.xs }}>
+        <Tag color="blue" style={{ margin: 0, fontSize: '11px' }}>
           {action}
         </Tag>
       ),
@@ -151,11 +152,11 @@ export const ChangeHistoryCollapse: React.FC<ChangeHistoryCollapseProps> = ({
       width: 220,
       render: (val?: string) =>
         val ? (
-          <Text style={{ fontSize: typography.fontSize.xs, color: colors.neutral[700] }}>
+          <Text style={{ fontSize: '11px', color: 'var(--color-neutral-700)' }}>
             {val}
           </Text>
         ) : (
-          <Text type="secondary" style={{ fontSize: typography.fontSize.xs }}>—</Text>
+          <Text type="secondary" style={{ fontSize: '11px' }}>—</Text>
         ),
     },
     {
@@ -165,11 +166,11 @@ export const ChangeHistoryCollapse: React.FC<ChangeHistoryCollapseProps> = ({
       width: 220,
       render: (val?: string) =>
         val ? (
-          <Text strong style={{ fontSize: typography.fontSize.xs, color: colors.success.dark }}>
+          <Text strong style={{ fontSize: '11px', color: 'var(--success-ink)' }}>
             {val}
           </Text>
         ) : (
-          <Text type="secondary" style={{ fontSize: typography.fontSize.xs }}>—</Text>
+          <Text type="secondary" style={{ fontSize: '11px' }}>—</Text>
         ),
     },
     {
@@ -178,8 +179,8 @@ export const ChangeHistoryCollapse: React.FC<ChangeHistoryCollapseProps> = ({
       key: 'ipAddress',
       width: 130,
       render: (ip?: string) => (
-        <Text style={{ fontSize: typography.fontSize.xs, color: colors.neutral[700] }}>
-          {ip || '192.168.1.100'}
+        <Text style={{ fontSize: '11px', color: 'var(--color-neutral-700)' }}>
+          {ip || '—'}
         </Text>
       ),
     },
@@ -200,8 +201,8 @@ export const ChangeHistoryCollapse: React.FC<ChangeHistoryCollapseProps> = ({
             key: 'history',
             label: (
               <Space size={8}>
-                <HistoryOutlined style={{ color: colors.primary[500], fontSize: 16 }} />
-                <Text strong style={{ fontSize: typography.fontSize.sm, textTransform: 'uppercase' }}>
+                <HistoryOutlined style={{ color: 'var(--primary)', fontSize: 16 }} />
+                <Text strong style={{ fontSize: '12px', textTransform: 'uppercase' }}>
                   Lịch sử thay đổi
                 </Text>
                 <Tag style={{ margin: 0, borderRadius: 10, fontSize: 11 }}>

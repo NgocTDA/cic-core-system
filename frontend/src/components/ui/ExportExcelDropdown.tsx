@@ -4,7 +4,6 @@ import React from 'react';
 import { Dropdown, Button, message } from 'antd';
 import type { MenuProps } from 'antd';
 import { FileExcelOutlined, PrinterOutlined, FilterOutlined, FileTextOutlined } from '@ant-design/icons';
-import { colors } from '@/design-system';
 
 interface ExportExcelDropdownProps {
   onExportCurrent?: () => void;
@@ -49,19 +48,19 @@ export const ExportExcelDropdown: React.FC<ExportExcelDropdownProps> = ({
     {
       key: 'export_current',
       label: 'Xuất trang hiện tại',
-      icon: <FileTextOutlined style={{ color: colors.primary[500] }} />,
+      icon: <FileTextOutlined style={{ color: 'var(--primary)' }} />,
       onClick: handleExportCurrent,
     },
     {
       key: 'export_filter',
       label: 'Xuất theo bộ lọc',
-      icon: <FilterOutlined style={{ color: colors.primary[500] }} />,
+      icon: <FilterOutlined style={{ color: 'var(--primary)' }} />,
       onClick: handleExportFilter,
     },
     {
       key: 'print_current',
       label: 'In trang hiện tại',
-      icon: <PrinterOutlined style={{ color: colors.primary[500] }} />,
+      icon: <PrinterOutlined style={{ color: 'var(--primary)' }} />,
       onClick: handlePrintCurrent,
     },
   ];
@@ -69,7 +68,7 @@ export const ExportExcelDropdown: React.FC<ExportExcelDropdownProps> = ({
   return (
     <Dropdown menu={{ items }} placement="bottomRight" trigger={['click']}>
       <Button
-        icon={<FileExcelOutlined style={{ color: colors.primary[500] }} />}
+        icon={<FileExcelOutlined style={{ color: 'var(--primary)' }} />}
         style={style}
       >
         {buttonText}

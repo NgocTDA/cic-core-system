@@ -67,7 +67,7 @@ AppSidebar            ← Render menu của activeSubSystem
 ```
 
 - Định nghĩa tất cả subsystem + menu trong `config/navigation.tsx`
-- Màu accent của subsystem (`subsystem.color`) nên khớp với `colors.subsystem.*` trong tokens
+- Màu accent của subsystem (`subsystem.color`) nên khớp với `SUBSYSTEMS.*.theme.primaryColor` trong config/subsystems.ts
 
 ---
 
@@ -94,7 +94,7 @@ Khi unmount: useHeaderActions tự clear (via useEffect cleanup)
 ## Design system flow
 
 ```
-tokens.ts (giá trị gốc)
+@ntda/forest-design-system/antd (theme gốc)
   ↓
 theme.ts (Ant Design ConfigProvider config)
   ↓
@@ -102,9 +102,9 @@ ClientLayout → ConfigProvider → antdTheme
   ↓
 Mọi Ant Design component trong app hưởng theme
 
-tokens.ts
+@ntda/forest-design-system CSS (nạp qua app/layout.tsx)
   ↓
-components/ui/*.tsx (shared components dùng token qua import)
+components/ui/*.tsx (shared components dùng var(--primary), var(--spacing-16), ...)
   ↓
 Page/module components import từ '@/components/ui'
 ```

@@ -12,7 +12,6 @@ import {
 import type { TableProps } from 'antd';
 import dayjs from 'dayjs';
 import { StatusTag, FilterBar, FilterCol, tablePagination } from '@/components/ui';
-import { colors, spacing, typography } from '@/design-system';
 import type { IJob, IJobRun } from '../types';
 import { mockJobRuns } from '../mockData';
 
@@ -99,7 +98,7 @@ const JobHistoryModal: React.FC<JobHistoryModalProps> = ({
       key: 'id',
       width: 140,
       render: (id) => (
-        <Text style={{ fontFamily: typography.fontFamily.mono, color: colors.text.primary, fontWeight: 600 }}>
+        <Text style={{ fontFamily: 'var(--font-mono, monospace)', color: 'var(--text)', fontWeight: 600 }}>
           {id}
         </Text>
       ),
@@ -114,7 +113,7 @@ const JobHistoryModal: React.FC<JobHistoryModalProps> = ({
         if (!time) return <Text type="secondary">-</Text>;
         const d = dayjs(time);
         return (
-          <Text style={{ fontSize: typography.fontSize.sm, color: colors.text.primary, whiteSpace: 'nowrap' }}>
+          <Text style={{ fontSize: '12px', color: 'var(--text)', whiteSpace: 'nowrap' }}>
             {d.isValid() ? d.format('DD/MM/YYYY HH:mm:ss') : time}
           </Text>
         );
@@ -130,7 +129,7 @@ const JobHistoryModal: React.FC<JobHistoryModalProps> = ({
         if (record.status === 'RUNNING' || !time) return <Text type="secondary">-</Text>;
         const d = dayjs(time);
         return (
-          <Text style={{ fontSize: typography.fontSize.sm, color: colors.text.primary, whiteSpace: 'nowrap' }}>
+          <Text style={{ fontSize: '12px', color: 'var(--text)', whiteSpace: 'nowrap' }}>
             {d.isValid() ? d.format('DD/MM/YYYY HH:mm:ss') : time}
           </Text>
         );
@@ -143,7 +142,7 @@ const JobHistoryModal: React.FC<JobHistoryModalProps> = ({
       width: 110,
       align: 'center',
       render: (duration, record) => (
-        <Text style={{ fontSize: typography.fontSize.sm, color: colors.text.secondary }}>
+        <Text style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
           {formatDuration(duration, record.status)}
         </Text>
       ),
@@ -158,11 +157,11 @@ const JobHistoryModal: React.FC<JobHistoryModalProps> = ({
         const failed = record.recordsFailed;
         return (
           <div style={{ whiteSpace: 'nowrap' }}>
-            <Text style={{ color: colors.success.dark, fontWeight: 600, fontSize: typography.fontSize.sm }}>
+            <Text style={{ color: 'var(--success-ink)', fontWeight: 600, fontSize: '12px' }}>
               ✓ {processed}
             </Text>
             {failed && failed > 0 ? (
-              <Text style={{ color: colors.error.base, fontWeight: 600, fontSize: typography.fontSize.sm, marginLeft: 8 }}>
+              <Text style={{ color: 'var(--error)', fontWeight: 600, fontSize: '12px', marginLeft: 8 }}>
                 ✕ {failed.toLocaleString('vi-VN')}
               </Text>
             ) : null}
@@ -177,7 +176,7 @@ const JobHistoryModal: React.FC<JobHistoryModalProps> = ({
       width: 110,
       align: 'center',
       render: (count?: number) => (
-        <Text style={{ fontSize: typography.fontSize.sm, color: colors.text.primary }}>
+        <Text style={{ fontSize: '12px', color: 'var(--text)' }}>
           {count || 0}
         </Text>
       ),
@@ -210,7 +209,7 @@ const JobHistoryModal: React.FC<JobHistoryModalProps> = ({
     >
       <div style={{ padding: '4px 0' }}>
         {/* Tra cứu theo các tiêu chí - M7-01 (bỏ node), M7-03 (Radio trạng thái) */}
-        <div style={{ marginBottom: spacing[4] }}>
+        <div style={{ marginBottom: 'var(--spacing-16)' }}>
           <FilterBar inCard onSearch={handleSearch} onReset={handleReset} showAddFilter={false}>
             <FilterCol minWidth={380}>
               <div style={{ display: 'flex', alignItems: 'center', height: 32 }}>

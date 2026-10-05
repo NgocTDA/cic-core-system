@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Form, Input, Typography, Space, Tag, Alert } from 'antd';
 import { MailOutlined, UserOutlined, SearchOutlined, LockOutlined } from '@ant-design/icons';
 import ComponentShowcase from '../../ComponentShowcase';
-import { colors, typography, spacing } from '@/design-system';
+import { typography, spacing } from '@/modules/design-system-explorer/tokens';
 import useHeaderActions from '@/hooks/useHeaderActions';
 
 const { Text } = Typography;
@@ -85,11 +85,11 @@ const TextboxDemo: React.FC = () => {
                 {/* Normal text */}
                 <Form.Item
                     name="fullName"
-                    label={<><Text>Họ và tên</Text> <Text style={{ color: colors.error.base }}>*</Text></>}
+                    label={<><Text>Họ và tên</Text> <Text style={{ color: 'var(--error)' }}>*</Text></>}
                     rules={[{ required: true, message: 'Vui lòng nhập họ tên' }]}
                 >
                     <Input
-                        prefix={<UserOutlined style={{ color: colors.text.tertiary }} />}
+                        prefix={<UserOutlined style={{ color: 'var(--text-subtle)' }} />}
                         placeholder="Họ và tên"
                         onBlur={() => handleBlurTrim('fullName')}
                         onKeyDown={handleSpecialKeyDown}
@@ -101,14 +101,14 @@ const TextboxDemo: React.FC = () => {
                 {/* Email */}
                 <Form.Item
                     name="email"
-                    label={<><Text>Email</Text> <Text style={{ color: colors.error.base }}>*</Text></>}
+                    label={<><Text>Email</Text> <Text style={{ color: 'var(--error)' }}>*</Text></>}
                     rules={[
                         { required: true, message: 'Vui lòng nhập email' },
                         { type: 'email', message: 'Địa chỉ email không hợp lệ' },
                     ]}
                 >
                     <Input
-                        prefix={<MailOutlined style={{ color: colors.text.tertiary }} />}
+                        prefix={<MailOutlined style={{ color: 'var(--text-subtle)' }} />}
                         placeholder="Email"
                         maxLength={254}
                         onBlur={() => handleBlurTrim('email')}
@@ -125,7 +125,7 @@ const TextboxDemo: React.FC = () => {
                     ]}
                 >
                     <Input.Password
-                        prefix={<LockOutlined style={{ color: colors.text.tertiary }} />}
+                        prefix={<LockOutlined style={{ color: 'var(--text-subtle)' }} />}
                         placeholder="Mật khẩu"
                     />
                 </Form.Item>
@@ -133,7 +133,7 @@ const TextboxDemo: React.FC = () => {
                 {/* Search (Like) */}
                 <Form.Item name="search" label="Tìm kiếm (Like)">
                     <Input.Search
-                        prefix={<SearchOutlined style={{ color: colors.text.tertiary }} />}
+                        prefix={<SearchOutlined style={{ color: 'var(--text-subtle)' }} />}
                         placeholder="Tìm theo tên, mã..."
                         enterButton="Tìm"
                         allowClear
@@ -150,9 +150,9 @@ const TextboxDemo: React.FC = () => {
                         <button
                             type="submit"
                             style={{
-                                background: colors.primary[500], color: '#fff', border: 'none',
-                                borderRadius: 6, padding: `${spacing[2]} ${spacing[5]}`, cursor: 'pointer',
-                                fontSize: typography.fontSize.sm, fontWeight: typography.fontWeight.medium,
+                                background: 'var(--primary)', color: '#fff', border: 'none',
+                                borderRadius: 6, padding: `var(--spacing-8) var(--spacing-20)`, cursor: 'pointer',
+                                fontSize: '12px', fontWeight: typography.fontWeight.medium,
                             }}
                         >
                             Submit (kiểm tra validation)
@@ -161,10 +161,10 @@ const TextboxDemo: React.FC = () => {
                             type="button"
                             onClick={() => { form.resetFields(); setSubmitResult(null); }}
                             style={{
-                                background: 'transparent', color: colors.text.secondary,
-                                border: `1px solid ${colors.border.base}`, borderRadius: 6,
-                                padding: `${spacing[2]} ${spacing[4]}`, cursor: 'pointer',
-                                fontSize: typography.fontSize.sm,
+                                background: 'transparent', color: 'var(--text-muted)',
+                                border: `1px solid var(--border)`, borderRadius: 6,
+                                padding: `var(--spacing-8) var(--spacing-16)`, cursor: 'pointer',
+                                fontSize: '12px',
                             }}
                         >
                             Reset

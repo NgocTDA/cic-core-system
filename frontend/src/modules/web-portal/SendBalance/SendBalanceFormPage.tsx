@@ -27,7 +27,7 @@ import {
   StopOutlined,
   FileExcelOutlined,
 } from '@ant-design/icons';
-import { colors, radius, shadows } from '@/design-system';
+import { SUBSYSTEM_COLORS } from '@/config/subsystems';
 import {
   PageLayout,
   StatusTag
@@ -309,7 +309,7 @@ const SendBalanceFormPage: React.FC = () => {
           <div style={{ display: 'flex', justifyContent: 'center', gap: 12, marginTop: 20 }}>
             <Button 
               onClick={() => confirmModal?.destroy()}
-              style={{ minWidth: 100, borderRadius: radius.md }}
+              style={{ minWidth: 100, borderRadius: 'var(--radius-md)' }}
             >
               Hủy
             </Button>
@@ -320,10 +320,10 @@ const SendBalanceFormPage: React.FC = () => {
                 confirmModal?.destroy();
               }}
               style={{
-                background: colors.subsystem.portal,
-                borderColor: colors.subsystem.portal,
+                background: SUBSYSTEM_COLORS.portal,
+                borderColor: SUBSYSTEM_COLORS.portal,
                 minWidth: 100,
-                borderRadius: radius.md
+                borderRadius: 'var(--radius-md)'
               }}
             >
               Tiếp tục
@@ -615,7 +615,7 @@ const SendBalanceFormPage: React.FC = () => {
               </Select>
             );
           }
-          return <span style={{ fontWeight: 650, color: colors.primary[600] }}>{text}</span>;
+          return <span style={{ fontWeight: 650, color: 'var(--primary-hover)' }}>{text}</span>;
         },
         filters: Array.from(new Set(editDetails.map(item => item.nghiepVu).filter((val): val is string => !!val))).sort().map(val => ({ text: val, value: val })),
         onFilter: (value: any, record: ReconciliationDetailRow) => record.nghiepVu === value,
@@ -763,12 +763,12 @@ const SendBalanceFormPage: React.FC = () => {
         {/* Khối thông tin chung */}
         <div style={{
           background: '#ffffff',
-          borderRadius: radius.lg,
-          border: `1px solid ${colors.border.split}`,
+          borderRadius: 'var(--radius-lg)',
+          border: `1px solid var(--color-neutral-100)`,
           padding: '20px',
-          boxShadow: shadows.sm
+          boxShadow: 'var(--elevation-1)'
         }}>
-          <div style={{ fontWeight: 700, fontSize: 14, color: colors.subsystem.portal, marginBottom: 16 }}>
+          <div style={{ fontWeight: 700, fontSize: 14, color: SUBSYSTEM_COLORS.portal, marginBottom: 16 }}>
             KHỐI THÔNG TIN CHUNG
           </div>
           <div style={{
@@ -858,17 +858,17 @@ const SendBalanceFormPage: React.FC = () => {
                   <span>
                     <strong>CIC yêu cầu sửa lại báo cáo này.</strong>
                     {loadedExistingReport.lyDoTuChoi && (
-                      <> Lý do: <strong style={{ color: colors.error.base }}>{loadedExistingReport.lyDoTuChoi}</strong>.</>
+                      <> Lý do: <strong style={{ color: 'var(--error)' }}>{loadedExistingReport.lyDoTuChoi}</strong>.</>
                     )} Vui lòng chỉnh sửa số liệu và gửi lại CIC.
                   </span>
                 ) : (
                   <span>
-                    <strong>Kỳ báo cáo này đã tồn tại bản ghi nháp!</strong> Trạng thái hiện tại: <strong style={{ color: colors.primary[600] }}>Tạo mới</strong>. Hệ thống đã tự động nạp dữ liệu để tiếp tục chỉnh sửa.
+                    <strong>Kỳ báo cáo này đã tồn tại bản ghi nháp!</strong> Trạng thái hiện tại: <strong style={{ color: 'var(--primary-hover)' }}>Tạo mới</strong>. Hệ thống đã tự động nạp dữ liệu để tiếp tục chỉnh sửa.
                   </span>
                 )
               ) : (
                 <span>
-                  <strong>Kỳ báo cáo này đã tồn tại bản ghi dữ liệu!</strong> Trạng thái hiện tại: <strong style={{ color: colors.primary[600] }}>{TRANG_THAI_TAG[loadedExistingReport.trangThai].label}</strong>. Hệ thống đã tự động nạp dữ liệu và khóa tính năng chỉnh sửa để đảm bảo an toàn số liệu.
+                  <strong>Kỳ báo cáo này đã tồn tại bản ghi dữ liệu!</strong> Trạng thái hiện tại: <strong style={{ color: 'var(--primary-hover)' }}>{TRANG_THAI_TAG[loadedExistingReport.trangThai].label}</strong>. Hệ thống đã tự động nạp dữ liệu và khóa tính năng chỉnh sửa để đảm bảo an toàn số liệu.
                 </span>
               )
             }
@@ -880,17 +880,17 @@ const SendBalanceFormPage: React.FC = () => {
                   : 'warning'
             }
             showIcon
-            style={{ borderRadius: radius.md }}
+            style={{ borderRadius: 'var(--radius-md)' }}
           />
         )}
 
         {/* Khối chi tiết thông tin cân đối */}
         <div style={{
           background: '#ffffff',
-          borderRadius: radius.lg,
-          border: `1px solid ${colors.border.split}`,
+          borderRadius: 'var(--radius-lg)',
+          border: `1px solid var(--color-neutral-100)`,
           padding: '20px',
-          boxShadow: shadows.sm
+          boxShadow: 'var(--elevation-1)'
         }}>
           <div style={{
             display: 'flex',
@@ -898,7 +898,7 @@ const SendBalanceFormPage: React.FC = () => {
             alignItems: 'center',
             marginBottom: 16
           }}>
-            <div style={{ fontWeight: 700, fontSize: 14, color: colors.subsystem.portal }}>
+            <div style={{ fontWeight: 700, fontSize: 14, color: SUBSYSTEM_COLORS.portal }}>
               KHỐI CHI TIẾT THÔNG TIN CÂN ĐỐI
             </div>
             <Space size="small">
@@ -925,8 +925,8 @@ const SendBalanceFormPage: React.FC = () => {
                 style={{
                   fontWeight: 600,
                   ...(!isReadOnly ? {
-                    background: colors.subsystem.portal,
-                    borderColor: colors.subsystem.portal,
+                    background: SUBSYSTEM_COLORS.portal,
+                    borderColor: SUBSYSTEM_COLORS.portal,
                   } : {})
                 }}
                 size="small"
@@ -941,8 +941,8 @@ const SendBalanceFormPage: React.FC = () => {
                 style={{
                   fontWeight: 600,
                   ...(!isReadOnly ? {
-                    color: colors.subsystem.portal,
-                    borderColor: colors.subsystem.portal,
+                    color: SUBSYSTEM_COLORS.portal,
+                    borderColor: SUBSYSTEM_COLORS.portal,
                   } : {})
                 }}
                 size="small"
@@ -973,7 +973,7 @@ const SendBalanceFormPage: React.FC = () => {
         }}>
           <Button
             onClick={() => router.push('/web-portal/send-balance')}
-            style={{ minWidth: 120, height: 40, borderRadius: radius.md }}
+            style={{ minWidth: 120, height: 40, borderRadius: 'var(--radius-md)' }}
           >
             Trở về danh sách
           </Button>
@@ -981,7 +981,7 @@ const SendBalanceFormPage: React.FC = () => {
             onClick={() => handleSave(true)}
             loading={uploadLoading}
             disabled={isReadOnly}
-            style={{ minWidth: 120, height: 40, borderRadius: radius.md }}
+            style={{ minWidth: 120, height: 40, borderRadius: 'var(--radius-md)' }}
           >
             Lưu nháp
           </Button>
@@ -993,10 +993,10 @@ const SendBalanceFormPage: React.FC = () => {
             style={{
               minWidth: 160,
               height: 40,
-              borderRadius: radius.md,
+              borderRadius: 'var(--radius-md)',
               ...(!isReadOnly ? {
-                background: colors.subsystem.portal,
-                borderColor: colors.subsystem.portal,
+                background: SUBSYSTEM_COLORS.portal,
+                borderColor: SUBSYSTEM_COLORS.portal,
               } : {})
             }}
           >
@@ -1016,7 +1016,7 @@ const SendBalanceFormPage: React.FC = () => {
             <Button 
               key="cancel" 
               onClick={() => setImportModalVisible(false)}
-              style={{ minWidth: 100, borderRadius: radius.md }}
+              style={{ minWidth: 100, borderRadius: 'var(--radius-md)' }}
             >
               Hủy
             </Button>
@@ -1026,11 +1026,11 @@ const SendBalanceFormPage: React.FC = () => {
               loading={importLoading}
               onClick={handleConfirmImport}
               style={{
-                background: colors.subsystem.portal,
-                borderColor: colors.subsystem.portal,
+                background: SUBSYSTEM_COLORS.portal,
+                borderColor: SUBSYSTEM_COLORS.portal,
                 fontWeight: 600,
                 minWidth: 120,
-                borderRadius: radius.md
+                borderRadius: 'var(--radius-md)'
               }}
             >
               Nhập dữ liệu
@@ -1123,7 +1123,7 @@ const SendBalanceFormPage: React.FC = () => {
               <div style={{
                 padding: '12px 16px',
                 background: '#f0fdf4',
-                borderRadius: radius.md,
+                borderRadius: 'var(--radius-md)',
                 border: '1px solid #bbf7d0',
                 display: 'flex',
                 alignItems: 'center',

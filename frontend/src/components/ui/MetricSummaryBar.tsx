@@ -1,5 +1,4 @@
 import React from 'react';
-import { colors, radius, spacing, typography } from '../../design-system';
 
 // ─── MetricSummaryBar ────────────────────────────────────────
 // Băng hiển thị các chỉ số tổng hợp cốt lõi (Module, Menu, Job, v.v.)
@@ -9,8 +8,8 @@ import { colors, radius, spacing, typography } from '../../design-system';
 //   <MetricSummaryBar
 //     items={[
 //       { label: 'Tổng số Job', value: 48 },
-//       { label: 'Đang hoạt động', value: 42, color: colors.success.dark },
-//       { label: 'Tạm dừng', value: 6, color: colors.warning.dark },
+//       { label: 'Đang hoạt động', value: 42, color: 'var(--success-ink)' },
+//       { label: 'Tạm dừng', value: 6, color: 'var(--warning-ink)' },
 //       { label: 'Kích hoạt gần nhất', value: 'Hôm nay' },
 //     ]}
 //   />
@@ -43,10 +42,10 @@ export const MetricSummaryBar: React.FC<MetricSummaryBarProps> = ({
       style={{
         display: 'grid',
         gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
-        background: colors.bg.container,
-        border: `1px solid ${colors.border.base}`,
-        borderRadius: radius.md,
-        marginBottom: spacing[4],
+        background: 'var(--surface)',
+        border: `1px solid var(--border)`,
+        borderRadius: 'var(--radius-md)',
+        marginBottom: 'var(--spacing-16)',
         overflow: 'hidden',
         boxShadow: 'none',
         ...style,
@@ -62,32 +61,32 @@ export const MetricSummaryBar: React.FC<MetricSummaryBarProps> = ({
             onClick={item.onClick}
             style={{
               padding: '14px 20px',
-              borderRight: isLast ? 'none' : `1px solid ${colors.border.base}`,
+              borderRight: isLast ? 'none' : `1px solid var(--border)`,
               cursor: isClickable ? 'pointer' : 'default',
               transition: 'background-color 150ms ease',
-              backgroundColor: item.active ? colors.bg.subtle : 'transparent',
+              backgroundColor: item.active ? 'var(--bg-subtle)' : 'transparent',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'center',
             }}
             onMouseEnter={(e) => {
               if (isClickable) {
-                e.currentTarget.style.backgroundColor = colors.bg.subtle;
+                e.currentTarget.style.backgroundColor = 'var(--bg-subtle)';
               }
             }}
             onMouseLeave={(e) => {
               if (isClickable) {
                 e.currentTarget.style.backgroundColor = item.active
-                  ? colors.bg.subtle
+                  ? 'var(--bg-subtle)'
                   : 'transparent';
               }
             }}
           >
             <div
               style={{
-                fontSize: typography.fontSize.xs,
-                fontWeight: typography.fontWeight.medium,
-                color: colors.text.secondary,
+                fontSize: '11px',
+                fontWeight: 500,
+                color: 'var(--text-muted)',
                 letterSpacing: '0.02em',
                 marginBottom: 4,
                 display: 'flex',
@@ -97,7 +96,7 @@ export const MetricSummaryBar: React.FC<MetricSummaryBarProps> = ({
             >
               <span>{item.label}</span>
               {item.subText && (
-                <span style={{ fontSize: 11, color: colors.text.tertiary }}>
+                <span style={{ fontSize: 11, color: 'var(--text-subtle)' }}>
                   {item.subText}
                 </span>
               )}
@@ -105,9 +104,9 @@ export const MetricSummaryBar: React.FC<MetricSummaryBarProps> = ({
             <div
               style={{
                 fontSize: '1.5rem',
-                fontWeight: typography.fontWeight.bold,
+                fontWeight: 700,
                 lineHeight: 1.2,
-                color: item.color || colors.text.primary,
+                color: item.color || 'var(--text)',
                 letterSpacing: '-0.02em',
               }}
             >
@@ -126,7 +125,7 @@ export const MetricSummaryBar: React.FC<MetricSummaryBarProps> = ({
             border-right: none !important;
           }
           .cic-metric-summary-bar > div:nth-child(-n + 2) {
-            border-bottom: 1px solid ${colors.border.base};
+            border-bottom: 1px solid var(--border);
           }
         }
       `}</style>

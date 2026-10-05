@@ -55,7 +55,7 @@ Thành phần kiến trúc quan trọng:
 - `SubSystemContext`: quản lý phân hệ đang active và menu tương ứng.
 - `HeaderContext`: quản lý tiêu đề và các nút thao tác của từng page.
 - `useHeaderActions`: hook để page đăng ký tiêu đề và thao tác lên header.
-- `frontend/src/design-system`: nguồn gốc cho tokens và Ant Design theme.
+- `frontend/src/design-system`: Ant Design theme kế thừa Forest; CSS tokens do package Forest cung cấp.
 - `frontend/src/components/ui`: bộ shared UI components dùng chung cho các page list/form/table.
 - `frontend/app/api/ai/*`: route handler phục vụ các tính năng AI và sinh tài liệu.
 
@@ -173,7 +173,7 @@ Container mount `./frontend/config` vào `/app/config:ro`, vì vậy có thể c
 
 - App Router nằm trong `frontend/app`, không nằm trong `frontend/src/app`.
 - Dùng path alias `@/` cho `frontend/src`.
-- Tất cả giá trị hiển thị phải đi qua `frontend/src/design-system/tokens.ts`.
+- Dùng CSS variables của `@ntda/forest-design-system`; cấu hình Ant Design tại `frontend/src/design-system/theme.ts`, layout tại `config/layout.ts`, subsystem tại `config/subsystems.ts`.
 - Page list/table dùng shared components trong `@/components/ui`.
 - Pagination dùng `tablePagination()`.
 - Header title/actions đăng ký bằng `useHeaderActions`.

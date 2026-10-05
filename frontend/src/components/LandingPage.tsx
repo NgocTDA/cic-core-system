@@ -6,7 +6,6 @@ import { ArrowRightOutlined } from '@ant-design/icons';
 import { useSubSystem } from '../context/SubSystemContext';
 import { SUB_SYSTEMS } from '../config/navigation';
 import { useRouter } from 'next/navigation';
-import { colors, typography } from '../design-system';
 
 const { Title, Text } = Typography;
 
@@ -67,7 +66,7 @@ const LandingPage: React.FC = () => {
         <div style={{
             height: '100vh',
             width: '100%',
-            background: colors.bg.page,
+            background: 'var(--bg)',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundAttachment: 'fixed',
@@ -85,7 +84,7 @@ const LandingPage: React.FC = () => {
                 left: 0,
                 right: 0,
                 height: '400px',
-                background: `linear-gradient(180deg, ${colors.primary[50]} 0%, rgba(255,255,255,0) 100%)`,
+                background: `linear-gradient(180deg, var(--primary-subtle) 0%, rgba(255,255,255,0) 100%)`,
                 pointerEvents: 'none',
                 zIndex: 0,
             }} />
@@ -116,16 +115,16 @@ const LandingPage: React.FC = () => {
                         display: 'inline-block',
                         padding: '6px 20px',
                         borderRadius: '100px',
-                        background: colors.primary[50],
+                        background: 'var(--primary-subtle)',
                         border: `1px solid ${colors.primary[100]}`,
                         marginBottom: 20,
                     }}>
-                        <Text style={{ color: colors.primary[500], fontSize: '13px', fontWeight: 600, letterSpacing: '0.05em' }}>
+                        <Text style={{ color: 'var(--primary)', fontSize: '13px', fontWeight: 600, letterSpacing: '0.05em' }}>
                             CREDIT INFORMATION CENTER
                         </Text>
                     </div> */}
                     <Title style={{
-                        color: colors.text.primary,
+                        color: 'var(--text)',
                         fontSize: 'clamp(32px, 4.5vw, 48px)',
                         fontWeight: 800,
                         marginBottom: 16,
@@ -135,7 +134,7 @@ const LandingPage: React.FC = () => {
                         CIC CORE SYSTEM
                     </Title>
                     <Text style={{
-                        color: colors.text.secondary,
+                        color: 'var(--text-muted)',
                         fontSize: 'clamp(16px, 1.6vw, 18px)',
                         lineHeight: 1.6,
                         fontWeight: 450,
@@ -157,7 +156,7 @@ const LandingPage: React.FC = () => {
                                         onClick={() => handleEnterSubSystem(sys.id, sys.menuItems[0].path || '#')}
                                         style={{
                                             background: '#ffffff',
-                                            border: `1px solid ${colors.border.split}`,
+                                            border: `1px solid var(--color-neutral-100)`,
                                             borderRadius: '20px',
                                             height: '100%',
                                             transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
@@ -208,11 +207,11 @@ const LandingPage: React.FC = () => {
                                             <div style={{
                                                 padding: '4px 12px',
                                                 borderRadius: '100px',
-                                                background: colors.neutral[50],
-                                                border: `1px solid ${colors.neutral[200]}`,
+                                                background: 'var(--color-neutral-50)',
+                                                border: `1px solid var(--color-neutral-200)`,
                                             }}>
                                                 <Text style={{
-                                                    color: colors.text.secondary,
+                                                    color: 'var(--text-muted)',
                                                     fontSize: '12px',
                                                     fontWeight: 500,
                                                 }}>
@@ -223,7 +222,7 @@ const LandingPage: React.FC = () => {
 
                                         {/* Title */}
                                         <Title level={4} style={{
-                                            color: colors.text.primary,
+                                            color: 'var(--text)',
                                             margin: '0 0 10px',
                                             fontSize: '18px',
                                             fontWeight: 700,
@@ -233,7 +232,7 @@ const LandingPage: React.FC = () => {
 
                                         {/* Description */}
                                         <Text style={{
-                                            color: colors.text.secondary,
+                                            color: 'var(--text-muted)',
                                             display: 'block',
                                             marginBottom: 20,
                                             fontSize: '14px',
@@ -273,7 +272,7 @@ const LandingPage: React.FC = () => {
                                             alignItems: 'center',
                                             justifyContent: 'space-between',
                                             paddingTop: 16,
-                                            borderTop: `1px solid ${colors.border.split}`,
+                                            borderTop: `1px solid var(--color-neutral-100)`,
                                             marginTop: 'auto',
                                         }}>
                                             <span style={{
@@ -303,7 +302,7 @@ const LandingPage: React.FC = () => {
                     transition: 'opacity 0.8s ease 0.6s',
                 }}>
                     <Text style={{
-                        color: colors.text.tertiary,
+                        color: 'var(--text-subtle)',
                         fontSize: '13px',
                     }}>
                         © {new Date().getFullYear()} Trung tâm Thông tin tín dụng Quốc gia Việt Nam (CIC) — v1.0.0
@@ -315,14 +314,14 @@ const LandingPage: React.FC = () => {
                 .landing-card:hover {
                     transform: translateY(-8px) !important;
                     background: #ffffff !important;
-                    border-color: ${colors.primary[200]} !important;
+                    border-color: var(--primary) !important;
                     box-shadow:
                         0 20px 40px rgba(0, 0, 0, 0.08),
-                        0 0 0 1px ${colors.primary[50]} inset !important;
+                        0 0 0 1px var(--primary-subtle) inset !important;
                 }
                 .landing-card:hover .landing-card-icon {
                     transform: scale(1.1);
-                    background: ${colors.primary[50]};
+                    background: var(--primary-subtle);
                 }
                 .landing-card:hover .landing-arrow {
                     transform: translateX(6px);

@@ -7,7 +7,7 @@ import {
     BellOutlined, HomeOutlined, AppstoreOutlined,
 } from '@ant-design/icons';
 import { PageLayout, SectionCard } from '@/components/ui';
-import { colors, typography, spacing, radius, shadows, layout, zIndex } from '@/design-system';
+import { colors, typography, spacing, radius, shadows, layout, zIndex } from '@/modules/design-system-explorer/tokens';
 import useHeaderActions from '@/hooks/useHeaderActions';
 
 const { Title, Text, Paragraph } = Typography;
@@ -31,12 +31,12 @@ const ZONES: Zone[] = [
         id: 'sidebar',
         label: 'AppSidebar',
         shortLabel: 'Sidebar',
-        color: colors.subsystem.ops,
+        color: 'var(--chart-4-indigo)',
         x: 0, y: 0, w: 22, h: 100,
         description: 'Sidebar điều hướng cố định bên trái. Dark theme với màu riêng của từng subsystem khi active.',
         tokens: [
-            { key: 'colors.sidebar.bg',          value: colors.sidebar.bg },
-            { key: 'colors.sidebar.bgDeep',       value: colors.sidebar.bgDeep },
+            { key: 'colors.sidebar.bg',          value: 'var(--color-ink-900)' },
+            { key: 'colors.sidebar.bgDeep',       value: 'var(--color-ink-950)' },
             { key: 'layout.sidebarWidth',         value: '256px' },
             { key: 'layout.sidebarCollapsedWidth',value: '64px' },
             { key: 'zIndex.sticky',               value: '1100' },
@@ -53,7 +53,7 @@ const ZONES: Zone[] = [
         id: 'header',
         label: 'AppHeader',
         shortLabel: 'Header',
-        color: colors.subsystem.collection,
+        color: 'var(--chart-6-sky)',
         x: 22, y: 0, w: 78, h: 13,
         description: 'Header sticky phía trên content area. Hiển thị breadcrumb, tiêu đề trang, và actions đăng ký qua hook.',
         tokens: [
@@ -74,11 +74,11 @@ const ZONES: Zone[] = [
         id: 'content',
         label: 'Content Area',
         shortLabel: 'Content',
-        color: colors.subsystem.product,
+        color: 'var(--primary)',
         x: 22, y: 13, w: 78, h: 87,
         description: 'Vùng nội dung chính. Bao gồm PageLayout wrapper cho mọi page.',
         tokens: [
-            { key: 'colors.bg.page',          value: colors.bg.page },
+            { key: 'colors.bg.page',          value: 'var(--bg)' },
             { key: 'layout.contentPadding',    value: '16px 24px 24px' },
             { key: 'layout.contentPaddingMobile', value: '16px' },
         ],
@@ -93,11 +93,11 @@ const ZONES: Zone[] = [
         id: 'subsystem-switcher',
         label: 'SubSystemSwitcher',
         shortLabel: 'Switcher',
-        color: colors.subsystem.kkn,
+        color: 'var(--chart-5-amber)',
         x: 0, y: 0, w: 22, h: 15,
         description: 'Component chuyển đổi giữa 7 phân hệ. Hiển thị tên + màu sắc của subsystem đang active.',
         tokens: [
-            { key: 'colors.sidebar.bg',     value: colors.sidebar.bg },
+            { key: 'colors.sidebar.bg',     value: 'var(--color-ink-900)' },
             { key: 'colors.subsystem.*',    value: '7 màu khác nhau' },
         ],
         notes: [
@@ -119,22 +119,22 @@ const LayoutExplorer: React.FC = () => {
     return (
         <PageLayout>
             {/* Intro */}
-            <div style={{ marginBottom: spacing[5] }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: spacing[3], marginBottom: spacing[2] }}>
+            <div style={{ marginBottom: 'var(--spacing-20)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-12)', marginBottom: 'var(--spacing-8)' }}>
                     <LayoutOutlined style={{ color: colors.subsystem.design, fontSize: 24 }} />
                     <Title level={2} style={{ margin: 0 }}>Layout hệ thống</Title>
                 </div>
-                <Paragraph style={{ color: colors.text.secondary, margin: 0 }}>
+                <Paragraph style={{ color: 'var(--text-muted)', margin: 0 }}>
                     Khám phá cấu trúc layout tổng thể của CIC Core System. Click vào từng vùng để xem chi tiết tokens và behavior.
                 </Paragraph>
             </div>
 
-            <div style={{ display: 'flex', gap: spacing[5], flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: 'var(--spacing-20)', flexWrap: 'wrap' }}>
                 {/* ─── Diagram ─────────────────────────────────────── */}
                 <SectionCard
                     title="Sơ đồ layout"
                     extra={
-                        <Tag style={{ fontSize: typography.fontSize.xs, cursor: 'default' }}>
+                        <Tag style={{ fontSize: '11px', cursor: 'default' }}>
                             Click để xem chi tiết
                         </Tag>
                     }
@@ -145,16 +145,16 @@ const LayoutExplorer: React.FC = () => {
                             position: 'relative',
                             width: '100%',
                             paddingBottom: '56.25%',
-                            marginTop: spacing[3],
-                            background: colors.bg.page,
-                            borderRadius: radius.md,
-                            border: `1px solid ${colors.border.base}`,
+                            marginTop: 'var(--spacing-12)',
+                            background: 'var(--bg)',
+                            borderRadius: 'var(--radius-md)',
+                            border: `1px solid var(--border)`,
                             overflow: 'hidden',
                         }}
                     >
                         <div style={{ position: 'absolute', inset: 0 }}>
                             {/* Background grid */}
-                            <div style={{ position: 'absolute', inset: 0, backgroundImage: `radial-gradient(${colors.border.split} 1px, transparent 1px)`, backgroundSize: '20px 20px' }} />
+                            <div style={{ position: 'absolute', inset: 0, backgroundImage: `radial-gradient(var(--color-neutral-100) 1px, transparent 1px)`, backgroundSize: '20px 20px' }} />
 
                             {/* Sidebar zone */}
                             <ZoneBlock zone={ZONES[0]} active={activeZone?.id === ZONES[0].id} onClick={() => setActiveZone(ZONES[0])} />
@@ -192,7 +192,7 @@ const LayoutExplorer: React.FC = () => {
                                             display: 'flex', alignItems: 'center',
                                             paddingLeft: 6,
                                             fontSize: 7,
-                                            color: i === 0 ? '#fff' : colors.sidebar.textSecond,
+                                            color: i === 0 ? '#fff' : 'var(--color-secondary-300)',
                                         }}
                                     >
                                         {item}
@@ -212,13 +212,13 @@ const LayoutExplorer: React.FC = () => {
                                 }}
                             >
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                                    <div style={{ width: 12, height: 8, background: colors.neutral[300], borderRadius: 2 }} />
-                                    <div style={{ width: 40, height: 8, background: colors.neutral[300], borderRadius: 2 }} />
+                                    <div style={{ width: 12, height: 8, background: 'var(--color-neutral-300)', borderRadius: 2 }} />
+                                    <div style={{ width: 40, height: 8, background: 'var(--color-neutral-300)', borderRadius: 2 }} />
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                                     <div style={{ width: 30, height: 8, background: colors.subsystem.design + '40', borderRadius: 10 }} />
                                     <div style={{ width: 20, height: 8, background: colors.subsystem.design + '40', borderRadius: 10 }} />
-                                    <div style={{ width: 10, height: 10, background: colors.neutral[300], borderRadius: '50%' }} />
+                                    <div style={{ width: 10, height: 10, background: 'var(--color-neutral-300)', borderRadius: '50%' }} />
                                 </div>
                             </div>
 
@@ -232,7 +232,7 @@ const LayoutExplorer: React.FC = () => {
                                     pointerEvents: 'none',
                                 }}
                             >
-                                <div style={{ width: '60%', height: 8, background: colors.neutral[300], borderRadius: 2, marginBottom: 6 }} />
+                                <div style={{ width: '60%', height: 8, background: 'var(--color-neutral-300)', borderRadius: 2, marginBottom: 6 }} />
                                 <div
                                     style={{
                                         background: '#fff', borderRadius: 4, padding: '3%', height: '40%',
@@ -241,12 +241,12 @@ const LayoutExplorer: React.FC = () => {
                                     }}
                                 >
                                     {[1, 2, 3, 4].map(i => (
-                                        <div key={i} style={{ flex: 1, background: colors.bg.page, borderRadius: 3 }} />
+                                        <div key={i} style={{ flex: 1, background: 'var(--bg)', borderRadius: 3 }} />
                                     ))}
                                 </div>
                                 <div style={{ background: '#fff', borderRadius: 4, padding: '2%', height: '45%', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
                                     {[1, 2, 3].map(i => (
-                                        <div key={i} style={{ height: 6, background: colors.bg.page, borderRadius: 2, marginBottom: 4 }} />
+                                        <div key={i} style={{ height: 6, background: 'var(--bg)', borderRadius: 2, marginBottom: 4 }} />
                                     ))}
                                 </div>
                             </div>
@@ -254,15 +254,15 @@ const LayoutExplorer: React.FC = () => {
                     </div>
 
                     {/* Zone legend */}
-                    <div style={{ display: 'flex', gap: spacing[3], marginTop: spacing[4], flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', gap: 'var(--spacing-12)', marginTop: 'var(--spacing-16)', flexWrap: 'wrap' }}>
                         {ZONES.slice(0, 3).map((z) => (
                             <div
                                 key={z.id}
-                                style={{ display: 'flex', alignItems: 'center', gap: spacing[2], cursor: 'pointer' }}
+                                style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-8)', cursor: 'pointer' }}
                                 onClick={() => setActiveZone(z)}
                             >
                                 <div style={{ width: 12, height: 12, borderRadius: 3, background: z.color + '40', border: `2px solid ${z.color}` }} />
-                                <Text style={{ fontSize: typography.fontSize.xs, color: colors.text.secondary }}>{z.label}</Text>
+                                <Text style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{z.label}</Text>
                             </div>
                         ))}
                     </div>
@@ -288,46 +288,46 @@ const LayoutExplorer: React.FC = () => {
                             }
                             style={{ height: '100%' }}
                         >
-                            <div style={{ paddingTop: spacing[2] }}>
-                                <Paragraph style={{ color: colors.text.secondary, fontSize: typography.fontSize.sm }}>
+                            <div style={{ paddingTop: 'var(--spacing-8)' }}>
+                                <Paragraph style={{ color: 'var(--text-muted)', fontSize: '12px' }}>
                                     {activeZone.description}
                                 </Paragraph>
 
-                                <Divider style={{ margin: `${spacing[3]} 0` }} />
+                                <Divider style={{ margin: `var(--spacing-12) 0` }} />
 
-                                <Text strong style={{ fontSize: typography.fontSize.xs, color: colors.text.secondary, textTransform: 'uppercase', letterSpacing: 1 }}>
+                                <Text strong style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 1 }}>
                                     Design Tokens
                                 </Text>
-                                <div style={{ marginTop: spacing[2], display: 'flex', flexDirection: 'column', gap: spacing[2] }}>
+                                <div style={{ marginTop: 'var(--spacing-8)', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}>
                                     {activeZone.tokens.map((t) => (
                                         <div
                                             key={t.key}
                                             style={{
                                                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                                                padding: `${spacing[2]} ${spacing[3]}`,
-                                                background: colors.bg.subtle,
-                                                borderRadius: radius.sm,
-                                                border: `1px solid ${colors.border.split}`,
+                                                padding: `var(--spacing-8) var(--spacing-12)`,
+                                                background: 'var(--bg-subtle)',
+                                                borderRadius: 'var(--radius-sm)',
+                                                border: `1px solid var(--color-neutral-100)`,
                                             }}
                                         >
-                                            <code style={{ fontSize: 11, color: colors.subsystem.governance, fontFamily: typography.fontFamily.mono }}>
+                                            <code style={{ fontSize: 11, color: 'var(--color-info-500)', fontFamily: typography.fontFamily.mono }}>
                                                 {t.key}
                                             </code>
-                                            <code style={{ fontSize: 11, color: colors.text.secondary, fontFamily: typography.fontFamily.mono }}>
+                                            <code style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: typography.fontFamily.mono }}>
                                                 {t.value}
                                             </code>
                                         </div>
                                     ))}
                                 </div>
 
-                                <Divider style={{ margin: `${spacing[3]} 0` }} />
+                                <Divider style={{ margin: `var(--spacing-12) 0` }} />
 
-                                <Text strong style={{ fontSize: typography.fontSize.xs, color: colors.text.secondary, textTransform: 'uppercase', letterSpacing: 1 }}>
+                                <Text strong style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 1 }}>
                                     Lưu ý
                                 </Text>
-                                <ul style={{ marginTop: spacing[2], paddingLeft: spacing[5], display: 'flex', flexDirection: 'column', gap: spacing[2] }}>
+                                <ul style={{ marginTop: 'var(--spacing-8)', paddingLeft: 'var(--spacing-20)', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-8)' }}>
                                     {activeZone.notes.map((n, i) => (
-                                        <li key={i} style={{ color: colors.text.secondary, fontSize: typography.fontSize.sm, lineHeight: 1.6 }}>
+                                        <li key={i} style={{ color: 'var(--text-muted)', fontSize: '12px', lineHeight: 1.6 }}>
                                             {n}
                                         </li>
                                     ))}
@@ -339,11 +339,11 @@ const LayoutExplorer: React.FC = () => {
                             <div
                                 style={{
                                     display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                                    minHeight: 200, color: colors.text.tertiary, gap: spacing[3],
+                                    minHeight: 200, color: 'var(--text-subtle)', gap: 'var(--spacing-12)',
                                 }}
                             >
                                 <LayoutOutlined style={{ fontSize: 36, color: colors.subsystem.design + '50' }} />
-                                <Text style={{ color: colors.text.tertiary, textAlign: 'center' }}>
+                                <Text style={{ color: 'var(--text-subtle)', textAlign: 'center' }}>
                                     Click vào một vùng trong sơ đồ để xem chi tiết
                                 </Text>
                             </div>
