@@ -1,9 +1,18 @@
+# syntax=docker/dockerfile:1
 # Stage 1: Build the Next.js Application
 FROM node:20-alpine AS builder
 
 WORKDIR /app
 
 # Install dependencies first (leverage Docker cache)
+ARG GITHUB_TOKEN
+RUN apk add --no-cache git openssh && \
+    if [ -n "$GITHUB_TOKEN" ]; then \
+      git config --global url."https://${GITHUB_TOKEN}:x-oauth-basic@github.com/".insteadOf "ssh://git@github.com/"; \
+      git config --global url."https://${GITHUB_TOKEN}:x-oauth-basic@github.com/".insteadOf "https://github.com/"; \
+    else \
+      mkdir -p -m 0700 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts; \
+    fi
 COPY package.json package-lock.json ./
 RUN npm install
 
